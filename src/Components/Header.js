@@ -45,7 +45,10 @@ const Header = () => {
               
             </ul>
             <form className="d-flex">
-              <button className="btn logout-btn" style={{ color: 'white' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+             <Link to='/'>
+             <button href='/' className="btn logout-btn" style={{ color: 'white' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+             </Link>
+              
               <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
             </form>
           </div>
@@ -80,7 +83,7 @@ const Header = () => {
                 <img src='ezeefile.png'  />
               </div>
               <div className='row' onClick={handleActiveTab} >
-                <Link to='/' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
+                <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
               </div>
               <div className='row' onClick={handleActiveTab}>
                 <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>

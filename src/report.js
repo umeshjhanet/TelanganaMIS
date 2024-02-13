@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SummaryData } from './Components/SummaryData';
+import Header from './Components/Header';
+import Footer from './Footer';
 
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -38,6 +40,7 @@ const Report = () => {
 
   return (
     <>
+      <Header />
       <div className='container-fluid'>
         <div className='row'>
           <div className='col-lg-2 col-md-2 '></div>
@@ -59,7 +62,7 @@ const Report = () => {
                   {selectedLocations.map((location, index) => (
                     <span key={index} className='selected-location'>
                       {location}
-                      <button   onClick={() => removeLocation(location)} style={{backgroundColor:'black',color:'white',border:'none',marginLeft:'5px',}}>x</button>
+                      <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', marginLeft: '5px', }}>x</button>
                       &nbsp;
                     </span>
                   ))}
@@ -81,7 +84,7 @@ const Report = () => {
               </div>
               <div className='col-6'>
                 <DatePicker className='date-field' selected={startDate} onChange={(date) => setStartDate(date)} />
-                <button className='btn ms-1 me-1' style={{ height: '40px', backgroundColor: '#4BC0C0',marginBottom:'5px',borderRadius:'0px'}}>To</button>
+                <button className='btn ms-1 me-1' style={{ height: '40px', backgroundColor: '#4BC0C0', marginBottom: '5px', borderRadius: '0px' }}>To</button>
                 <DatePicker className='date-field' selected={endDate} onChange={(date) => setEndDate(date)} />
               </div>
               <div className='col-2'>
@@ -155,223 +158,223 @@ const Report = () => {
                         <th>Images</th>
                       </tr>
                     </thead>
-                    <tbody style={{ color: 'black',minHeight:'600px',overflowY:'auto' }} >
+                    <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
                       <tr>
-                      <td>Agra District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
-                    <tr>
-                      <td>Meerut District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
-                    <tr>
-                      <td>Kasganj District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
-                    <tr>
-                      <td>Kanpur Dehat District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
-                    <tr>
-                      <td>Ghaziabad District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
-                    <tr>
-                      <td>Bagpat District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
-                    <tr>
-                      <td>Bareilly District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
-                    <tr>
-                      <td>Kaushambi District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
-                    <tr>
-                      <td>Allahabad District Court</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td>11,974</td>
-                      <td>3,668,877</td>
-                      <td><button className='btn view-btn'>View</button></td>
-                    </tr>
+                        <td>Agra District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
+                      <tr>
+                        <td>Meerut District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
+                      <tr>
+                        <td>Kasganj District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
+                      <tr>
+                        <td>Kanpur Dehat District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
+                      <tr>
+                        <td>Ghaziabad District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
+                      <tr>
+                        <td>Bagpat District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
+                      <tr>
+                        <td>Bareilly District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
+                      <tr>
+                        <td>Kaushambi District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
+                      <tr>
+                        <td>Allahabad District Court</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td>11,974</td>
+                        <td>3,668,877</td>
+                        <td><button className='btn view-btn'>View</button></td>
+                      </tr>
                     </tbody>
 
                   </table>
@@ -382,7 +385,7 @@ const Report = () => {
           </div>
         </div>
       </div>
-
+      <Footer />
     </>
   )
 }
