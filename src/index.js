@@ -13,14 +13,12 @@ import Login from './login';
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      {/* <Header /> */}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path='/dashboard' element={<Dashboard/>}/>
         <Route path="/report" element={<Report />} />
         <Route path="/file" element={<File/>}/>
       </Routes>
-      {/* <Footer /> */}
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
