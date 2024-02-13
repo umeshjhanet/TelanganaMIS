@@ -8,7 +8,7 @@ import Footer from './Footer';
 import Dashboard from './dashboard';
 import Report from './report';
 import File from './file';
-import Login from './login';
+import Login from './Login';
 
 ReactDOM.render(
   <React.StrictMode>
