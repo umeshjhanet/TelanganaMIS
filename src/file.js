@@ -1,8 +1,11 @@
 import React from 'react'
+import Header from './Components/Header'
+import Footer from './Footer'
 
 const File = () => {
   return (
     <>
+    <Header/>
     <div className='container-fluid'>
       <div className='row'>
         <div className='col-2'></div>
@@ -11,7 +14,7 @@ const File = () => {
         </div>
       </div>
     </div>
-    
+    <Footer/>
     </>
   )
 }

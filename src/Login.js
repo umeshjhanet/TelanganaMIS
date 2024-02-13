@@ -103,8 +103,8 @@ const Login = () => {
                   className="password-inputbox"
              />
               </div>
-              <p className="text-end mt-2 me-3" style={{color:'red',fontSize:'14px'}}>Forgot Password ?</p>
               {renderErrorMessage('password')}
+              <p className="text-end mt-2 me-3" style={{color:'red',fontSize:'14px'}}>Forgot Password ?</p>
                 <input type='submit' className='btn login-btn' placeholder="Log In"></input>
               </div>
             </form>

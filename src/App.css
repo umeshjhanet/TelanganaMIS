@@ -114,7 +114,6 @@ input[type="submit"]:hover {
 }
 
 .login-card {
-  /* border: 1px solid gray; */
   width: 400px;
   margin: auto;
   padding-left: 12px;
@@ -123,9 +122,6 @@ input[type="submit"]:hover {
   background-color: white;
 }
 
-.login-inputs {
-  width: 100%;
-}
 .sign-in {
   background-color: #107393;
   padding: 10px;
@@ -133,17 +129,6 @@ input[type="submit"]:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.login-btn {
-  width: 100%;
-  background-color: #4a0153;
-  border: 1px solid #4a0153;
-  margin-top: 10px;
-}
-
-.login-btn:hover {
-  background-color: white;
 }
 
 .password-field {
@@ -178,7 +163,7 @@ input[type="submit"]:hover {
 }
 
 .mobile-sidebar {
-  bottom: 5px;
+  bottom: 25px;
   height: 100%;
   margin-bottom: -70px;
   margin-top: 0px;
@@ -277,9 +262,6 @@ input[type="submit"]:hover {
   z-index: 999;
 }
 
-.location-card p {
-  line-height: 1;
-}
 
 .location-card p:hover {
   background-color: #61dafb;
@@ -338,6 +320,37 @@ input[type="submit"]:hover {
 }
 
 @media only screen and (max-width: 480px) {
+  .login-card {
+    width: 300px;
+    margin: auto;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 20px;
+    background-color: white;
+  }
+  .password-field {
+    width: 100%;
+  }
+  .password-inputbox:active {
+    border: none;
+  }
+  .password-inputbox{
+    width: 220px;
+    box-shadow: 4px 4px 4px 4px #cfcdcd;
+    border: none;
+  }
+  form
+input[type="submit"] {
+  margin-top:10px;
+  cursor: pointer;
+  font-size: 15px;
+  background: #359d53;
+  border: 1px solid #2a8c64;
+  color: #fff;
+  padding: 8px 10px;
+  width: 200px;
+  margin-left: 40px;
+}
   .data-table {
     width: 300px;
     overflow-x: auto;
@@ -359,7 +372,7 @@ input[type="submit"]:hover {
   }
 
   .search-btn {
-    width: 242px;
+    width: 300px;
     height: 40px;
     background-color: #4BC0C0;
     margin-left: 0;
@@ -395,7 +408,7 @@ input[type="submit"]:hover {
   }
 
   .search-btn {
-    width: 242px;
+    width: 300px;
     height: 40px;
     background-color: #4BC0C0;
     margin-left: 0;

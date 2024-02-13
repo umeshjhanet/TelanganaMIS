@@ -5,12 +5,25 @@ import { SummaryData } from './Components/SummaryData';
 import Header from './Components/Header';
 import Footer from './Footer';
 
+const Locations = [
+  "Agra",
+  "Allahabad",
+  "Kanpur",
+  "Bagpat",
+  "Ghaziabad",
+  "Bareilly",
+  "Kasganj",
+  "Kaushambi",
+  "Meerut",
+]
+
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [searchInput, setSearchInput] = useState('');
+  const [filteredLocations, setFilteredLocations] = new useState(Locations);
   const dropdownRef = useRef(null);
 
 
@@ -38,6 +51,7 @@ const Report = () => {
   //   };
   // }, [dropdownRef]);
 
+
   return (
     <>
       <Header />
@@ -51,7 +65,7 @@ const Report = () => {
               </div>
             </div>
             <div className='row mt-2 me-1 search-report-card'>
-              <div className='col-4'>
+              <div className='col-md-4 col-sm-12'>
                 <div
                   ref={dropdownRef}
                   className='search-bar mt-1'
@@ -69,7 +83,15 @@ const Report = () => {
                   <span style={{ minWidth: '5px', display: 'inline-block' }}>&#8203;</span>
                 </div>
                 {showLocation && (
-                  <div className='location-card'>
+                  <>
+                    <div className='location-card' >
+                      {filteredLocations.map((item, index) => (
+                        <div key={index}>
+                          <p onClick={() => handleLocation(item)}>{item}</p>
+                        </div>
+                      ))}
+                    </div>
+                    {/* <div className='location-card'>
                     <p onClick={() => handleLocation('Agra')}>Agra</p>
                     <p onClick={() => handleLocation('Meerut')}>Meerut</p>
                     <p onClick={() => handleLocation('Kanpur Dehat')}>Kanpur Dehat</p>
@@ -79,15 +101,17 @@ const Report = () => {
                     <p onClick={() => handleLocation('Bagpat')}>Bagpat</p>
                     <p onClick={() => handleLocation('Ghaziabad')}>Ghaziabad</p>
                     <p onClick={() => handleLocation('Bareilly')}>Bareilly</p>
-                  </div>
+
+                  </div> */}
+                  </>
                 )}
               </div>
-              <div className='col-6'>
+              <div className='col-md-6 col-sm-12'>
                 <DatePicker className='date-field' selected={startDate} onChange={(date) => setStartDate(date)} />
                 <button className='btn ms-1 me-1' style={{ height: '40px', backgroundColor: '#4BC0C0', marginBottom: '5px', borderRadius: '0px' }}>To</button>
                 <DatePicker className='date-field' selected={endDate} onChange={(date) => setEndDate(date)} />
               </div>
-              <div className='col-2'>
+              <div className='col-md-2 col-sm-12'>
                 <button className='btn search-btn'>Search</button>
               </div>
             </div>
@@ -104,7 +128,7 @@ const Report = () => {
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>{elem.Title}</h6>
                         </div>
-                        <p className='text-center fw-bold'>Total Files: {elem.Files}<br />Total Images: {elem.Images}</p>
+                        <p className='text-center'>Total Files: {elem.Files}<br />Total Images: {elem.Images}</p>
                       </div>
                     </div>
                   ))}
