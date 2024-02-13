@@ -46,7 +46,7 @@ const Header = () => {
             </ul>
             <form className="d-flex">
              <Link to='/'>
-             <button href='/' className="btn logout-btn" style={{ color: 'white' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+             <button href='/' className="btn logout-btn" style={{ color: 'white',marginTop:'4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px'}} />LOGOUT</button>
              </Link>
               
               <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
@@ -112,7 +112,7 @@ const Header = () => {
           <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
             <form className="d-flex">
               <Link to='/'>
-              <button className="btn logout-btn" style={{ color: 'white' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+              <button className="btn logout-btn" style={{ color: 'white',marginTop:'4px'  }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
               </Link>
               <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
             </form>
