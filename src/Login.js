@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from 'react-icons-kit';
 import { eyeOff } from 'react-icons-kit/feather/eyeOff';
@@ -11,18 +11,23 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [type, setType] = useState('password');
   const [icon, setIcon] = useState(eyeOff);
+  const [userDB, setUserDB] = useState();
   const navigate = useNavigate();
 
-  const userDB = [
-    {
-      uname: "user1",
-      password: "pass1"
-    },
-    {
-      uname: "user2",
-      password: "pass2"
+  let API = "http://localhost:3002/users";
+  const fetchAPIData = async(url) => {
+    try{
+      const res = await fetch(url);
+      const data = await res.json();
+      setUserDB(data);
     }
-  ];
+    catch(error){
+      console.log(error);
+    }
+  }
+  useEffect((data) => {
+    fetchAPIData(API);
+  },[])
 
   const errors = {
     username: "Invalid username",
@@ -33,7 +38,7 @@ const Login = () => {
     event.preventDefault();
     const { uname, password } = event.target.elements;
 
-    const userData = userDB.find((user) => user.uname === uname.value);
+    const userData = userDB.find((user) => user.username === uname.value);
 
     if (userData) {
       if (userData.password !== password.value) {
@@ -60,6 +65,7 @@ const Login = () => {
          setType('password')
       }
    }
+  
 
   return (
     <div className="">
