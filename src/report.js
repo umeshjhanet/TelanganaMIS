@@ -40,8 +40,9 @@ const Report = () => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
   };
   useEffect(() => {
-    axios.get("https://backend-nodejs-nine.vercel.app/locations")
-    .then(response => setLocations(response.data))
+    fetch("https://backend-nodejs-nine.vercel.app/locations")
+    .then(response => response.json())
+    .then(data => setLocations(data))
     .catch(error => console.error("Msg",error));
     console.log("Locations",locations);
   }, [])
@@ -80,9 +81,9 @@ const Report = () => {
                 {showLocation && (
                   <>
                     <div className='location-card' >
-                      {filteredLocations.map((item, index) => (
+                      {locations.map((item, index) => (
                         <div key={index}>
-                          <p onClick={() => handleLocation(item)}>{item}</p>
+                          <p onClick={() => handleLocation(item.location_name)}>{item.location_name}</p>
                         </div>
                       ))}
                     </div>
