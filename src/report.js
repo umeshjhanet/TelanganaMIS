@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SummaryData } from './Components/SummaryData';
 import Header from './Components/Header';
 import Footer from './Footer';
+import axios from 'axios';
 
 const Locations = [
   "Agra",
@@ -22,6 +23,7 @@ const Report = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
+  const [locations, setLocations] = useState();
   const [searchInput, setSearchInput] = useState('');
   const [filteredLocations, setFilteredLocations] = new useState(Locations);
   const dropdownRef = useRef(null);
@@ -37,19 +39,12 @@ const Report = () => {
   const removeLocation = (location) => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
   };
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //       setShowLocation(false);
-  //     }
-  //   };
-
-  //   document.addEventListener('mousedown', handleClickOutside);
-
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, [dropdownRef]);
+  useEffect(() => {
+    axios.get("https://backend-nodejs-nine.vercel.app/locations")
+    .then(response => setLocations(response.data))
+    .catch(error => console.error("Msg",error));
+    console.log("Locations",locations);
+  }, [])
 
 
   return (

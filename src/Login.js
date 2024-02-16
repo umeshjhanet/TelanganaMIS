@@ -4,6 +4,7 @@ import { Icon } from 'react-icons-kit';
 import { eyeOff } from 'react-icons-kit/feather/eyeOff';
 import { eye } from 'react-icons-kit/feather/eye'
 import { FaUserLarge } from "react-icons/fa6";
+import axios from 'axios';
 
 
 const Login = () => {
@@ -19,14 +20,15 @@ const Login = () => {
     try{
       const res = await fetch(url);
       const data = await res.json();
-      console.log(data);
+      console.log("API response",data)
       setUserDB(data);
     }
     catch(error){
       console.log(error);
+      
     }
   }
-  useEffect((data) => {
+  useEffect(() => {
     fetchAPIData(API);
   },[])
 
