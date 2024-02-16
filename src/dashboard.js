@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { CCard, CCardBody, CCol, CCardHeader, CRow } from '@coreui/react'
-import {
-  CChartBar,
-  CChartDoughnut,
-  CChartLine,
-  CChartPie,
-  CChartPolarArea,
-  CChartRadar,
-} from '@coreui/react-chartjs'
+import { CChartBar,CChartDoughnut,CChartLine,CChartPie,CChartPolarArea,CChartRadar} from '@coreui/react-chartjs'
 import Header from './Components/Header';
 import SideBar from './Components/SideBar';
 import './App.css';
+import Footer from './Footer';
 
 const Dashboard = () => {
   const [data2,setData2] = useState();
@@ -38,6 +32,7 @@ const Dashboard = () => {
   // console.log("actual data", data2.city)
   return (
     <>
+    <Header/>
       <div className='container-fluid'>
       <div className='row'>
         <div className='col-lg-2'></div>
@@ -49,7 +44,8 @@ const Dashboard = () => {
         <div className='row'>
           <div className='col-md-6 col-sm-12'>
             <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-              <CCardHeader>Cumulative Report</CCardHeader>
+              <h4 className='ms-1'>Cumulative Report</h4>
+              <h5 className='ms-1'>All Location: Files</h5>
               <CCardBody>
                 <CChartBar
                   data={{
@@ -69,7 +65,8 @@ const Dashboard = () => {
           </div>
           <div className='col-md-6 col-sm-12' >
             <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-              <CCardHeader>Cumulative Report</CCardHeader>
+            <h4 className='ms-1'>Cumulative Report</h4>
+              <h5 className='ms-1'>All Location: Images</h5>
               <CCardBody>
                 <CChartBar
                   data={{
@@ -88,68 +85,6 @@ const Dashboard = () => {
             </CCard>
           </div>
         </div>
-        {/* <div className='row'>
-          <div className='col-6'>
-          <CCard className="mb-4">
-          <CCardHeader>Line Chart</CCardHeader>
-          <CCardBody>
-            <CChartLine
-              data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(220, 220, 220, 0.2)',
-                    borderColor: 'rgba(220, 220, 220, 1)',
-                    pointBackgroundColor: 'rgba(220, 220, 220, 1)',
-                    pointBorderColor: '#fff',
-                    data: [random(), random(), random(), random(), random(), random(), random()],
-                  },
-                  {
-                    label: 'My Second dataset',
-                    backgroundColor: 'rgba(151, 187, 205, 0.2)',
-                    borderColor: 'rgba(151, 187, 205, 1)',
-                    pointBackgroundColor: 'rgba(151, 187, 205, 1)',
-                    pointBorderColor: '#fff',
-                    data: [random(), random(), random(), random(), random(), random(), random()],
-                  },
-                ],
-              }}
-            />
-          </CCardBody>
-        </CCard>
-          </div>
-          <div className='col-6'>
-          <CCard className="mb-4">
-          <CCardHeader>Line Chart</CCardHeader>
-          <CCardBody>
-            <CChartBar
-              data={{
-                
-                datasets: [
-                  {
-                    label: 'Civil',
-                    backgroundColor: 'rgba(220, 220, 220, 0.2)',
-                    borderColor: 'rgba(220, 220, 220, 1)',
-                    pointBackgroundColor: 'rgba(220, 220, 220, 1)',
-                    pointBorderColor: '#fff',
-                    data: [4.24 ],
-                  },
-                  {
-                    label: 'Criminal',
-                    backgroundColor: 'rgba(151, 187, 205, 0.2)',
-                    borderColor: 'rgba(151, 187, 205, 1)',
-                    pointBackgroundColor: 'rgba(151, 187, 205, 1)',
-                    pointBorderColor: '#fff',
-                    data: [1.09],
-                  },
-                ],
-              }}
-            />
-          </CCardBody>
-        </CCard>
-          </div>
-        </div> */}
         <div className='row'>
           <div className='table-card'>
             <div className='row'>
@@ -478,7 +413,7 @@ const Dashboard = () => {
         </div>
       </div>
       </div>
-     
+     <Footer/>
     </>
   )
 }
