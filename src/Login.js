@@ -14,11 +14,12 @@ const Login = () => {
   const [userDB, setUserDB] = useState();
   const navigate = useNavigate();
 
-  let API = "http://localhost:3002/users";
+  let API = "https://backend-nodejs-nine.vercel.app/users";
   const fetchAPIData = async(url) => {
     try{
       const res = await fetch(url);
       const data = await res.json();
+      console.log(data);
       setUserDB(data);
     }
     catch(error){
