@@ -433,7 +433,7 @@ const Dashboard = () => {
              
           </div>
         </div>
-        {/* <div className='row'>
+        <div className='row'>
         <h4>IP Address Details:</h4>
           <table className='table-bordered' style={{width:'400px'}}>
             <thead>
@@ -472,7 +472,7 @@ const Dashboard = () => {
             </thead>
           </table>
           
-        </div> */}
+        </div>
       </div>
       
         </div>
