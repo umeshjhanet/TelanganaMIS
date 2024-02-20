@@ -24,6 +24,7 @@ const Report = () => {
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [locations, setLocations] = useState();
+  const [summary, setSummary] = useState();
   const [searchInput, setSearchInput] = useState('');
   const [filteredLocations, setFilteredLocations] = new useState(Locations);
   const dropdownRef = useRef(null);
@@ -40,13 +41,31 @@ const Report = () => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
   };
   useEffect(() => {
-    fetch("https://backend-nodejs-nine.vercel.app/locations")
-    .then(response => response.json())
-    .then(data => setLocations(data))
-    .catch(error => console.error("Msg",error));
-    console.log("Locations",locations);
-  }, [])
+    const fetchData = () => {
+      fetch("https://backend-nodejs-nine.vercel.app/locations")
+        .then(response => response.json())
+        .then(data => setLocations(data))
+        .catch(error => console.error("Msg", error));
+    };
+    const summaryData =() => {
+      fetch("https://backend-nodejs-nine.vercel.app/summary")
+      .then(response => response.json())
+      .then(data => setSummary(data))
+      .catch(error => console.error("Msg",error))
+      console.log("Summary", summary);
+    }
+    fetchData();
+    summaryData();
 
+    const intervalId = setInterval(fetchData,summaryData, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+  
+if(!locations) 
+return(
+  <>Loading....</>
+)
 
   return (
     <>
@@ -87,18 +106,6 @@ const Report = () => {
                         </div>
                       ))}
                     </div>
-                    {/* <div className='location-card'>
-                    <p onClick={() => handleLocation('Agra')}>Agra</p>
-                    <p onClick={() => handleLocation('Meerut')}>Meerut</p>
-                    <p onClick={() => handleLocation('Kanpur Dehat')}>Kanpur Dehat</p>
-                    <p onClick={() => handleLocation('Kasganj')}>Kasganj</p>
-                    <p onClick={() => handleLocation('Kaushambi')}>Kaushambi</p>
-                    <p onClick={() => handleLocation('Allahabad')}>Allahabad</p>
-                    <p onClick={() => handleLocation('Bagpat')}>Bagpat</p>
-                    <p onClick={() => handleLocation('Ghaziabad')}>Ghaziabad</p>
-                    <p onClick={() => handleLocation('Bareilly')}>Bareilly</p>
-
-                  </div> */}
                   </>
                 )}
               </div>
@@ -118,13 +125,13 @@ const Report = () => {
               <div className='main-summary-card '>
 
                 <div className='row'>
-                  {SummaryData().map((elem, index) => (
+                  {summary.map((elem, index) => (
                     <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>{elem.Title}</h6>
+                          <h6 style={{ textTransform: 'capitalize' }}>{elem.title}</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.Files}<br />Total Images: {elem.Images}</p>
+                        <p className='text-center'>Total Files: {elem.totalfiles}<br />Total Images: {elem.totalimages}</p>
                       </div>
                     </div>
                   ))}
@@ -178,9 +185,15 @@ const Report = () => {
                         <th>Images</th>
                       </tr>
                     </thead>
+                    {/* {locations.map((elem,index) => (
+                      <tr key={index}>
+                        <td>{elem.location_name}</td>
+                      </tr>
+                    ))} */}
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
-                      <tr>
-                        <td>Agra District Court</td>
+                       {locations.map((elem,index)=>(
+                        <tr key={index}>
+                        <td>{elem.location_name}</td>
                         <td>11,974</td>
                         <td>3,668,877</td>
                         <td>11,974</td>
@@ -203,203 +216,10 @@ const Report = () => {
                         <td>3,668,877</td>
                         <td><button className='btn view-btn'>View</button></td>
                       </tr>
-                      <tr>
-                        <td>Meerut District Court</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
-                      <tr>
-                        <td>Kasganj District Court</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
-                      <tr>
-                        <td>Kanpur Dehat District Court</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
-                      <tr>
-                        <td>Ghaziabad District Court</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
-                      <tr>
-                        <td>Bagpat District Court</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
-                      <tr>
-                        <td>Bareilly District Court</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
-                      <tr>
-                        <td>Kaushambi District Court</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
-                      <tr>
-                        <td>Allahabad District Court</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
+                      ))}
                     </tbody>
-
                   </table>
                 </div>
-
               </div>
             </div>
           </div>
