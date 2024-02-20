@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CCard, CCardBody, CCol, CCardHeader, CRow } from '@coreui/react'
 import { CChartBar,CChartDoughnut,CChartLine,CChartPie,CChartPolarArea,CChartRadar} from '@coreui/react-chartjs'
 import Header from './Components/Header';
-import SideBar from './Components/SideBar';
+
 import './App.css';
 import Footer from './Footer';
 
@@ -16,8 +16,8 @@ const Dashboard = () => {
     try {
       const res = await fetch(url);
       const data = await res.json();
-      console.log(data);
-      console.log(data.city);
+      // console.log(data);
+      // console.log(data.city);
       setData2(data);
     }
     catch (error) {
@@ -368,7 +368,7 @@ const Dashboard = () => {
              
           </div>
         </div>
-        <div className='row'>
+        {/* <div className='row'>
         <h4>IP Address Details:</h4>
           <table className='table-bordered' style={{width:'400px'}}>
             <thead>
@@ -407,7 +407,7 @@ const Dashboard = () => {
             </thead>
           </table>
           
-        </div>
+        </div> */}
       </div>
       
         </div>
