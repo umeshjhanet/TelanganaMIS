@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from 'react'
-import { IoMenuOutline } from "react-icons/io5";
-import { IoLogOut } from "react-icons/io5";
-import { FaHome } from "react-icons/fa";
-import { VscGraph } from "react-icons/vsc";
-import { IoIosArrowDown } from "react-icons/io";
-import { BsFillCloudArrowUpFill } from "react-icons/bs";
-import { BsCloudyFill } from "react-icons/bs";
-import Dashboard from '../dashboard';
-import Header from './Header';
+// import { IoMenuOutline } from "react-icons/io5";
+// import { IoLogOut } from "react-icons/io5";
+// import { FaHome } from "react-icons/fa";
+// import { VscGraph } from "react-icons/vsc";
+// import { IoIosArrowDown } from "react-icons/io";
+// import { BsFillCloudArrowUpFill } from "react-icons/bs";
+// import { BsCloudyFill } from "react-icons/bs";
+// import Dashboard from '../dashboard';
+// import Header from './Header';
 
 
 const SideBar = ({sidebar}) => {
