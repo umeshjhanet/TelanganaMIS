@@ -45,13 +45,13 @@ const Report = () => {
       fetch("https://backend-nodejs-nine.vercel.app/locations")
         .then(response => response.json())
         .then(data => setLocations(data))
-        .catch(error => console.error("Msg", error));
+        .catch(error => console.error( error));
     };
     const summaryData =() => {
       fetch("https://backend-nodejs-nine.vercel.app/summary")
       .then(response => response.json())
       .then(data => setSummary(data))
-      .catch(error => console.error("Msg",error))
+      .catch(error => console.error(error))
       console.log("Summary", summary);
     }
     fetchData();
@@ -185,17 +185,12 @@ return(
                         <th>Images</th>
                       </tr>
                     </thead>
-                    {/* {locations.map((elem,index) => (
-                      <tr key={index}>
-                        <td>{elem.location_name}</td>
-                      </tr>
-                    ))} */}
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
                        {locations.map((elem,index)=>(
                         <tr key={index}>
                         <td>{elem.location_name}</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
+                        <td>{elem.files}</td>
+                        <td>{elem.images}</td>
                         <td>11,974</td>
                         <td>3,668,877</td>
                         <td>11,974</td>
