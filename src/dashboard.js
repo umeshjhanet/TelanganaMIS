@@ -5,25 +5,10 @@ import Header from './Components/Header';
 import axios from 'axios';
 import './App.css';
 import Footer from './Footer';
+import { BarChart } from '@mui/x-charts/BarChart';
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
-
-  const random = () => Math.round(Math.random() * 100)
-
-  // let API = "http://ip-api.com/json/42.108.26.152"
-  // const fetchAPIData = async (url) => {
-  //   try {
-  //     const res = await fetch(url);
-  //     const data = await res.json();
-  //     // console.log(data);
-  //     // console.log(data.city);
-  //     setData2(data);
-  //   }
-  //   catch (error) {
-  //     console.log(error);
-  //   }
-  // }
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -34,38 +19,103 @@ const Dashboard = () => {
       },
     ],
   });
+  const [scannedData, setScannedData] = useState(null);
+  const [locationReportData, setLocationReportData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Scanning',
+        backgroundColor: '#02B2AF',
+        data: [],
+      },
+    ],
+  })
+  const random = () => Math.round(Math.random() * 100)
+
+  // let API = "http://ip-api.com/json/42.108.26.152"
+
 
   useEffect(() => {
     const fetchGraphData = () => {
-      axios.get('http://localhost:5000/graph')
-      .then(response => {
-        const apiData = response.data[0]; // Assuming there's only one object in the response array
-        const labels = Object.keys(apiData);
-        const data = Object.values(apiData);
-        setChartData({
-          labels: labels.filter(label => label !== 'id'), // Exclude 'id' from labels
-          datasets: [
-            {
-              ...chartData.datasets[0],
-              data: data.filter((value, index) => typeof value === 'number' && labels[index] !== 'id'), // Filter out non-numeric values
-            },
-          ],
+      axios.get('https://backend-nodejs-nine.vercel.app/graph')
+        .then(response => {
+          const apiData = response.data[0];
+          const labels = Object.keys(apiData);
+          const data = Object.values(apiData);
+          setChartData({
+            labels: labels.filter(label => label !== 'id'),
+            datasets: [
+              {
+                ...chartData.datasets[0],
+                data: data.filter((value, index) => typeof value === 'number' && labels[index] !== 'id'),
+              },
+            ],
+          });
+        })
+        .catch(error => {
+          // console.error('Error fetching data:', error);
         });
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+    }
+    const fetchScannedData = () => {
+      fetch('https://backend-nodejs-nine.vercel.app/scanned_images')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (!Array.isArray(data)) {
+            throw new Error('Data format is incorrect');
+          }
+        
+          const dates = [];
+          const images = [];
+        
+          data.forEach(item => {
+            // Assuming each item has 'date' and 'images' properties
+            dates.push(item.date);
+            images.push(item.images);
+          });
+        
+          const chartData = {
+            xAxis: [{ scaleType: 'band', data: dates ,categoryGapRatio: 0.3,barGapRatio: 0.1}],
+            series: [{ data: images }],
+            width:1300,
+            height:500,
+          };
+          setScannedData(chartData);
+        })
+        
+    };
+    const fetchLocationReportData = () => {
+      axios.get('https://backend-nodejs-nine.vercel.app/location_report')
+        .then(response => {
+          const apiData = response.data;
+          const labels = apiData.map(item => item.location_name);
+          const data = apiData.map(item => item.images);
+          setLocationReportData({
+            labels: labels,
+            datasets: [
+              {
+                label: 'Scanning',
+                backgroundColor: '#ae32c5',
+                data: data,
+              },
+            ],
+          });
+        })
+        .catch(error => {
+          // console.error('Error fetching data:', error);
+        });
     }
     fetchGraphData();
-      const intervalID = setInterval(fetchGraphData, 2000);
-      return () => clearInterval(intervalID);
+    fetchScannedData();
+    fetchLocationReportData();
+    const intervalID = setInterval(fetchGraphData, fetchScannedData, fetchLocationReportData, 2000);
+    return () => clearInterval(intervalID);
   }, []);
 
-  // useEffect((data) => {
-  //   fetchAPIData(API);
-
-  // }, [])
-  // console.log("actual data", data2.city)
   return (
     <>
       <Header />
@@ -113,6 +163,45 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className='row'>
+                <CCard>
+                  <h4 className='ms-1'>SCANNED REPORT FOR (22-02-24)</h4>
+                  <h5 className='ms-1'>All Location: Images</h5>
+                  <CCardBody>
+                    <CChartBar
+                      data={locationReportData}
+                      options={{
+                        scales: {
+                          yAxes: [{
+                            ticks: {
+                              beginAtZero: true
+                            }
+                          }]
+                        }
+                      }}>
+
+                    </CChartBar>
+                  </CCardBody>
+                </CCard>
+              </div>
+              <div className='row mt-2'>
+                <div className='card'>
+                  <h4 className='ms-1'>CUMULATIVE SCANNED TILL DATE</h4>
+                  <h5 className='ms-1'>All Location: Images</h5>
+                  <div>
+                    
+                    {scannedData && (
+                      <BarChart
+                      className='scanned-chart'
+                        xAxis={scannedData.xAxis}
+                        series={scannedData.series}
+                        width={scannedData.width}
+                        height={scannedData.height}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className='row mt-2'>
                 <div className='table-card'>
                   <div className='row'>
                     <div className='card' style={{ padding: '5px', backgroundColor: '#4BC0C0' }}>
@@ -446,3 +535,12 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+
+
+
+
+
+
+
+
+

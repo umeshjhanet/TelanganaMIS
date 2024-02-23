@@ -42,15 +42,15 @@ const Report = () => {
   };
   useEffect(() => {
     const fetchData = () => {
-      // fetch("https://backend-nodejs-nine.vercel.app/locations")
-      fetch("http://localhost:5000/locations")
+      fetch("https://backend-nodejs-nine.vercel.app/locations")
+      // fetch("http://localhost:5000/locations")
         .then(response => response.json())
         .then(data => setLocations(data))
         .catch(error => console.error( error));
     };
     const summaryData =() => {
-      // fetch("https://backend-nodejs-nine.vercel.app/summary")
-      fetch("http://localhost:5000/summary")
+      fetch("https://backend-nodejs-nine.vercel.app/summary")
+      // fetch("http://localhost:5000/summary")
       .then(response => response.json())
       .then(data => setSummary(data))
       .catch(error => console.error(error))
@@ -191,8 +191,8 @@ return(
                        {locations.map((elem,index)=>(
                         <tr key={index}>
                         <td>{elem.location_name}</td>
-                        <td>{elem.files}||0</td>
-                        <td>{elem.images}||0</td>
+                        <td>{elem.files}</td>
+                        <td>{elem.images}</td>
                         <td>11,974</td>
                         <td>3,668,877</td>
                         <td>11,974</td>

@@ -328,6 +328,9 @@ input[type="submit"]:hover {
   border: 1px solid black;
   padding: 10px;
 }
+.scanned-chart{
+  background-color: #f87979;
+}
 @media only screen and (max-width: 480px) {
   .login-card {
     width: 300px;
