@@ -127,65 +127,9 @@ const Dashboard = () => {
               <div className='row'>
                 <p className='mt-1 fw-bold' style={{ color: '#4BC0C0', fontSize: '20px' }}>Dashboard</p>
               </div>
-              <div className='row'>
-                <div className='col-md-6 col-sm-12'>
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Cumulative Report</h4>
-                    <h5 className='ms-1'>All Location: Files</h5>
-                    <CCardBody>
-                      <CChartBar
-                        data={chartData}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
-                </div>
-                <div className='col-md-6 col-sm-12' >
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Cumulative Report</h4>
-                    <h5 className='ms-1'>All Location: Images</h5>
-                    <CCardBody>
-                      <CChartBar
-                        data={{
-                          labels: ['Export pdf', 'Client QA Pending', 'Client QA', 'CBSL QA', 'Scanned'],
-                          datasets: [
-                            {
-                              label: 'No. of Images',
-                              backgroundColor: '#E78895',
-                              data: [214276, 798357, 47440, 845797, 53353729],
-                            },
-                          ],
-                        }}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
-                </div>
-              </div>
-              <div className='row'>
-                <CCard>
-                  <h4 className='ms-1'>SCANNED REPORT FOR (22-02-24)</h4>
-                  <h5 className='ms-1'>All Location: Images</h5>
-                  <CCardBody>
-                    <CChartBar
-                      data={locationReportData}
-                      options={{
-                        scales: {
-                          yAxes: [{
-                            ticks: {
-                              beginAtZero: true
-                            }
-                          }]
-                        }
-                      }}>
-
-                    </CChartBar>
-                  </CCardBody>
-                </CCard>
-              </div>
               <div className='row mt-2'>
                 <div className='card'>
-                  <h4 className='ms-1'>CUMULATIVE SCANNED TILL DATE</h4>
+                  <h4 className='ms-1'>SCANNING REPORT OF LAST 30 DAYS</h4>
                   <h5 className='ms-1'>All Location: Images</h5>
                   <div>
                     
@@ -484,46 +428,72 @@ const Dashboard = () => {
 
                 </div>
               </div>
-              {/* <div className='row'>
-        <h4>IP Address Details:</h4>
-          <table className='table-bordered' style={{width:'400px'}}>
-            <thead>
-              <tr>
-                <th>City:</th>
-                <td>{data2.city}</td>
-              </tr>
-              <tr>
-                <th> Country:</th>
-                <td>{data2.country}</td>
-              </tr>
-              <tr>
-                <th>Country Code:</th>
-                <td>{data2.countryCode}</td>
-              </tr>
-              <tr>
-                <th> ISP:</th>
-                <td>{data2.isp}</td>
-              </tr>
-              <tr>
-                <th>Query:</th>
-                <td>{data2.query}</td>
-              </tr>
-              <tr>
-                <th>Region:</th>
-                <td>{data2.region}</td>
-              </tr>
-              <tr>
-                <th>Region Name:</th>
-                <td>{data2.regionName}</td>
-              </tr>
-              <tr>
-                <th>Timezone: </th>
-                <td>{data2.timezone}</td>
-              </tr>
-            </thead>
-          </table>
-          
-        </div> */}
+              <div className='row'>
+                <div className='col-md-6 col-sm-12'>
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>Cumulative Report</h4>
+                    <h5 className='ms-1'>All Location: Files</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={chartData}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+                <div className='col-md-6 col-sm-12' >
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>Cumulative Report</h4>
+                    <h5 className='ms-1'>All Location: Images</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={{
+                          labels: ['Export pdf', 'Client QA Pending', 'Client QA', 'CBSL QA', 'Scanned'],
+                          datasets: [
+                            {
+                              label: 'No. of Images',
+                              backgroundColor: '#E78895',
+                              data: [214276, 798357, 47440, 845797, 53353729],
+                              display:'true',
+                              text: [214276, 798357, 47440, 845797, 53353729],
+                            },
+                            
+                          ],
+                          datalabels: {
+                            align: 'end',
+                            anchor: 'start'
+                          },
+                        }}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </div>
+              <div className='row'>
+                <CCard>
+                  <h4 className='ms-1'>SCANNED REPORT FOR (22-02-24)</h4>
+                  <h5 className='ms-1'>All Location: Images</h5>
+                  <CCardBody>
+                    <CChartBar
+                      data={locationReportData}
+                      options={{
+                        scales: {
+                          yAxes: [{
+                            ticks: {
+                              beginAtZero: true
+                            }
+                          }]
+                        }
+                      }}>
+
+                    </CChartBar>
+                  </CCardBody>
+                </CCard>
+              </div>
+             
+              
+              {/* <canvas id="barcasefile" height="449" width="642" style={{width: '642px',height: '449px;'}}></canvas> */}
             </div>
 
           </div>
