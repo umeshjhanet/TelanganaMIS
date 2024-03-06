@@ -68,11 +68,11 @@ const File = () => {
         const response = await axios.get("http://localhost:5000/site_MPData");
         const site_MPData = response.data;
 
-        
+        console.log("Manpower Data" , site_MPData);
         setFormData({
-          PM_Id: site_MPData.PM_Id || '',
-          SM_Name: site_MPData.SM_Name || '',
-          
+          // PM_Id: site_MPData.PM_Id || '',
+          // SM_Name: site_MPData.SM_Name || '',
+          Coll_Index_MP: site_MPData.Coll_Index_MP || ''
         });
         console.log("PM_ID",site_MPData);
       } catch (error) {

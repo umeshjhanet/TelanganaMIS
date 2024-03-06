@@ -37,23 +37,25 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchGraphData = () => {
-      axios.get('https://backend-nodejs-nine.vercel.app/graph')
+      axios.get('http://localhost:5000/graph1')
         .then(response => {
           const apiData = response.data[0];
           const labels = Object.keys(apiData);
           const data = Object.values(apiData);
+          console.log('Labels:', labels);
+          console.log('Data:', data);
           setChartData({
             labels: labels.filter(label => label !== 'id'),
             datasets: [
               {
                 ...chartData.datasets[0],
-                data: data.filter((value, index) => typeof value === 'number' && labels[index] !== 'id'),
+                data: data
               },
             ],
           });
         })
         .catch(error => {
-          // console.error('Error fetching data:', error);
+          console.error('Error fetching data:', error);
         });
     }
     const fetchScannedData = () => {
@@ -68,25 +70,25 @@ const Dashboard = () => {
           if (!Array.isArray(data)) {
             throw new Error('Data format is incorrect');
           }
-        
+
           const dates = [];
           const images = [];
-        
+
           data.forEach(item => {
             // Assuming each item has 'date' and 'images' properties
             dates.push(item.date);
             images.push(item.images);
           });
-        
+
           const chartData = {
-            xAxis: [{ scaleType: 'band', data: dates ,categoryGapRatio: 0.3,barGapRatio: 0.1}],
+            xAxis: [{ scaleType: 'band', data: dates, categoryGapRatio: 0.3, barGapRatio: 0.1 }],
             series: [{ data: images }],
-            width:1300,
-            height:500,
+            width: 1300,
+            height: 500,
           };
           setScannedData(chartData);
         })
-        
+
     };
     const fetchLocationReportData = () => {
       axios.get('https://backend-nodejs-nine.vercel.app/location_report')
@@ -112,7 +114,7 @@ const Dashboard = () => {
     fetchGraphData();
     fetchScannedData();
     fetchLocationReportData();
-    const intervalID = setInterval(fetchGraphData, fetchScannedData, fetchLocationReportData, 2000);
+    const intervalID = setInterval( fetchGraphData, 2000);
     return () => clearInterval(intervalID);
   }, []);
 
@@ -132,10 +134,10 @@ const Dashboard = () => {
                   <h4 className='ms-1'>SCANNING REPORT OF LAST 30 DAYS</h4>
                   <h5 className='ms-1'>All Location: Images</h5>
                   <div>
-                    
+
                     {scannedData && (
                       <BarChart
-                      className='scanned-chart'
+                        className='scanned-chart'
                         xAxis={scannedData.xAxis}
                         series={scannedData.series}
                         width={scannedData.width}
@@ -454,10 +456,10 @@ const Dashboard = () => {
                               label: 'No. of Images',
                               backgroundColor: '#E78895',
                               data: [214276, 798357, 47440, 845797, 53353729],
-                              display:'true',
+                              display: 'true',
                               text: [214276, 798357, 47440, 845797, 53353729],
                             },
-                            
+
                           ],
                           datalabels: {
                             align: 'end',
@@ -491,8 +493,8 @@ const Dashboard = () => {
                   </CCardBody>
                 </CCard>
               </div>
-             
-              
+
+
               {/* <canvas id="barcasefile" height="449" width="642" style={{width: '642px',height: '449px;'}}></canvas> */}
             </div>
 
