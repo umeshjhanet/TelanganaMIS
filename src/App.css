@@ -325,9 +325,10 @@ input[type="submit"]:hover {
   color: white;
 }
 .process-card{
-  border: 1px solid black;
+  border: 1px solid gray;
   padding: 10px;
-  height: 212px;
+  /* height: 212px; */
+  margin-left: 10px;
 }
 .master-card{
   border: 1px solid black;
@@ -357,7 +358,7 @@ input[type="submit"]:hover {
   z-index: 999;
 }
 .main-updc{
-  border: 1px solid black;
+  border: 1px solid gray;
   padding: 10px;
 }
 .dropdown-card{
