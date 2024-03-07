@@ -9,11 +9,61 @@ import { BarChart } from '@mui/x-charts/BarChart';
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
-  const [chartData, setChartData] = useState({
+  const [barFile, setBarFile] = useState({
     labels: [],
     datasets: [
       {
         label: 'No. of Files',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+  const [barImage, setBarImage] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Images',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+  const [todayFile, setTodayFile] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Files',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+  const [todayImage, setTodayImage] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Images',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+  const [civilCase, setCivilCase] = useState({
+    labels: [],
+    datasets: [
+      {
+        // label: 'No. of Files',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+  const [criminalCase, setCriminalCase] = useState({
+    labels: [],
+    datasets: [
+      {
+        // label: 'No. of Images',
         backgroundColor: '#f87979',
         data: [],
       },
@@ -36,7 +86,7 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    const fetchGraphData = () => {
+    const fetchGraphFileData = () => {
       axios.get('http://localhost:5000/graph1')
         .then(response => {
           const apiData = response.data[0];
@@ -44,11 +94,11 @@ const Dashboard = () => {
           const data = Object.values(apiData);
           console.log('Labels:', labels);
           console.log('Data:', data);
-          setChartData({
+          setBarFile({
             labels: labels.filter(label => label !== 'id'),
             datasets: [
               {
-                ...chartData.datasets[0],
+                ...barFile.datasets[0],
                 data: data
               },
             ],
@@ -57,6 +107,132 @@ const Dashboard = () => {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
+    }
+    const fetchGraphImageData = () => {
+      axios.get('http://localhost:5000/graph2')
+        .then(response => {
+          const apiData = response.data[0];
+          const labels = Object.keys(apiData);
+          const data = Object.values(apiData);
+          console.log('Labels:', labels);
+          console.log('Data:', data);
+          setBarImage({
+            labels: labels.filter(label => label !== 'id'),
+            datasets: [
+              {
+                ...barImage.datasets[0],
+                data: data
+              },
+            ],
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+    const fetchTodayGraphFileData = () => {
+      axios.get('http://localhost:5000/graph7')
+        .then(response => {
+          const apiData = response.data[0];
+          const labels = Object.keys(apiData);
+          const data = Object.values(apiData);
+          console.log('Labels:', labels);
+          console.log('Data:', data);
+          setTodayFile({
+            labels: labels.filter(label => label !== 'id'),
+            datasets: [
+              {
+                ...todayFile.datasets[0],
+                data: data
+              },
+            ],
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+    const fetchTodayGraphImageData = () => {
+      axios.get('http://localhost:5000/graph8')
+        .then(response => {
+          const apiData = response.data[0];
+          const labels = Object.keys(apiData);
+          const data = Object.values(apiData);
+          console.log('Labels:', labels);
+          console.log('Data:', data);
+          setTodayImage({
+            labels: labels.filter(label => label !== 'id'),
+            datasets: [
+              {
+                ...todayImage.datasets[0],
+                data: data
+              },
+            ],
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+    const fetchCivilCaseGraphData = () => {
+      axios.get('http://localhost:5000/civil')
+        .then(response => {
+          const apiData = response.data[0];
+          const labels = Object.keys(apiData);
+          const data = Object.values(apiData);
+          console.log('Labels:', labels);
+          console.log('Data:', data);
+          setCivilCase({
+            labels: labels.filter(label => label !== 'id'),
+            datasets: [
+              {
+                ...civilCase.datasets[0],
+                data: data
+              },
+            ],
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+    const fetchCriminalCaseGraphData = () => {
+      axios.get('http://localhost:5000/criminal')
+        .then(response => {
+          const apiData = response.data[0];
+          const labels = Object.keys(apiData);
+          const data = Object.values(apiData);
+          console.log('Labels:', labels);
+          console.log('Data:', data);
+          setCriminalCase({
+            labels: labels.filter(label => label !== 'id'),
+            datasets: [
+              {
+                ...criminalCase.datasets[0],
+                data: data
+              },
+            ],
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+
+    }
+    const fetchAllCurrentGraphImageData = () => {
+      axios.get('http://localhost:5000/graph9')
+        .then(response => {
+          const apiData = response.data;
+          const labels = Object.keys(apiData);
+          const data = Object.values(apiData);
+          console.log('TodayLabels:', labels);
+          console.log('TodayData:', data);
+          
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+
     }
     const fetchScannedData = () => {
       fetch('https://backend-nodejs-nine.vercel.app/scanned_images')
@@ -111,10 +287,24 @@ const Dashboard = () => {
           // console.error('Error fetching data:', error);
         });
     }
-    fetchGraphData();
+    fetchGraphFileData();
+    fetchGraphImageData();
     fetchScannedData();
     fetchLocationReportData();
-    const intervalID = setInterval( fetchGraphData, 2000);
+    fetchTodayGraphFileData();
+    fetchTodayGraphImageData();
+    fetchCivilCaseGraphData();
+    fetchCriminalCaseGraphData();
+    fetchAllCurrentGraphImageData();
+    const intervalID =
+      setInterval(fetchGraphImageData,
+        fetchGraphFileData,
+        fetchTodayGraphFileData,
+        fetchTodayGraphImageData,
+        fetchCivilCaseGraphData,
+        fetchCriminalCaseGraphData,
+        fetchAllCurrentGraphImageData,
+        2000);
     return () => clearInterval(intervalID);
   }, []);
 
@@ -437,7 +627,7 @@ const Dashboard = () => {
                     <h5 className='ms-1'>All Location: Files</h5>
                     <CCardBody>
                       <CChartBar
-                        data={chartData}
+                        data={barFile}
                         labels="months"
                       />
                     </CCardBody>
@@ -449,23 +639,59 @@ const Dashboard = () => {
                     <h5 className='ms-1'>All Location: Images</h5>
                     <CCardBody>
                       <CChartBar
-                        data={{
-                          labels: ['Export pdf', 'Client QA Pending', 'Client QA', 'CBSL QA', 'Scanned'],
-                          datasets: [
-                            {
-                              label: 'No. of Images',
-                              backgroundColor: '#E78895',
-                              data: [214276, 798357, 47440, 845797, 53353729],
-                              display: 'true',
-                              text: [214276, 798357, 47440, 845797, 53353729],
-                            },
-
-                          ],
-                          datalabels: {
-                            align: 'end',
-                            anchor: 'start'
-                          },
-                        }}
+                        data={barImage}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </div>
+              <div className='row'>
+                <div className='col-md-6 col-sm-12'>
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>Case Type Report</h4>
+                    <h5 className='ms-1'>Civil Cases</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={civilCase}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+                <div className='col-md-6 col-sm-12' >
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>Case Type Report</h4>
+                    <h5 className='ms-1'>Criminal Cases</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={criminalCase}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </div>
+              <div className='row'>
+                <div className='col-md-6 col-sm-12'>
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>PRODUCTION REPORT FOR (06-03-2024)</h4>
+                    <h5 className='ms-1'>All Location: Files</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={todayFile}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+                <div className='col-md-6 col-sm-12' >
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>PRODUCTION REPORT FOR (06-03-2024)</h4>
+                    <h5 className='ms-1'>All Location: Images</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={todayImage}
                         labels="months"
                       />
                     </CCardBody>
