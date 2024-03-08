@@ -27,7 +27,7 @@ const File = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [status, setStatus] = useState();
   const [manpowerForm, setManpowerForm] = useState({
-    PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Name: '', Coll_Index_MP: '', Barc_MP: '', Barc_TF: '', Barc_TI: '', Page_No_MP: '', Prepare_MP: '',
+    PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Id: '', Coll_Index_MP: '', Barc_MP: '', Barc_TF: '', Barc_TI: '', Page_No_MP: '', Prepare_MP: '',
     Prepare_TF: '', Prepare_TI: '', Scan_MP: '', Cover_Page_MP: '', Cover_Page_TF: '', Rescan_MP: '', Image_QC_MP: '', Doc_MP: '', Index_MP: '', CBSL_QA_MP: '',
     Ready_Cust_QA_MP: '', Cust_QA_Done_MP: '', PDF_Export_MP: '', Refilling_Files_MP: '', Inventory_MP: '', Location_Id: '',
   })
@@ -69,12 +69,11 @@ const File = () => {
         const response = await axios.get("http://localhost:5000/site_MPData");
         const site_MPData = response.data;
 
-        
+        console.log("Manpower Data" , site_MPData);
         setFormData({
-          PM_Id: site_MPData.PM_Id || '',
-          SM_Name: site_MPData.SM_Name || '',
-          // ...site_MPData
-          
+          // PM_Id: site_MPData.PM_Id || '',
+          // SM_Name: site_MPData.SM_Name || '',
+          Coll_Index_MP: site_MPData.Coll_Index_MP || ''
         });
         console.log("PM_ID",site_MPData);
       } catch (error) {
@@ -166,7 +165,7 @@ const File = () => {
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, SM_Name: selectedSMId, PH_Id: selectedPHId, Location_Id: selectedLocationId });
+    setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, SM_Id: selectedSMId, PH_Id: selectedPHId, Location_Id: selectedLocationId });
   }
 
   const handleManPowerForm = async (e) => {
@@ -180,7 +179,7 @@ const File = () => {
     catch (error) {
       console.error("Error creating post:", error);
     }
-    const requiredFields = ['PH_Id', 'PO_Id', 'PM_Id', 'PCo_Id', 'SM_Name', 'Coll_Index_MP', 'Barc_MP', 'Barc_TF', 'Barc_TI', 'Page_No_MP', 'Prepare_MP', 'Prepare_TF', 'Prepare_TI', 'Scan_MP', 'Cover_Page_MP', 'Cover_Page_TF', 'Rescan_MP', 'Image_QC_MP', 'Doc_MP', 'Index_MP', 'CBSL_QA_MP', 'Ready_Cust_QA_MP', 'Cust_QA_Done_MP', 'PDF_Export_MP', 'Refilling_Files_MP', 'Refilling_Files_TF', 'Refilling_Files_TI', 'Inventory_MP', 'Location_Id',]; // Add other required field names here
+    const requiredFields = ['PH_Id', 'PO_Id', 'PM_Id', 'PCo_Id', 'SM_Id', 'Coll_Index_MP', 'Barc_MP', 'Barc_TF', 'Barc_TI', 'Page_No_MP', 'Prepare_MP', 'Prepare_TF', 'Prepare_TI', 'Scan_MP', 'Cover_Page_MP', 'Cover_Page_TF', 'Rescan_MP', 'Image_QC_MP', 'Doc_MP', 'Index_MP', 'CBSL_QA_MP', 'Ready_Cust_QA_MP', 'Cust_QA_Done_MP', 'PDF_Export_MP', 'Refilling_Files_MP', 'Refilling_Files_TF', 'Refilling_Files_TI', 'Inventory_MP', 'Location_Id',]; // Add other required field names here
     for (const field of requiredFields) {
       if (!manpowerForm[field]) {
         setErrorMessage(`Please fill out all fields.`);
@@ -294,7 +293,7 @@ const File = () => {
                 </div>
                 <div className='row mt-2'>
                   <div className='col-5'><span>Site Manager Name: </span></div>
-                  <div className='col-7'><input type='text' placeholder='Select SM Name' name='SM_Name' value={selectedSM || ''} onClick={handleShowSiteMan} onChange={handleInputChange} /></div>
+                  <div className='col-7'><input type='text' placeholder='Select SM Name' name='SM_Id' value={selectedSM || ''} onClick={handleShowSiteMan} onChange={handleInputChange} /></div>
                   {siteMan && (
                     <div className='dropdown-card'>
                       {usermaster.filter(user => user.designation.toLowerCase() === "site manager" || "site incharge").map((elem, index) => (
