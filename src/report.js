@@ -64,10 +64,10 @@ const Report = () => {
     return () => clearInterval(intervalId);
   }, []);
   
-if(!locations) 
-return(
-  <>Loading....</>
-)
+// if(!locations) 
+// return(
+//   <>Loading....</>
+// )
 
   return (
     <>
@@ -90,23 +90,23 @@ return(
                   contentEditable={true}
                   onClick={() => setShowLocation(!showLocation)}
                 >
-                  {selectedLocations.map((location, index) => (
+                  {/* {selectedLocations.map((location, index) => (
                     <span key={index} className='selected-location'>
                       {location}
                       <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', marginLeft: '5px', }}>x</button>
                       &nbsp;
                     </span>
-                  ))}
+                  ))} */}
                   <span style={{ minWidth: '5px', display: 'inline-block' }}>&#8203;</span>
                 </div>
                 {showLocation && (
                   <>
                     <div className='location-card' >
-                      {locations.map((item, index) => (
+                      {/* {locations.map((item, index) => (
                         <div key={index}>
                           <p onClick={() => handleLocation(item.location_name)}>{item.location_name}</p>
                         </div>
-                      ))}
+                      ))} */}
                     </div>
                   </>
                 )}
@@ -127,7 +127,7 @@ return(
               <div className='main-summary-card '>
 
                 <div className='row'>
-                  {summary.map((elem, index) => (
+                  {/* {summary.map((elem, index) => (
                     <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -136,7 +136,7 @@ return(
                         <p className='text-center'>Total Files: {elem.totalfiles}<br />Total Images: {elem.totalimages}</p>
                       </div>
                     </div>
-                  ))}
+                  ))} */}
                 </div>
               </div>
             </div>
@@ -188,7 +188,7 @@ return(
                       </tr>
                     </thead>
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
-                       {locations.map((elem,index)=>(
+                       {/* {locations.map((elem,index)=>(
                         <tr key={index}>
                         <td>{elem.location_name}</td>
                         <td>{elem.files}</td>
@@ -213,7 +213,7 @@ return(
                         <td>3,668,877</td>
                         <td><button className='btn view-btn'>View</button></td>
                       </tr>
-                      ))}
+                      ))} */}
                     </tbody>
                   </table>
                 </div>

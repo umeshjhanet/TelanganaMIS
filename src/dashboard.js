@@ -10,13 +10,13 @@ import { format, sub } from 'date-fns';
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
-  const currentDate = new Date(); 
+  const currentDate = new Date();
   const yesterdayDate = sub(currentDate, { days: 1 });
-  const previousDate = sub(currentDate, { days: 2 }); 
+  const previousDate = sub(currentDate, { days: 2 });
   const formattedCurrentDate = format(currentDate, 'dd-MM-yyyy');
   const formattedYesterdayDate = format(yesterdayDate, 'dd-MM-yyyy');
   const formattedPreviousDate = format(previousDate, 'dd-MM-yyyy');
-  const[tableData, setTableData] = useState();
+  const [tableData, setTableData] = useState();
 
   const [barFile, setBarFile] = useState({
     labels: [],
@@ -296,14 +296,15 @@ const Dashboard = () => {
         });
     }
     const fetchTableData = () => {
-      fetch("http://localhost:5000/tabularData")
-      .then(respsone => respsone.json())
-      .then(data => setTableData(data))
-      .catch(error => console.error(error))
-      console.log("Table Data", tableData);
+      axios.get("http://localhost:5000/tabularData")
+        .then(response => {
+          setTableData(response.data);
+          console.log("Table Data", response.data); // Log inside the then block
+        })
+        .catch(error => console.error(error));
     }
 
-    
+
     const fetchLocationReportData = () => {
       axios.get('https://backend-nodejs-nine.vercel.app/location_report')
         .then(response => {
@@ -349,7 +350,7 @@ const Dashboard = () => {
         2000);
     return () => clearInterval(intervalID);
   }, []);
- 
+
 
   return (
     <>
@@ -411,19 +412,23 @@ const Dashboard = () => {
                         </tr>
                       </thead>
                       <tbody style={{ color: 'gray' }}>
-                        <tr>
-                        <td>1</td>
-                        <td>Agra District Court</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>11,974</td>
-                        <td>3,668,877</td>
-                        <td></td>
-                      </tr>
+                        
+                        {tableData && tableData.map((elem, index) => (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{elem.LocationName }</td>
+                            <td>{elem.Prev_Files || '0'}</td>
+                            <td>{elem.Prev_Images || '0' }</td>
+                            <td>{elem.Yes_Files || '0' }</td>
+                            <td>{elem.Yes_Images || '0'}</td>
+                            <td>{elem.Today_Files || '0'}</td>
+                            <td>{elem.Today_Images || '0'}</td>
+                            <td>{elem.Total_Files || '0'}</td>
+                            <td>{elem.Total_Images || '0'}</td>
+                            <td></td>
+                          </tr>
+                        ))}
+
                         <tr style={{ color: 'black' }}>
                           <td colspan="2"><strong>Total</strong></td>
                           <td><strong>195</strong></td>
@@ -443,6 +448,7 @@ const Dashboard = () => {
 
                 </div>
               </div>
+              
               <div className='row'>
                 <div className='col-md-6 col-sm-12'>
                   <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
@@ -529,8 +535,8 @@ const Dashboard = () => {
                     <CChartBar
                       data={allLocationYesImage}
                       labels="months"
-                      
-                      >
+
+                    >
                     </CChartBar>
                   </CCardBody>
                 </CCard>
@@ -543,8 +549,8 @@ const Dashboard = () => {
                     <CChartBar
                       data={allLocationImage}
                       labels="months"
-                      
-                      >
+
+                    >
                     </CChartBar>
                   </CCardBody>
                 </CCard>
