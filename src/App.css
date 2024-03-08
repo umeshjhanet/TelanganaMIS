@@ -318,6 +318,60 @@ input[type="submit"]:hover {
   color: red;
   font-weight: bold;
 }
+.location-btn{
+  background-color: #107393;
+  width: 200px;
+  text-align: left;
+  color: white;
+}
+.process-card{
+  border: 1px solid gray;
+  padding: 10px;
+  /* height: 212px; */
+  margin-left: 10px;
+}
+.master-card{
+  border: 1px solid black;
+  padding: 10px;
+  height: 312px;
+}
+.scanned-chart{
+  background-color: #f87979;
+}
+.btn-row{
+  display: flex;
+  justify-content: end;
+  align-items: end;
+}
+.process-btn{
+  background-color: #107393;
+  color: white;
+  width: 150px;
+}
+.locations-card{
+  max-height: 200px;
+  width: 200px;
+  padding: 5px;
+  overflow-y: auto;
+  border: 1px solid black;
+  background-color: white;
+  z-index: 999;
+}
+.main-updc{
+  border: 1px solid gray;
+  padding: 10px;
+}
+.dropdown-card{
+  background-color: white;
+  position: relative;
+  top: 0;
+  left: 200px;
+  width: 190px;
+  border: 1px solid black;
+  z-index: 999;
+  height: 300px;
+  overflow-y: auto;
+}
 
 @media only screen and (max-width: 480px) {
   .login-card {

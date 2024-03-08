@@ -9,6 +9,7 @@ import Dashboard from './dashboard';
 import Report from './report';
 import File from './file';
 import Login from './Login';
+import MISUPDC from './mis_updc';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -18,6 +19,7 @@ ReactDOM.render(
         <Route path='/dashboard' element={<Dashboard/>}/>
         <Route path="/report" element={<Report />} />
         <Route path="/file" element={<File/>}/>
+        <Route path="/mis_updc" element={<MISUPDC/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

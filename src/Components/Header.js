@@ -6,7 +6,6 @@ import { VscGraph } from "react-icons/vsc";
 import { IoIosArrowDown } from "react-icons/io";
 import { BsFillCloudArrowUpFill } from "react-icons/bs";
 import { BsCloudyFill } from "react-icons/bs";
-//import SideBar from './SideBar';
 import { BrowserRouter, Routes, Route, Link, Router } from "react-router-dom";
 // import Dashboard from './pages/dashboard';
 
