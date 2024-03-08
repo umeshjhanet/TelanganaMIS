@@ -8,7 +8,7 @@ import Footer from './Footer';
 import { BarChart } from '@mui/x-charts/BarChart';
 
 const Dashboard = () => {
-  const [data2, setData2] = useState();
+  // const [data2, setData2] = useState();
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -19,6 +19,41 @@ const Dashboard = () => {
       },
     ],
   });
+
+  const [weekFile, setWeekFile] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Files',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+
+  const [weekImage, setWeekImage] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Images',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+
+  const[monthImage,setMonthImage]=useState({
+    labels:[],
+    datasets:[
+      {
+        label:"No. of Images",
+        backgroundColor:'#f87979',
+        data:[],
+
+      },
+    ],
+  });
+
   const [scannedData, setScannedData] = useState(null);
   const [locationReportData, setLocationReportData] = useState({
     labels: [],
@@ -56,6 +91,83 @@ const Dashboard = () => {
           // console.error('Error fetching data:', error);
         });
     }
+    const fetchWeekFileGraphData = () => {
+      axios.get('http://localhost:5000/graph5')
+        .then(response => {
+          const apiData = response.data;
+          const labels = apiData.map(item=>item["scandate"]);
+          const data = apiData.map(item =>item["scannedfiles"]);
+          console.log("weekly lables",labels);
+          console.log("weekly data",data);
+          setWeekFile({
+            labels: labels.filter(label => label !== 'id'),
+            datasets:[
+              {
+                ...weekFile.datasets[0],
+                data: data
+              },
+            ],
+            
+          });
+          console.log("weekly data fetch",weekFile)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+
+    const fetchWeekImageGraphData = () => {
+      axios.get('http://localhost:5000/graph6')
+        .then(response => {
+          const apiData = response.data;
+          const labels = apiData.map(item=>item["scandate"]);
+          const data = apiData.map(item =>item["scannedimages"]);
+          console.log("weekly lables",labels);
+          console.log("weekly data",data);
+          setWeekImage({
+            labels: labels.filter(label => label !== 'id'),
+            datasets:[
+              {
+                ...weekImage.datasets[0],
+                data: data
+              },
+            ],
+            
+          });
+          console.log("weekly data fetch",weekImage)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+
+    const fetchMonthImageGraphData=()=>{
+      axios.get("http://localhost:5000/graph7")
+      .then(response=>{
+        const apiData=response.data
+        const labels=apiData.map(item =>item['scandate'])
+        const data=apiData.map(item =>item['Scanned No Of Images'])
+        console.log("lables",labels);
+        console.log("images",data);
+        setMonthImage({
+        labels: labels.filter(label => label !== 'id'),
+        datasets:[
+          {
+            ...monthImage.datasets[0],
+            data: data
+          },
+        ],
+        
+      });
+      console.log("Monthly  data fetch",monthImage)
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });   
+    }
+    
+    
+    
     const fetchScannedData = () => {
       fetch('https://backend-nodejs-nine.vercel.app/scanned_images')
         .then(response => {
@@ -107,13 +219,16 @@ const Dashboard = () => {
         })
         .catch(error => {
           // console.error('Error fetching data:', error);
-        });
-    }
+         });
+     }
     fetchGraphData();
+    fetchWeekFileGraphData();
+    fetchWeekImageGraphData();
+    fetchMonthImageGraphData();
     fetchScannedData();
     fetchLocationReportData();
-    const intervalID = setInterval(fetchGraphData, fetchScannedData, fetchLocationReportData, 2000);
-    return () => clearInterval(intervalID);
+    // const intervalID = setInterval(fetchWeekFileGraphData, 2000);
+    // return () => clearInterval(intervalID);
   }, []);
 
   return (
@@ -470,6 +585,56 @@ const Dashboard = () => {
                   </CCard>
                 </div>
               </div>
+              <div className='row'>
+                <div className='col-md-6 col-sm-12'>
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>Cumulative Report</h4>
+                    <h5 className='ms-1'>All Location: Files</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={chartData}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+                <div className='col-md-6 col-sm-12' >
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>Weekly Report</h4>
+                    <h5 className='ms-1'>All Location: Files</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={weekFile}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </div>
+              <div className='col-md-6 col-sm-12' >
+                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                    <h4 className='ms-1'>Weekly Report</h4>
+                    <h5 className='ms-1'>All Location: Images</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={weekImage}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
+                <div className='row' >
+                  <CCard>
+                    <h4 className='ms-1'>Monthly Report</h4>
+                    <h5 className='ms-1'>All Location: Images</h5>
+                    <CCardBody>
+                      <CChartBar
+                        data={monthImage}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                </div>
               <div className='row'>
                 <CCard>
                   <h4 className='ms-1'>SCANNED REPORT FOR (22-02-24)</h4>

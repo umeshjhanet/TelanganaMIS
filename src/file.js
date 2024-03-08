@@ -32,7 +32,8 @@ const File = () => {
     Ready_Cust_QA_MP: '', Cust_QA_Done_MP: '', PDF_Export_MP: '', Refilling_Files_MP: '', Inventory_MP: '', Location_Id: '',
   })
   const [newData, setNewData] = useState({ Desig_ID: '', Desig_name: '' });
-  const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
+  const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' ,PM_Id: '',
+  SM_Name: '', })
   const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
     // const fetchData = () => {
@@ -72,6 +73,7 @@ const File = () => {
         setFormData({
           PM_Id: site_MPData.PM_Id || '',
           SM_Name: site_MPData.SM_Name || '',
+          // ...site_MPData
           
         });
         console.log("PM_ID",site_MPData);
@@ -192,10 +194,10 @@ const File = () => {
   }
 
 
-  if (!designation)
-    return (
-      <>Loading...</>
-    )
+  // if (!designation)
+  //   return (
+  //     <>Loading...</>
+  //   )
   return (
     <>
       <Header />
@@ -222,6 +224,8 @@ const File = () => {
         </div>
       </div>
     </div> */}
+     
+     
       <div className='container '>
         <div className='row'>
           <div className='col-2'></div>
@@ -241,7 +245,9 @@ const File = () => {
                       <>
                         <div className='locations-card'>
                           {location.map((elem, index) => (
-                            <div key={index} onClick={() => handleSelectLocation(elem.LocationID, `${elem.LocationName}`)}>
+                            <div key={index} 
+                            onClick={() => handleSelectLocation(elem.LocationID, `${elem.LocationName}`)}
+                            >
                               <p>{elem.LocationName}</p>
                             </div>
                           ))}
@@ -311,6 +317,11 @@ const File = () => {
                   <span>MP Used: </span>
                   <input type='text' name='Coll_Index_MP' onChange={handleInputChange} required /><br />
                 </div>
+                <div className='col-4'>
+                  <span>UPDC: </span>
+                  <input type='text' name='UPDC_MP' onChange={handleInputChange} required /><br />
+                </div>
+                
               </div>
               <h6 className=' mt-2'>Barcoding</h6>
               <div className='row process-card'>
@@ -318,6 +329,7 @@ const File = () => {
                   <span>MP Used: </span>
                   <input type='text' name='Barc_MP' onChange={handleInputChange} required /><br />
                 </div>
+                
                 <div className='col-4'>
                   <span>Total Files: </span>
                   <input type='text' name='Barc_TF' onChange={handleInputChange} required />
