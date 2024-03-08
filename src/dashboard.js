@@ -2,13 +2,22 @@ import React, { useEffect, useState } from 'react'
 import { CCard, CCardBody, CCol, CCardHeader, CRow } from '@coreui/react'
 import { CChartBar, CChartDoughnut, CChartLine, CChartPie, CChartPolarArea, CChartRadar } from '@coreui/react-chartjs'
 import Header from './Components/Header';
-import axios from 'axios';
+import axios, { all } from 'axios';
 import './App.css';
 import Footer from './Footer';
 import { BarChart } from '@mui/x-charts/BarChart';
+import { format, sub } from 'date-fns';
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
+  const currentDate = new Date(); 
+  const yesterdayDate = sub(currentDate, { days: 1 });
+  const previousDate = sub(currentDate, { days: 2 }); 
+  const formattedCurrentDate = format(currentDate, 'dd-MM-yyyy');
+  const formattedYesterdayDate = format(yesterdayDate, 'dd-MM-yyyy');
+  const formattedPreviousDate = format(previousDate, 'dd-MM-yyyy');
+  const[tableData, setTableData] = useState();
+
   const [barFile, setBarFile] = useState({
     labels: [],
     datasets: [
@@ -64,6 +73,26 @@ const Dashboard = () => {
     datasets: [
       {
         // label: 'No. of Images',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+  const [allLocationYesImage, setAllLocationYesImage] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Images',
+        backgroundColor: '#f87979',
+        data: [],
+      },
+    ],
+  });
+  const [allLocationImage, setAllLocationImage] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Images',
         backgroundColor: '#f87979',
         data: [],
       },
@@ -219,53 +248,62 @@ const Dashboard = () => {
         });
 
     }
-    const fetchAllCurrentGraphImageData = () => {
+    const fetchAllYesGraphImageData = () => {
       axios.get('http://localhost:5000/graph9')
         .then(response => {
           const apiData = response.data;
-          const labels = Object.keys(apiData);
-          const data = Object.values(apiData);
+          const labels = apiData.map(item => item["Location Name"]);
+          const data = apiData.map(item => item["Images"]);
           console.log('TodayLabels:', labels);
           console.log('TodayData:', data);
-          
+          setAllLocationYesImage({
+            labels: labels,
+            datasets: [
+              {
+                ...allLocationYesImage.datasets,
+                data: data,
+                backgroundColor: '#02B2AF',
+              },
+            ],
+          });
         })
         .catch(error => {
           console.error('Error fetching data:', error);
         });
 
     }
-    const fetchScannedData = () => {
-      fetch('https://backend-nodejs-nine.vercel.app/scanned_images')
+    const fetchAllGraphImageData = () => {
+      axios.get('http://localhost:5000/graph10')
         .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to fetch data');
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (!Array.isArray(data)) {
-            throw new Error('Data format is incorrect');
-          }
-
-          const dates = [];
-          const images = [];
-
-          data.forEach(item => {
-            // Assuming each item has 'date' and 'images' properties
-            dates.push(item.date);
-            images.push(item.images);
+          const apiData = response.data;
+          const labels = apiData.map(item => item["Location Name"]);
+          const data = apiData.map(item => item["Images"]);
+          console.log('TodayLabels:', labels);
+          console.log('TodayData:', data);
+          setAllLocationImage({
+            labels: labels,
+            datasets: [
+              {
+                ...allLocationImage.datasets,
+                data: data,
+                backgroundColor: '#02B2AF',
+              },
+            ],
           });
-
-          const chartData = {
-            xAxis: [{ scaleType: 'band', data: dates, categoryGapRatio: 0.3, barGapRatio: 0.1 }],
-            series: [{ data: images }],
-            width: 1300,
-            height: 500,
-          };
-          setScannedData(chartData);
         })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+    const fetchTableData = () => {
+      fetch("http://localhost:5000/tabularData")
+      .then(respsone => respsone.json())
+      .then(data => setTableData(data))
+      .catch(error => console.error(error))
+      console.log("Table Data", tableData);
+    }
 
-    };
+    
     const fetchLocationReportData = () => {
       axios.get('https://backend-nodejs-nine.vercel.app/location_report')
         .then(response => {
@@ -289,13 +327,15 @@ const Dashboard = () => {
     }
     fetchGraphFileData();
     fetchGraphImageData();
-    fetchScannedData();
+    // fetchScannedData();
     fetchLocationReportData();
     fetchTodayGraphFileData();
     fetchTodayGraphImageData();
     fetchCivilCaseGraphData();
     fetchCriminalCaseGraphData();
-    fetchAllCurrentGraphImageData();
+    fetchAllYesGraphImageData();
+    fetchAllGraphImageData();
+    fetchTableData();
     const intervalID =
       setInterval(fetchGraphImageData,
         fetchGraphFileData,
@@ -303,10 +343,13 @@ const Dashboard = () => {
         fetchTodayGraphImageData,
         fetchCivilCaseGraphData,
         fetchCriminalCaseGraphData,
-        fetchAllCurrentGraphImageData,
+        fetchAllYesGraphImageData,
+        fetchAllGraphImageData,
+        fetchTableData,
         2000);
     return () => clearInterval(intervalID);
   }, []);
+ 
 
   return (
     <>
@@ -350,9 +393,9 @@ const Dashboard = () => {
                         <tr>
                           <th rowspan="2">Sr. No.</th>
                           <th rowspan="2">Location</th>
-                          <th colspan="2">Scanned (04-02-2024)</th>
-                          <th colspan="2">Scanned (05-02-2024)</th>
-                          <th colspan="2">Scanned (06-02-2024)</th>
+                          <th colspan="2">Scanned ({formattedPreviousDate})</th>
+                          <th colspan="2">Scanned ({formattedYesterdayDate})</th>
+                          <th colspan="2">Scanned ({formattedCurrentDate})</th>
                           <th colspan="2">Cumulative till date</th>
                           <th rowspan="2">Remarks</th>
                         </tr>
@@ -367,7 +410,8 @@ const Dashboard = () => {
                           <th>Images</th>
                         </tr>
                       </thead>
-                      <tbody style={{ color: 'gray' }}><tr>
+                      <tbody style={{ color: 'gray' }}>
+                        <tr>
                         <td>1</td>
                         <td>Agra District Court</td>
                         <td>0</td>
@@ -380,227 +424,6 @@ const Dashboard = () => {
                         <td>3,668,877</td>
                         <td></td>
                       </tr>
-                        <tr>
-                          <td>2</td>
-                          <td>Allahabad District Court</td>
-                          <td>7</td>
-                          <td>1,258</td>
-                          <td>3,104</td>
-                          <td>206,489</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>138,277</td>
-                          <td>23,529,570</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>3</td>
-                          <td>Bagpat District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>18</td>
-                          <td>4,128</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>2,045</td>
-                          <td>287,496</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>4</td>
-                          <td>Bareilly District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>21,104</td>
-                          <td>2,780,750</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>5</td>
-                          <td>Chandauli District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>17</td>
-                          <td>2,040</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>1,090</td>
-                          <td>105,090</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>6</td>
-                          <td>Etah District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>628</td>
-                          <td>89,123</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>1,935</td>
-                          <td>255,579</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>7</td>
-                          <td>Gautam Buddha Nagar District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>222</td>
-                          <td>23,678</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>13,337</td>
-                          <td>1,948,024</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>8</td>
-                          <td>Ghaziabad District Court</td>
-                          <td>138</td>
-                          <td>34,533</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>20,416</td>
-                          <td>3,077,606</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>9</td>
-                          <td>Kanpur Dehat District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>12,946</td>
-                          <td>2,776,294</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>10</td>
-                          <td>Kanpur Nagar District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>743</td>
-                          <td>200,250</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>6,837</td>
-                          <td>1,633,888</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>11</td>
-                          <td>Kasganj District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>65</td>
-                          <td>10,949</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>343</td>
-                          <td>59,464</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>12</td>
-                          <td>Kaushambi District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>763</td>
-                          <td>116,711</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>13</td>
-                          <td>Lalitpur District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>2,347</td>
-                          <td>283,086</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>14</td>
-                          <td>Lucknow District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>534</td>
-                          <td>53,178</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>13,086</td>
-                          <td>2,964,812</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>15</td>
-                          <td>Meerut District Court</td>
-                          <td>50</td>
-                          <td>16,634</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>6,647</td>
-                          <td>2,517,910</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>16</td>
-                          <td>Rae Bareli District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>319</td>
-                          <td>40,328</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>30,347</td>
-                          <td>4,535,681</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>17</td>
-                          <td>Shravasti District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>192</td>
-                          <td>24,656</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>2,655</td>
-                          <td>150,887</td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td>18</td>
-                          <td>Siddharthnagar  District Court</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>286</td>
-                          <td>31,999</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>18,293</td>
-                          <td>2,662,004</td>
-                          <td></td>
-                        </tr>
                         <tr style={{ color: 'black' }}>
                           <td colspan="2"><strong>Total</strong></td>
                           <td><strong>195</strong></td>
@@ -675,7 +498,7 @@ const Dashboard = () => {
               <div className='row'>
                 <div className='col-md-6 col-sm-12'>
                   <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>PRODUCTION REPORT FOR (06-03-2024)</h4>
+                    <h4 className='ms-1'>PRODUCTION REPORT FOR ({formattedYesterdayDate})</h4>
                     <h5 className='ms-1'>All Location: Files</h5>
                     <CCardBody>
                       <CChartBar
@@ -687,7 +510,7 @@ const Dashboard = () => {
                 </div>
                 <div className='col-md-6 col-sm-12' >
                   <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>PRODUCTION REPORT FOR (06-03-2024)</h4>
+                    <h4 className='ms-1'>PRODUCTION REPORT FOR ({formattedYesterdayDate})</h4>
                     <h5 className='ms-1'>All Location: Images</h5>
                     <CCardBody>
                       <CChartBar
@@ -700,26 +523,32 @@ const Dashboard = () => {
               </div>
               <div className='row'>
                 <CCard>
-                  <h4 className='ms-1'>SCANNED REPORT FOR (22-02-24)</h4>
+                  <h4 className='ms-1'>SCANNED REPORT FOR ({formattedYesterdayDate})</h4>
                   <h5 className='ms-1'>All Location: Images</h5>
                   <CCardBody>
                     <CChartBar
-                      data={locationReportData}
-                      options={{
-                        scales: {
-                          yAxes: [{
-                            ticks: {
-                              beginAtZero: true
-                            }
-                          }]
-                        }
-                      }}>
-
+                      data={allLocationYesImage}
+                      labels="months"
+                      
+                      >
                     </CChartBar>
                   </CCardBody>
                 </CCard>
               </div>
-
+              <div className='row mt-2'>
+                <CCard>
+                  <h4 className='ms-1'>CUMULATIVE SCANNED TILL DATE</h4>
+                  <h5 className='ms-1'>All Location: Images</h5>
+                  <CCardBody>
+                    <CChartBar
+                      data={allLocationImage}
+                      labels="months"
+                      
+                      >
+                    </CChartBar>
+                  </CCardBody>
+                </CCard>
+              </div>
 
               {/* <canvas id="barcasefile" height="449" width="642" style={{width: '642px',height: '449px;'}}></canvas> */}
             </div>
