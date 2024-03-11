@@ -43,14 +43,14 @@ const Report = () => {
   };
   useEffect(() => {
     const fetchData = () => {
-      fetch("https://backend-nodejs-nine.vercel.app/locations")
+      fetch("http://localhost:5000/locations")
       // fetch("http://localhost:5000/locations")
         .then(response => response.json())
         .then(data => setLocations(data))
         .catch(error => console.error( error));
     };
     const summaryData =() => {
-      fetch("https://backend-nodejs-nine.vercel.app/summary")
+      fetch("http://localhost:5000/summary")
       // fetch("http://localhost:5000/summary")
       .then(response => response.json())
       .then(data => setSummary(data))
@@ -100,23 +100,23 @@ const Report = () => {
                   contentEditable={true}
                   onClick={() => setShowLocation(!showLocation)}
                 >
-                  {/* {selectedLocations.map((location, index) => (
+                  {selectedLocations.map((location, index) => (
                     <span key={index} className='selected-location'>
                       {location}
                       <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', marginLeft: '5px', }}>x</button>
                       &nbsp;
                     </span>
-                  ))} */}
+                  ))}
                   <span style={{ minWidth: '5px', display: 'inline-block' }}>&#8203;</span>
                 </div>
                 {showLocation && (
                   <>
                     <div className='location-card' >
-                      {/* {locations.map((item, index) => (
+                      {locations && locations.map((item, index) => (
                         <div key={index}>
-                          <p onClick={() => handleLocation(item.location_name)}>{item.location_name}</p>
+                          <p onClick={() => handleLocation(item.LocationName)}>{item.LocationName}</p>
                         </div>
-                      ))} */}
+                      ))}
                     </div>
                   </>
                 )}
@@ -135,18 +135,108 @@ const Report = () => {
                 <h6 className='text-center' style={{ color: 'white' }}>SUMMARY REPORT</h6>
               </div>
               <div className='main-summary-card '>
-
+                <h5 className='mt-1'>Total Location: 57</h5>
                 <div className='row'>
-                  {/* {summary.map((elem, index) => (
+                  {summary && summary.map((elem, index) => (
                     <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>{elem.title}</h6>
+                          <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.totalfiles}<br />Total Images: {elem.totalimages}</p>
+                        <p className='text-center'>Total Files: {elem.CollectionFiles}<br />Total Images: {elem.CollectionImages}</p>
                       </div>
                     </div>
-                  ))} */}
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.ScannedFiles}<br />Total Images: {elem.ScannedImages}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Image QC</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.QCFiles}<br />Total Images: {elem.QCImages}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.FlaggingFiles}<br />Total Images: {elem.FlaggingImages}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.IndexingFiles}<br />Total Images: {elem.IndexingImages}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.CBSL_QAFiles}<br />Total Images: {elem.CBSL_QAImages}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.Export_PdfFiles}<br />Total Images: {elem.Export_PdfImages}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles}<br />Total Images: {elem.Client_QA_AcceptedImages}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.Client_QA_RejectedFiles}<br />Total Images: {elem.Client_QA_RejectedImages}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {summary && summary.map((elem, index) => (
+                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
+                        </div>
+                        <p className='text-center'>Total Files: {elem.Digi_SignFiles}<br />Total Images: {elem.Digi_SignImages}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -217,10 +307,18 @@ const Report = () => {
                         <td>{elem.Export_PdfImages || '0'}</td>
                         <td>{elem.Client_QA_AcceptedFiles || '0'}</td>
                         <td>{elem.Client_QA_AcceptedImages || '0'}</td>
-                        <td>{elem.Client_QA_RejectedFiles || '0'}</td>
-                        <td>{elem.Client_QA_RejectedImages || '0'}</td>
-                        <td>{elem.Digi_SignFiles || '0'}</td>
-                        <td>{elem.Digi_SignImages || '0'}</td>
+                        <td>
+                          {/* {elem.Client_QA_RejectedFiles || '0'} */}
+                        0</td>
+                        <td>
+                         {/* {elem.Client_QA_RejectedImages || '0'} */}
+                          0</td> 
+                        <td>
+                          {/* {elem.Digi_SignFiles || '0'} */}
+                          0</td>
+                        <td>
+                          {/* {elem.Digi_SignImages || '0'} */}
+                          0</td>
                         <td><button className='btn view-btn'>View</button></td>
                       </tr>
                       ))}
