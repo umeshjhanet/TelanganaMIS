@@ -17,7 +17,7 @@ const Dashboard = () => {
   const formattedYesterdayDate = format(yesterdayDate, 'dd-MM-yyyy');
   const formattedPreviousDate = format(previousDate, 'dd-MM-yyyy');
   const [tableData, setTableData] = useState();
-
+  const[csv,setCsv]=useState('');
   const [barFile, setBarFile] = useState({
     labels: [],
     datasets: [
@@ -144,6 +144,84 @@ const Dashboard = () => {
 
   // let API = "http://ip-api.com/json/42.108.26.152"
 
+  // const handleExport=()=>{
+  //   if (csv) {
+  //     const blob = new Blob([csv], { type: 'text/csv' });
+  //     const url = window.URL.createObjectURL(blob);
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.setAttribute('download', 'export.csv');
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     // window.URL.revokeObjectURL(url);
+  //     // document.body.removeChild(link);
+  //   } else {
+  //     console.error('CSV data is not available.');
+  //   }
+
+  // }
+
+  const handleExport=()=>{
+    const headers = [
+      'Sr. No.',
+      'Location',
+      'Scanned (' + formattedPreviousDate + ')',
+      '', 
+      
+      'Scanned (' + formattedYesterdayDate + ')',
+      '', 
+     
+      'Scanned (' + formattedCurrentDate + ')',
+      '', 
+     
+      'Cumulative till date',
+      '', 
+      
+      'Remarks'
+    ];
+    
+    const csvRows = [];
+    csvRows.push(headers.join(',')); 
+    const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
+    csvRows.push(fileImageHeaders.join(','));
+    tableData.forEach((elem, index) => {
+      const rowData = [
+        index+1,
+        elem.LocationName,
+        elem.Prev_Files || '0',
+        elem.Prev_Images || '0',
+        
+        elem.Yes_Files || '0',
+        elem.Yes_Images || '0',
+        
+        elem.Today_Files || '0',
+        elem.Today_Images || '0',
+        
+        elem.Total_Files || '0',
+        elem.Total_Images || '0',
+        
+      
+      ];
+    
+      csvRows.push(rowData.join(','));
+    });
+    const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(csvBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'export.csv');
+    document.body.appendChild(link);
+    link.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+    
+  };
+
+
+
+  
+
+
 
   useEffect(() => {
     const fetchGraphFileData = () => {
@@ -168,6 +246,24 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
+    const fetchExportCsvFile = () => {
+      axios.get('http://localhost:5000/csv',{responseType:'blob'})
+        .then((response)=>{
+          // const url=window.URL.createObjectURL(new Blob([response.data]));
+          // const link=document.createElement('a');
+          // link.href=url;
+          // link.setAttribute("download","export.csv");
+          // document.body.appendChild(link);
+          // link.click();
+          setCsv(response.data);
+  
+        })
+        .catch((error)=>{
+          console.error('Error in exporting data:', error);
+  
+        });
+        
+    };
     const fetchGraphImageData = () => {
       axios.get('http://localhost:5000/graph2')
         .then(response => {
@@ -404,24 +500,7 @@ const Dashboard = () => {
 
     }
 
-    const fetchExportCsvFile=()=> {
-      axios.get('http://localhost:5000/csv',{responseType:'blob'})
-        .then((response)=>{
-          const url=window.URL.createObjectURL(new Blob([response.data]));
-          const link=document.createElement('a');
-          link.href=url;
-          link.setAttribute("download","export.csv");
-          document.body.appendChild(link);
-          link.click();
-
-        })
-        .catch((error)=>{
-          console.error('Error in exporting data:', error);
-
-        });
-        
-    };
-
+   
     const fetchAllGraphImageData = () => {
       axios.get('http://localhost:5000/graph10')
         .then(response => {
@@ -555,6 +634,7 @@ const Dashboard = () => {
                   <div className='row'>
                     <div className='card' style={{ padding: '5px', backgroundColor: '#4BC0C0' }}>
                       <h6 className='text-center' style={{ color: 'white' }}>PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE RECORDS FOR DISTRICT COURT OF UTTAR PRADESH</h6>
+                      <button onClick={handleExport}>Export CSV</button>
                     </div>
                   </div>
                   <div className='row mt-5 ms-2 me-2' style={{ overflowX: 'auto' }}>
