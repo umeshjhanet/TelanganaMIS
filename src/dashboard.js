@@ -350,7 +350,7 @@ const Dashboard = () => {
         2000);
     return () => clearInterval(intervalID);
   }, []);
-
+// const SumofPrevFiles = sum(tableData.Prev_Files);
 
   return (
     <>
@@ -431,7 +431,7 @@ const Dashboard = () => {
 
                         <tr style={{ color: 'black' }}>
                           <td colspan="2"><strong>Total</strong></td>
-                          <td><strong>195</strong></td>
+                          <td><strong></strong></td>
                           <td><strong>52,425</strong></td>
                           <td><strong>6,128</strong></td>
                           <td><strong>686,818</strong></td>
