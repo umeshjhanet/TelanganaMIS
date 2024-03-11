@@ -6,17 +6,17 @@ import Header from './Components/Header';
 import Footer from './Footer';
 import axios from 'axios';
 
-const Locations = [
-  "Agra",
-  "Allahabad",
-  "Kanpur",
-  "Bagpat",
-  "Ghaziabad",
-  "Bareilly",
-  "Kasganj",
-  "Kaushambi",
-  "Meerut",
-]
+// const Locations = [
+//   "Agra",
+//   "Allahabad",
+//   "Kanpur",
+//   "Bagpat",
+//   "Ghaziabad",
+//   "Bareilly",
+//   "Kasganj",
+//   "Kaushambi",
+//   "Meerut",
+// ]
 
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -26,7 +26,7 @@ const Report = () => {
   const [locations, setLocations] = useState();
   const [summary, setSummary] = useState();
   const [searchInput, setSearchInput] = useState('');
-  const [filteredLocations, setFilteredLocations] = new useState(Locations);
+  // const [filteredLocations, setFilteredLocations] = new useState(Locations);
   const dropdownRef = useRef(null);
 
 
@@ -41,13 +41,16 @@ const Report = () => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
   };
   useEffect(() => {
-    const fetchData = () => {
-      fetch("https://backend-nodejs-nine.vercel.app/locations")
-      // fetch("http://localhost:5000/locations")
-        .then(response => response.json())
-        .then(data => setLocations(data))
-        .catch(error => console.error( error));
-    };
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/locations");
+        const data = await response.json();
+        setLocations(data);
+        console.log("Location:", data); 
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
     const summaryData =() => {
       fetch("https://backend-nodejs-nine.vercel.app/summary")
       // fetch("http://localhost:5000/summary")
@@ -64,10 +67,10 @@ const Report = () => {
     return () => clearInterval(intervalId);
   }, []);
   
-if(!locations) 
-return(
-  <>Loading....</>
-)
+// if(!locations) 
+// return(
+//   <>Loading....</>
+// )
 
   return (
     <>
@@ -102,9 +105,9 @@ return(
                 {showLocation && (
                   <>
                     <div className='location-card' >
-                      {locations.map((item, index) => (
+                      {locations && locations.map((item, index) => (
                         <div key={index}>
-                          <p onClick={() => handleLocation(item.location_name)}>{item.location_name}</p>
+                          <p onClick={() => handleLocation(item.LocationName)}>{item.LocationName}</p>
                         </div>
                       ))}
                     </div>
@@ -127,7 +130,7 @@ return(
               <div className='main-summary-card '>
 
                 <div className='row'>
-                  {summary.map((elem, index) => (
+                  {/* {summary.map((elem, index) => (
                     <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -136,7 +139,7 @@ return(
                         <p className='text-center'>Total Files: {elem.totalfiles}<br />Total Images: {elem.totalimages}</p>
                       </div>
                     </div>
-                  ))}
+                  ))} */}
                 </div>
               </div>
             </div>
@@ -188,7 +191,7 @@ return(
                       </tr>
                     </thead>
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
-                       {locations.map((elem,index)=>(
+                       {/* {locations.map((elem,index)=>(
                         <tr key={index}>
                         <td>{elem.location_name}</td>
                         <td>{elem.files}</td>
@@ -213,7 +216,7 @@ return(
                         <td>3,668,877</td>
                         <td><button className='btn view-btn'>View</button></td>
                       </tr>
-                      ))}
+                      ))} */}
                     </tbody>
                   </table>
                 </div>

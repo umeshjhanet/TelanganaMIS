@@ -17,13 +17,14 @@ const Dashboard = () => {
   const formattedYesterdayDate = format(yesterdayDate, 'dd-MM-yyyy');
   const formattedPreviousDate = format(previousDate, 'dd-MM-yyyy');
   const[tableData, setTableData] = useState();
+  const[csv,setCsv]=useState();
 
   const [barFile, setBarFile] = useState({
     labels: [],
     datasets: [
       {
         label: 'No. of Files',
-        backgroundColor: '#f87979',
+        backgroundColor: ' #ad33ff',
         data: [],
       },
     ],
@@ -33,7 +34,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: 'No. of Images',
-        backgroundColor: '#f87979',
+        backgroundColor: '#ad33ff',
         data: [],
       },
     ],
@@ -43,12 +44,43 @@ const Dashboard = () => {
     datasets: [
       {
         label: 'No. of Files',
-        backgroundColor: '#f87979',
+        backgroundColor: '#ff4dff',
         data: [],
       },
     ],
   });
   const [todayImage, setTodayImage] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Images',
+        backgroundColor: ' #ff4dff',
+        data: [],
+      },
+    ],
+  });
+  const [weekFile, setWeekFile] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Files',
+        backgroundColor: ' #ad33ff',
+        data: [],
+      },
+    ],
+  });
+
+  const [weekImage, setWeekImage] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'No. of Images',
+        backgroundColor: '#ad33ff',
+        data: [],
+      },
+    ],
+  });
+  const [monthImage, setMonthImage] = useState({
     labels: [],
     datasets: [
       {
@@ -83,7 +115,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: 'No. of Images',
-        backgroundColor: '#f87979',
+        backgroundColor: '#66b3ff',
         data: [],
       },
     ],
@@ -181,6 +213,29 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
+    const fetchTodayGraphImageData = () => {
+      axios.get('http://localhost:5000/graph8')
+        .then(response => {
+          const apiData = response.data[0];
+          const labels = Object.keys(apiData);
+          const data = Object.values(apiData);
+          console.log('Labels:', labels);
+          console.log('Data:', data);
+          setTodayImage({
+            labels: labels.filter(label => label !== 'id'),
+            datasets: [
+              {
+                ...todayImage.datasets[0],
+                data: data
+              },
+            ],
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+
     const fetchWeekFileGraphData = () => {
       axios.get('http://localhost:5000/graph5')
         .then(response => {
@@ -232,7 +287,7 @@ const Dashboard = () => {
     }
 
     const fetchMonthImageGraphData=()=>{
-      axios.get("http://localhost:5000/graph7")
+      axios.get("http://localhost:5000/graphmonth")
       .then(response=>{
         const apiData=response.data
         const labels=apiData.map(item =>item['scandate'])
@@ -259,7 +314,7 @@ const Dashboard = () => {
     
     
     const fetchScannedData = () => {
-      fetch('https://backend-nodejs-nine.vercel.app/scanned_images')
+      fetch('http://localhost:5000/scanned_images')
         .then(response => {
           const apiData = response.data[0];
           const labels = Object.keys(apiData);
@@ -349,6 +404,25 @@ const Dashboard = () => {
         });
 
     }
+
+    const fetchExportCsvFile=()=> {
+      axios.get('http://localhost:5000/csv',{responseType:'blob'})
+        .then((response)=>{
+          const url=window.URL.createObjectURL(new Blob([response.data]));
+          const link=document.createElement('a');
+          link.href=url;
+          link.setAttribute("download","export.csv");
+          document.body.appendChild(link);
+          link.click();
+
+        })
+        .catch((error)=>{
+          console.error('Error in exporting data:', error);
+
+        });
+        
+    };
+
     const fetchAllGraphImageData = () => {
       axios.get('http://localhost:5000/graph10')
         .then(response => {
@@ -382,7 +456,7 @@ const Dashboard = () => {
 
     
     const fetchLocationReportData = () => {
-      axios.get('https://backend-nodejs-nine.vercel.app/location_report')
+      axios.get('http://localhost:5000/location_report')
         .then(response => {
           const apiData = response.data;
           const labels = apiData.map(item => item.location_name);
@@ -402,7 +476,9 @@ const Dashboard = () => {
           // console.error('Error fetching data:', error);
          });
      }
-    fetchGraphData();
+    // fetchGraphData();
+    fetchGraphFileData();
+    fetchGraphImageData();
     fetchWeekFileGraphData();
     fetchWeekImageGraphData();
     fetchMonthImageGraphData();
@@ -415,16 +491,21 @@ const Dashboard = () => {
     fetchAllYesGraphImageData();
     fetchAllGraphImageData();
     fetchTableData();
+    fetchExportCsvFile();
     const intervalID =
       setInterval(fetchGraphImageData,
         fetchGraphFileData,
         fetchTodayGraphFileData,
         fetchTodayGraphImageData,
+        fetchWeekFileGraphData,
+        fetchWeekImageGraphData,
+        fetchMonthImageGraphData,
         fetchCivilCaseGraphData,
         fetchCriminalCaseGraphData,
         fetchAllYesGraphImageData,
         fetchAllGraphImageData,
         fetchTableData,
+        fetchExportCsvFile,
         2000);
     return () => clearInterval(intervalID);
   }, []);
@@ -445,6 +526,16 @@ const Dashboard = () => {
                 <div className='card'>
                   <h4 className='ms-1'>SCANNING REPORT OF LAST 30 DAYS</h4>
                   <h5 className='ms-1'>All Location: Images</h5>
+                 
+                  <CCard>
+                    <CCardBody>
+                      <CChartBar
+                        data={monthImage}
+                        labels="months"
+                      />
+                    </CCardBody>
+                  </CCard>
+                
                   <div>
 
                     {scannedData && (
@@ -601,18 +692,6 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className='row'>
-                <div className='col-md-6 col-sm-12'>
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Cumulative Report</h4>
-                    <h5 className='ms-1'>All Location: Files</h5>
-                    <CCardBody>
-                      <CChartBar
-                        data={chartData}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
-                </div>
                 <div className='col-md-6 col-sm-12' >
                   <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
                     <h4 className='ms-1'>Weekly Report</h4>
@@ -624,7 +703,6 @@ const Dashboard = () => {
                       />
                     </CCardBody>
                   </CCard>
-                </div>
               </div>
               <div className='col-md-6 col-sm-12' >
                   <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
@@ -638,18 +716,8 @@ const Dashboard = () => {
                     </CCardBody>
                   </CCard>
                 </div>
-                <div className='row' >
-                  <CCard>
-                    <h4 className='ms-1'>Monthly Report</h4>
-                    <h5 className='ms-1'>All Location: Images</h5>
-                    <CCardBody>
-                      <CChartBar
-                        data={monthImage}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
                 </div>
+                
               <div className='row'>
                 <CCard>
                   <h4 className='ms-1'>SCANNED REPORT FOR ({formattedYesterdayDate})</h4>
@@ -666,7 +734,7 @@ const Dashboard = () => {
               </div>
               <div className='row mt-2'>
                 <CCard>
-                  <h4 className='ms-1'>SCANNED REPORT FOR (22-02-24)</h4>
+                  <h4 className='ms-1'>CUMULATIVE SCANNED TILL DATE</h4>
                   <h5 className='ms-1'>All Location: Images</h5>
                   <CCardBody>
                     <CChartBar
@@ -678,6 +746,7 @@ const Dashboard = () => {
                   </CCardBody>
                 </CCard>
               </div>
+
 
               {/* <canvas id="barcasefile" height="449" width="642" style={{width: '642px',height: '449px;'}}></canvas> */}
             </div>
