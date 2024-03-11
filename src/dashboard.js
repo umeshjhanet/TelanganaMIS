@@ -702,7 +702,7 @@ const Dashboard = () => {
                     <h4 className='ms-1'>Weekly Report</h4>
                     <h5 className='ms-1'>All Location: Files</h5>
                     <CCardBody>
-                      <CChartBar
+                      <CChartDoughnut
                         data={weekFile}
                         labels="months"
                       />
@@ -714,7 +714,7 @@ const Dashboard = () => {
                     <h4 className='ms-1'>Weekly Report</h4>
                     <h5 className='ms-1'>All Location: Images</h5>
                     <CCardBody>
-                      <CChartBar
+                      <CChartDoughnut
                         data={weekImage}
                         labels="months"
                       />

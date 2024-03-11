@@ -139,10 +139,11 @@ const Report = () => {
                 <h6 className='text-center' style={{ color: 'white' }}>SUMMARY REPORT</h6>
               </div>
               <div className='main-summary-card '>
-                <h5 className='mt-1'>Total Location: 57</h5>
+              <h5 className='mt-1 mb-2'>Total Location: 57</h5>
                 <div className='row'>
                   {summary && summary.map((elem, index) => (
                     <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                    
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
@@ -292,7 +293,7 @@ const Report = () => {
                       </tr>
                     </thead>
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
-                       {locations.map((elem,index)=>(
+                       {report && report.map((elem,index)=>(
                         <tr key={index}>
                         <td>{elem.LocationName}</td>
                         <td>{elem.CollectionFiles || '0'}</td>
