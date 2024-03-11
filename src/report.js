@@ -6,17 +6,17 @@ import Header from './Components/Header';
 import Footer from './Footer';
 import axios from 'axios';
 
-const Locations = [
-  "Agra",
-  "Allahabad",
-  "Kanpur",
-  "Bagpat",
-  "Ghaziabad",
-  "Bareilly",
-  "Kasganj",
-  "Kaushambi",
-  "Meerut",
-]
+// const Locations = [
+//   "Agra",
+//   "Allahabad",
+//   "Kanpur",
+//   "Bagpat",
+//   "Ghaziabad",
+//   "Bareilly",
+//   "Kasganj",
+//   "Kaushambi",
+//   "Meerut",
+// ]
 
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -27,7 +27,7 @@ const Report = () => {
   const [summary, setSummary] = useState();
   const [report, setReport] = useState();
   const [searchInput, setSearchInput] = useState('');
-  const [filteredLocations, setFilteredLocations] = new useState(Locations);
+  // const [filteredLocations, setFilteredLocations] = new useState(Locations);
   const dropdownRef = useRef(null);
 
 
@@ -74,6 +74,10 @@ const Report = () => {
     return () => clearInterval(intervalId);
   }, []);
   
+// if(!locations) 
+// return(
+//   <>Loading....</>
+// )
 // if(!locations) 
 // return(
 //   <>Loading....</>
@@ -288,7 +292,7 @@ const Report = () => {
                       </tr>
                     </thead>
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
-                       {report && report.map((elem,index)=>(
+                       {locations.map((elem,index)=>(
                         <tr key={index}>
                         <td>{elem.LocationName}</td>
                         <td>{elem.CollectionFiles || '0'}</td>
@@ -321,7 +325,7 @@ const Report = () => {
                           0</td>
                         <td><button className='btn view-btn'>View</button></td>
                       </tr>
-                      ))}
+                      ))} 
                     </tbody>
                   </table>
                 </div>
