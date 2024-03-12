@@ -6,83 +6,85 @@ import Header from './Components/Header';
 import Footer from './Footer';
 import axios from 'axios';
 
-// const Locations = [
-//   "Agra",
-//   "Allahabad",
-//   "Kanpur",
-//   "Bagpat",
-//   "Ghaziabad",
-//   "Bareilly",
-//   "Kasganj",
-//   "Kaushambi",
-//   "Meerut",
-// ]
-
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
-  const [locations, setLocations] = useState();
+  const [locations, setLocations] = useState([]);
+  const [locationData, setLocationData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
   const [summary, setSummary] = useState();
   const [report, setReport] = useState();
-  const [searchInput, setSearchInput] = useState('');
-  // const [filteredLocations, setFilteredLocations] = new useState(Locations);
   const dropdownRef = useRef(null);
 
-
-  const handleLocation = (location) => {
-    if (!selectedLocations.includes(location)) {
-      setSelectedLocations([...selectedLocations, location]);
+  const handleLocation = (locationName) => {
+    if (!selectedLocations.includes(locationName)) {
+      setSelectedLocations([...selectedLocations, locationName]);
       setSearchInput('');
     }
+    setShowLocation(false); // Close the dropdown when a location is selected
+    
   };
+  
 
-  const removeLocation = (location) => {
-    setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
+  const removeLocation = (locationName) => {
+    setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
+  
+
   useEffect(() => {
-    const fetchData = () => {
-      fetch("http://localhost:5000/locations")
-      // fetch("http://localhost:5000/locations")
-        .then(response => response.json())
-        .then(data => setLocations(data))
-        .catch(error => console.error( error));
+    
+
+    const summaryData = () => {
+      axios.get("http://localhost:5000/summary")
+        .then(response => setSummary(response.data))
+        .catch(error => console.error(error));
     };
-    const summaryData =() => {
-      fetch("http://localhost:5000/summary")
-      // fetch("http://localhost:5000/summary")
-      .then(response => response.json())
-      .then(data => setSummary(data))
-      .catch(error => console.error(error))
-      console.log("Summary", summary);
-    }
-    const reportData =() => {
+
+    const reportData = () => {
       axios.get("http://localhost:5000/reportTable")
-      .then(response => {
-        setReport(response.data);
-        console.log("Report Data", response.data); // Log inside the then block
-      })
-      .catch(error => console.error(error))
-    }
-    fetchData();
+        .then(response => setReport(response.data))
+        .catch(error => console.error(error));
+    };
+    const fetchLocationData = async () => {
+      if (selectedLocations.length > 0) {
+        try {
+          setIsLoading(true);
+          const locationDataResponses = await Promise.all(selectedLocations.map(location =>
+            axios.get(`http://localhost:5000/reportLocationWiseTable?locationname=Agra%20District%20Court`)
+          ));
+          const locationData = locationDataResponses.map(response => response.data);
+          setLocationData(locationData);
+          console.log("agra",locationData);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching location data:', error);
+          setError('Error fetching location data. Please try again.');
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    fetchLocationData();
+
+   
     summaryData();
     reportData();
-
-    const intervalId = setInterval(fetchData,summaryData,reportData, 5000);
+    
+    const intervalId = setInterval(() => {
+      fetchLocationData();
+      summaryData();
+      reportData();
+    }, 5000);
+    
 
     return () => clearInterval(intervalId);
-  }, []);
-  
-// if(!locations) 
-// return(
-//   <>Loading....</>
-// )
-// if(!locations) 
-// return(
-//   <>Loading....</>
-// )
+  }, [selectedLocations]);
 
+  
   return (
     <>
       <Header />
@@ -116,7 +118,7 @@ const Report = () => {
                 {showLocation && (
                   <>
                     <div className='location-card' >
-                      {locations && locations.map((item, index) => (
+                      {report && report.map((item, index) => (
                         <div key={index}>
                           <p onClick={() => handleLocation(item.LocationName)}>{item.LocationName}</p>
                         </div>
@@ -139,109 +141,107 @@ const Report = () => {
                 <h6 className='text-center' style={{ color: 'white' }}>SUMMARY REPORT</h6>
               </div>
               <div className='main-summary-card '>
-              <h5 className='mt-1 mb-2'>Total Location: 57</h5>
+                <h5 className='mt-1 mb-2'>Total Location: 57</h5>
                 <div className='row'>
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
-                    
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
-                        </div>
-                        <p className='text-center'>Total Files: {elem.CollectionFiles}<br />Total Images: {elem.CollectionImages}</p>
-                      </div>
-                    </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                 
+                  {/* {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.ScannedFiles}<br />Total Images: {elem.ScannedImages}</p>
+                        <p className='text-center'>Total Files: {summary.ScannedFiles}<br />Total Images: {summary.ScannedImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Image QC</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.QCFiles}<br />Total Images: {elem.QCImages}</p>
+                        <p className='text-center'>Total Files: {summary.QCFiles}<br />Total Images: {summary.QCImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.FlaggingFiles}<br />Total Images: {elem.FlaggingImages}</p>
+                        <p className='text-center'>Total Files: {summary.FlaggingFiles}<br />Total Images: {summary.FlaggingImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.IndexingFiles}<br />Total Images: {elem.IndexingImages}</p>
+                        <p className='text-center'>Total Files: {summary.IndexingFiles}<br />Total Images: {summary.IndexingImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.CBSL_QAFiles}<br />Total Images: {elem.CBSL_QAImages}</p>
+                        <p className='text-center'>Total Files: {summary.CBSL_QAFiles}<br />Total Images: {summary.CBSL_QAImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.Export_PdfFiles}<br />Total Images: {elem.Export_PdfImages}</p>
+                        <p className='text-center'>Total Files: {summary.Export_PdfFiles}<br />Total Images: {summary.Export_PdfImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles}<br />Total Images: {elem.Client_QA_AcceptedImages}</p>
+                        <p className='text-center'>Total Files: {summary.Client_QA_AcceptedFiles}<br />Total Images: {summary.Client_QA_AcceptedImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.Client_QA_RejectedFiles}<br />Total Images: {elem.Client_QA_RejectedImages}</p>
+                        <p className='text-center'>Total Files: 0
+                          
+                          <br />Total Images: 0
+                          
+                        </p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
-                    <div className='col-lg-2 col-md-4 col-sm-6' key={index} >
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.Digi_SignFiles}<br />Total Images: {elem.Digi_SignImages}</p>
+                        <p className='text-center'>Total Files: 0
+                          
+                          <br />Total Images: 0
+                          
+                        </p>
                       </div>
                     </div>
-                  ))}
+                  )} */}
                 </div>
               </div>
             </div>
@@ -293,40 +293,38 @@ const Report = () => {
                       </tr>
                     </thead>
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
-                       {report && report.map((elem,index)=>(
-                        <tr key={index}>
-                        <td>{elem.LocationName}</td>
-                        <td>{elem.CollectionFiles || '0'}</td>
-                        <td>{elem.CollectionImages || '0'}</td>
-                        <td>{elem.ScannedFiles || '0'}</td>
-                        <td>{elem.ScannedImages || '0'}</td>
-                        <td>{elem.QCFiles || '0'}</td>
-                        <td>{elem.QCImages || '0'}</td>
-                        <td>{elem.FlaggingFiles || '0'}</td>
-                        <td>{elem.FlaggingImages || '0'}</td>
-                        <td>{elem.IndexingFiles || '0'}</td>
-                        <td>{elem.IndexingImages || '0'}</td>
-                        <td>{elem.CBSL_QAFiles || '0'}</td>
-                        <td>{elem.CBSL_QAImages || '0'}</td>
-                        <td>{elem.Export_PdfFiles || '0'}</td>
-                        <td>{elem.Export_PdfImages || '0'}</td>
-                        <td>{elem.Client_QA_AcceptedFiles || '0'}</td>
-                        <td>{elem.Client_QA_AcceptedImages || '0'}</td>
-                        <td>
-                          {/* {elem.Client_QA_RejectedFiles || '0'} */}
-                        0</td>
-                        <td>
-                         {/* {elem.Client_QA_RejectedImages || '0'} */}
-                          0</td> 
-                        <td>
-                          {/* {elem.Digi_SignFiles || '0'} */}
-                          0</td>
-                        <td>
-                          {/* {elem.Digi_SignImages || '0'} */}
-                          0</td>
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr>
-                      ))} 
+                     
+                      {report && report.map((elem, index) => {
+                        if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                          return (
+                            <tr key={index}>
+                              <td>{elem.LocationName}</td>
+                              <td>{elem.CollectionFiles || '0'}</td>
+                              <td>{elem.CollectionImages || '0'}</td>
+                              <td>{elem.ScannedFiles || '0'}</td>
+                              <td>{elem.ScannedImages || '0'}</td>
+                              <td>{elem.QCFiles || '0'}</td>
+                              <td>{elem.QCImages || '0'}</td>
+                              <td>{elem.FlaggingFiles || '0'}</td>
+                              <td>{elem.FlaggingImages || '0'}</td>
+                              <td>{elem.IndexingFiles || '0'}</td>
+                              <td>{elem.IndexingImages || '0'}</td>
+                              <td>{elem.CBSL_QAFiles || '0'}</td>
+                              <td>{elem.CBSL_QAImages || '0'}</td>
+                              <td>{elem.Export_PdfFiles || '0'}</td>
+                              <td>{elem.Export_PdfImages || '0'}</td>
+                              <td>{elem.Client_QA_AcceptedFiles || '0'}</td>
+                              <td>{elem.Client_QA_AcceptedImages || '0'}</td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td><button className='btn view-btn'>View</button></td>
+                            </tr>
+                          );
+                        }
+                        return null;
+                      })}
                     </tbody>
                   </table>
                 </div>
