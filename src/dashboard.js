@@ -234,12 +234,7 @@ const Dashboard = () => {
     
   };
 
-  const searchLocation=()=>{
-    
-
-
-  }
-
+  
 
 
   
@@ -665,7 +660,7 @@ const Dashboard = () => {
               </div>
 
               <div className='col-md-2 col-sm-12'>
-                <button className='btn search-btn' onClick={searchLocation}>Search</button>
+                <button className='btn search-btn' >Search</button>
               </div>
             </div>
               <div className='row mt-2'>
@@ -849,7 +844,7 @@ const Dashboard = () => {
                     <h4 className='ms-1'>Weekly Report</h4>
                     <h5 className='ms-1'>All Location: Files</h5>
                     <CCardBody>
-                      <CChartBar
+                      <CChartDoughnut
                         data={weekFile}
                         labels="months"
                       />
@@ -861,7 +856,7 @@ const Dashboard = () => {
                     <h4 className='ms-1'>Weekly Report</h4>
                     <h5 className='ms-1'>All Location: Images</h5>
                     <CCardBody>
-                      <CChartBar
+                      <CChartDoughnut
                         data={weekImage}
                         labels="months"
                       />
