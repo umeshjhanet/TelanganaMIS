@@ -5,7 +5,7 @@ import { SummaryData } from './Components/SummaryData';
 import Header from './Components/Header';
 import Footer from './Footer';
 import axios from 'axios';
-
+ 
 // const Locations = [
 //   "Agra",
 //   "Allahabad",
@@ -17,7 +17,7 @@ import axios from 'axios';
 //   "Kaushambi",
 //   "Meerut",
 // ]
-
+ 
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -27,8 +27,196 @@ const Report = () => {
   const [summary, setSummary] = useState();
   const [report, setReport] = useState();
   const [searchInput, setSearchInput] = useState('');
+  const[csv,setCsv]=useState('');
+  const [reportCsv,setReportCsv]=useState('');
   // const [filteredLocations, setFilteredLocations] = new useState(Locations);
   const dropdownRef = useRef(null);
+
+
+  const handleReportCsv=()=>{
+    const headers = [
+      'Sr. No.',
+      'Location',
+      'Collection Of Records',
+      '',
+      'Scanning ADF',
+      '',
+      'Image QC',
+      
+      '',
+      'Document Classification',
+      
+      '',
+      'Indexing',
+      
+      '',
+      'CBSL QA',
+     
+      '',
+      'Export PDF',
+     
+      '',
+      'Client QA',
+      
+      '',
+      'CSV Generation',
+      
+      '',
+      'Inventory Out'
+
+      
+    ];
+    
+    const csvRows = [];
+    csvRows.push(headers.join(',')); 
+    const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'
+    , 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'
+    , 'Files', 'Images', 'Files', 'Images'];
+    csvRows.push(fileImageHeaders.join(','));
+    report.forEach((elem, index) => {
+      const rowData = [
+        index+1,
+        elem.LocationName,
+        elem.CollectionFiles || '0',
+        elem.CollectionImages || '0',
+        
+        elem.ScannedFiles || '0',
+        elem.ScannedImages || '0',
+        
+        elem.QCFiles || '0',
+        elem.QCImages || '0',
+        
+        elem.FlaggingFiles || '0',
+        elem.FlaggingImages || '0',
+
+        elem.IndexingFiles || '0',
+        elem.IndexingImages || '0',
+        
+        elem.CBSL_QAFiles || '0',
+        elem.CBSL_QAImages || '0',
+        
+        elem.Export_PdfFiles || '0',
+        elem.Export_PdfImages || '0',
+        
+        elem.Client_QA_AcceptedFiles || '0',
+        elem.Client_QA_AcceptedImages || '0',
+
+         '0',
+         '0',
+        
+        '0',
+        '0',
+        
+      
+      ];
+    
+      csvRows.push(rowData.join(','));
+    });
+    const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(csvBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'export.csv');
+    document.body.appendChild(link);
+    link.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+
+  }
+
+
+  const handleExport=()=>{
+    const headers = [
+      'Sr. No.',
+      'Total Location',
+      'Collection Of Records',
+      '',
+      'Scanning ADF',
+      '',
+      'Image QC',
+      
+      '',
+      'Document Classification',
+      
+      '',
+      'Indexing',
+      
+      '',
+      'CBSL QA',
+     
+      '',
+      'Export PDF',
+     
+      '',
+      'Client QA',
+      
+      '',
+      'CSV Generation',
+      
+      '',
+      'Inventory Out'
+
+      
+    ];
+    
+    const csvRows = [];
+    csvRows.push(headers.join(',')); 
+    const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'
+    , 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'
+    , 'Files', 'Images', 'Files', 'Images'];
+    csvRows.push(fileImageHeaders.join(','));
+    summary.forEach((elem, index) => {
+      const rowData = [
+        index+1,
+        elem.TotalLocation,
+        elem.CollectionFiles || '0',
+        elem.CollectionImages || '0',
+        
+        elem.ScannedFiles || '0',
+        elem.ScannedImages || '0',
+        
+        elem.QCFiles || '0',
+        elem.QCImages || '0',
+        
+        elem.FlaggingFiles || '0',
+        elem.FlaggingImages || '0',
+
+        elem.IndexingFiles || '0',
+        elem.IndexingImages || '0',
+        
+        elem.CBSL_QAFiles || '0',
+        elem.CBSL_QAImages || '0',
+        
+        elem.Export_PdfFiles || '0',
+        elem.Export_PdfImages || '0',
+        
+        elem.Client_QA_AcceptedFiles || '0',
+        elem.Client_QA_AcceptedImages || '0',
+
+         '0',
+         '0',
+        
+        '0',
+        '0',
+        
+      
+      ];
+    
+      csvRows.push(rowData.join(','));
+    });
+    const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(csvBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'export.csv');
+    document.body.appendChild(link);
+    link.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+    
+  };
+
+
 
 
   const handleLocation = (location) => {
@@ -37,7 +225,7 @@ const Report = () => {
       setSearchInput('');
     }
   };
-
+ 
   const removeLocation = (location) => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
   };
@@ -57,6 +245,25 @@ const Report = () => {
       .catch(error => console.error(error))
       console.log("Summary", summary);
     }
+
+    const fetchSummaryCsv=()=>{
+      axios.get('http://localhost:5000/summarycsv',{responseType:'blob'})
+        .then((response)=>{
+          setCsv(response.data);
+        })
+        .catch((error)=>{
+          console.error('Error in exporting data:', error);
+        }); 
+    };
+    const fetchReportCsv=()=>{
+      axios.get('http://localhost:5000/reporttablecsv',{responseType:'blob'})
+        .then((response)=>{
+          setReportCsv(response.data);
+        })
+        .catch((error)=>{
+          console.error('Error in exporting data:', error);
+        }); 
+    };
     const reportData =() => {
       axios.get("http://localhost:5000/reportTable")
       .then(response => {
@@ -68,9 +275,12 @@ const Report = () => {
     fetchData();
     summaryData();
     reportData();
+    fetchSummaryCsv();
+    fetchReportCsv();
 
-    const intervalId = setInterval(fetchData,summaryData,reportData, 5000);
-
+ 
+    const intervalId = setInterval(fetchData,summaryData,reportData,fetchReportCsv, fetchSummaryCsv, 5000);
+ 
     return () => clearInterval(intervalId);
   }, []);
   
@@ -82,7 +292,7 @@ const Report = () => {
 // return(
 //   <>Loading....</>
 // )
-
+ 
   return (
     <>
       <Header />
@@ -137,6 +347,7 @@ const Report = () => {
             <div className='row mt-3 me-1'>
               <div className='card' style={{ padding: '5px', backgroundColor: '#4BC0C0' }}>
                 <h6 className='text-center' style={{ color: 'white' }}>SUMMARY REPORT</h6>
+                <button onClick={handleExport}>Export Csv</button>
               </div>
               <div className='main-summary-card '>
                 <h5 className='mt-1'>Total Location: 57</h5>
@@ -227,7 +438,7 @@ const Report = () => {
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.Client_QA_RejectedFiles}<br />Total Images: {elem.Client_QA_RejectedImages}</p>
+                        <p className='text-center'>Total Files:{'0'}<br />Total Images: {'0'}</p>
                       </div>
                     </div>
                   ))}
@@ -237,7 +448,7 @@ const Report = () => {
                         <div className='summary-title'>
                           <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
                         </div>
-                        <p className='text-center'>Total Files: {elem.Digi_SignFiles}<br />Total Images: {elem.Digi_SignImages}</p>
+                        <p className='text-center'>Total Files: {'0'}<br />Total Images: {'0'}</p>
                       </div>
                     </div>
                   ))}
@@ -249,6 +460,7 @@ const Report = () => {
                 <div className='row'>
                   <div className='card' style={{ padding: '5px', backgroundColor: '#4BC0C0' }}>
                     <h6 className='text-center' style={{ color: 'white' }}>LOCATION WISE DETAILED CUMULATIVE REPORT</h6>
+                    <button onClick={handleReportCsv}>Export csv</button>
                   </div>
                 </div>
                 <div className='row mt-5 ms-2 me-2' style={{ overflowX: 'auto' }}>
@@ -292,7 +504,7 @@ const Report = () => {
                       </tr>
                     </thead>
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
-                       {locations.map((elem,index)=>(
+                       {report &&  report.map((elem,index)=>(
                         <tr key={index}>
                         <td>{elem.LocationName}</td>
                         <td>{elem.CollectionFiles || '0'}</td>
@@ -338,5 +550,5 @@ const Report = () => {
     </>
   )
 }
-
+ 
 export default Report

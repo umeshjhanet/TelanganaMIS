@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useRef } from 'react'
 import { CCard, CCardBody, CCol, CCardHeader, CRow } from '@coreui/react'
 import { CChartBar, CChartDoughnut, CChartLine, CChartPie, CChartPolarArea, CChartRadar } from '@coreui/react-chartjs'
 import Header from './Components/Header';
@@ -18,6 +18,12 @@ const Dashboard = () => {
   const formattedPreviousDate = format(previousDate, 'dd-MM-yyyy');
   const [tableData, setTableData] = useState();
   const[csv,setCsv]=useState('');
+  const dropdownRef = useRef(null);
+  const [showLocation, setShowLocation] = useState(false);
+  const [selectedLocations, setSelectedLocations] = useState([]);
+  const [locations, setLocations] = useState();
+  const [searchInput, setSearchInput] = useState('');
+  const [search,setSearch]=useState('');
   const [barFile, setBarFile] = useState({
     labels: [],
     datasets: [
@@ -161,6 +167,17 @@ const Dashboard = () => {
 
   // }
 
+  const handleLocation = (location) => {
+    if (!selectedLocations.includes(location)) {
+      setSelectedLocations([...selectedLocations, location]);
+      setSearchInput('');
+    }
+  };
+ 
+  const removeLocation = (location) => {
+    setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
+  };
+
   const handleExport=()=>{
     const headers = [
       'Sr. No.',
@@ -217,6 +234,12 @@ const Dashboard = () => {
     
   };
 
+  const searchLocation=()=>{
+    
+
+
+  }
+
 
 
   
@@ -246,6 +269,13 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
+
+    const fetchData = () => {
+      fetch("http://localhost:5000/locations")
+        .then(response => response.json())
+        .then(data => setLocations(data))
+        .catch(error => console.error( error));
+    };
     const fetchExportCsvFile = () => {
       axios.get('http://localhost:5000/csv',{responseType:'blob'})
         .then((response)=>{
@@ -556,6 +586,7 @@ const Dashboard = () => {
          });
      }
     // fetchGraphData();
+    fetchData();
     fetchGraphFileData();
     fetchGraphImageData();
     fetchWeekFileGraphData();
@@ -573,6 +604,7 @@ const Dashboard = () => {
     fetchExportCsvFile();
     const intervalID =
       setInterval(fetchGraphImageData,
+        fetchData,
         fetchGraphFileData,
         fetchTodayGraphFileData,
         fetchTodayGraphImageData,
@@ -601,6 +633,41 @@ const Dashboard = () => {
               <div className='row'>
                 <p className='mt-1 fw-bold' style={{ color: '#4BC0C0', fontSize: '20px' }}>Dashboard</p>
               </div>
+              <div className='row mt-2 me-1 search-report-card'>
+              <div className='col-md-4 col-sm-12'>
+                <div
+                  ref={dropdownRef}
+                  className='search-bar mt-1'
+                  style={{ border: '1px solid #000', padding: '5px', borderRadius: '5px', minHeight: '30px' }}
+                  contentEditable={true}
+                  onClick={() => setShowLocation(!showLocation)}
+                >
+                  {selectedLocations.map((location, index) => (
+                    <span key={index} className='selected-location'>
+                      {location}
+                      <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', marginLeft: '5px', }}>x</button>
+                      &nbsp;
+                    </span>
+                  ))}
+                  <span style={{ minWidth: '5px', display: 'inline-block' }}>&#8203;</span>
+                </div>
+                {showLocation && (
+                  <>
+                    <div className='location-card' >
+                      {locations && locations.map((item, index) => (
+                        <div key={index}>
+                          <p onClick={() => handleLocation(item.LocationName)}>{item.LocationName}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className='col-md-2 col-sm-12'>
+                <button className='btn search-btn' onClick={searchLocation}>Search</button>
+              </div>
+            </div>
               <div className='row mt-2'>
                 <div className='card'>
                   <h4 className='ms-1'>SCANNING REPORT OF LAST 30 DAYS</h4>
