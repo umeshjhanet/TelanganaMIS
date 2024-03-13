@@ -18,6 +18,7 @@ const Dashboard = () => {
   const formattedPreviousDate = format(previousDate, 'dd-MM-yyyy');
   const [tableData, setTableData] = useState();
   const[csv,setCsv]=useState('');
+  const[locationWiseCsv,setLocationWiseCsv]=useState();
   const dropdownRef = useRef(null);
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
@@ -207,6 +208,7 @@ const Dashboard = () => {
     const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
     csvRows.push(fileImageHeaders.join(','));
     tableData.forEach((elem, index) => {
+      
       const rowData = [
         index+1,
         elem.LocationName,
@@ -224,7 +226,6 @@ const Dashboard = () => {
         
       
       ];
-    
       csvRows.push(rowData.join(','));
     });
     const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
@@ -239,13 +240,10 @@ const Dashboard = () => {
     
   };
 
+
+ 
+
   
-
-
-  
-
-
-
   useEffect(() => {
 
     const fetchLocationData = async () => {
@@ -253,11 +251,29 @@ const Dashboard = () => {
         try {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:5000/api/locationwisetabularData?locationName=Agra%20District%20Court`)
+            axios.get(`http://localhost:5000/api/locationwisetabularData?locationName=?`)
           ));
           const locationData = locationDataResponses.map(response => response.data);
           setLocationData(locationData);
           console.log("agra",locationData);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching location data:', error);
+          setError('Error fetching location data. Please try again.');
+          setIsLoading(false);
+        }
+      }
+    };
+
+    const fetchGraph1LocationData = async () => {
+      if (selectedLocations.length > 0) {
+        try {
+          setIsLoading(true);
+          const locationDataResponses = await Promise.all(selectedLocations.map(location =>
+            axios.get(`http://localhost:5000/graph1LocationWise?locationName=?`)
+          ));
+          const locationData = locationDataResponses.map(response => response.data);
+          setLocationData(locationData);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching location data:', error);
@@ -275,12 +291,15 @@ const Dashboard = () => {
           const data = Object.values(apiData);
           console.log('Labels:', labels);
           console.log('Data:', data);
+          const filteredData = data.filter((value, index) => {
+            return labels[index] !== 'id';
+          });
           setBarFile({
             labels: labels.filter(label => label !== 'id'),
             datasets: [
               {
                 ...barFile.datasets[0],
-                data: data
+                data: filteredData
               },
             ],
           });
@@ -297,23 +316,18 @@ const Dashboard = () => {
         .catch(error => console.error( error));
     };
     const fetchExportCsvFile = () => {
-      axios.get('http://localhost:5000/csv',{responseType:'blob'})
+      axios.get(`http://localhost:5000/csv?LocationName=?}`,{responseType:'blob'})
         .then((response)=>{
-          // const url=window.URL.createObjectURL(new Blob([response.data]));
-          // const link=document.createElement('a');
-          // link.href=url;
-          // link.setAttribute("download","export.csv");
-          // document.body.appendChild(link);
-          // link.click();
-          setCsv(response.data);
-  
+          handleExport(selectedLocations,response.data);
         })
         .catch((error)=>{
           console.error('Error in exporting data:', error);
-  
         });
-        
     };
+
+    
+
+
     const fetchGraphImageData = () => {
       axios.get('http://localhost:5000/graph2')
         .then(response => {
@@ -625,6 +639,8 @@ const Dashboard = () => {
     fetchTableData();
     fetchExportCsvFile();
     fetchLocationData();
+    fetchGraph1LocationData();
+    
   
     const intervalID =
       setInterval(fetchGraphImageData,
@@ -642,9 +658,11 @@ const Dashboard = () => {
         fetchTableData,
         fetchExportCsvFile,
         fetchLocationData,
+        fetchGraph1LocationData,
+      
         2000);
     return () => clearInterval(intervalID);
-  }, []);
+  }, [selectedLocations]);
 // const SumofPrevFiles = sum(tableData.Prev_Files);
 
   return (
@@ -801,10 +819,13 @@ const Dashboard = () => {
                     <h4 className='ms-1'>Cumulative Report</h4>
                     <h5 className='ms-1'>All Location: Files</h5>
                     <CCardBody>
-                      <CChartBar
-                        data={barFile}
-                        labels="months"
-                      />
+          
+                          <CChartBar
+                          data={barFile}
+                          labels="months"
+                        />
+                        
+                      
                     </CCardBody>
                   </CCard>
                 </div>
