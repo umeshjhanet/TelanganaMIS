@@ -1,344 +1,286 @@
 import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { SummaryData } from "./Components/SummaryData";
-import Header from "./Components/Header";
-import Footer from "./Footer";
-import axios from "axios";
-
-// const Locations = [
-//   "Agra",
-//   "Allahabad",
-//   "Kanpur",
-//   "Bagpat",
-//   "Ghaziabad",
-//   "Bareilly",
-//   "Kasganj",
-//   "Kaushambi",
-//   "Meerut",
-// ]
+import { SummaryData } from './Components/SummaryData';
+import Header from './Components/Header';
+import Footer from './Footer';
+import axios from 'axios';
 
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
-  const [locations, setLocations] = useState();
+  const [locations, setLocations] = useState([]);
+  const [locationData, setLocationData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
   const [summary, setSummary] = useState();
   const [report, setReport] = useState();
-  const [searchInput, setSearchInput] = useState("");
-  const [csv, setCsv] = useState("");
-  const [reportCsv, setReportCsv] = useState("");
+  const[csv,setCsv]=useState('');
+  const[reportCsv,setReportCsv]=useState('');
   const dropdownRef = useRef(null);
 
-  const handleReportCsv = () => {
-    const headers = [
-      "Sr. No.",
-      "Location",
-      "Collection Of Records",
-      "",
-      "Scanning ADF",
-      "",
-      "Image QC",
+  const handleLocation = (locationName) => {
+    if (!selectedLocations.includes(locationName)) {
+      setSelectedLocations([...selectedLocations, locationName]);
+      setSearchInput('');
+    }
+    setShowLocation(false); // Close the dropdown when a location is selected
+    
+  };
+  
 
-      "",
-      "Document Classification",
-
-      "",
-      "Indexing",
-
-      "",
-      "CBSL QA",
-
-      "",
-      "Export PDF",
-
-      "",
-      "Client QA",
-
-      "",
-      "CSV Generation",
-
-      "",
-      "Inventory Out",
-    ];
-
-    const csvRows = [];
-    csvRows.push(headers.join(","));
-    const fileImageHeaders = [
-      "",
-      "",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-    ];
-    csvRows.push(fileImageHeaders.join(","));
-    report.forEach((elem, index) => {
-      const rowData = [
-        index + 1,
-        elem.LocationName,
-        elem.CollectionFiles || "0",
-        elem.CollectionImages || "0",
-
-        elem.ScannedFiles || "0",
-        elem.ScannedImages || "0",
-
-        elem.QCFiles || "0",
-        elem.QCImages || "0",
-
-        elem.FlaggingFiles || "0",
-        elem.FlaggingImages || "0",
-
-        elem.IndexingFiles || "0",
-        elem.IndexingImages || "0",
-
-        elem.CBSL_QAFiles || "0",
-        elem.CBSL_QAImages || "0",
-
-        elem.Export_PdfFiles || "0",
-        elem.Export_PdfImages || "0",
-
-        elem.Client_QA_AcceptedFiles || "0",
-        elem.Client_QA_AcceptedImages || "0",
-
-        "0",
-        "0",
-
-        "0",
-        "0",
-      ];
-
-      csvRows.push(rowData.join(","));
-    });
-    const csvBlob = new Blob([csvRows.join("\n")], { type: "text/csv" });
-    const url = window.URL.createObjectURL(csvBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "export.csv");
-    document.body.appendChild(link);
-    link.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(link);
+  const removeLocation = (locationName) => {
+    setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
 
-  const handleExport = () => {
+  const handleExport=()=>{
     const headers = [
-      "Sr. No.",
-      "Total Location",
-      "Collection Of Records",
-      "",
-      "Scanning ADF",
-      "",
-      "Image QC",
-
-      "",
-      "Document Classification",
-
-      "",
-      "Indexing",
-
-      "",
-      "CBSL QA",
-
-      "",
-      "Export PDF",
-
-      "",
-      "Client QA",
-
-      "",
-      "CSV Generation",
-
-      "",
-      "Inventory Out",
+      'Sr. No.',
+      'Location',
+      'Collection of Records',
+      '',
+      'Scanning ADF',
+      '',
+      'ImageQC',
+      '',
+      'Document Classification',
+      '',
+      'Indexing',
+      '',
+      'CBSLQA',
+      '',
+      'Export PDF',
+      '',
+      'Client QA',
+      '',
+      'CSV Generation',
+      '',
+      'Inventory Out',
+      
     ];
-
+    
     const csvRows = [];
-    csvRows.push(headers.join(","));
-    const fileImageHeaders = [
-      "",
-      "",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-      "Files",
-      "Images",
-    ];
-    csvRows.push(fileImageHeaders.join(","));
+    csvRows.push(headers.join(',')); 
+    const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
+    'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
+    csvRows.push(fileImageHeaders.join(','));
     summary.forEach((elem, index) => {
       const rowData = [
-        index + 1,
+        index+1,
         elem.TotalLocation,
-        elem.CollectionFiles || "0",
-        elem.CollectionImages || "0",
+        elem.CollectionFiles || '0',
+        elem.CollectionImages || '0',
+        
+        elem.ScannedFiles || '0',
+        elem.ScannedImages || '0',
+        
+        elem.QCFiles || '0',
+        elem.QCImages || '0',
+        
+        elem.FlaggingFiles || '0',
+        elem.FlaggingImages || '0',
 
-        elem.ScannedFiles || "0",
-        elem.ScannedImages || "0",
+        elem.IndexingFiles || '0',
+        elem.IndexingImages || '0',
+        
+        elem.CBSL_QAFiles || '0',
+        elem.CBSL_QAImages || '0',
+        
+        elem.Export_PdfFiles || '0',
+        elem.Export_PdfImages || '0',
+        
+        elem.Client_QA_AcceptedFiles || '0',
+        elem.Client_QA_AcceptedImages || '0',
 
-        elem.QCFiles || "0",
-        elem.QCImages || "0",
-
-        elem.FlaggingFiles || "0",
-        elem.FlaggingImages || "0",
-
-        elem.IndexingFiles || "0",
-        elem.IndexingImages || "0",
-
-        elem.CBSL_QAFiles || "0",
-        elem.CBSL_QAImages || "0",
-
-        elem.Export_PdfFiles || "0",
-        elem.Export_PdfImages || "0",
-
-        elem.Client_QA_AcceptedFiles || "0",
-        elem.Client_QA_AcceptedImages || "0",
-
-        "0",
-        "0",
-
-        "0",
-        "0",
+        '0',
+        '0',
+        
+         '0',
+         '0',
+        
+      
       ];
-
-      csvRows.push(rowData.join(","));
+    
+      csvRows.push(rowData.join(','));
     });
-    const csvBlob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+    const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
     const url = window.URL.createObjectURL(csvBlob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.setAttribute("download", "export.csv");
+    link.setAttribute('download', 'export.csv');
     document.body.appendChild(link);
     link.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(link);
+    
   };
 
-  const handleLocation = (location) => {
-    if (!selectedLocations.includes(location)) {
-      setSelectedLocations([...selectedLocations, location]);
-      setSearchInput("");
-    }
+  const handleReportCsv=()=>{
+    const headers = [
+      'Sr. No.',
+      'Location',
+      'Collection of Records',
+      '',
+      'Scanning ADF',
+      '',
+      'ImageQC',
+      '',
+      'Document Classification',
+      '',
+      'Indexing',
+      '',
+      'CBSLQA',
+      '',
+      'Export PDF',
+      '',
+      'Client QA',
+      '',
+      'CSV Generation',
+      '',
+      'Inventory Out',
+      
+    ];
+    
+    const csvRows = [];
+    csvRows.push(headers.join(',')); 
+    const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
+    'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
+    csvRows.push(fileImageHeaders.join(','));
+    report.forEach((elem, index) => {
+      const rowData = [
+        index+1,
+        elem.LocationName,
+        elem.CollectionFiles || '0',
+        elem.CollectionImages || '0',
+        
+        elem.ScannedFiles || '0',
+        elem.ScannedImages || '0',
+        
+        elem.QCFiles || '0',
+        elem.QCImages || '0',
+        
+        elem.FlaggingFiles || '0',
+        elem.FlaggingImages || '0',
+
+        elem.IndexingFiles || '0',
+        elem.IndexingImages || '0',
+        
+        elem.CBSL_QAFiles || '0',
+        elem.CBSL_QAImages || '0',
+        
+        elem.Export_PdfFiles || '0',
+        elem.Export_PdfImages || '0',
+        
+        elem.Client_QA_AcceptedFiles || '0',
+        elem.Client_QA_AcceptedImages || '0',
+
+        '0',
+        '0',
+        
+         '0',
+         '0',
+        
+      
+      ];
+    
+      csvRows.push(rowData.join(','));
+    });
+    const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(csvBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'export.csv');
+    document.body.appendChild(link);
+    link.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+    
   };
 
-  const removeLocation = (location) => {
-    setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
-  };
 
   
-
-
 
   useEffect(() => {
-    const fetchData = () => {
-      fetch("http://localhost:5000/locations")
-        .then((response) => response.json())
-        .then((data) => setLocations(data))
-        .catch((error) => console.error(error));
-    };
-
-  
-  
+    
 
     const summaryData = () => {
-      fetch("http://localhost:5000/summary")
-        // fetch("http://localhost:5000/summary")
-        .then((response) => response.json())
-        .then((data) => setSummary(data))
-        .catch((error) => console.error(error));
-      console.log("Summary", summary);
+      axios.get("http://localhost:5000/summary")
+        .then(response => setSummary(response.data))
+        .catch(error => console.error(error));
     };
 
-   
-
-    const fetchSummaryCsv = () => {
-      axios
-        .get("http://localhost:5000/summarycsv", { responseType: "blob" })
-        .then((response) => {
+    const fetchSummaryReportCsvFile = () => {
+      axios.get('http://localhost:5000/summarycsv',{responseType:'blob'})
+        .then((response)=>{
           setCsv(response.data);
+  
         })
-        .catch((error) => {
-          console.error("Error in exporting data:", error);
+        .catch((error)=>{
+          console.error('Error in exporting data:', error);
+  
         });
+        
     };
-    const fetchReportCsv = () => {
-      axios
-        .get("http://localhost:5000/reporttablecsv", { responseType: "blob" })
-        .then((response) => {
+
+    const fetchSummaryReportTableCsvFile = () => {
+      axios.get('http://localhost:5000/reporttablecsv',{responseType:'blob'})
+        .then((response)=>{
           setReportCsv(response.data);
+  
         })
-        .catch((error) => {
-          console.error("Error in exporting data:", error);
+        .catch((error)=>{
+          console.error('Error in exporting data:', error);
+  
         });
+        
     };
+
     const reportData = () => {
-      axios
-        .get("http://localhost:5000/reportTable")
-        .then((response) => {
-          setReport(response.data);
-          console.log("Report Data", response.data); // Log inside the then block
-        })
-        .catch((error) => console.error(error));
+      axios.get("http://localhost:5000/reportTable")
+        .then(response => setReport(response.data))
+        .catch(error => console.error(error));
     };
-    fetchData();
+    const fetchLocationData = async () => {
+      if (selectedLocations.length > 0) {
+        try {
+          setIsLoading(true);
+          const locationDataResponses = await Promise.all(selectedLocations.map(location =>
+            axios.get(`http://localhost:5000/reportLocationWiseTable?locationname=Agra%20District%20Court`)
+          ));
+          const locationData = locationDataResponses.map(response => response.data);
+          setLocationData(locationData);
+          console.log("agra",locationData);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching location data:', error);
+          setError('Error fetching location data. Please try again.');
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    fetchLocationData();
+    fetchSummaryReportTableCsvFile();
+    fetchSummaryReportCsvFile();
     summaryData();
     reportData();
-    fetchSummaryCsv();
-    fetchReportCsv();
-  
-    const intervalId = setInterval(
-      fetchData,
-      summaryData,
-      reportData,
-      fetchReportCsv,
-      fetchSummaryCsv,
-     
-      5000
-    );
+    
+    const intervalId = setInterval(() => {
+      fetchLocationData();
+      summaryData();
+      reportData();
+      fetchSummaryReportCsvFile();
+      fetchSummaryReportTableCsvFile();
+    }, 5000);
+    
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [selectedLocations]);
 
-  // if(!locations)
-  // return(
-  //   <>Loading....</>
-  // )
-  // if(!locations)
-  // return(
-  //   <>Loading....</>
-  // )
-
+  
   return (
     <>
       <Header />
@@ -393,17 +335,12 @@ const Report = () => {
                 </div>
                 {showLocation && (
                   <>
-                    <div className="location-card">
-                      {locations &&
-                        locations.map((item, index) => (
-                          <div key={index}>
-                            <p
-                              onClick={() => handleLocation(item.LocationName)}
-                            >
-                              {item.LocationName}
-                            </p>
-                          </div>
-                        ))}
+                    <div className='location-card' >
+                      {report && report.map((item, index) => (
+                        <div key={index}>
+                          <p onClick={() => handleLocation(item.LocationName)}>{item.LocationName}</p>
+                        </div>
+                      ))}
                     </div>
                   </>
                 )}
@@ -445,179 +382,108 @@ const Report = () => {
                 </h6>
                 <button onClick={handleExport}>Export Csv</button>
               </div>
-              <div className="main-summary-card ">
-                <h5 className="mt-1 mb-2">Total Location: 57</h5>
-                <div className="row">
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              Collection of Records
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {elem.CollectionFiles}
-                            <br />
-                            Total Images: {elem.CollectionImages}
-                          </p>
+              <div className='main-summary-card '>
+                <h5 className='mt-1 mb-2'>Total Location: 57</h5>
+                <div className='row'>
+                 
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
                         </div>
+                        <p className='text-center'>Total Files: {summary.ScannedFiles}<br />Total Images: {summary.ScannedImages}</p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              Scanning ADF
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {elem.ScannedFiles}
-                            <br />
-                            Total Images: {elem.ScannedImages}
-                          </p>
+                    </div>
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Image QC</h6>
                         </div>
+                        <p className='text-center'>Total Files: {summary.QCFiles}<br />Total Images: {summary.QCImages}</p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              Image QC
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {elem.QCFiles}
-                            <br />
-                            Total Images: {elem.QCImages}
-                          </p>
+                    </div>
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
                         </div>
+                        <p className='text-center'>Total Files: {summary.FlaggingFiles}<br />Total Images: {summary.FlaggingImages}</p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              Document Classification
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {elem.FlaggingFiles}
-                            <br />
-                            Total Images: {elem.FlaggingImages}
-                          </p>
+                    </div>
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
                         </div>
+                        <p className='text-center'>Total Files: {summary.IndexingFiles}<br />Total Images: {summary.IndexingImages}</p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              Indexing
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {elem.IndexingFiles}
-                            <br />
-                            Total Images: {elem.IndexingImages}
-                          </p>
+                    </div>
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
                         </div>
+                        <p className='text-center'>Total Files: {summary.CBSL_QAFiles}<br />Total Images: {summary.CBSL_QAImages}</p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              CBSL QA
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {elem.CBSL_QAFiles}
-                            <br />
-                            Total Images: {elem.CBSL_QAImages}
-                          </p>
+                    </div>
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
                         </div>
+                        <p className='text-center'>Total Files: {summary.Export_PdfFiles}<br />Total Images: {summary.Export_PdfImages}</p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              Export PDF
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {elem.Export_PdfFiles}
-                            <br />
-                            Total Images: {elem.Export_PdfImages}
-                          </p>
+                    </div>
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
                         </div>
+                        <p className='text-center'>Total Files: {summary.Client_QA_AcceptedFiles}<br />Total Images: {summary.Client_QA_AcceptedImages}</p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              Client QA
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {elem.Client_QA_AcceptedFiles}
-                            <br />
-                            Total Images: {elem.Client_QA_AcceptedImages}
-                          </p>
+                    </div>
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
                         </div>
+                        <p className='text-center'>Total Files: 0
+                          
+                          <br />Total Images: 0
+                          
+                        </p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              CSV Generation
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files:{"0"}
-                            <br />
-                            Total Images: {"0"}
-                          </p>
+                    </div>
+                  )}
+                  {summary && (
+                    <div className='col-lg-2 col-md-4 col-sm-6'>
+                      <div className='summary-card mt-3'>
+                        <div className='summary-title'>
+                          <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
                         </div>
+                        <p className='text-center'>Total Files: 0
+                          
+                          <br />Total Images: 0
+                          
+                        </p>
                       </div>
-                    ))}
-                  {summary &&
-                    summary.map((elem, index) => (
-                      <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                        <div className="summary-card mt-3">
-                          <div className="summary-title">
-                            <h6 style={{ textTransform: "capitalize" }}>
-                              Inventory Out
-                            </h6>
-                          </div>
-                          <p className="text-center">
-                            Total Files: {"0"}
-                            <br />
-                            Total Images: {"0"}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -680,39 +546,39 @@ const Report = () => {
                       </tr>
                     </thead>
                     <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
-                       {report &&report.map((elem,index)=>(
-                       
-                        <tr key={index}>
-                        <td>{elem.LocationName}</td>
-                        <td>{elem.CollectionFiles || '0'}</td>
-                        <td>{elem.CollectionImages || '0'}</td>
-                        <td>{elem.ScannedFiles || '0'}</td>
-                        <td>{elem.ScannedImages || '0'}</td>
-                        <td>{elem.QCFiles || '0'}</td>
-                        <td>{elem.QCImages || '0'}</td>
-                        <td>{elem.FlaggingFiles || '0'}</td>
-                        <td>{elem.FlaggingImages || '0'}</td>
-                        <td>{elem.IndexingFiles || '0'}</td>
-                        <td>{elem.IndexingImages || '0'}</td>
-                        <td>{elem.CBSL_QAFiles || '0'}</td>
-                        <td>{elem.CBSL_QAImages || '0'}</td>
-                        <td>{elem.Export_PdfFiles || '0'}</td>
-                        <td>{elem.Export_PdfImages || '0'}</td>
-                        <td>{elem.Client_QA_AcceptedFiles || '0'}</td>
-                        <td>{elem.Client_QA_AcceptedImages || '0'}</td>
-                        <td> 0</td>
-                        <td>0</td>
-                        <td>0</td>  
-                        <td>0</td> 
-                        <td><button className='btn view-btn'>View</button></td>
-                      </tr> 
-                      ))} 
-                          
-                     </tbody> 
-
-                   
-
-
+                     
+                      {report && report.map((elem, index) => {
+                        if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                          return (
+                            <tr key={index}>
+                              <td>{elem.LocationName}</td>
+                              <td>{elem.CollectionFiles || '0'}</td>
+                              <td>{elem.CollectionImages || '0'}</td>
+                              <td>{elem.ScannedFiles || '0'}</td>
+                              <td>{elem.ScannedImages || '0'}</td>
+                              <td>{elem.QCFiles || '0'}</td>
+                              <td>{elem.QCImages || '0'}</td>
+                              <td>{elem.FlaggingFiles || '0'}</td>
+                              <td>{elem.FlaggingImages || '0'}</td>
+                              <td>{elem.IndexingFiles || '0'}</td>
+                              <td>{elem.IndexingImages || '0'}</td>
+                              <td>{elem.CBSL_QAFiles || '0'}</td>
+                              <td>{elem.CBSL_QAImages || '0'}</td>
+                              <td>{elem.Export_PdfFiles || '0'}</td>
+                              <td>{elem.Export_PdfImages || '0'}</td>
+                              <td>{elem.Client_QA_AcceptedFiles || '0'}</td>
+                              <td>{elem.Client_QA_AcceptedImages || '0'}</td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td>0</td>
+                              <td><button className='btn view-btn'>View</button></td>
+                            </tr>
+                          );
+                        }
+                        return null;
+                      })}
+                    </tbody>
                   </table>
                 </div>
               </div>

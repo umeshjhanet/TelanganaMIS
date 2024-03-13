@@ -23,7 +23,9 @@ const Dashboard = () => {
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [locations, setLocations] = useState();
   const [searchInput, setSearchInput] = useState('');
-  const [search,setSearch]=useState('');
+  const [locationData, setLocationData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [barFile, setBarFile] = useState({
     labels: [],
     datasets: [
@@ -167,15 +169,18 @@ const Dashboard = () => {
 
   // }
 
-  const handleLocation = (location) => {
-    if (!selectedLocations.includes(location)) {
-      setSelectedLocations([...selectedLocations, location]);
+  const handleLocation = (locationName) => {
+    if (!selectedLocations.includes(locationName)) {
+      setSelectedLocations([...selectedLocations, locationName]);
       setSearchInput('');
     }
+    setShowLocation(false); // Close the dropdown when a location is selected
+    
   };
- 
-  const removeLocation = (location) => {
-    setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
+  
+
+  const removeLocation = (locationName) => {
+    setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
 
   const handleExport=()=>{
@@ -242,6 +247,26 @@ const Dashboard = () => {
 
 
   useEffect(() => {
+
+    const fetchLocationData = async () => {
+      if (selectedLocations.length > 0) {
+        try {
+          setIsLoading(true);
+          const locationDataResponses = await Promise.all(selectedLocations.map(location =>
+            axios.get(`http://localhost:5000/api/locationwisetabularData?locationName=Agra%20District%20Court`)
+          ));
+          const locationData = locationDataResponses.map(response => response.data);
+          setLocationData(locationData);
+          console.log("agra",locationData);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching location data:', error);
+          setError('Error fetching location data. Please try again.');
+          setIsLoading(false);
+        }
+      }
+    };
+
     const fetchGraphFileData = () => {
       axios.get('http://localhost:5000/graph1')
         .then(response => {
@@ -477,6 +502,8 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
+
+
     const fetchCriminalCaseGraphData = () => {
       axios.get('http://localhost:5000/criminal')
         .then(response => {
@@ -597,6 +624,8 @@ const Dashboard = () => {
     fetchAllGraphImageData();
     fetchTableData();
     fetchExportCsvFile();
+    fetchLocationData();
+  
     const intervalID =
       setInterval(fetchGraphImageData,
         fetchData,
@@ -612,6 +641,7 @@ const Dashboard = () => {
         fetchAllGraphImageData,
         fetchTableData,
         fetchExportCsvFile,
+        fetchLocationData,
         2000);
     return () => clearInterval(intervalID);
   }, []);
@@ -649,7 +679,7 @@ const Dashboard = () => {
                 {showLocation && (
                   <>
                     <div className='location-card' >
-                      {locations && locations.map((item, index) => (
+                      {tableData && tableData.map((item, index) => (
                         <div key={index}>
                           <p onClick={() => handleLocation(item.LocationName)}>{item.LocationName}</p>
                         </div>
@@ -724,7 +754,9 @@ const Dashboard = () => {
                       </thead>
                       <tbody style={{ color: 'gray' }}>
                         
-                        {tableData && tableData.map((elem, index) => (
+                        {tableData && tableData.map((elem, index) => {
+                          if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                            return (
                           <tr key={index}>
                             <td>{index + 1}</td>
                             <td>{elem.LocationName }</td>
@@ -738,7 +770,10 @@ const Dashboard = () => {
                             <td>{elem.Total_Images || '0'}</td>
                             <td></td>
                           </tr>
-                        ))}
+                          );
+                        }
+                        return null;
+                        })}
 
                         <tr style={{ color: 'black' }}>
                           <td colspan="2"><strong>Total</strong></td>
