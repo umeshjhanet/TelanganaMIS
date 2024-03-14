@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [locations, setLocations] = useState();
   const [searchInput, setSearchInput] = useState('');
   const [locationData, setLocationData] = useState(null);
+  const [locationGraphData, setLocationGraphData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
@@ -799,10 +800,12 @@ const Dashboard = () => {
                     <h4 className='ms-1'>Cumulative Report</h4>
                     <h5 className='ms-1'>All Location: Images</h5>
                     <CCardBody>
-                      <CChartBar
-                        data={barImage}
-                        labels="months"
-                      />
+                    {selectedLocations.length > 0  && (
+                        <CChartBar
+                          data={barImage}
+                          labels="months"
+                        />
+                       )}
                     </CCardBody>
                   </CCard>
                 </div>
