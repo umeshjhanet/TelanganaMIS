@@ -11,6 +11,8 @@ import File from './file';
 import Login from './Login';
 import MISUPDC from './mis_updc';
 import MIS_Form from './MIS_Form';
+import User_Form from './User_Form';
+import User_List from './User_List';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,6 +21,8 @@ ReactDOM.render(
         <Route path="/" element={<Login />} />
         <Route path='/dashboard' element={<Dashboard/>}/>
         <Route path="/report" element={<Report />} />
+        <Route path="/User_Form" element={<User_Form />} />
+        <Route path="/User_List" element={<User_List />} />
         <Route path="/file" element={<File />} />
         <Route path="/MIS_Form" element={<MIS_Form/>}/>
         <Route path="/mis_updc" element={<MISUPDC/>}/>

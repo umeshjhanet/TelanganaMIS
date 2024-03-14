@@ -24,6 +24,7 @@ const Dashboard = () => {
   const [locations, setLocations] = useState();
   const [searchInput, setSearchInput] = useState('');
   const [locationData, setLocationData] = useState(null);
+  const [locationGraphData, setLocationGraphData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [barFile, setBarFile] = useState({
@@ -253,11 +254,29 @@ const Dashboard = () => {
         try {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:5000/api/locationwisetabularData?locationName=Agra%20District%20Court`)
+            axios.get(`http://localhost:5000/api/locationwisetabularData?locationName=?`)
           ));
           const locationData = locationDataResponses.map(response => response.data);
           setLocationData(locationData);
           console.log("agra",locationData);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching location data:', error);
+          setError('Error fetching location data. Please try again.');
+          setIsLoading(false);
+        }
+      }
+    };
+    const fetchGraph1LocationData = async () => {
+      if (selectedLocations.length > 0) {
+        try {
+          setIsLoading(true);
+          const locationDataResponses = await Promise.all(selectedLocations.map(location =>
+            axios.get(`http://localhost:5000/graph1LocationWise?locationName=?`)
+          ));
+          const locationData = locationDataResponses.map(response => response.data);
+          setLocationGraphData(locationData);
+          console.log("Agra District Court",locationGraphData);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching location data:', error);
@@ -625,6 +644,7 @@ const Dashboard = () => {
     fetchTableData();
     fetchExportCsvFile();
     fetchLocationData();
+    fetchGraph1LocationData();
   
     const intervalID =
       setInterval(fetchGraphImageData,
@@ -642,6 +662,7 @@ const Dashboard = () => {
         fetchTableData,
         fetchExportCsvFile,
         fetchLocationData,
+        fetchGraph1LocationData,
         2000);
     return () => clearInterval(intervalID);
   }, []);
@@ -801,10 +822,12 @@ const Dashboard = () => {
                     <h4 className='ms-1'>Cumulative Report</h4>
                     <h5 className='ms-1'>All Location: Files</h5>
                     <CCardBody>
-                      <CChartBar
-                        data={barFile}
-                        labels="months"
-                      />
+                    {selectedLocations.length > 0  && (
+                        <CChartBar
+                          data={barFile}
+                          labels="months"
+                        />
+                       )} 
                     </CCardBody>
                   </CCard>
                 </div>
@@ -813,10 +836,12 @@ const Dashboard = () => {
                     <h4 className='ms-1'>Cumulative Report</h4>
                     <h5 className='ms-1'>All Location: Images</h5>
                     <CCardBody>
-                      <CChartBar
-                        data={barImage}
-                        labels="months"
-                      />
+                    {selectedLocations.length > 0  && (
+                        <CChartBar
+                          data={barImage}
+                          labels="months"
+                        />
+                       )}
                     </CCardBody>
                   </CCard>
                 </div>
