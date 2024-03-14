@@ -27,7 +27,11 @@ const Dashboard = () => {
   const [locationData, setLocationData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [locationName, setLocationName] = useState('');
   const [barFile, setBarFile] = useState({
+    
     labels: [],
     datasets: [
       {
@@ -240,10 +244,6 @@ const Dashboard = () => {
     
   };
 
-
- 
-
-  
   useEffect(() => {
 
     const fetchLocationData = async () => {
@@ -264,51 +264,18 @@ const Dashboard = () => {
         }
       }
     };
-
-    const fetchGraph1LocationData = async () => {
-      if (selectedLocations.length > 0) {
-        try {
-          setIsLoading(true);
-          const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:5000/graph1LocationWise?locationName=?`)
-          ));
-          const locationData = locationDataResponses.map(response => response.data);
-          setLocationData(locationData);
-          setIsLoading(false);
-        } catch (error) {
-          console.error('Error fetching location data:', error);
-          setError('Error fetching location data. Please try again.');
-          setIsLoading(false);
-        }
-      }
-    };
-
     const fetchGraphFileData = () => {
-      axios.get('http://localhost:5000/graph1')
+      axios.get('http://localhost:5000/graph1LocationWise?locationname="Agra%20District%20Court')
         .then(response => {
-          const apiData = response.data[0];
-          const labels = Object.keys(apiData);
-          const data = Object.values(apiData);
-          console.log('Labels:', labels);
-          console.log('Data:', data);
-          const filteredData = data.filter((value, index) => {
-            return labels[index] !== 'id';
-          });
-          setBarFile({
-            labels: labels.filter(label => label !== 'id'),
-            datasets: [
-              {
-                ...barFile.datasets[0],
-                data: filteredData
-              },
-            ],
-          });
+          setData(response.data)
+          console.log("rachna", response.data)
+          
         })
         .catch(error => {
           console.error('Error fetching data:', error);
         });
     }
-
+    
     const fetchData = () => {
       fetch("http://localhost:5000/locations")
         .then(response => response.json())
@@ -316,26 +283,24 @@ const Dashboard = () => {
         .catch(error => console.error( error));
     };
     const fetchExportCsvFile = () => {
-      axios.get(`http://localhost:5000/csv?LocationName=?}`,{responseType:'blob'})
+      axios.get(`http://localhost:5000/csv?LocationName=${encodeURIComponent(selectedLocations)}`, {
+      })
         .then((response)=>{
-          handleExport(selectedLocations,response.data);
+          handleExport(response.data);
         })
         .catch((error)=>{
           console.error('Error in exporting data:', error);
         });
     };
-
-    
-
-
+  
     const fetchGraphImageData = () => {
       axios.get('http://localhost:5000/graph2')
         .then(response => {
           const apiData = response.data[0];
           const labels = Object.keys(apiData);
           const data = Object.values(apiData);
-          console.log('Labels:', labels);
-          console.log('Data:', data);
+          // console.log('Labels:', labels);
+          // console.log('Data:', data);
           setBarImage({
             labels: labels.filter(label => label !== 'id'),
             datasets: [
@@ -639,7 +604,7 @@ const Dashboard = () => {
     fetchTableData();
     fetchExportCsvFile();
     fetchLocationData();
-    fetchGraph1LocationData();
+    // fetchGraph1LocationData();
     
   
     const intervalID =
@@ -658,11 +623,11 @@ const Dashboard = () => {
         fetchTableData,
         fetchExportCsvFile,
         fetchLocationData,
-        fetchGraph1LocationData,
+        // fetchGraph1LocationData,
       
         2000);
     return () => clearInterval(intervalID);
-  }, [selectedLocations]);
+  }, []);
 // const SumofPrevFiles = sum(tableData.Prev_Files);
 
   return (
