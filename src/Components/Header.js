@@ -7,6 +7,11 @@ import { IoIosArrowDown } from "react-icons/io";
 import { BsFillCloudArrowUpFill } from "react-icons/bs";
 import { BsCloudyFill } from "react-icons/bs";
 import { BrowserRouter, Routes, Route, Link, Router } from "react-router-dom";
+import { FaUserAlt } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
+import { RiUserFill } from "react-icons/ri";
+import { HiMiniUserGroup, HiMiniUserPlus } from "react-icons/hi2";
+
 // import Dashboard from './pages/dashboard';
 
 
@@ -93,10 +98,25 @@ const Header = () => {
                     </div>
                     {showReportDropdown && (
                       <>
+                      <hr/>
                         <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Location Wise Report</Link>
                         <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />Last Upload File</Link>
+                        <hr/> 
                       </>
                     )}
+                    <div className='row' onClick={handleActiveTab}>
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaUserAlt  style={{ marginRight: '10px' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
+                    </div>
+                    {showMasterDropdown && (
+                <>
+                <hr/>
+                  <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', }}><FaUsers  style={{ marginRight: '10px' }} />Group Manager<br /></Link>
+                  <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><RiUserFill  style={{ marginRight: '10px' }} />User Role<br /></Link>
+                  <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><HiMiniUserPlus  style={{ marginRight: '10px' }} />Add User<br /></Link>
+                  <Link to='/User_List' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><HiMiniUserGroup  style={{ marginRight: '10px' }} />User List<br /></Link>
+                <hr/>
+                </>
+              )}
 
                   </div>
                 </div>
@@ -134,7 +154,7 @@ const Header = () => {
                 <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
               </div>
               <div className='row' onClick={handleActiveTab}>
-                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />Master <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
+                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
               </div>
               {showReportDropdown && (
                 <>
@@ -142,11 +162,13 @@ const Header = () => {
                   <Link to='/file' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />Last Upload File</Link>
                 </>
               )}
-              
+
               {showMasterDropdown && (
                 <>
-                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Add User</Link>
-                  <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List</Link>
+                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Group Manager<br /></Link><br />
+                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />User Role<br /></Link><br />
+                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Add User<br /></Link><br />
+                  <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List<br /></Link><br />
                 </>
               )}
             </div>

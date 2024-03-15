@@ -67,7 +67,8 @@ const User_Form = () => {
                       {group && group.map((elem,index) => (
                         <option key={index} value={index + 1}>{elem.group_name}</option>
                       ))}
-                    </select>                     <label className='mt-1'>Select Location</label><br />
+                    </select>                     
+                    <label className='mt-1'>Select Location</label><br />
                     <input type='text' placeholder='Select Location' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} /><br />
                     <label className='mt-1'>Select User's Privilege<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='text' placeholder='Select Users Privilege' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} /><br />

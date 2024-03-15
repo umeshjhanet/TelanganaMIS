@@ -263,24 +263,7 @@ const Report = () => {
         }
       }
     };
-    const fetchSummaryLocationData = async () => {
-      if (selectedLocations.length > 0) {
-        try {
-          setIsLoading(true);
-          const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:5000/summaryLocation?locationname=?`)
-          ));
-          const locationData = locationDataResponses.map(response => response.data);
-          setLocationData(locationData);
-          console.log("agra", locationData);
-          setIsLoading(false);
-        } catch (error) {
-          console.error('Error fetching location data:', error);
-          setError('Error fetching location data. Please try again.');
-          setIsLoading(false);
-        }
-      }
-    };
+    
 
     fetchLocationData();
     fetchSummaryReportTableCsvFile();
@@ -406,7 +389,7 @@ const Report = () => {
                 <h5 className='mt-1 mb-2'>Total Location: 57</h5>
                 <div className='row'>
                   {summary && summary.map((elem, index) => {
-                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationId)) {
                       return (
                         <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
                           <div className='summary-card mt-3'>
