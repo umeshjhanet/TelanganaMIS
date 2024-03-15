@@ -28,7 +28,11 @@ const Dashboard = () => {
   const [locationGraphData, setLocationGraphData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [locationName, setLocationName] = useState('');
   const [barFile, setBarFile] = useState({
+    
     labels: [],
     datasets: [
       {
@@ -219,10 +223,6 @@ const Dashboard = () => {
     
   };
 
-
- 
-
-  
   useEffect(() => {
 
     const fetchLocationData = async () => {
