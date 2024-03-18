@@ -240,7 +240,7 @@ const MIS_Form = () => {
                     {showLocation && (
                       <>
                         <div className='locations-card'>
-                          {location.map((elem, index) => (
+                          {location && location.map((elem, index) => (
                             <div key={index} onClick={() => handleSelectLocation(elem.LocationID, `${elem.LocationName}`)}>
                               <p>{elem.LocationName}</p>
                             </div>
