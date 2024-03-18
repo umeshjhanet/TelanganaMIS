@@ -288,15 +288,15 @@ const Dashboard = () => {
     //     .then(data => setLocations(data))
     //     .catch(error => console.error( error));
     // };
-    // const fetchExportCsvFile = () => {
-    //   axios.get(`http://localhost:5000/csv?LocationName=?}`,{responseType:'blob'})
-    //     .then((response)=>{
-    //       handleExport(selectedLocations,response.data);
-    //     })
-    //     .catch((error)=>{
-    //       console.error('Error in exporting data:', error);
-    //     });
-    // };
+    const fetchExportCsvFile = () => {
+      axios.get(`http://localhost:5000/csv?LocationName=?}`,{responseType:'blob'})
+        .then((response)=>{
+          handleExport(selectedLocations,response.data);
+        })
+        .catch((error)=>{
+          console.error('Error in exporting data:', error);
+        });
+    };
 
     
 
@@ -716,7 +716,7 @@ const Dashboard = () => {
     fetchAllYesGraphImageData(locationName);
     fetchAllGraphImageData(locationName);
     fetchTableData();
-    // fetchExportCsvFile();
+    fetchExportCsvFile(selectedLocations);
     // fetchLocationData();
     
     
@@ -742,7 +742,7 @@ const Dashboard = () => {
     //     2000);
     // return () => clearInterval(intervalID);
   }, [selectedLocations]);
-// const SumofPrevFiles = sum(tableData.Prev_Files);
+
 
   return (
     <>

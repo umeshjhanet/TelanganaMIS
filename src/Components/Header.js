@@ -93,6 +93,9 @@ const Header = () => {
                     <div className='row' onClick={handleActiveTab} >
                       <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
                     </div>
+                    <div className='row' onClick={handleActiveTab} >
+                      <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Upload Database</Link>
+                    </div>
                     <div className='row' onClick={handleActiveTab}>
                       <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                     </div>
@@ -110,8 +113,8 @@ const Header = () => {
                     {showMasterDropdown && (
                 <>
                 <hr/>
-                  <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', }}><FaUsers  style={{ marginRight: '10px' }} />Group Manager<br /></Link>
-                  <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><RiUserFill  style={{ marginRight: '10px' }} />User Role<br /></Link>
+                  <Link to='/groupManager' className='ms-1' style={{ color: 'black', textDecoration: 'none', }}><FaUsers  style={{ marginRight: '10px' }} />Group Manager<br /></Link>
+                  <Link to='/userRole' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><RiUserFill  style={{ marginRight: '10px' }} />User Role<br /></Link>
                   <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><HiMiniUserPlus  style={{ marginRight: '10px' }} />Add User<br /></Link>
                   <Link to='/User_List' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><HiMiniUserGroup  style={{ marginRight: '10px' }} />User List<br /></Link>
                 <hr/>

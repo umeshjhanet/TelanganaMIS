@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Header from './Components/Header';
 import Footer from './Footer';
 import axios from 'axios';
+import { BiEdit } from "react-icons/bi";
+import { RiDeleteBin5Line } from "react-icons/ri";
 
 const User_List = () => {
   const [user, setUser] = useState([]);
@@ -96,7 +98,7 @@ const User_List = () => {
                       <td>{elem.phone_no}</td>
                       <td></td>
                       <td>{elem.locations}</td>
-                      <td>Edit/Delete</td>
+                      <td><BiEdit /> / <RiDeleteBin5Line /></td>
                     </tr>
                   ))}
                 </tbody>

@@ -3,6 +3,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: 'Montserrat';
 }
 
 .App {
@@ -285,9 +286,19 @@ input[type="submit"]:hover {
 .location-card p:hover {
   background-color: #61dafb;
 }
+.user-tables{
+  border: 1px solid lightgray;
+  
+}
 
 .search-btn {
   width: 100px;
+  height: 40px;
+  background-color: #4BC0C0;
+  margin-left: 20px;
+}
+.add-btn {
+  width: 150px;
   height: 40px;
   background-color: #4BC0C0;
   margin-left: 20px;
