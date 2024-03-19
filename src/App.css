@@ -3,7 +3,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: 'Montserrat';
+
 }
 
 .App {
@@ -288,9 +288,8 @@ input[type="submit"]:hover {
 }
 .user-tables{
   border: 1px solid lightgray;
-  
 }
-
+tr:nth-child(even) {background-color: #f2f2f2;}
 .search-btn {
   width: 100px;
   height: 40px;

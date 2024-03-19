@@ -69,13 +69,14 @@ const User_List = () => {
               <div className='row'>
                 <input
                   type='text'
-                  style={{ width: '300px', height: '30px' }}
+                  style={{ width: '300px', height: '40px' }}
                   placeholder='Search by name or email...'
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
+                 <button className='btn search-btn mb-1'>Search</button>
               </div>
-              <table className='table-bordered mt-1 mb-5'>
+              <table className='user-tables table-bordered mt-1 mb-5'>
                 <thead>
                   <tr>
                     <th>All</th>
@@ -98,7 +99,7 @@ const User_List = () => {
                       <td>{elem.phone_no}</td>
                       <td></td>
                       <td>{elem.locations}</td>
-                      <td><BiEdit /> / <RiDeleteBin5Line /></td>
+                      <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> / <RiDeleteBin5Line style={{color:'red',fontSize:'20px'}}/></td>
                     </tr>
                   ))}
                 </tbody>

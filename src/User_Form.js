@@ -293,7 +293,7 @@ const [formData,setFormData]=useState({
                     <input type='date' placeholder='13-03-24' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
                     <label className='mt-1'>Profile Picture<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='file' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
-                    <input type='submit' className='mt-3' onClick={handleFormSubmit} />
+                    <input type='submit' className='mt-3 btn search-btn' onClick={handleFormSubmit} />
                   </div>
                 </div>
               </div>

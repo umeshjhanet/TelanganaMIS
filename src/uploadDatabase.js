@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import Header from './Header'
-import Footer from '../Footer'
+import Header from './Components/Header'
+import Footer from './Footer'
 
 const UploadDatabase = () => {
 
@@ -14,31 +14,35 @@ const UploadDatabase = () => {
 
     const handleSubmit = async () => {
         if (!file) {
-            setMessage('Please select a file');
-            return;
+          setMessage('Please select a file');
+          return;
         }
-
+      
         setUploading(true);
         setMessage('Uploading file...');
-
+      
+        const currentDate = new Date();
+        const dateString = currentDate.toISOString().replace(/:/g, '-').replace(/\..+/, '');
+        const fileName = `${file.name}_${dateString}.${file.name.split('.').pop()}`;
+      
         const formData = new FormData();
-        formData.append('file', file);
-
+        formData.append('file', file, fileName);
+      
         try {
-            const response = await fetch('http://localhost:5000/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            // Handle response from server
-            setMessage('File uploaded successfully');
+          const response = await fetch('http://localhost:5000/upload', {
+            method: 'POST',
+            body: formData,
+          });
+      
+          // Handle response from server
+          setMessage('File uploaded successfully');
         } catch (error) {
-            console.error('Error uploading file:', error);
-            setMessage('Error uploading file');
+          console.error('Error uploading file:', error);
+          setMessage('Error uploading file');
         } finally {
-            setUploading(false);
+          setUploading(false);
         }
-    };
+      };
 
     return (
         <>
@@ -58,15 +62,19 @@ const UploadDatabase = () => {
                         <div className='user-form-card mt-3'>
                             <h5>SELECTED FOLDER:</h5>
                             <div className='row'>
+                                <div className='col-3'>
                                 <input
                                     type="file"
                                     onChange={handleFileChange}
                                 />
-                                
-                                <button onClick={handleSubmit} disabled={uploading}>
+                                </div>
+                               <div className='col-3'>
+                               <button className='btn add-btn' onClick={handleSubmit} disabled={uploading}>
                                     {uploading ? 'Uploading...' : 'Upload'}
                                 </button>
                                 <p>{message}</p>
+                               </div>
+                                
                             </div>
                         </div>
                     </div>
