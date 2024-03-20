@@ -15,8 +15,8 @@ import User_Form from './User_Form';
 import User_List from './User_List';
 import GroupManager from './groupManager';
 import UserRole from './userRole';
-import UploadDatabase from './uploadDatabase';
-import Inventory from './inventory';
+import UploadDatabase from './Components/uploadDatabase';
+import UpdateUserModal from './Components/UpdateUserModal';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -33,7 +33,7 @@ ReactDOM.render(
         <Route path="/file" element={<File />} />
         <Route path="/MIS_Form" element={<MIS_Form/>}/>
         <Route path="/mis_updc" element={<MISUPDC/>}/>
-        <Route path="/inventory" element={<Inventory/>}/>
+        <Route path="/User_List" element={<UpdateUserModal />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

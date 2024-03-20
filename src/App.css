@@ -3,7 +3,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
+  /* font-family: 'Montserrat'; */
 }
 
 .App {
@@ -14,6 +14,46 @@ body {
   height: 40vmin;
   pointer-events: none;
 }
+
+/* Modal container */
+.modal {
+  display: block; /* Hide modal by default */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+/* Modal content */
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto; /* Center modal vertically and horizontally */
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 800px; /* Maximum width of the modal */
+}
+
+/* Close button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
@@ -135,6 +175,39 @@ input[type="submit"]:hover {
 .password-field {
   width: 100%;
 }
+/* .group-card{
+  position: relative;
+  height: 400px;
+  overflow-y: auto;
+  top: 0;
+  border: 1px solid black;
+} */
+
+.form-control {
+  width: 100%;
+  height: 25px;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+}
+
+.group-dropdown {
+  max-height: 200px; /* Adjust as needed */
+  overflow-y: auto;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  padding: 5px;
+}
+
+.group-card {
+  /* padding: 10px; */
+  cursor: pointer;
+}
+
+.group-card:hover {
+  background-color: #f0f0f0;
+}
+
+
 
 .password-inputbox:active {
   border: none;
