@@ -316,7 +316,7 @@ const Dashboard = () => {
             console.error('No data received from the API');
             return;
           }
-    
+    console.log("Api Data",apiData);
           const labels = Object.keys(apiData[0]).filter(label => label !== 'locationid' && label !== 'LocationName');
           const datasets = apiData.map(locationData => {
             return {
@@ -721,26 +721,26 @@ const Dashboard = () => {
     
     
   
-    // const intervalID =
-    //   setInterval(fetchGraphImageData,
-    //     fetchData,
-    //     // fetchGraphFileData,
-    //     fetchTodayGraphFileData,
-    //     fetchTodayGraphImageData,
-    //     fetchWeekFileGraphData,
-    //     fetchWeekImageGraphData,
-    //     fetchMonthImageGraphData,
-    //     fetchCivilCaseGraphData,
-    //     fetchCriminalCaseGraphData,
-    //     fetchAllYesGraphImageData,
-    //     fetchAllGraphImageData,
-    //     fetchTableData,
-    //     fetchExportCsvFile,
-    //     fetchLocationData,
-    //     fetchGraph1LocationData,
+    const intervalID =
+      setInterval(fetchGraphImageData,
+        // fetchData,
+        // fetchGraphFileData,
+        fetchTodayGraphFileData,
+        fetchTodayGraphImageData,
+        fetchWeekFileGraphData,
+        fetchWeekImageGraphData,
+        fetchMonthImageGraphData,
+        fetchCivilCaseGraphData,
+        fetchCriminalCaseGraphData,
+        fetchAllYesGraphImageData,
+        fetchAllGraphImageData,
+        fetchTableData,
+        fetchExportCsvFile,
+        fetchLocationData,
+        // fetchGraph1LocationData,
       
-    //     2000);
-    // return () => clearInterval(intervalID);
+        2000);
+    return () => clearInterval(intervalID);
   }, [selectedLocations]);
 
 
