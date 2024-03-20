@@ -13,6 +13,10 @@ import MISUPDC from './mis_updc';
 import MIS_Form from './MIS_Form';
 import User_Form from './User_Form';
 import User_List from './User_List';
+import GroupManager from './groupManager';
+import UserRole from './userRole';
+import UploadDatabase from './Components/uploadDatabase';
+import UpdateUserModal from './Components/UpdateUserModal';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -20,12 +24,16 @@ ReactDOM.render(
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path='/dashboard' element={<Dashboard/>}/>
+        <Route path='/uploadDatabase' element={<UploadDatabase/>}/>
         <Route path="/report" element={<Report />} />
+        <Route path="/groupManager" element={<GroupManager />} />
+        <Route path="/userRole" element={<UserRole />} />
         <Route path="/User_Form" element={<User_Form />} />
         <Route path="/User_List" element={<User_List />} />
         <Route path="/file" element={<File />} />
         <Route path="/MIS_Form" element={<MIS_Form/>}/>
         <Route path="/mis_updc" element={<MISUPDC/>}/>
+        <Route path="/User_List" element={<UpdateUserModal />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
