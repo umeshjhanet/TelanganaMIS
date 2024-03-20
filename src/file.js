@@ -104,15 +104,15 @@ const File = () => {
                             <div className='col-md-2 col-sm-12'>
                                 <button className='btn search-btn'>Search</button>
                             </div>
-                            <div className='row mt-5 '>
-                                <table className='table-bordered'>
-                                    <thead>
+                            
+                                <table className='table-bordered user-tables mt-3'>
+                                    <thead style={{backgroundColor:'#4BC0C0', color:'white'}}>
                                         <tr>
-                                            <th>Sr.No.</th>
-                                            <th>Location Name</th>
-                                            <th>File Date</th>
-                                            <th>Upload Date Time</th>
-                                            <th>App Version</th>
+                                            <th style={{fontWeight:'500'}}>Sr.No.</th>
+                                            <th style={{fontWeight:'500'}}>Location Name</th>
+                                            <th style={{fontWeight:'500'}}>File Date</th>
+                                            <th style={{fontWeight:'500'}}>Upload Date Time</th>
+                                            <th style={{fontWeight:'500'}}>App Version</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -132,7 +132,7 @@ const File = () => {
                                         })}
                                     </tbody>
                                 </table>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

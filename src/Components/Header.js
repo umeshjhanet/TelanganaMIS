@@ -44,7 +44,8 @@ const Header = () => {
 
   return (
     <>
-      <div className='d-none d-xl-block d-sm-none'>
+    
+      <div className='d-none d-xl-block d-md-block d-sm-none'>
         <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
           <div className="container-fluid" >
             <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
@@ -90,10 +91,10 @@ const Header = () => {
                     <div className='row header-image' >
                       <img src='ezeefile.png' />
                     </div>
-                    <div className='row' onClick={handleActiveTab} >
+                    <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
                     </div>
-                    <div className='row' onClick={handleActiveTab} >
+                    <div className='row' onClick={handleActiveTab}>
                       <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Upload Database</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
@@ -132,7 +133,7 @@ const Header = () => {
           </>
         )}
       </div>
-      <div className='d-block d-xl-none d-sm-block'>
+      <div className='d-block d-xl-none d-md-none d-sm-block'>
         <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
           <div className="container-fluid" >
             <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
@@ -178,6 +179,7 @@ const Header = () => {
           </div>
         }
       </div>
+      
     </>
   )
 }

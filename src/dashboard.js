@@ -7,6 +7,7 @@ import './App.css';
 import Footer from './Footer';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { format, sub } from 'date-fns';
+import { MdFileDownload } from "react-icons/md";
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
@@ -721,26 +722,26 @@ const Dashboard = () => {
     
     
   
-    // const intervalID =
-    //   setInterval(fetchGraphImageData,
-    //     fetchData,
-    //     // fetchGraphFileData,
-    //     fetchTodayGraphFileData,
-    //     fetchTodayGraphImageData,
-    //     fetchWeekFileGraphData,
-    //     fetchWeekImageGraphData,
-    //     fetchMonthImageGraphData,
-    //     fetchCivilCaseGraphData,
-    //     fetchCriminalCaseGraphData,
-    //     fetchAllYesGraphImageData,
-    //     fetchAllGraphImageData,
-    //     fetchTableData,
-    //     fetchExportCsvFile,
-    //     fetchLocationData,
-    //     fetchGraph1LocationData,
+    const intervalID =
+      setInterval(fetchGraphImageData,
+        // fetchData,
+        // fetchGraphFileData,
+        fetchTodayGraphFileData,
+        fetchTodayGraphImageData,
+        fetchWeekFileGraphData,
+        fetchWeekImageGraphData,
+        fetchMonthImageGraphData,
+        fetchCivilCaseGraphData,
+        fetchCriminalCaseGraphData,
+        fetchAllYesGraphImageData,
+        fetchAllGraphImageData,
+        fetchTableData,
+        fetchExportCsvFile,
+        fetchLocationData,
+        // fetchGraph1LocationData,
       
-    //     2000);
-    // return () => clearInterval(intervalID);
+        2000);
+    return () => clearInterval(intervalID);
   }, [selectedLocations]);
 
 
@@ -749,9 +750,9 @@ const Dashboard = () => {
       <Header />
       <div className='container-fluid'>
         <div className='row'>
-          <div className='col-lg-2'></div>
-          <div className='col-lg-10'>
-            <div className='container-fluid'>
+          <div className='col-lg-2 col-md-2 '></div>
+          <div className='col-lg-10 col-md-10'>
+            {/* <div className='container-fluid'> */}
               <div className='row'>
                 <p className='mt-1 fw-bold' style={{ color: '#4BC0C0', fontSize: '20px' }}>Dashboard</p>
               </div>
@@ -820,10 +821,12 @@ const Dashboard = () => {
               </div>
               <div className='row mt-2'>
                 <div className='table-card'>
-                  <div className='row'>
-                    <div className='card' style={{ padding: '5px', backgroundColor: '#4BC0C0' }}>
+                  <div className='row'style={{ padding: '5px', backgroundColor: '#4BC0C0',paddingTop:'15px' }}>
+                    <div className='col-10' >
                       <h6 className='text-center' style={{ color: 'white' }}>PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE RECORDS FOR DISTRICT COURT OF UTTAR PRADESH</h6>
-                      <button onClick={handleExport}>Export CSV</button>
+                      </div>
+                      <div className='col-2'>
+                      <h6 style={{ color: 'white' }} onClick={handleExport}> <MdFileDownload style={{fontSize:'20px'}}/>Export CSV</h6>
                     </div>
                   </div>
                   <div className='row mt-5 ms-2 me-2' style={{ overflowX: 'auto' }}>
@@ -1033,7 +1036,7 @@ const Dashboard = () => {
 
 
               {/* <canvas id="barcasefile" height="449" width="642" style={{width: '642px',height: '449px;'}}></canvas> */}
-            </div>
+            {/* </div> */}
 
           </div>
         </div>

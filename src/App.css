@@ -265,11 +265,10 @@ input[type="submit"]:hover {
   border-top: 4px solid #4BC0C0;
   border-radius: 4px;
 }
-.search-bar {
+/* .search-bar {
   width: 400px;
-  overflow-x: auto;
-  height: 40px;
-}
+  
+} */
 
 .location-card {
   background-color: white;
@@ -281,7 +280,11 @@ input[type="submit"]:hover {
   top: 0px;
   z-index: 999;
 }
-
+.data-table tbody.scrollable{
+  height:200px !important;
+  overflow-y:auto !important;
+  width: 100%;
+  }
 
 .location-card p:hover {
   background-color: #61dafb;
@@ -402,6 +405,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
   overflow-y: auto;
 }
 
+
 @media only screen and (max-width: 480px) {
   .login-card {
     width: 300px;
@@ -452,6 +456,8 @@ input[type="submit"] {
 
   .search-bar {
     width: 242px;
+    overflow-x: auto;
+  height: 40px;
   }
 
   .search-btn {
@@ -479,7 +485,7 @@ input[type="submit"] {
   }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 768px) {
   .data-table {
     width: 300px !important;
     overflow-x: auto;
@@ -498,6 +504,8 @@ input[type="submit"] {
 
   .search-bar {
     width: 242px;
+    overflow-x: auto;
+  height: 40px;
   }
 
   .search-btn {
@@ -515,8 +523,26 @@ input[type="submit"] {
   }
 }
 
-@media only screen and (max-width: 1260px) {
+@media only screen and (max-width: 1024px) {
   .search-bar {
-    width: 300px;
+    width: 242px;
+    overflow-x: auto;
+  height: 40px;
   }
 }
+
+@media only screen and (max-width: 1200px) {
+  .search-bar {
+    width: 242px;
+    overflow-x: auto;
+  height: 40px;
+  }
+}
+@media only screen and (min-width: 1470px) {
+  .search-bar {
+    width: 400px;
+    overflow-x: auto;
+  height: 40px;
+  }
+}
+
