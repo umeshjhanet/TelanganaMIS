@@ -176,17 +176,15 @@ const User_List = () => {
             <div className="row user-list-card mt-3 mb-5">
               <div className="row">
                 <input
-                  type="text"
-                  style={{ width: "300px", height: "30px" }}
-                  placeholder="Search by name or email..."
+                  type='text'
+                  style={{ width: '300px', height: '40px' }}
+                  placeholder='Search by name or email...'
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
+                 <button className='btn search-btn mb-1'>Search</button>
               </div>
-              <table
-                className="table-bordered mt-1 mb-5"
-                style={{ width: "1000px" }}
-              >
+              <table className='user-tables table-bordered mt-1 mb-5'>
                 <thead>
                   <tr>
                     <th>All</th>

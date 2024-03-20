@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import Header from './Components/Header'
 import Footer from './Footer'
 import axios from 'axios';
+import { BiEdit } from "react-icons/bi";
+import { RiDeleteBin5Line } from "react-icons/ri";
 
 const UserRole = () => {
     const [group,setGroup] = useState();
@@ -58,8 +60,8 @@ const UserRole = () => {
                         <button className='btn search-btn mb-1'>Search</button>
                     </div>
                 </div>
-                <div className='row mt-3'>
-                    <table className='table-bordered'>
+                <div className='row mt-5'>
+                    <table className='user-tables table-bordered'>
                         <thead>
                             <tr>
                                 <th>Sr. No.</th>
@@ -72,7 +74,7 @@ const UserRole = () => {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{elem.group_name}</td>
-                                    <td>icon</td>
+                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> / <RiDeleteBin5Line style={{color:'red',fontSize:'20px'}}/></td>
                                 </tr>
                             ))}
                         </tbody>

@@ -18,8 +18,8 @@ const Report = () => {
   const [searchInput, setSearchInput] = useState('');
   const [summary, setSummary] = useState();
   const [report, setReport] = useState();
-  const[csv,setCsv]=useState('');
-  const[reportCsv,setReportCsv]=useState('');
+  const [csv, setCsv] = useState('');
+  const [reportCsv, setReportCsv] = useState('');
   const dropdownRef = useRef(null);
 
   const handleLocation = (locationName) => {
@@ -36,7 +36,7 @@ const Report = () => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
 
-  const handleExport=()=>{
+  const handleExport = () => {
     const headers = [
       'Sr. No.',
       'Location',
@@ -59,51 +59,51 @@ const Report = () => {
       'CSV Generation',
       '',
       'Inventory Out',
-      
+
     ];
-    
+
     const csvRows = [];
-    csvRows.push(headers.join(',')); 
-    const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
-    'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
+    csvRows.push(headers.join(','));
+    const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
+      'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
     csvRows.push(fileImageHeaders.join(','));
     summary.forEach((elem, index) => {
       const rowData = [
-        index+1,
+        index + 1,
         elem.TotalLocation,
         elem.CollectionFiles || '0',
         elem.CollectionImages || '0',
-        
+
         elem.ScannedFiles || '0',
         elem.ScannedImages || '0',
-        
+
         elem.QCFiles || '0',
         elem.QCImages || '0',
-        
+
         elem.FlaggingFiles || '0',
         elem.FlaggingImages || '0',
 
         elem.IndexingFiles || '0',
         elem.IndexingImages || '0',
-        
+
         elem.CBSL_QAFiles || '0',
         elem.CBSL_QAImages || '0',
-        
+
         elem.Export_PdfFiles || '0',
         elem.Export_PdfImages || '0',
-        
+
         elem.Client_QA_AcceptedFiles || '0',
         elem.Client_QA_AcceptedImages || '0',
 
         '0',
         '0',
-        
-         '0',
-         '0',
-        
-      
+
+        '0',
+        '0',
+
+
       ];
-    
+
       csvRows.push(rowData.join(','));
     });
     const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
@@ -115,10 +115,10 @@ const Report = () => {
     link.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(link);
-    
+
   };
 
-  const handleReportCsv=()=>{
+  const handleReportCsv = () => {
     const headers = [
       'Sr. No.',
       'Location',
@@ -141,51 +141,51 @@ const Report = () => {
       'CSV Generation',
       '',
       'Inventory Out',
-      
+
     ];
-    
+
     const csvRows = [];
-    csvRows.push(headers.join(',')); 
-    const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
-    'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
+    csvRows.push(headers.join(','));
+    const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
+      'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
     csvRows.push(fileImageHeaders.join(','));
     report.forEach((elem, index) => {
       const rowData = [
-        index+1,
+        index + 1,
         elem.LocationName,
         elem.CollectionFiles || '0',
         elem.CollectionImages || '0',
-        
+
         elem.ScannedFiles || '0',
         elem.ScannedImages || '0',
-        
+
         elem.QCFiles || '0',
         elem.QCImages || '0',
-        
+
         elem.FlaggingFiles || '0',
         elem.FlaggingImages || '0',
 
         elem.IndexingFiles || '0',
         elem.IndexingImages || '0',
-        
+
         elem.CBSL_QAFiles || '0',
         elem.CBSL_QAImages || '0',
-        
+
         elem.Export_PdfFiles || '0',
         elem.Export_PdfImages || '0',
-        
+
         elem.Client_QA_AcceptedFiles || '0',
         elem.Client_QA_AcceptedImages || '0',
 
         '0',
         '0',
-        
-         '0',
-         '0',
-        
-      
+
+        '0',
+        '0',
+
+
       ];
-    
+
       csvRows.push(rowData.join(','));
     });
     const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
@@ -197,11 +197,11 @@ const Report = () => {
     link.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(link);
-    
+
   };
 
 
-  
+
 
   useEffect(() => {
 
@@ -215,29 +215,29 @@ const Report = () => {
     };
 
     const fetchSummaryReportCsvFile = () => {
-      axios.get('http://localhost:5000/summarycsv',{responseType:'blob'})
-        .then((response)=>{
+      axios.get('http://localhost:5000/summarycsv', { responseType: 'blob' })
+        .then((response) => {
           setCsv(response.data);
-  
+
         })
-        .catch((error)=>{
+        .catch((error) => {
           console.error('Error in exporting data:', error);
-  
+
         });
-        
+
     };
 
     const fetchSummaryReportTableCsvFile = () => {
-      axios.get('http://localhost:5000/reporttablecsv',{responseType:'blob'})
-        .then((response)=>{
+      axios.get('http://localhost:5000/reporttablecsv', { responseType: 'blob' })
+        .then((response) => {
           setReportCsv(response.data);
-  
+
         })
-        .catch((error)=>{
+        .catch((error) => {
           console.error('Error in exporting data:', error);
-  
+
         });
-        
+
     };
 
     const reportData = () => {
@@ -263,7 +263,7 @@ const Report = () => {
         }
       }
     };
-    
+
 
     fetchLocationData();
     fetchSummaryReportTableCsvFile();
@@ -383,7 +383,7 @@ const Report = () => {
                 <h6 className="text-center" style={{ color: "white" }}>
                   SUMMARY REPORT
                 </h6>
-                <button onClick={handleExport}>Export Csv</button>
+                <button  onClick={handleExport}>Export Csv</button>
               </div>
               <div className='main-summary-card '>
                 <h5 className='mt-1 mb-2'>Total Location: 57</h5>
