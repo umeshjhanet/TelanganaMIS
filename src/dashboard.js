@@ -16,8 +16,8 @@ const Dashboard = () => {
   const formattedCurrentDate = format(currentDate, 'dd-MM-yyyy');
   const formattedYesterdayDate = format(yesterdayDate, 'dd-MM-yyyy');
   const formattedPreviousDate = format(previousDate, 'dd-MM-yyyy');
-  const [tableData, setTableData] = useState();
-  const[csv,setCsv]=useState('');
+  const [tableData, setTableData] = useState([]);
+  const[csv,setCsv]=useState(null);
   const[locationWiseCsv,setLocationWiseCsv]=useState();
   const dropdownRef = useRef(null);
   const [showLocation, setShowLocation] = useState(false);
@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [locationName, setLocationName] = useState('');
+  
   const [barFile, setBarFile] = useState({
     
     labels: [],
@@ -167,62 +168,120 @@ const Dashboard = () => {
   const removeLocation = (locationName) => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
-  const handleExport=()=>{
-    const headers = [
-      'Sr. No.',
-      'Location',
-      'Scanned (' + formattedPreviousDate + ')',
-      '', 
-      
-      'Scanned (' + formattedYesterdayDate + ')',
-      '', 
-     
-      'Scanned (' + formattedCurrentDate + ')',
-      '', 
-     
-      'Cumulative till date',
-      '', 
-      
-      'Remarks'
-    ];
-    
-    const csvRows = [];
-    csvRows.push(headers.join(',')); 
-    const fileImageHeaders = ['','', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
-    csvRows.push(fileImageHeaders.join(','));
-    tableData.forEach((elem, index) => {
-      
-      const rowData = [
-        index+1,
-        elem.LocationName,
-        elem.Prev_Files || '0',
-        elem.Prev_Images || '0',
-        
-        elem.Yes_Files || '0',
-        elem.Yes_Images || '0',
-        
-        elem.Today_Files || '0',
-        elem.Today_Images || '0',
-        
-        elem.Total_Files || '0',
-        elem.Total_Images || '0',
-        
-      
-      ];
-      csvRows.push(rowData.join(','));
-    });
-    const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(csvBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'export.csv');
-    document.body.appendChild(link);
-    link.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(link);
-    
+ 
+
+
+  // const handleExport = () => {
+  //   if (csv) {
+  //     const headers = [
+  //       'Sr. No.',
+  //       'Location',
+  //       'Scanned (' + formattedPreviousDate + ')',
+  //       '',
+  //       'Scanned (' + formattedYesterdayDate + ')',
+  //       '',
+  //       'Scanned (' + formattedCurrentDate + ')',
+  //       '',
+  //       'Cumulative till date',
+  //       '',
+  //       'Remarks'
+  //     ];
+  
+  //     const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
+  
+  //     const csvRows = [headers.join(',')]; // Add table headers as the first row
+  //     csvRows.push(fileImageHeaders.join(',')); // Add file image headers as the second row
+  
+  //     // Add table data rows
+  //     tableData.forEach((elem, index) => {
+  //       const rowData = [
+  //         index + 1,
+  //         elem.LocationName,
+  //         elem.Prev_Files || '0',
+  //         elem.Prev_Images || '0',
+  //         elem.Yes_Files || '0',
+  //         elem.Yes_Images || '0',
+  //         elem.Today_Files || '0',
+  //         elem.Today_Images || '0',
+  //         elem.Total_Files || '0',
+  //         elem.Total_Images || '0',
+  //       ];
+  //       csvRows.push(rowData.join(','));
+  //     });
+  
+  //     // Join all rows into a single CSV string
+  //     const csvContent = csvRows.join('\n');
+  
+  //     // Convert CSV string to a Blob
+  //     const blob = new Blob([csvContent], { type: 'text/csv' });
+  
+  //     // Create a URL for the Blob
+  //     const url = window.URL.createObjectURL(blob);
+  
+  //     // Create a temporary link and trigger the download
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.setAttribute('download', 'export.csv');
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }
+  // };
+
+  const handleExport = () => {
+    if (csv) {
+      const link = document.createElement('a');
+      link.href = csv;
+      link.setAttribute('download', 'export.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
+  const calculateColumnSum = ( ) => {
+    // Initialize variables to hold sum for each column
+    let prevFilesSum = 0;
+    let prevImagesSum = 0;
+    let yesFilesSum = 0;
+    let yesImagesSum = 0;
+    let todayFilesSum = 0;
+    let todayImagesSum = 0;
+    let totalFilesSum = 0;
+    let totalImagesSum = 0;
+
+    // Iterate over tableData array
+    tableData.forEach(elem => {
+      if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+        prevFilesSum += parseInt(elem.Prev_Files) || 0;
+        prevImagesSum += parseInt(elem.Prev_Images) || 0;
+        yesFilesSum += parseInt(elem.Yes_Files) || 0;
+        yesImagesSum += parseInt(elem.Yes_Images) || 0;
+        todayFilesSum += parseInt(elem.Today_Files) || 0;
+        todayImagesSum += parseInt(elem.Today_Images) || 0;
+        totalFilesSum += parseInt(elem.Total_Files) || 0;
+        totalImagesSum += parseInt(elem.Total_Images) || 0;
+      }
+    });
+
+    // Return an object containing the sums for each column
+    return {
+      prevFilesSum,
+      prevImagesSum,
+      yesFilesSum,
+      yesImagesSum,
+      todayFilesSum,
+      todayImagesSum,
+      totalFilesSum,
+      totalImagesSum
+    };
+  }
+
+  
+  
+
+  
+  
   useEffect(() => {
 
     const fetchLocationData = async () => {
@@ -288,15 +347,37 @@ const Dashboard = () => {
     //     .then(data => setLocations(data))
     //     .catch(error => console.error( error));
     // };
+    // const fetchExportCsvFile = () => {
+    //   axios.get('http://localhost:5000/csv',{responseType:'blob'})
+    //     .then((response)=>{
+    //       setCsv(response.data);
+    //     })
+    //     .catch((error)=>{
+    //       console.error('Error in exporting data:', error);
+    //     });
+    // };
+
+
     const fetchExportCsvFile = () => {
-      axios.get(`http://localhost:5000/csv?LocationName=?}`,{responseType:'blob'})
-        .then((response)=>{
-          handleExport(selectedLocations,response.data);
-        })
-        .catch((error)=>{
-          console.error('Error in exporting data:', error);
-        });
+      const apiUrl = locationName ? `http://localhost:5000/csv?locationName=${locationName}` : 'http://localhost:5000/csv';
+
+    axios.get(apiUrl, { responseType: 'blob' })
+      .then(response => {
+        const blob = new Blob([response.data], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        setCsv(url);
+      })
+      .catch(error => {
+        console.error('Error in exporting data:', error);
+      });
     };
+
+
+
+   
+   
+
+    
 
     
 
@@ -716,7 +797,7 @@ const Dashboard = () => {
     fetchAllYesGraphImageData(locationName);
     fetchAllGraphImageData(locationName);
     fetchTableData();
-    fetchExportCsvFile(selectedLocations);
+    fetchExportCsvFile();
     // fetchLocationData();
     
     
@@ -743,6 +824,7 @@ const Dashboard = () => {
     // return () => clearInterval(intervalID);
   }, [selectedLocations]);
 
+  const columnSums = calculateColumnSum();
 
   return (
     <>
@@ -849,8 +931,10 @@ const Dashboard = () => {
                           <th>Images</th>
                         </tr>
                       </thead>
+                    
                       <tbody style={{ color: 'gray' }}>
-                        
+                    
+                       
                         {tableData && tableData.map((elem, index) => {
                           if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
                             return (
@@ -867,6 +951,7 @@ const Dashboard = () => {
                             <td>{elem.Total_Images || '0'}</td>
                             <td></td>
                           </tr>
+                          
                           );
                         }
                         return null;
@@ -874,14 +959,15 @@ const Dashboard = () => {
 
                         <tr style={{ color: 'black' }}>
                           <td colspan="2"><strong>Total</strong></td>
-                          <td><strong></strong></td>
-                          <td><strong>52,425</strong></td>
-                          <td><strong>6,128</strong></td>
-                          <td><strong>686,818</strong></td>
-                          <td><strong>0</strong></td>
-                          <td><strong>0</strong></td>
-                          <td><strong>304,442</strong></td>
-                          <td><strong>53,353,729</strong></td>
+                         
+                          <td><strong>{columnSums.prevFilesSum}</strong></td>
+        <td><strong>{columnSums.prevImagesSum}</strong></td>
+        <td><strong>{columnSums.yesFilesSum}</strong></td>
+        <td><strong>{columnSums.yesImagesSum}</strong></td>
+        <td><strong>{columnSums.todayFilesSum}</strong></td>
+        <td><strong>{columnSums.todayImagesSum}</strong></td>
+        <td><strong>{columnSums.totalFilesSum}</strong></td>
+        <td><strong>{columnSums.totalImagesSum}</strong></td>
                           <td></td>
                         </tr>
                       </tbody>

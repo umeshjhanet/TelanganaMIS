@@ -15,7 +15,7 @@ import User_Form from './User_Form';
 import User_List from './User_List';
 import GroupManager from './groupManager';
 import UserRole from './userRole';
-import UploadDatabase from './Components/uploadDatabase';
+import UploadDatabase from './uploadDatabase';
 import UpdateUserModal from './Components/UpdateUserModal';
 
 ReactDOM.render(

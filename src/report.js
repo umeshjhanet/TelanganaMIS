@@ -18,8 +18,8 @@ const Report = () => {
   const [searchInput, setSearchInput] = useState('');
   const [summary, setSummary] = useState();
   const [report, setReport] = useState();
-  const [csv, setCsv] = useState('');
-  const [reportCsv, setReportCsv] = useState('');
+  const [csv, setCsv] = useState(null);
+  const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
 
   const handleLocation = (locationName) => {
@@ -36,175 +36,197 @@ const Report = () => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
 
+  // const handleExport = () => {
+  //   const headers = [
+  //     'Sr. No.',
+  //     'Location',
+  //     'Collection of Records',
+  //     '',
+  //     'Scanning ADF',
+  //     '',
+  //     'ImageQC',
+  //     '',
+  //     'Document Classification',
+  //     '',
+  //     'Indexing',
+  //     '',
+  //     'CBSLQA',
+  //     '',
+  //     'Export PDF',
+  //     '',
+  //     'Client QA',
+  //     '',
+  //     'CSV Generation',
+  //     '',
+  //     'Inventory Out',
+
+  //   ];
+
+  //   const csvRows = [];
+  //   csvRows.push(headers.join(','));
+  //   const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
+  //     'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
+  //   csvRows.push(fileImageHeaders.join(','));
+  //   summary.forEach((elem, index) => {
+  //     const rowData = [
+  //       index + 1,
+  //       elem.TotalLocation,
+  //       elem.CollectionFiles || '0',
+  //       elem.CollectionImages || '0',
+
+  //       elem.ScannedFiles || '0',
+  //       elem.ScannedImages || '0',
+
+  //       elem.QCFiles || '0',
+  //       elem.QCImages || '0',
+
+  //       elem.FlaggingFiles || '0',
+  //       elem.FlaggingImages || '0',
+
+  //       elem.IndexingFiles || '0',
+  //       elem.IndexingImages || '0',
+
+  //       elem.CBSL_QAFiles || '0',
+  //       elem.CBSL_QAImages || '0',
+
+  //       elem.Export_PdfFiles || '0',
+  //       elem.Export_PdfImages || '0',
+
+  //       elem.Client_QA_AcceptedFiles || '0',
+  //       elem.Client_QA_AcceptedImages || '0',
+
+  //       '0',
+  //       '0',
+
+  //       '0',
+  //       '0',
+
+
+  //     ];
+
+  //     csvRows.push(rowData.join(','));
+  //   });
+  //   const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+  //   const url = window.URL.createObjectURL(csvBlob);
+  //   const link = document.createElement('a');
+  //   link.href = url;
+  //   link.setAttribute('download', 'export.csv');
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   window.URL.revokeObjectURL(url);
+  //   document.body.removeChild(link);
+
+  // };
+
   const handleExport = () => {
-    const headers = [
-      'Sr. No.',
-      'Location',
-      'Collection of Records',
-      '',
-      'Scanning ADF',
-      '',
-      'ImageQC',
-      '',
-      'Document Classification',
-      '',
-      'Indexing',
-      '',
-      'CBSLQA',
-      '',
-      'Export PDF',
-      '',
-      'Client QA',
-      '',
-      'CSV Generation',
-      '',
-      'Inventory Out',
-
-    ];
-
-    const csvRows = [];
-    csvRows.push(headers.join(','));
-    const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
-      'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
-    csvRows.push(fileImageHeaders.join(','));
-    summary.forEach((elem, index) => {
-      const rowData = [
-        index + 1,
-        elem.TotalLocation,
-        elem.CollectionFiles || '0',
-        elem.CollectionImages || '0',
-
-        elem.ScannedFiles || '0',
-        elem.ScannedImages || '0',
-
-        elem.QCFiles || '0',
-        elem.QCImages || '0',
-
-        elem.FlaggingFiles || '0',
-        elem.FlaggingImages || '0',
-
-        elem.IndexingFiles || '0',
-        elem.IndexingImages || '0',
-
-        elem.CBSL_QAFiles || '0',
-        elem.CBSL_QAImages || '0',
-
-        elem.Export_PdfFiles || '0',
-        elem.Export_PdfImages || '0',
-
-        elem.Client_QA_AcceptedFiles || '0',
-        elem.Client_QA_AcceptedImages || '0',
-
-        '0',
-        '0',
-
-        '0',
-        '0',
-
-
-      ];
-
-      csvRows.push(rowData.join(','));
-    });
-    const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(csvBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'export.csv');
-    document.body.appendChild(link);
-    link.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(link);
-
+    if (csv) {
+      const link = document.createElement('a');
+      link.href = csv;
+      link.setAttribute('download', 'export.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
+  // const handleReportCsv = () => {
+  //   const headers = [
+  //     'Sr. No.',
+  //     'Location',
+  //     'Collection of Records',
+  //     '',
+  //     'Scanning ADF',
+  //     '',
+  //     'ImageQC',
+  //     '',
+  //     'Document Classification',
+  //     '',
+  //     'Indexing',
+  //     '',
+  //     'CBSLQA',
+  //     '',
+  //     'Export PDF',
+  //     '',
+  //     'Client QA',
+  //     '',
+  //     'CSV Generation',
+  //     '',
+  //     'Inventory Out',
+
+  //   ];
+
+  //   const csvRows = [];
+  //   csvRows.push(headers.join(','));
+  //   const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
+  //     'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
+  //   csvRows.push(fileImageHeaders.join(','));
+  //   report.forEach((elem, index) => {
+  //     const rowData = [
+  //       index + 1,
+  //       elem.LocationName,
+  //       elem.CollectionFiles || '0',
+  //       elem.CollectionImages || '0',
+
+  //       elem.ScannedFiles || '0',
+  //       elem.ScannedImages || '0',
+
+  //       elem.QCFiles || '0',
+  //       elem.QCImages || '0',
+
+  //       elem.FlaggingFiles || '0',
+  //       elem.FlaggingImages || '0',
+
+  //       elem.IndexingFiles || '0',
+  //       elem.IndexingImages || '0',
+
+  //       elem.CBSL_QAFiles || '0',
+  //       elem.CBSL_QAImages || '0',
+
+  //       elem.Export_PdfFiles || '0',
+  //       elem.Export_PdfImages || '0',
+
+  //       elem.Client_QA_AcceptedFiles || '0',
+  //       elem.Client_QA_AcceptedImages || '0',
+
+  //       '0',
+  //       '0',
+
+  //       '0',
+  //       '0',
+
+
+  //     ];
+
+  //     csvRows.push(rowData.join(','));
+  //   });
+  //   const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+  //   const url = window.URL.createObjectURL(csvBlob);
+  //   const link = document.createElement('a');
+  //   link.href = url;
+  //   link.setAttribute('download', 'export.csv');
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   window.URL.revokeObjectURL(url);
+  //   document.body.removeChild(link);
+
+  // };
 
   const handleReportCsv = () => {
-    const headers = [
-      'Sr. No.',
-      'Location',
-      'Collection of Records',
-      '',
-      'Scanning ADF',
-      '',
-      'ImageQC',
-      '',
-      'Document Classification',
-      '',
-      'Indexing',
-      '',
-      'CBSLQA',
-      '',
-      'Export PDF',
-      '',
-      'Client QA',
-      '',
-      'CSV Generation',
-      '',
-      'Inventory Out',
-
-    ];
-
-    const csvRows = [];
-    csvRows.push(headers.join(','));
-    const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
-      'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
-    csvRows.push(fileImageHeaders.join(','));
-    report.forEach((elem, index) => {
-      const rowData = [
-        index + 1,
-        elem.LocationName,
-        elem.CollectionFiles || '0',
-        elem.CollectionImages || '0',
-
-        elem.ScannedFiles || '0',
-        elem.ScannedImages || '0',
-
-        elem.QCFiles || '0',
-        elem.QCImages || '0',
-
-        elem.FlaggingFiles || '0',
-        elem.FlaggingImages || '0',
-
-        elem.IndexingFiles || '0',
-        elem.IndexingImages || '0',
-
-        elem.CBSL_QAFiles || '0',
-        elem.CBSL_QAImages || '0',
-
-        elem.Export_PdfFiles || '0',
-        elem.Export_PdfImages || '0',
-
-        elem.Client_QA_AcceptedFiles || '0',
-        elem.Client_QA_AcceptedImages || '0',
-
-        '0',
-        '0',
-
-        '0',
-        '0',
-
-
-      ];
-
-      csvRows.push(rowData.join(','));
-    });
-    const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(csvBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'export.csv');
-    document.body.appendChild(link);
-    link.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(link);
-
+    if (reportCsv) {
+      const link = document.createElement('a');
+      link.href = reportCsv;
+      link.setAttribute('download', 'export.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
-
+ 
 
 
   useEffect(() => {
 
+    const locationName = selectedLocations;
 
     const summaryData = () => {
       axios.get("http://localhost:5000/summary")
@@ -214,30 +236,57 @@ const Report = () => {
         .catch(error => console.error(error));
     };
 
+    // const fetchSummaryReportCsvFile = () => {
+    //   axios.get('http://localhost:5000/summarycsv', { responseType: 'blob' })
+    //     .then((response) => {
+    //       setCsv(response.data);
+
+    //     })
+    //     .catch((error) => {
+    //       console.error('Error in exporting data:', error);
+
+    //     });
+
+    // };
+
     const fetchSummaryReportCsvFile = () => {
-      axios.get('http://localhost:5000/summarycsv', { responseType: 'blob' })
-        .then((response) => {
-          setCsv(response.data);
+      const apiUrl = locationName ? `http://localhost:5000/summarycsv?locationName=${locationName}` : 'http://localhost:5000/summarycsv';
 
-        })
-        .catch((error) => {
-          console.error('Error in exporting data:', error);
-
-        });
-
+    axios.get(apiUrl, { responseType: 'blob' })
+      .then(response => {
+        const blob = new Blob([response.data], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        setCsv(url);
+      })
+      .catch(error => {
+        console.error('Error in exporting data:', error);
+      });
     };
 
+    // const fetchSummaryReportTableCsvFile = () => {
+    //   axios.get('http://localhost:5000/reporttablecsv', { responseType: 'blob' })
+    //     .then((response) => {
+    //       setReportCsv(response.data);
+
+    //     })
+    //     .catch((error) => {
+    //       console.error('Error in exporting data:', error);
+
+    //     });
+
+    // };
     const fetchSummaryReportTableCsvFile = () => {
-      axios.get('http://localhost:5000/reporttablecsv', { responseType: 'blob' })
-        .then((response) => {
-          setReportCsv(response.data);
+      const apiUrl = locationName ? `http://localhost:5000/reporttablecsv?locationName=${locationName}` : 'http://localhost:5000/reporttablecsv';
 
-        })
-        .catch((error) => {
-          console.error('Error in exporting data:', error);
-
-        });
-
+    axios.get(apiUrl, { responseType: 'blob' })
+      .then(response => {
+        const blob = new Blob([response.data], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        setReportCsv(url);
+      })
+      .catch(error => {
+        console.error('Error in exporting data:', error);
+      });
     };
 
     const reportData = () => {
@@ -250,7 +299,8 @@ const Report = () => {
         try {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:5000/reportLocationWiseTable?locationname=?`)
+            axios.get(`http://localhost:5000/reportLocationWiseTable?locationname=${location}`)
+            
           ));
           const locationData = locationDataResponses.map(response => response.data);
           setLocationData(locationData);
@@ -264,12 +314,39 @@ const Report = () => {
       }
     };
 
+    const fetchReportData = async () => {
+        let apiUrl = 'http://localhost:5000/summarylocationwise';
+      
+        if (selectedLocations && selectedLocations.length > 0) {
+          const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
+          apiUrl += `?${locationQuery}`;
+        }
+      
+        axios.get(apiUrl)
+          .then(response => {
+            const apiData = response.data;
+            if (!apiData || apiData.length === 0) {
+              console.error('No data received from the API');
+              return;
+            }
+          })
+           .catch (error =>{
+            console.error('Error fetching location data:', error);
+           
+          })
+        
+    };
+
+    
+    
+    
 
     fetchLocationData();
     fetchSummaryReportTableCsvFile();
     fetchSummaryReportCsvFile();
     summaryData();
     reportData();
+    fetchLocationData();
 
     const intervalId = setInterval(() => {
       fetchLocationData();
@@ -277,6 +354,7 @@ const Report = () => {
       reportData();
       fetchSummaryReportCsvFile();
       fetchSummaryReportTableCsvFile();
+      fetchReportData();
     }, 5000);
 
 
@@ -389,7 +467,8 @@ const Report = () => {
                 <h5 className='mt-1 mb-2'>Total Location: 57</h5>
                 <div className='row'>
                   {summary && summary.map((elem, index) => {
-                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationId)) {
+                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                   
                       return (
                         <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
                           <div className='summary-card mt-3'>
@@ -402,9 +481,11 @@ const Report = () => {
                       );
                     }
                     return null;
+                   
                   })}
                   {summary && summary.map((elem, index) => {
-                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                    
                       return (
                         <div className='col-lg-2 col-md-4 col-sm-6'>
                           <div className='summary-card mt-3'>
@@ -415,10 +496,13 @@ const Report = () => {
                           </div>
                         </div>
                       );
-                    }
-                    return null;
+                      }
+                      return null;
+                   
                   })}
-                  {summary && summary.map((elem, index) => (
+                  {summary && summary.map((elem, index) => {
+                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      return(
                     <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -427,8 +511,13 @@ const Report = () => {
                         <p className='text-center'>Total Files: {elem.QCFiles}<br />Total Images: {elem.QCImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
+                      )
+                     }
+                     return null;
+                  })}
+                  {summary && summary.map((elem, index) => {
+                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      return(
                     <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -437,8 +526,13 @@ const Report = () => {
                         <p className='text-center'>Total Files: {elem.FlaggingFiles}<br />Total Images: {elem.FlaggingImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
+                      )
+                     }
+                     return null;
+                    })}
+                  {summary && summary.map((elem, index) => {
+                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      return(
                     <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -447,8 +541,13 @@ const Report = () => {
                         <p className='text-center'>Total Files: {elem.IndexingFiles}<br />Total Images: {elem.IndexingImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
+                      )
+                     }
+                     return null;
+                    })}
+                  {summary && summary.map((elem, index) => {
+                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      return (
                     <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -457,8 +556,13 @@ const Report = () => {
                         <p className='text-center'>Total Files: {elem.CBSL_QAFiles}<br />Total Images: {elem.CBSL_QAImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
+                      )
+                     }
+                      return null;
+                    })}
+                  {summary && summary.map((elem, index) => {
+                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      return(
                     <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -467,8 +571,13 @@ const Report = () => {
                         <p className='text-center'>Total Files: {elem.Export_PdfFiles}<br />Total Images: {elem.Export_PdfImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
+                      )
+                     }
+                     return null;
+                    })}
+                  {summary && summary.map((elem, index) => {
+                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      return(
                     <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -477,8 +586,13 @@ const Report = () => {
                         <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles}<br />Total Images: {elem.Client_QA_AcceptedImages}</p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
+                      )
+                     }
+                     return null;
+                    })}
+                  {summary && summary.map((elem, index) => {
+                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      return(
                     <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -491,8 +605,14 @@ const Report = () => {
                         </p>
                       </div>
                     </div>
-                  ))}
-                  {summary && summary.map((elem, index) => (
+                      )
+                     }
+                     return null;
+                    })}
+                  {summary && summary.map((elem, index) => {
+
+                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                      return(
                     <div className='col-lg-2 col-md-4 col-sm-6'>
                       <div className='summary-card mt-3'>
                         <div className='summary-title'>
@@ -505,7 +625,10 @@ const Report = () => {
                         </p>
                       </div>
                     </div>
-                  ))}
+                      )
+                    }
+                    return null;
+                  })}
                 </div>
               </div>
             </div>

@@ -31,6 +31,7 @@ const User_Form = () => {
   const [selectedReportingId, setSelectedReportingId] = useState('');
   const [selectedReporting, setSelectedReporting] = useState(null);
   const [showReporting, setShowReporting] = useState(false);
+  const [passwordMatch, setPasswordMatch] = useState(true);
 
 const [formData,setFormData]=useState({
     user_email_id:'',
@@ -83,12 +84,12 @@ const [formData,setFormData]=useState({
       .then(data => setStorage(data))
       .catch(error => console.error(error))
     }
-    const fetchEmail = () => {
-      fetch("http://localhost:5000/user_email")
-      .then(response => response.json())
-      .then(data => setEmail(data))
-      .catch(error => console.error(error))
-    }
+    // const fetchEmail = () => {
+    //   fetch("http://localhost:5000/user_email")
+    //   .then(response => response.json())
+    //   .then(data => setEmail(data))
+    //   .catch(error => console.error(error))
+    // }
    
    
     const fetchReporting = () => {
@@ -98,7 +99,7 @@ const [formData,setFormData]=useState({
       .catch(error => console.error(error))
     }
     fetchGroup();
-    fetchEmail();
+    // fetchEmail();
     fetchLocation();
     fetchPrivilege();
     fetchStorage();
@@ -115,7 +116,7 @@ const [formData,setFormData]=useState({
   const handleGroupDropdown = () => {
     setGroupDropdown(!groupDropdown);
   }
-
+ 
   const handleLocationDropdown=()=>{
     setLocationDropdown(!locationDropdown);
   }
@@ -136,76 +137,58 @@ const [formData,setFormData]=useState({
     setSelectedLocation(name);
     setSelectedLocationId(parseInt(id));
     setShowLocation(!showLocation);
+    setLocationDropdown(false);
   };
   const handleSelectGroup = (id, name) => {
     setSelectedGroup(name);
     setSelectedGroupId(parseInt(id));
-    setShowGroup(!showLocation);
+    setShowGroup(!showGroup);
+    setGroupDropdown(false);
   };
   const handleSelectPrivilege = (id, name) => {
     setSelectedPrivilege(name);
     setSelectedPrivilegeId(parseInt(id));
-    setShowPrivilege(!showLocation);
+    setShowPrivilege(!showPrivilege);
+    setPrivilegeDropdown(false);
   };
   const handleSelectStorage = (id, name) => {
     setSelectedStorage(name);
     setSelectedStorageId(parseInt(id));
-    setShowStorage(!showLocation);
+    setShowStorage(!showStorage);
+    setStorageDropdown(false);
   };
   const handleSelectReporting = (id, name) => {
     setSelectedReporting(name);
     setSelectedReportingId(parseInt(id));
-    setShowReporting(!showLocation);
+    setShowReporting(!showReporting);
+    setReportingDropdown(false)
   };
 
   console.log(formData)
 
-//   const handleFormSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
    
-//     e.preventDefault();
-//   if (formData.password !== formData.confirmPassword) {
-//       alert("Passwords do not match");
-//       return;
-//     }
-//    if(!email)
-//    {
-//     try {
-//       const response = await axios.post("http://localhost:5000/createuser", formData);
-//       console.log("Post created:", response.data);
-//     }
-//     catch (error) {
-//       console.error("Error creating post:", error);
-//     }
-//   }
-//   else{
-//     alert("email already exist");
-//   }
-// }
-
-const handleFormSubmit = async (e) => {
-  e.preventDefault();
-
-  // Check if password and confirmPassword match
+    e.preventDefault();
   if (formData.password !== formData.confirmPassword) {
-    alert("Passwords do not match");
-    return;
+      alert("Passwords do not match");
+      return;
+    }
+    try {
+      const response = await axios.post("http://localhost:5000/createuser", formData);
+      console.log("Post created:", response.data);
+    } catch (error) {
+     
+      if (error.response && error.response.status === 409) {
+        alert("Email already exists");
+      } else {
+        console.error("Error creating post:", error);
+        alert("Email already exists");
+      }
+    }
+  
   }
 
-  // Check if email is already in use
-  if (email.includes(email)) {
-    alert("Email already exists");
-    return;
-  }
 
-  // Proceed with form submission
-  try {
-    const response = await axios.post("http://localhost:5000/createuser", formData);
-    console.log("Post created:", response.data);
-  } catch (error) {
-    console.error("Error creating post:", error);
-    alert("Error creating post");
-  }
-};
 
 
   const handleInputChange = (e) => {
@@ -322,11 +305,11 @@ const handleFormSubmit = async (e) => {
 
                     )}
                     <label className='mt-1'>Select Reporting To</label><br />
-                    <input type='text' placeholder='Select Reporting To' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedReporting || ''} onClick={handleReportingDropdown} onChange={handleInputChange} /><br />
+                    <input type='text' placeholder='Select Reporting To' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedReporting || ''} onClick={handleReportingDropdown} onChange={handleInputChange} />
                     {reportingDropdown && (
                       <div className='group-dropdown'>
                         {reporting && reporting.map((elem,index)=>(
-                          <div key={index} onClick={() => handleSelectReporting(elem.user_id, `${elem.first_name} ${elem.last_name} (${elem.user_email_id})`)}>
+                          <div key={index} className='group-card' onClick={() => handleSelectReporting(elem.user_id, `${elem.first_name} ${elem.last_name} (${elem.user_email_id})`)}>
                             <p>{elem.first_name} {elem.last_name} ({elem.user_email_id})</p>
                           </div>
                         ))}

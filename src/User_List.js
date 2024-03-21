@@ -109,7 +109,9 @@ const User_List = () => {
       axios
         .get("http://localhost:5000/privilege")
         .then((response) => {
+          
           setPrivileges(response.data);
+          console.log("role",response.data)
         })
         .catch((error) => {
           console.error("Error fetching privileges:", error);
@@ -140,6 +142,10 @@ const User_List = () => {
   //     const location = location.find(loc => loc.locations === locations);
   //     return location ? location.locationname : '';
   //   }
+
+  // const getRoleById=(roles)=>{
+  //   return roles.role_id || '';
+  // }
 
   const getLocationNameById = (locations) => {
     const locationArray = locations.split(",");
@@ -207,7 +213,7 @@ const User_List = () => {
                       <td>{elem.designation}</td>
                       <td>{elem.user_email_id}</td>
                       <td>{elem.phone_no}</td>
-                      <td>{elem.user_role}</td>
+                      <td>{privileges.user_role}</td>
                       <td>{getLocationNameById(elem.locations)}</td>
 
                       <td>
