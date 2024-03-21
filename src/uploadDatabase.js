@@ -14,35 +14,35 @@ const UploadDatabase = () => {
 
     const handleSubmit = async () => {
         if (!file) {
-          setMessage('Please select a file');
-          return;
+            setMessage('Please select a file');
+            return;
         }
-      
+
         setUploading(true);
         setMessage('Uploading file...');
-      
+
         const currentDate = new Date();
         const dateString = currentDate.toISOString().replace(/:/g, '-').replace(/\..+/, '');
         const fileName = `${file.name}_${dateString}.${file.name.split('.').pop()}`;
-      
+
         const formData = new FormData();
         formData.append('file', file, fileName);
-      
+
         try {
-          const response = await fetch('http://localhost:5000/upload', {
-            method: 'POST',
-            body: formData,
-          });
-      
-          // Handle response from server
-          setMessage('File uploaded successfully');
+            const response = await fetch('http://localhost:5000/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            // Handle response from server
+            setMessage('File uploaded successfully');
         } catch (error) {
-          console.error('Error uploading file:', error);
-          setMessage('Error uploading file');
+            console.error('Error uploading file:', error);
+            setMessage('Error uploading file');
         } finally {
-          setUploading(false);
+            setUploading(false);
         }
-      };
+    };
 
     return (
         <>
@@ -63,18 +63,18 @@ const UploadDatabase = () => {
                             <h5>SELECT FILE:</h5>
                             <div className='row'>
                                 <div className='col-3'>
-                                <input
-                                    type="file"
-                                    onChange={handleFileChange}
-                                />
+                                    <input
+                                        type="file"
+                                        onChange={handleFileChange}
+                                    />
                                 </div>
-                               <div className='col-3'>
-                               <button className='btn add-btn' onClick={handleSubmit} disabled={uploading}>
-                                    {uploading ? 'Uploading...' : 'Upload'}
-                                </button>
-                                <p>{message}</p>
-                               </div>
-                                
+                                <div className='col-3'>
+                                    <button className='btn add-btn' onClick={handleSubmit} disabled={uploading}>
+                                        {uploading ? 'Uploading...' : 'Upload'}
+                                    </button>
+                                    <p>{message}</p>
+                                </div>
+
                             </div>
                         </div>
                     </div>

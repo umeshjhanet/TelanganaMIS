@@ -105,7 +105,7 @@ const File = () => {
                                 <button className='btn search-btn'>Search</button>
                             </div>
                             
-                                <table className='table-bordered user-tables mt-3'>
+                                <table className='table-bordered table-hover user-tables mt-3'>
                                     <thead style={{backgroundColor:'#4BC0C0', color:'white'}}>
                                         <tr>
                                             <th style={{fontWeight:'500'}}>Sr.No.</th>
