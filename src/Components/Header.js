@@ -66,7 +66,6 @@ const Header = () => {
 
         {showSideBar ? (
           <>
-            {/* <div className='container-fluid'> */}
             <div className='row'>
               <div className='col-1'>
                 <div className='shrink-sidebar'>
@@ -79,17 +78,14 @@ const Header = () => {
               </div>
               <div className='col-11'></div>
             </div>
-            {/* </div> */}
-
           </>
         ) : (
           <>
-            <div className='container-fluid'>
-              <div className='row'>
+              <div className='row' style={{marginLeft:'0'}}>
                 <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
                   <div className='sidebar'>
-                    <div className='row header-image' >
-                      <img src='ezeefile.png' />
+                    <div className='row header-image'>
+                      <img src='ezeefile.png'/>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
@@ -121,15 +117,10 @@ const Header = () => {
                 <hr/>
                 </>
               )}
-
                   </div>
                 </div>
-                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-
-                </div>
+                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px'}}></div>
               </div>
-            </div>
-
           </>
         )}
       </div>

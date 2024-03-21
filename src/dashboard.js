@@ -838,7 +838,7 @@ const Dashboard = () => {
               <div className='row'>
                 <p className='mt-1 fw-bold' style={{ color: '#4BC0C0', fontSize: '20px' }}>Dashboard</p>
               </div>
-              <div className='row mt-2 me-1 search-report-card'>
+              <div className='row  mt-2  search-report-card'>
               <div className='col-md-4 col-sm-12'>
                 <div
                   ref={dropdownRef}
@@ -872,12 +872,12 @@ const Dashboard = () => {
               <div className='col-md-2 col-sm-12'>
                 <button className='btn search-btn' >Search</button>
               </div>
+              <div className='col-md-6'></div>
             </div>
               <div className='row mt-2'>
                 <div className='card'>
                   <h4 className='ms-1'>SCANNING REPORT OF LAST 30 DAYS</h4>
                   <h5 className='ms-1'>All Location: Images</h5>
-                 
                   <CCard>
                     <CCardBody>
                       <CChartBar
@@ -885,10 +885,8 @@ const Dashboard = () => {
                         labels="months"
                       />
                     </CCardBody>
-                  </CCard>
-                
+                  </CCard>               
                   <div>
-
                     {scannedData && (
                       <BarChart
                         className='scanned-chart'
@@ -1119,11 +1117,6 @@ const Dashboard = () => {
                   </CCardBody>
                 </CCard>
               </div>
-
-
-              {/* <canvas id="barcasefile" height="449" width="642" style={{width: '642px',height: '449px;'}}></canvas> */}
-            {/* </div> */}
-
           </div>
         </div>
       </div>
