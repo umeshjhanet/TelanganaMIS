@@ -5,6 +5,7 @@ import { SummaryData } from './Components/SummaryData';
 import Header from './Components/Header';
 import Footer from './Footer';
 import axios from 'axios';
+import { MdFileDownload } from "react-icons/md";
 
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -374,7 +375,7 @@ const Report = () => {
                 className="card"
                 style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
               >
-                <h6 className="text-center" style={{ color: "white" }}>
+                <h6 className="" style={{ color: "white" }}>
                   Dashboard / Site Wise Project Summary Report
                 </h6>
               </div>
@@ -454,14 +455,13 @@ const Report = () => {
               </div>
             </div>
             <div className="row mt-3 me-1">
-              <div
-                className="card"
-                style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
-              >
-                <h6 className="text-center" style={{ color: "white" }}>
-                  SUMMARY REPORT
-                </h6>
-                <button  onClick={handleExport}>Export Csv</button>
+              <div className='row' style={{ padding: '5px', backgroundColor: '#4BC0C0', paddingTop: '15px',marginLeft:'0' }}>
+                <div className='col-10' >
+                  <h6 className='' style={{ color: 'white' }}>SUMMARY REPORT</h6>
+                </div>
+                <div className='col-2'>
+                  <h6 style={{ color: 'white' }} onClick={handleExport}> <MdFileDownload style={{ fontSize: '20px' }} />Export CSV</h6>
+                </div>
               </div>
               <div className='main-summary-card '>
                 <h5 className='mt-1 mb-2'>Total Location: 57</h5>
@@ -634,22 +634,20 @@ const Report = () => {
             </div>
             <div className="row mt-3 me-1">
               <div className="table-card">
-                <div className="row">
-                  <div
-                    className="card"
-                    style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
-                  >
-                    <h6 className="text-center" style={{ color: "white" }}>
-                      LOCATION WISE DETAILED CUMULATIVE REPORT
-                    </h6>
-                    <button onClick={handleReportCsv}>Export csv</button>
-                  </div>
+                
+                <div className='row' style={{ padding: '5px', backgroundColor: '#4BC0C0', paddingTop: '15px' }}>
+                <div className='col-10' >
+                  <h6 className='' style={{ color: 'white' }}>LOCATION WISE DETAILED CUMULATIVE REPORT</h6>
                 </div>
+                <div className='col-2'>
+                  <h6 style={{ color: 'white' }} onClick={handleReportCsv}> <MdFileDownload style={{ fontSize: '20px' }} />Export CSV</h6>
+                </div>
+              </div>
                 <div
                   className="row mt-5 ms-2 me-2"
                   style={{ overflowX: "auto" }}
                 >
-                  <table class="table table-hover table-bordered table-responsive table-striped data-table">
+                  <table class="table table-hover table-bordered table-responsive table-striped data-table" >
                     <thead
                       style={{ color: "white", backgroundColor: "#4BC0C0" }}
                     >
@@ -667,7 +665,7 @@ const Report = () => {
                         <th colSpan="2">Inventory Out</th>
                         <th rowspan="2">Document Wise</th>
                       </tr>
-                      <tr>
+                      <tr style={{ color: "white", backgroundColor: "#4BC0C0" }}>
                         <th>Files</th>
                         <th>Images</th>
                         <th>Files</th>
@@ -690,12 +688,12 @@ const Report = () => {
                         <th>Images</th>
                       </tr>
                     </thead>
-                    <tbody style={{ color: 'black', minHeight: '600px', overflowY: 'auto' }} >
+                    <tbody className="scrollable" style={{ color: 'black',height:'200px' }} >
 
                       {report && report.map((elem, index) => {
                         if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
                           return (
-                            <tr key={index}>
+                            <tr key={index} style={{backgroundColor:'white'}}>
                               <td>{elem.LocationName}</td>
                               <td>{elem.CollectionFiles || '0'}</td>
                               <td>{elem.CollectionImages || '0'}</td>

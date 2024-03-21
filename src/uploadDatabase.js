@@ -60,7 +60,7 @@ const UploadDatabase = () => {
                             </h6>
                         </div>
                         <div className='user-form-card mt-3'>
-                            <h5>SELECTED FOLDER:</h5>
+                            <h5>SELECT FILE:</h5>
                             <div className='row'>
                                 <div className='col-3'>
                                 <input
