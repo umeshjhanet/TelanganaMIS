@@ -317,7 +317,7 @@ const Dashboard = () => {
             console.error('No data received from the API');
             return;
           }
-    
+    console.log("Api Data",apiData);
           const labels = Object.keys(apiData[0]).filter(label => label !== 'locationid' && label !== 'LocationName');
           const datasets = apiData.map(locationData => {
             return {
