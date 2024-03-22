@@ -208,44 +208,47 @@ const Report = () => {
 
 
     const summaryData = () => {
-      axios.get("http://localhost:5000/summary")
-        .then
-        (response => setSummary(response.data))
-
-        .catch(error => console.error(error));
+      axios.get("http://localhost:5000/summary", {
+        params: {
+          startDate: startDate.toISOString(), // Convert to ISO string format
+          endDate: endDate.toISOString()
+        }
+      })
+      .then(response => setSummary(response.data))
+      .catch(error => console.error(error));
     };
 
     const fetchSummaryReportCsvFile = () => {
       axios.get('http://localhost:5000/summarycsv', { responseType: 'blob' })
         .then((response) => {
           setCsv(response.data);
-
         })
         .catch((error) => {
           console.error('Error in exporting data:', error);
-
         });
-
     };
 
     const fetchSummaryReportTableCsvFile = () => {
       axios.get('http://localhost:5000/reporttablecsv', { responseType: 'blob' })
         .then((response) => {
           setReportCsv(response.data);
-
         })
         .catch((error) => {
           console.error('Error in exporting data:', error);
-
         });
-
     };
 
     const reportData = () => {
-      axios.get("http://localhost:5000/reportTable")
-        .then(response => setReport(response.data))
-        .catch(error => console.error(error));
+      axios.get("http://localhost:5000/reportLocationWiseTable", {
+        params: {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString()
+        }
+      })
+      .then(response => setReport(response.data))
+      .catch(error => console.error(error));
     };
+    
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
         try {
@@ -265,7 +268,6 @@ const Report = () => {
       }
     };
 
-
     fetchLocationData();
     fetchSummaryReportTableCsvFile();
     fetchSummaryReportCsvFile();
@@ -282,7 +284,7 @@ const Report = () => {
 
 
     return () => clearInterval(intervalId);
-  }, [selectedLocations]);
+  }, [selectedLocations,startDate, endDate]);
 
 
   return (

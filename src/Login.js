@@ -69,7 +69,6 @@ const Login = () => {
          setType('password')
       }
    }
-  
 
   return (
     <div className="">

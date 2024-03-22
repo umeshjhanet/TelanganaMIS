@@ -220,8 +220,8 @@ const User_List = () => {
                       <td>{getLocationNameById(elem.locations)}</td>
 
                       <td>
-                        <BiEdit onClick={handleOpenModal} />
-                        / <RiDeleteBin5Line onClick={() => handleDeleteUser(elem.user_id)} />
+                        <BiEdit onClick={handleOpenModal} style={{color:'blue', fontSize:'20px'}}/>
+                        / <RiDeleteBin5Line onClick={() => handleDeleteUser(elem.user_id)}  style={{color:'red', fontSize:'20px'}}/>
                       </td>
                     </tr>
                   ))}
