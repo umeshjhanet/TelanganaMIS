@@ -170,65 +170,6 @@ const Dashboard = () => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
  
-
-
-  // const handleExport = () => {
-  //   if (csv) {
-  //     const headers = [
-  //       'Sr. No.',
-  //       'Location',
-  //       'Scanned (' + formattedPreviousDate + ')',
-  //       '',
-  //       'Scanned (' + formattedYesterdayDate + ')',
-  //       '',
-  //       'Scanned (' + formattedCurrentDate + ')',
-  //       '',
-  //       'Cumulative till date',
-  //       '',
-  //       'Remarks'
-  //     ];
-  
-  //     const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
-  
-  //     const csvRows = [headers.join(',')]; // Add table headers as the first row
-  //     csvRows.push(fileImageHeaders.join(',')); // Add file image headers as the second row
-  
-  //     // Add table data rows
-  //     tableData.forEach((elem, index) => {
-  //       const rowData = [
-  //         index + 1,
-  //         elem.LocationName,
-  //         elem.Prev_Files || '0',
-  //         elem.Prev_Images || '0',
-  //         elem.Yes_Files || '0',
-  //         elem.Yes_Images || '0',
-  //         elem.Today_Files || '0',
-  //         elem.Today_Images || '0',
-  //         elem.Total_Files || '0',
-  //         elem.Total_Images || '0',
-  //       ];
-  //       csvRows.push(rowData.join(','));
-  //     });
-  
-  //     // Join all rows into a single CSV string
-  //     const csvContent = csvRows.join('\n');
-  
-  //     // Convert CSV string to a Blob
-  //     const blob = new Blob([csvContent], { type: 'text/csv' });
-  
-  //     // Create a URL for the Blob
-  //     const url = window.URL.createObjectURL(blob);
-  
-  //     // Create a temporary link and trigger the download
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.setAttribute('download', 'export.csv');
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   }
-  // };
-
   const handleExport = () => {
     if (csv) {
       const link = document.createElement('a');
@@ -348,15 +289,7 @@ const Dashboard = () => {
     //     .then(data => setLocations(data))
     //     .catch(error => console.error( error));
     // };
-    // const fetchExportCsvFile = () => {
-    //   axios.get('http://localhost:5000/csv',{responseType:'blob'})
-    //     .then((response)=>{
-    //       setCsv(response.data);
-    //     })
-    //     .catch((error)=>{
-    //       console.error('Error in exporting data:', error);
-    //     });
-    // };
+    
 
 
     const fetchExportCsvFile = () => {
@@ -372,16 +305,6 @@ const Dashboard = () => {
         console.error('Error in exporting data:', error);
       });
     };
-
-
-
-   
-   
-
-    
-
-    
-
 
     const fetchGraphImageData = (selectedLocations) => {
       let apiUrl = 'http://localhost:5000/graph2';
@@ -803,26 +726,26 @@ const Dashboard = () => {
     
     
   
-    const intervalID =
-      setInterval(fetchGraphImageData,
-        // fetchData,
-        // fetchGraphFileData,
-        fetchTodayGraphFileData,
-        fetchTodayGraphImageData,
-        fetchWeekFileGraphData,
-        fetchWeekImageGraphData,
-        fetchMonthImageGraphData,
-        fetchCivilCaseGraphData,
-        fetchCriminalCaseGraphData,
-        fetchAllYesGraphImageData,
-        fetchAllGraphImageData,
-        fetchTableData,
-        fetchExportCsvFile,
-        fetchLocationData,
-        // fetchGraph1LocationData,
+    // const intervalID =
+    //   setInterval(fetchGraphImageData,
+    //     // fetchData,
+    //     // fetchGraphFileData,
+    //     fetchTodayGraphFileData,
+    //     fetchTodayGraphImageData,
+    //     fetchWeekFileGraphData,
+    //     fetchWeekImageGraphData,
+    //     fetchMonthImageGraphData,
+    //     fetchCivilCaseGraphData,
+    //     fetchCriminalCaseGraphData,
+    //     fetchAllYesGraphImageData,
+    //     fetchAllGraphImageData,
+    //     fetchTableData,
+    //     fetchExportCsvFile,
+    //     fetchLocationData,
+    //     // fetchGraph1LocationData,
       
-        2000);
-    return () => clearInterval(intervalID);
+    //     );
+    // return () => clearInterval(intervalID);
   }, [selectedLocations]);
 
   const columnSums = calculateColumnSum();
@@ -905,7 +828,7 @@ const Dashboard = () => {
                     <div className='col-10' >
                       <h6 className='text-center' style={{ color: 'white' }}>PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE RECORDS FOR DISTRICT COURT OF UTTAR PRADESH</h6>
                       </div>
-                      <div className='col-2'>
+                      <div className='col-2' >
                       <h6 style={{ color: 'white' }} onClick={handleExport}> <MdFileDownload style={{fontSize:'20px'}}/>Export CSV</h6>
                     </div>
                   </div>

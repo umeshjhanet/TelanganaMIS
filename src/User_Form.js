@@ -179,7 +179,7 @@ const [formData,setFormData]=useState({
     } catch (error) {
      
       if (error.response && error.response.status === 409) {
-        alert("Email already exists");
+        alert("error creating post");
       } else {
         console.error("Error creating post:", error);
         alert("Email already exists");
