@@ -7,6 +7,7 @@ import Footer from './Footer';
 import axios from 'axios';
 import { MdFileDownload } from "react-icons/md";
 
+
 const Report = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -23,6 +24,7 @@ const Report = () => {
   const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
 
+
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
       setSelectedLocations([...selectedLocations, locationName]);
@@ -30,12 +32,15 @@ const Report = () => {
     }
     setShowLocation(false); // Close the dropdown when a location is selected
 
+
   };
+
 
 
   const removeLocation = (locationName) => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
+
 
   // const handleExport = () => {
   //   const headers = [
@@ -61,7 +66,9 @@ const Report = () => {
   //     '',
   //     'Inventory Out',
 
+
   //   ];
+
 
   //   const csvRows = [];
   //   csvRows.push(headers.join(','));
@@ -75,35 +82,46 @@ const Report = () => {
   //       elem.CollectionFiles || '0',
   //       elem.CollectionImages || '0',
 
+
   //       elem.ScannedFiles || '0',
   //       elem.ScannedImages || '0',
+
 
   //       elem.QCFiles || '0',
   //       elem.QCImages || '0',
 
+
   //       elem.FlaggingFiles || '0',
   //       elem.FlaggingImages || '0',
+
 
   //       elem.IndexingFiles || '0',
   //       elem.IndexingImages || '0',
 
+
   //       elem.CBSL_QAFiles || '0',
   //       elem.CBSL_QAImages || '0',
+
 
   //       elem.Export_PdfFiles || '0',
   //       elem.Export_PdfImages || '0',
 
+
   //       elem.Client_QA_AcceptedFiles || '0',
   //       elem.Client_QA_AcceptedImages || '0',
 
-  //       '0',
-  //       '0',
 
   //       '0',
   //       '0',
+
+
+  //       '0',
+  //       '0',
+
 
 
   //     ];
+
 
   //     csvRows.push(rowData.join(','));
   //   });
@@ -117,7 +135,9 @@ const Report = () => {
   //   window.URL.revokeObjectURL(url);
   //   document.body.removeChild(link);
 
+
   // };
+
 
   const handleExport = () => {
     if (csv) {
@@ -153,7 +173,9 @@ const Report = () => {
   //     '',
   //     'Inventory Out',
 
+
   //   ];
+
 
   //   const csvRows = [];
   //   csvRows.push(headers.join(','));
@@ -167,35 +189,46 @@ const Report = () => {
   //       elem.CollectionFiles || '0',
   //       elem.CollectionImages || '0',
 
+
   //       elem.ScannedFiles || '0',
   //       elem.ScannedImages || '0',
+
 
   //       elem.QCFiles || '0',
   //       elem.QCImages || '0',
 
+
   //       elem.FlaggingFiles || '0',
   //       elem.FlaggingImages || '0',
+
 
   //       elem.IndexingFiles || '0',
   //       elem.IndexingImages || '0',
 
+
   //       elem.CBSL_QAFiles || '0',
   //       elem.CBSL_QAImages || '0',
+
 
   //       elem.Export_PdfFiles || '0',
   //       elem.Export_PdfImages || '0',
 
+
   //       elem.Client_QA_AcceptedFiles || '0',
   //       elem.Client_QA_AcceptedImages || '0',
 
-  //       '0',
-  //       '0',
 
   //       '0',
   //       '0',
+
+
+  //       '0',
+  //       '0',
+
 
 
   //     ];
+
 
   //     csvRows.push(rowData.join(','));
   //   });
@@ -209,7 +242,9 @@ const Report = () => {
   //   window.URL.revokeObjectURL(url);
   //   document.body.removeChild(link);
 
+
   // };
+
 
   const handleReportCsv = () => {
     if (reportCsv) {
@@ -222,39 +257,47 @@ const Report = () => {
     }
   };
 
+
  
+
 
 
   useEffect(() => {
 
+
     const locationName = selectedLocations;
 
+
     const summaryData = () => {
-      axios.get("http://localhost:5000/summary", {
-        params: {
-          startDate: startDate.toISOString(), // Convert to ISO string format
-          endDate: endDate.toISOString()
-        }
-      })
-      .then(response => setSummary(response.data))
-      .catch(error => console.error(error));
+      axios.get("http://localhost:5000/summary")
+        .then
+        (response => setSummary(response.data))
+
+
+        .catch(error => console.error(error));
     };
+
 
     // const fetchSummaryReportCsvFile = () => {
     //   axios.get('http://localhost:5000/summarycsv', { responseType: 'blob' })
     //     .then((response) => {
     //       setCsv(response.data);
 
+
     //     })
     //     .catch((error) => {
     //       console.error('Error in exporting data:', error);
 
+
     //     });
+
 
     // };
 
+
     const fetchSummaryReportCsvFile = () => {
       const apiUrl = locationName ? `http://localhost:5000/summarycsv?locationName=${locationName}` : 'http://localhost:5000/summarycsv';
+
 
     axios.get(apiUrl, { responseType: 'blob' })
       .then(response => {
@@ -267,20 +310,25 @@ const Report = () => {
       });
     };
 
+
     // const fetchSummaryReportTableCsvFile = () => {
     //   axios.get('http://localhost:5000/reporttablecsv', { responseType: 'blob' })
     //     .then((response) => {
     //       setReportCsv(response.data);
 
+
     //     })
     //     .catch((error) => {
     //       console.error('Error in exporting data:', error);
 
+
     //     });
+
 
     // };
     const fetchSummaryReportTableCsvFile = () => {
       const apiUrl = locationName ? `http://localhost:5000/reporttablecsv?locationName=${locationName}` : 'http://localhost:5000/reporttablecsv';
+
 
     axios.get(apiUrl, { responseType: 'blob' })
       .then(response => {
@@ -293,17 +341,12 @@ const Report = () => {
       });
     };
 
+
     const reportData = () => {
-      axios.get("http://localhost:5000/reportLocationWiseTable", {
-        params: {
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString()
-        }
-      })
-      .then(response => setReport(response.data))
-      .catch(error => console.error(error));
+      axios.get("http://localhost:5000/reportTable")
+        .then(response => setReport(response.data))
+        .catch(error => console.error(error));
     };
-    
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
         try {
@@ -324,32 +367,52 @@ const Report = () => {
       }
     };
 
-    const fetchReportData = async () => {
-        let apiUrl = 'http://localhost:5000/summarylocationwise';
-      
-        if (selectedLocations && selectedLocations.length > 0) {
-          const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
-          apiUrl += `?${locationQuery}`;
-        }
-      
-        axios.get(apiUrl)
-          .then(response => {
-            const apiData = response.data;
-            if (!apiData || apiData.length === 0) {
-              console.error('No data received from the API');
-              return;
-            }
-          })
-           .catch (error =>{
-            console.error('Error fetching location data:', error);
-           
-          })
-        
+
+
+    const fetchReportData = () => {
+      const apiUrl = locationName ? `http://localhost:5000/summarylocationname?locationname=${encodeURIComponent(locationName)}` : 'http://localhost:5000/summary';
+    
+      axios.get(apiUrl)
+        .then(response => {
+          setSummary(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching report data:', error);
+          // Optionally, you can set an error state here if needed
+        });
     };
+    
+
+
+    // const fetchReportData = async () => {
+    //     let apiUrl = 'http://localhost:5000/summarylocationname?locationname=?';
+      
+    //     if (selectedLocations && selectedLocations.length > 0) {
+    //       const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
+    //       apiUrl += `?${locationQuery}`;
+    //     }
+      
+    //     axios.get(apiUrl)
+    //       .then(response => {
+    //         const apiData = response.data;
+    //         if (!apiData || apiData.length === 0) {
+    //           console.error('No data received from the API');
+    //           return;
+    //         }
+    //         setSummary(apiData)
+    //       })
+    //        .catch (error =>{
+    //         console.error('Error fetching location data:', error);
+           
+    //       })
+        
+    // };
+
 
     
     
     
+
 
     fetchLocationData();
     fetchSummaryReportTableCsvFile();
@@ -357,6 +420,7 @@ const Report = () => {
     summaryData();
     reportData();
     fetchLocationData();
+
 
     const intervalId = setInterval(() => {
       fetchLocationData();
@@ -368,8 +432,10 @@ const Report = () => {
     }, 5000);
 
 
+
     return () => clearInterval(intervalId);
-  }, [selectedLocations,startDate, endDate]);
+  }, [selectedLocations]);
+
 
 
   return (
@@ -476,7 +542,7 @@ const Report = () => {
                 <h5 className='mt-1 mb-2'>Total Location: 57</h5>
                 <div className='row'>
                   {summary && summary.map((elem, index) => {
-                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                    if (elem && elem.LocationName && (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))) {
                    
                       return (
                         <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
@@ -492,6 +558,9 @@ const Report = () => {
                     return null;
                    
                   })}
+                 
+
+
                   {summary && summary.map((elem, index) => {
                       if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
                     
@@ -609,7 +678,9 @@ const Report = () => {
                         </div>
                         <p className='text-center'>Total Files: 0
 
+
                           <br />Total Images: 0
+
 
                         </p>
                       </div>
@@ -620,6 +691,7 @@ const Report = () => {
                     })}
                   {summary && summary.map((elem, index) => {
 
+
                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
                       return(
                     <div className='col-lg-2 col-md-4 col-sm-6'>
@@ -629,7 +701,9 @@ const Report = () => {
                         </div>
                         <p className='text-center'>Total Files: 0
 
+
                           <br />Total Images: 0
+
 
                         </p>
                       </div>
@@ -699,6 +773,7 @@ const Report = () => {
                     </thead>
                     <tbody className="scrollable" style={{ color: 'black',height:'200px' }} >
 
+
                       {report && report.map((elem, index) => {
                         if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
                           return (
@@ -742,5 +817,6 @@ const Report = () => {
     </>
   );
 };
+
 
 export default Report;

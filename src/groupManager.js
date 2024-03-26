@@ -4,10 +4,20 @@ import Footer from './Footer'
 import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import UpdateUserModal from './Components/UpdateUserModal';
+import AddGroupModal from './Components/AddGroupModal';
 
 const GroupManager = () => {
     const [group,setGroup] = useState();
     const [searchQuery, setSearchQuery] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+      };
+      const handleCloseModal = () => {
+        setIsModalOpen(false);
+      };
 
     useEffect(() => {
         const fetchGroupData = () => {
@@ -46,8 +56,9 @@ const GroupManager = () => {
             <div className='user-form-card mt-3'>
                 <div className='row'>
                     <div className='col-3'>
-                        <button className='btn add-btn'>Add Group</button>
+                        <button className='btn add-btn' onClick={handleOpenModal}>Add Group</button>
                     </div>
+                    {isModalOpen && <AddGroupModal onClose={handleCloseModal} />}
                     <div className='col-2'></div>
                     <div className='col-5'>
                     <input

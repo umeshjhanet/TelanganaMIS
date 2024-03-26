@@ -278,11 +278,6 @@ const Dashboard = () => {
     };
   }
 
-  
-  
-
-  
-  
   useEffect(() => {
 
     const fetchLocationData = async () => {
@@ -324,7 +319,7 @@ const Dashboard = () => {
           const labels = Object.keys(apiData[0]).filter(label => label !== 'locationid' && label !== 'LocationName');
           const datasets = apiData.map(locationData => {
             return {
-              label: 'No. of Files',
+              label: 'No. of Files', // Use location name as label for each dataset
               data: labels.map(label => locationData[label]),
               backgroundColor: '#ad33ff', // Change the background color here
             };
@@ -342,23 +337,6 @@ const Dashboard = () => {
     
     
 
-    // const fetchData = () => {
-    //   fetch("http://localhost:5000/locations")
-    //     .then(response => response.json())
-    //     .then(data => setLocations(data))
-    //     .catch(error => console.error( error));
-    // };
-    // const fetchExportCsvFile = () => {
-    //   axios.get('http://localhost:5000/csv',{responseType:'blob'})
-    //     .then((response)=>{
-    //       setCsv(response.data);
-    //     })
-    //     .catch((error)=>{
-    //       console.error('Error in exporting data:', error);
-    //     });
-    // };
-
-
     const fetchExportCsvFile = () => {
       const apiUrl = locationName ? `http://localhost:5000/csv?locationName=${locationName}` : 'http://localhost:5000/csv';
 
@@ -372,16 +350,6 @@ const Dashboard = () => {
         console.error('Error in exporting data:', error);
       });
     };
-
-
-
-   
-   
-
-    
-
-    
-
 
     const fetchGraphImageData = (selectedLocations) => {
       let apiUrl = 'http://localhost:5000/graph2';
@@ -701,7 +669,6 @@ const Dashboard = () => {
             labels: labels,
             datasets: [
               {
-                ...allLocationYesImage.datasets,
                 label:'No. of Images',
                 data: data,
                 backgroundColor: '#02B2AF', // Set the background color
@@ -738,7 +705,6 @@ const Dashboard = () => {
             labels: labels,
             datasets: [
               {
-                ...allLocationImage.datasets,
                 label:'No. of Images',
                 data: data,
                 backgroundColor: '#02B2AF',
@@ -750,6 +716,7 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
+    
     
     const fetchTableData = () => {
       axios.get("http://localhost:5000/tabularData")
@@ -803,26 +770,26 @@ const Dashboard = () => {
     
     
   
-    const intervalID =
-      setInterval(fetchGraphImageData,
-        // fetchData,
-        // fetchGraphFileData,
-        fetchTodayGraphFileData,
-        fetchTodayGraphImageData,
-        fetchWeekFileGraphData,
-        fetchWeekImageGraphData,
-        fetchMonthImageGraphData,
-        fetchCivilCaseGraphData,
-        fetchCriminalCaseGraphData,
-        fetchAllYesGraphImageData,
-        fetchAllGraphImageData,
-        fetchTableData,
-        fetchExportCsvFile,
-        fetchLocationData,
-        // fetchGraph1LocationData,
+    // const intervalID =
+    //   setInterval(fetchGraphImageData,
+    //     // fetchData,
+    //     // fetchGraphFileData,
+    //     fetchTodayGraphFileData,
+    //     fetchTodayGraphImageData,
+    //     fetchWeekFileGraphData,
+    //     fetchWeekImageGraphData,
+    //     fetchMonthImageGraphData,
+    //     fetchCivilCaseGraphData,
+    //     fetchCriminalCaseGraphData,
+    //     fetchAllYesGraphImageData,
+    //     fetchAllGraphImageData,
+    //     fetchTableData,
+    //     fetchExportCsvFile,
+    //     fetchLocationData,
+    //     // fetchGraph1LocationData,
       
-        2000);
-    return () => clearInterval(intervalID);
+    //     2000);
+    // return () => clearInterval(intervalID);
   }, [selectedLocations]);
 
   const columnSums = calculateColumnSum();

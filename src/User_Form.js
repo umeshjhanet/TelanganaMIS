@@ -244,10 +244,6 @@ const [formData,setFormData]=useState({
                       <option value="2">Client User</option>
                       <option value="3">Server User</option>
                     </select>                            
-
-
-
-                   
                     </div>
                 </div>
                 <div className='col-6'>
