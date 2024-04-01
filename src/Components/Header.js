@@ -16,13 +16,13 @@ import { MdUpload } from "react-icons/md";
 // import Dashboard from './pages/dashboard';
 
 
-const Header = ({userDB}) => {
+const Header = () => {
   const [showSideBar, setShowSideBar] = useState(false);
   const [showMobileSideBar, setShowMobileSideBar] = useState();
   const [showReportDropdown, setShowReportDropdown] = useState(false);
   const [showMasterDropdown, setShowMasterDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState(false);
-  console.log("user data",userDB)
+ 
   const handleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown);
   }
@@ -59,7 +59,7 @@ const Header = ({userDB}) => {
                   <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                 </Link>
 
-                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:{userDB}</p>
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:Admin</p>
               </form>
             </div>
           </div>

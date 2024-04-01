@@ -46,7 +46,7 @@ const User_List = () => {
   // const handleDeleteUser = async (user_id) => {
   //   try {
   //     const response = await axios.delete(
-  //       `http://localhost:5000/createuserdelete/${user_id}`
+  //       `http://192.168.3.119:81/createuserdelete/${user_id}`
   //     );
   //     setUser(user.filter((elem) => elem.id !== user_id));
   //     console.log("User Deleted:", response.data);
@@ -59,7 +59,7 @@ const User_List = () => {
 
   const handleDeleteUser = async (user_id) => {
     try {
-      await axios.delete(`http://localhost:5000/createuserdelete/${user_id}`);
+      await axios.delete(`http://192.168.3.119:81/createuserdelete/${user_id}`);
       // Filter out the deleted user from the users array
       setUser(user.filter((elem) => elem.id !== user_id));
       console.log("User Deleted:", user_id);
@@ -88,7 +88,7 @@ const User_List = () => {
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://localhost:5000/user_master")
+        .get("http://192.168.3.119:81/user_master")
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
@@ -96,7 +96,7 @@ const User_List = () => {
     };
 
     // const fetchLocation = () => {
-    //   axios.get("http://localhost:5000/locations")
+    //   axios.get("http://192.168.3.119:81/locations")
 
     //     .then(response => setLocation(response.data))
 
@@ -106,7 +106,7 @@ const User_List = () => {
 
     // }
     // const fetchLocation = () => {
-    //   axios.get("http://localhost:5000/locations")
+    //   axios.get("http://192.168.3.119:81/locations")
     //     .then(response => {
     //       console.log("Location data:", response.data);
     //       setLocation(response.data);
@@ -118,7 +118,7 @@ const User_List = () => {
 
     const fetchLocation = () => {
       axios
-        .get("http://localhost:5000/locations")
+        .get("http://192.168.3.119:81/locations")
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};
@@ -137,7 +137,7 @@ const User_List = () => {
 
     const fetchPrivileges = () => {
       axios
-        .get("http://localhost:5000/privilege")
+        .get("http://192.168.3.119:81/privilege")
         .then((response) => {
           
           setPrivileges(response.data);

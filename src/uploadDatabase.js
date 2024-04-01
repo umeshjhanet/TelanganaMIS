@@ -29,7 +29,7 @@ const UploadDatabase = () => {
         formData.append('file', file, fileName);
 
         try {
-            const response = await fetch('http://localhost:5000/upload', {
+            const response = await fetch('http://192.168.3.119:81/upload', {
                 method: 'POST',
                 body: formData,
             });

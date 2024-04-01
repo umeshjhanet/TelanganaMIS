@@ -44,20 +44,20 @@ const MIS_Form = () => {
 
     // }
     const locationData = () => {
-      fetch("http://localhost:5000/locations")
+      fetch("http://192.168.3.119:81/locations")
         .then(respsone => respsone.json())
         .then(data => setLocation(data))
         .catch(error => console.error(error))
       console.log("Locations", location);
     }
     const designationData = () => {
-      fetch("http://localhost:5000/designations")
+      fetch("http://192.168.3.119:81/designations")
         .then(respsone => respsone.json())
         .then(data => setDesignation(data))
         .catch(error => console.error(error))
     }
     const usermasterData = () => {
-      fetch("http://localhost:5000/usermaster")
+      fetch("http://192.168.3.119:81/usermaster")
         .then(respsone => respsone.json())
         .then(data => setUsermaster(data))
         .catch(error => console.error(error))
@@ -65,7 +65,7 @@ const MIS_Form = () => {
     }
     const fetchLastInsertedData = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/site_MPData");
+        const response = await axios.get("http://192.168.3.119:81/site_MPData");
         const site_MPData = response.data;
 
         console.log("Manpower Data" , site_MPData);
@@ -117,7 +117,7 @@ const MIS_Form = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/usermasterinfo", formData);
+      const response = await axios.post("http://192.168.3.119:81/usermasterinfo", formData);
       console.log("Post created:", response.data);
     }
     catch (error) {
@@ -127,7 +127,7 @@ const MIS_Form = () => {
   const handleEditDesignation = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:5000/usermasterupdate/${formData.Desig_ID}`, newData);
+      const response = await axios.put(`http://192.168.3.119:81/usermasterupdate/${formData.Desig_ID}`, newData);
       console.log("User updated:", response.data);
     } catch (error) {
       console.error("Error updating user:", error);
@@ -136,7 +136,7 @@ const MIS_Form = () => {
 
   const handleDeleteDesignation = async (Desig_ID) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/usermasterdelete/${Desig_ID}`)
+      const response = await axios.delete(`http://192.168.3.119:81/usermasterdelete/${Desig_ID}`)
       setDesignation(designation.filter(elem => elem.id !== Desig_ID));
       console.log("User Deleted:", response.data)
     }
@@ -171,7 +171,7 @@ const MIS_Form = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:5000/site_MP", manpowerForm);
+      const response = await axios.post("http://192.168.3.119:81/site_MP", manpowerForm);
       <Alert severity="success">This is a success Alert.</Alert>
       console.log("Post created:", response.data);
     }

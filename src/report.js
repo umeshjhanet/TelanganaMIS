@@ -165,7 +165,7 @@ const Report = () => {
   useEffect(() => {
     const locationName = selectedLocations;
     const summaryData = () => {
-      axios.get("http://localhost:5000/summary")
+      axios.get("http://192.168.3.119:81/summary")
         .then
         (response => setSummary(response.data))
 
@@ -177,7 +177,7 @@ const Report = () => {
    
 
     const fetchSummaryReportCsvFile = () => {
-      const apiUrl = locationName ? `http://localhost:5000/summarycsv?locationName=${locationName}` : 'http://localhost:5000/summarycsv';
+      const apiUrl = locationName ? `http://192.168.3.119:81/summarycsv?locationName=${locationName}` : 'http://192.168.3.119:81/summarycsv';
 
 
     axios.get(apiUrl, { responseType: 'blob' })
@@ -194,7 +194,7 @@ const Report = () => {
 
     
     const fetchSummaryReportTableCsvFile = () => {
-      const apiUrl = locationName ? `http://localhost:5000/reporttablecsv?locationName=${locationName}` : 'http://localhost:5000/reporttablecsv';
+      const apiUrl = locationName ? `http://192.168.3.119:81/reporttablecsv?locationName=${locationName}` : 'http://192.168.3.119:81/reporttablecsv';
 
 
     axios.get(apiUrl, { responseType: 'blob' })
@@ -210,7 +210,7 @@ const Report = () => {
 
 
     const reportData = () => {
-      axios.get("http://localhost:5000/reportTable")
+      axios.get("http://192.168.3.119:81/reportTable")
         .then(response => setReport(response.data))
         .catch(error => console.error(error));
     };
@@ -219,7 +219,7 @@ const Report = () => {
         try {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:5000/reportLocationWiseTable?locationname=${location}`)
+            axios.get(`http://192.168.3.119:81/reportLocationWiseTable?locationname=${location}`)
             
           ));
           const locationData = locationDataResponses.map(response => response.data);

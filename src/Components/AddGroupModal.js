@@ -9,7 +9,7 @@ const AddGroupModal = ({onClose}) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:5000/add-group", { group_name: groupName });
+      const response = await axios.post("http://192.168.3.119:81/add-group", { group_name: groupName });
       console.log("Group name created:", response.data);
       onClose(); 
     } catch (error) {

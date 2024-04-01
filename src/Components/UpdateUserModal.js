@@ -78,19 +78,19 @@ const [newData, setNewData] = useState({
 
   useEffect(() => {
     const fetchGroup = () => {
-      fetch("http://localhost:5000/group_master")
+      fetch("http://192.168.3.119:81/group_master")
       .then(response => response.json())
       .then(data => setGroup(data))
       .catch(error => console.error(error))
     }
     const fetchLocation = () => {
-      fetch("http://localhost:5000/locations")
+      fetch("http://192.168.3.119:81/locations")
       .then(response => response.json())
       .then(data => setLocation(data))
       .catch(error => console.error(error))
     }
     const fetchPrivilege = () => {
-      fetch("http://localhost:5000/privilege")
+      fetch("http://192.168.3.119:81/privilege")
       .then(response => response.json())
       .then(data => setPrivilege(data))
       .catch(error => console.error(error))
@@ -102,7 +102,7 @@ const [newData, setNewData] = useState({
       .catch(error => console.error(error))
     }
     const fetchEmail = () => {
-      fetch("http://localhost:5000/user_email")
+      fetch("http://192.168.3.119:81/user_email")
       .then(response => response.json())
       .then(data => setEmail(data))
       .catch(error => console.error(error))
@@ -110,7 +110,7 @@ const [newData, setNewData] = useState({
    
    
     const fetchReporting = () => {
-      fetch("http://localhost:5000/reporting")
+      fetch("http://192.168.3.119:81/reporting")
       .then(response => response.json())
       .then(data => setReporting(data))
       .catch(error => console.error(error))
@@ -133,7 +133,7 @@ const [newData, setNewData] = useState({
     console.log("click outside");
     try {
       const response = await axios.put(
-        `http://localhost:5000/createuserupdate/${formData.user_id}`,
+        `http://192.168.3.119:81/createuserupdate/${formData.user_id}`,
         newData
       );
       onClose(); 
