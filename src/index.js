@@ -17,6 +17,7 @@ import GroupManager from './groupManager';
 import UserRole from './userRole';
 import UploadDatabase from './uploadDatabase';
 import UpdateUserModal from './Components/UpdateUserModal';
+import AddGroupModal from './Components/AddGroupModal';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -27,6 +28,7 @@ ReactDOM.render(
         <Route path='/uploadDatabase' element={<UploadDatabase/>}/>
         <Route path="/report" element={<Report />} />
         <Route path="/groupManager" element={<GroupManager />} />
+        <Route path="/groupManager" element={<AddGroupModal />} />
         <Route path="/userRole" element={<UserRole />} />
         <Route path="/User_Form" element={<User_Form />} />
         <Route path="/User_List" element={<User_List />} />

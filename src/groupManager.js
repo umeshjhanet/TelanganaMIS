@@ -4,10 +4,21 @@ import Footer from './Footer'
 import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import UpdateUserModal from './Components/UpdateUserModal';
+import AddGroupModal from './Components/AddGroupModal';
 
 const GroupManager = () => {
     const [group,setGroup] = useState();
     const [searchQuery, setSearchQuery] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+   
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+      };
+      const handleCloseModal = () => {
+        setIsModalOpen(false);
+      };
 
     useEffect(() => {
         const fetchGroupData = () => {
@@ -28,6 +39,21 @@ const GroupManager = () => {
         elem.group_name.toLowerCase().includes(searchQuery.toLowerCase()) 
       );
 
+      const handleDelete = async(group_id)=>{
+        try{
+          const response = await axios.delete(`http://localhost:5000/deletegroup/${group_id}`);
+          setGroup(group.filter((elem) => elem.id !== group_id));
+          console.log("Group Deleted:", response.data);
+          } catch (error) {
+          console.error("There was an error in deleting data!", error);
+        }
+
+        
+      }
+
+      
+      
+
   return (
     <>
     <Header/>
@@ -46,8 +72,9 @@ const GroupManager = () => {
             <div className='user-form-card mt-3'>
                 <div className='row'>
                     <div className='col-3'>
-                        <button className='btn add-btn'>Add Group</button>
+                        <button className='btn add-btn' onClick={handleOpenModal}>Add Group</button>
                     </div>
+                    {isModalOpen && <AddGroupModal onClose={handleCloseModal} />}
                     <div className='col-2'></div>
                     <div className='col-5'>
                     <input
@@ -74,7 +101,8 @@ const GroupManager = () => {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{elem.group_name}</td>
-                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> / <RiDeleteBin5Line style={{color:'red',fontSize:'20px'}}/></td>
+                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> 
+                                    / <RiDeleteBin5Line onClick={() => handleDelete(elem.group_id)} style={{color:'red',fontSize:'20px'}}/></td>
                                 </tr>
                             ))}
                         </tbody>

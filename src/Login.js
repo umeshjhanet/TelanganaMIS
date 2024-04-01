@@ -23,6 +23,7 @@ const Login = () => {
       const data = await res.json();
       console.log("API response",data)
       setUserDB(data);
+      console.log(...data[0].first_name);
     }
     catch(error){
       console.log(error);
@@ -31,27 +32,30 @@ const Login = () => {
   }
   useEffect(() => {
     fetchAPIData(API);
-  },[])
+  },[API])
 
   const errors = {
     username: "Invalid username",
     password: "Invalid password"
   };
 
+ 
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const { uname, password } = event.target.elements;
 
-    const userData = userDB.find((user) => user.username === uname.value);
+    const userData = userDB.find((user) => user.user_email_id === uname.value);
 
     if (userData) {
       if (userData.password !== password.value) {
         setErrorMessages({ name: "password", message: errors.password });
       } else {
+       
         navigate('/dashboard')
       }
     } else {
-      setErrorMessages({ name: "uname", message: errors.username });
+      setErrorMessages({ name: "uname", message: errors.user_email_id });
     }
   };
 
@@ -69,7 +73,6 @@ const Login = () => {
          setType('password')
       }
    }
-  
 
   return (
     <div className="">
@@ -96,7 +99,7 @@ const Login = () => {
                 <span class="flex justify-around items-start">
                 <FaUserLarge className="me-2" size={20} color="gray"/>
               </span>
-                <input type='text' name='uname' placeholder='Username' className='password-inputbox' />
+                <input type='email' name='uname' placeholder='Username' className='password-inputbox' />
                 </div>
                 {renderErrorMessage('uname')}
                 <div className="password-field mt-3 ms-2">

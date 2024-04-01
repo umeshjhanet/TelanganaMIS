@@ -265,7 +265,7 @@ const Dashboard = () => {
           const labels = Object.keys(apiData[0]).filter(label => label !== 'locationid' && label !== 'LocationName');
           const datasets = apiData.map(locationData => {
             return {
-              label: 'No. of Files',
+              label: 'No. of Files', // Use location name as label for each dataset
               data: labels.map(label => locationData[label]),
               backgroundColor: '#ad33ff', // Change the background color here
             };
@@ -624,7 +624,6 @@ const Dashboard = () => {
             labels: labels,
             datasets: [
               {
-                ...allLocationYesImage.datasets,
                 label:'No. of Images',
                 data: data,
                 backgroundColor: '#02B2AF', // Set the background color
@@ -661,7 +660,6 @@ const Dashboard = () => {
             labels: labels,
             datasets: [
               {
-                ...allLocationImage.datasets,
                 label:'No. of Images',
                 data: data,
                 backgroundColor: '#02B2AF',
@@ -673,6 +671,7 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
+    
     
     const fetchTableData = () => {
       axios.get("http://localhost:5000/tabularData")

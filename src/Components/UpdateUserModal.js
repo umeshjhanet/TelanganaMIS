@@ -136,6 +136,7 @@ const [newData, setNewData] = useState({
         `http://localhost:5000/createuserupdate/${formData.user_id}`,
         newData
       );
+      onClose(); 
       console.log("User updated:", response.data);
     } catch (error) {
       console.error("Error updating user:", error);
@@ -190,32 +191,7 @@ const [newData, setNewData] = useState({
 
   console.log(formData)
 
-//   const handleFormSubmit = async (e) => {
-   
-//     e.preventDefault();
-//    if(!email)
-//    {
-//     try {
-//       const response = await axios.post("http://localhost:5000/createuser", formData);
-//       console.log("Post created:", response.data);
-//     }
-//     catch (error) {
-//       console.error("Error creating post:", error);
-//     }
-//   }
-//   else if(formData.password === formData.confirmPassword){
-//     try {
-//       const response = await axios.post("http://localhost:5000/createuser", formData);
-//       console.log("Post created:", response.data);
-//     }
-//     catch (error) {
-//       console.error("Error creating post:", error);
-//     }
-//   }
-//   else{
-//     alert("Error");
-//   }
-// }
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
