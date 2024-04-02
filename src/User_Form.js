@@ -61,31 +61,31 @@ const [formData,setFormData]=useState({
 
   useEffect(() => {
     const fetchGroup = () => {
-      fetch("http://192.168.3.119:81/group_master")
+      fetch("http://localhost:5000/group_master")
       .then(response => response.json())
       .then(data => setGroup(data))
       .catch(error => console.error(error))
     }
     const fetchLocation = () => {
-      fetch("http://192.168.3.119:81/locations")
+      fetch("http://localhost:5000/locations")
       .then(response => response.json())
       .then(data => setLocation(data))
       .catch(error => console.error(error))
     }
     const fetchPrivilege = () => {
-      fetch("http://192.168.3.119:81/privilege")
+      fetch("http://localhost:5000/privilege")
       .then(response => response.json())
       .then(data => setPrivilege(data))
       .catch(error => console.error(error))
     }
     const fetchStorage = () => {
-      fetch("http://192.168.3.119:81/storage")
+      fetch("http://localhost:5000/storage")
       .then(response => response.json())
       .then(data => setStorage(data))
       .catch(error => console.error(error))
     }
     // const fetchEmail = () => {
-    //   fetch("http://192.168.3.119:81/user_email")
+    //   fetch("http://localhost:5000/user_email")
     //   .then(response => response.json())
     //   .then(data => setEmail(data))
     //   .catch(error => console.error(error))
@@ -93,7 +93,7 @@ const [formData,setFormData]=useState({
    
    
     const fetchReporting = () => {
-      fetch("http://192.168.3.119:81/reporting")
+      fetch("http://localhost:5000/reporting")
       .then(response => response.json())
       .then(data => setReporting(data))
       .catch(error => console.error(error))
@@ -174,7 +174,7 @@ const [formData,setFormData]=useState({
       return;
     }
     try {
-      const response = await axios.post("http://192.168.3.119:81/createuser", formData);
+      const response = await axios.post("http://localhost:5000/createuser", formData);
       console.log("Post created:", response.data);
     } catch (error) {
      

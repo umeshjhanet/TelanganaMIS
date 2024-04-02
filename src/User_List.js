@@ -40,44 +40,23 @@ const User_List = () => {
     sl_id: "",
   });
 
-
-
-
-  // const handleDeleteUser = async (user_id) => {
-  //   try {
-  //     const response = await axios.delete(
-  //       `http://192.168.3.119:81/createuserdelete/${user_id}`
-  //     );
-  //     setUser(user.filter((elem) => elem.id !== user_id));
-  //     console.log("User Deleted:", response.data);
-     
-
-  //   } catch (error) {
-  //     console.error("There was an error in deleting data!", error);
-  //   }
-  // };
-
   const handleDeleteUser = async (user_id) => {
     try {
-      await axios.delete(`http://192.168.3.119:81/createuserdelete/${user_id}`);
-      // Filter out the deleted user from the users array
-      setUser(user.filter((elem) => elem.id !== user_id));
-      console.log("User Deleted:", user_id);
+      const response = await axios.delete(
+        `http://localhost:5000/createuserdelete/${user_id}`
+      );
+      setUser(user.filter((elem) => elem.user_id !== user_id));
+      console.log("User Deleted:", response.data);
       setShowConfirmation(false);
     } catch (error) {
-      console.error("There was an error in deleting user!", error);
+      console.error("There was an error in deleting data!", error);
     }
   };
 
-  // Function to handle deletion confirmation
   const handleDeleteUserId = (user_id) => {
-    // Set the user ID to delete and show confirmation dialog
     setUserIdToDelete(user_id);
     setShowConfirmation(true);
   };
-
- 
-
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -88,37 +67,15 @@ const User_List = () => {
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://192.168.3.119:81/user_master")
+        .get("http://localhost:5000/user_master")
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
         });
     };
-
-    // const fetchLocation = () => {
-    //   axios.get("http://192.168.3.119:81/locations")
-
-    //     .then(response => setLocation(response.data))
-
-    //     .catch(error => {
-    //       console.error('Error fetching location data:', error);
-    //     });
-
-    // }
-    // const fetchLocation = () => {
-    //   axios.get("http://192.168.3.119:81/locations")
-    //     .then(response => {
-    //       console.log("Location data:", response.data);
-    //       setLocation(response.data);
-    //     })
-    //     .catch(error => {
-    //       console.error('Error fetching location data:', error);
-    //     });
-    // }
-
-    const fetchLocation = () => {
+const fetchLocation = () => {
       axios
-        .get("http://192.168.3.119:81/locations")
+        .get("http://localhost:5000/locations")
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};
@@ -137,7 +94,7 @@ const User_List = () => {
 
     const fetchPrivileges = () => {
       axios
-        .get("http://192.168.3.119:81/privilege")
+        .get("http://localhost:5000/privilege")
         .then((response) => {
           
           setPrivileges(response.data);
@@ -162,22 +119,12 @@ const User_List = () => {
     return () => clearInterval(intervalID);
   }, []);
 
-  // Filter user data based on search query
+
   const filteredUsers = currentUsers.filter(
     (elem) =>
       elem.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       elem.user_email_id.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  //   const getLocationNameById = (locations) => {
-  //     const location = location.find(loc => loc.locations === locations);
-  //     return location ? location.locationname : '';
-  //   }
-
-  // const getRoleById=(roles)=>{
-  //   return roles.role_id || '';
-  // }
-
   const getLocationNameById = (locations) => {
     const locationArray = locations.split(",");
     let result = "";
@@ -238,7 +185,7 @@ const User_List = () => {
                 </thead>
                 <tbody>
                   {filteredUsers.map((elem, index) => (
-                    <tr key={index}>
+                    <tr key={elem.user_id}>
                       <td>{index + 1 + (currentPage - 1) * usersPerPage}</td>
                       <td>
                         {elem.first_name} {elem.middle_name} {elem.last_name}
@@ -251,12 +198,9 @@ const User_List = () => {
                       <td>
                         <BiEdit onClick={handleOpenModal} style={{color:'blue', fontSize:'20px'}}/>
                         / 
-                        <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
+                        {/* <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} /> */}
 
-
-      
-                       
-                        {/* <RiDeleteBin5Line onClick={() => handleDeleteUser(elem.user_id)}  style={{color:'red', fontSize:'20px'}}/> */}
+                        <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)}  style={{color:'red', fontSize:'20px'}}/>
                       </td>
                     </tr>
                   ))}
@@ -266,7 +210,7 @@ const User_List = () => {
         <div className="confirmation-dialog">
           <div className="confirmation-content">
             <p>Are you sure you want to delete?</p>
-            <button onClick={handleDeleteUser}>Yes</button>
+           <button onClick={() => handleDeleteUser(userIdToDelete)}>Yes</button>
             <button onClick={() => setShowConfirmation(false)}>No</button>
           </div>
         </div>
@@ -306,3 +250,4 @@ const User_List = () => {
 };
 
 export default User_List;
+
