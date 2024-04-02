@@ -172,63 +172,6 @@ const Dashboard = () => {
  
 
 
-  // const handleExport = () => {
-  //   if (csv) {
-  //     const headers = [
-  //       'Sr. No.',
-  //       'Location',
-  //       'Scanned (' + formattedPreviousDate + ')',
-  //       '',
-  //       'Scanned (' + formattedYesterdayDate + ')',
-  //       '',
-  //       'Scanned (' + formattedCurrentDate + ')',
-  //       '',
-  //       'Cumulative till date',
-  //       '',
-  //       'Remarks'
-  //     ];
-  
-  //     const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
-  
-  //     const csvRows = [headers.join(',')]; // Add table headers as the first row
-  //     csvRows.push(fileImageHeaders.join(',')); // Add file image headers as the second row
-  
-  //     // Add table data rows
-  //     tableData.forEach((elem, index) => {
-  //       const rowData = [
-  //         index + 1,
-  //         elem.LocationName,
-  //         elem.Prev_Files || '0',
-  //         elem.Prev_Images || '0',
-  //         elem.Yes_Files || '0',
-  //         elem.Yes_Images || '0',
-  //         elem.Today_Files || '0',
-  //         elem.Today_Images || '0',
-  //         elem.Total_Files || '0',
-  //         elem.Total_Images || '0',
-  //       ];
-  //       csvRows.push(rowData.join(','));
-  //     });
-  
-  //     // Join all rows into a single CSV string
-  //     const csvContent = csvRows.join('\n');
-  
-  //     // Convert CSV string to a Blob
-  //     const blob = new Blob([csvContent], { type: 'text/csv' });
-  
-  //     // Create a URL for the Blob
-  //     const url = window.URL.createObjectURL(blob);
-  
-  //     // Create a temporary link and trigger the download
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.setAttribute('download', 'export.csv');
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   }
-  // };
-
   const handleExport = () => {
     if (csv) {
       const link = document.createElement('a');

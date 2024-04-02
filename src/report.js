@@ -422,18 +422,15 @@ const Report = () => {
     fetchLocationData();
 
 
-    const intervalId = setInterval(() => {
-      fetchLocationData();
-      summaryData();
-      reportData();
-      fetchSummaryReportCsvFile();
-      fetchSummaryReportTableCsvFile();
-      fetchReportData();
-    }, 5000);
-
-
-
-    return () => clearInterval(intervalId);
+    // const intervalId = setInterval(() => {
+    //   fetchLocationData();
+    //   summaryData();
+    //   reportData();
+    //   fetchSummaryReportCsvFile();
+    //   fetchSummaryReportTableCsvFile();
+    //   fetchReportData();
+    // }, 5000);
+    // return () => clearInterval(intervalId);
   }, [selectedLocations]);
 
 
