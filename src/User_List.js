@@ -5,6 +5,7 @@ import axios from "axios";
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import UpdateUserModal from "./Components/UpdateUserModal";
+import { ToastContainer } from "react-toastify";
 
 const User_List = () => {
   const [user, setUser] = useState([]);
@@ -39,23 +40,6 @@ const User_List = () => {
     group_id: "",
     sl_id: "",
   });
-
-
-
-
-  // const handleDeleteUser = async (user_id) => {
-  //   try {
-  //     const response = await axios.delete(
-  //       `http://192.168.3.119:81/createuserdelete/${user_id}`
-  //     );
-  //     setUser(user.filter((elem) => elem.id !== user_id));
-  //     console.log("User Deleted:", response.data);
-     
-
-  //   } catch (error) {
-  //     console.error("There was an error in deleting data!", error);
-  //   }
-  // };
 
   const handleDeleteUser = async (user_id) => {
     try {
@@ -252,11 +236,6 @@ const User_List = () => {
                         <BiEdit onClick={handleOpenModal} style={{color:'blue', fontSize:'20px'}}/>
                         / 
                         <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
-
-
-      
-                       
-                        {/* <RiDeleteBin5Line onClick={() => handleDeleteUser(elem.user_id)}  style={{color:'red', fontSize:'20px'}}/> */}
                       </td>
                     </tr>
                   ))}
@@ -266,7 +245,7 @@ const User_List = () => {
         <div className="confirmation-dialog">
           <div className="confirmation-content">
             <p>Are you sure you want to delete?</p>
-            <button onClick={handleDeleteUser}>Yes</button>
+            <button onClick={()=>handleDeleteUser(userIdToDelete)}>Yes</button>
             <button onClick={() => setShowConfirmation(false)}>No</button>
           </div>
         </div>
@@ -300,6 +279,7 @@ const User_List = () => {
           </div>
         </div>
       </div>
+      <ToastContainer/>
       <Footer />
     </>
   );

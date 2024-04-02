@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import Header from './Components/Header'
 import Footer from './Footer'
 import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 
 const User_Form = () => {
@@ -176,6 +178,7 @@ const [formData,setFormData]=useState({
     try {
       const response = await axios.post("http://192.168.3.119:81/createuser", formData);
       console.log("Post created:", response.data);
+      toast("User created successfully");
     } catch (error) {
      
       if (error.response && error.response.status === 409) {
