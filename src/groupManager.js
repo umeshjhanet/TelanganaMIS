@@ -11,6 +11,7 @@ const GroupManager = () => {
     const [group,setGroup] = useState();
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+   
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -21,7 +22,7 @@ const GroupManager = () => {
 
     useEffect(() => {
         const fetchGroupData = () => {
-            axios.get("http://localhost:5000/group_master")
+            axios.get("http://192.168.3.119:81/group_master")
             .then(response => setGroup(response.data))
             .catch(error => console.error(error))
         }
@@ -37,6 +38,21 @@ const GroupManager = () => {
     const filteredGroups = group && group.filter(elem =>
         elem.group_name.toLowerCase().includes(searchQuery.toLowerCase()) 
       );
+
+      const handleDelete = async(group_id)=>{
+        try{
+          const response = await axios.delete(`http://192.168.3.119:81/deletegroup/${group_id}`);
+          setGroup(group.filter((elem) => elem.id !== group_id));
+          console.log("Group Deleted:", response.data);
+          } catch (error) {
+          console.error("There was an error in deleting data!", error);
+        }
+
+        
+      }
+
+      
+      
 
   return (
     <>
@@ -85,7 +101,8 @@ const GroupManager = () => {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{elem.group_name}</td>
-                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> / <RiDeleteBin5Line style={{color:'red',fontSize:'20px'}}/></td>
+                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> 
+                                    / <RiDeleteBin5Line onClick={() => handleDelete(elem.group_id)} style={{color:'red',fontSize:'20px'}}/></td>
                                 </tr>
                             ))}
                         </tbody>

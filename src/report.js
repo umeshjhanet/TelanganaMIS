@@ -13,7 +13,7 @@ const Report = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
-  const [locations, setLocations] = useState([]);
+  const [locationName, setLocationName] = useState('');
   const [locationData, setLocationData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -149,101 +149,6 @@ const Report = () => {
       document.body.removeChild(link);
     }
   };
-  // const handleReportCsv = () => {
-  //   const headers = [
-  //     'Sr. No.',
-  //     'Location',
-  //     'Collection of Records',
-  //     '',
-  //     'Scanning ADF',
-  //     '',
-  //     'ImageQC',
-  //     '',
-  //     'Document Classification',
-  //     '',
-  //     'Indexing',
-  //     '',
-  //     'CBSLQA',
-  //     '',
-  //     'Export PDF',
-  //     '',
-  //     'Client QA',
-  //     '',
-  //     'CSV Generation',
-  //     '',
-  //     'Inventory Out',
-
-
-  //   ];
-
-
-  //   const csvRows = [];
-  //   csvRows.push(headers.join(','));
-  //   const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
-  //     'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
-  //   csvRows.push(fileImageHeaders.join(','));
-  //   report.forEach((elem, index) => {
-  //     const rowData = [
-  //       index + 1,
-  //       elem.LocationName,
-  //       elem.CollectionFiles || '0',
-  //       elem.CollectionImages || '0',
-
-
-  //       elem.ScannedFiles || '0',
-  //       elem.ScannedImages || '0',
-
-
-  //       elem.QCFiles || '0',
-  //       elem.QCImages || '0',
-
-
-  //       elem.FlaggingFiles || '0',
-  //       elem.FlaggingImages || '0',
-
-
-  //       elem.IndexingFiles || '0',
-  //       elem.IndexingImages || '0',
-
-
-  //       elem.CBSL_QAFiles || '0',
-  //       elem.CBSL_QAImages || '0',
-
-
-  //       elem.Export_PdfFiles || '0',
-  //       elem.Export_PdfImages || '0',
-
-
-  //       elem.Client_QA_AcceptedFiles || '0',
-  //       elem.Client_QA_AcceptedImages || '0',
-
-
-  //       '0',
-  //       '0',
-
-
-  //       '0',
-  //       '0',
-
-
-
-  //     ];
-
-
-  //     csvRows.push(rowData.join(','));
-  //   });
-  //   const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-  //   const url = window.URL.createObjectURL(csvBlob);
-  //   const link = document.createElement('a');
-  //   link.href = url;
-  //   link.setAttribute('download', 'export.csv');
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   window.URL.revokeObjectURL(url);
-  //   document.body.removeChild(link);
-
-
-  // };
 
 
   const handleReportCsv = () => {
@@ -257,19 +162,10 @@ const Report = () => {
     }
   };
 
-
- 
-
-
-
   useEffect(() => {
-
-
     const locationName = selectedLocations;
-
-
     const summaryData = () => {
-      axios.get("http://localhost:5000/summary")
+      axios.get("http://192.168.3.119:81/summary")
         .then
         (response => setSummary(response.data))
 
@@ -278,25 +174,10 @@ const Report = () => {
     };
 
 
-    // const fetchSummaryReportCsvFile = () => {
-    //   axios.get('http://localhost:5000/summarycsv', { responseType: 'blob' })
-    //     .then((response) => {
-    //       setCsv(response.data);
-
-
-    //     })
-    //     .catch((error) => {
-    //       console.error('Error in exporting data:', error);
-
-
-    //     });
-
-
-    // };
-
+   
 
     const fetchSummaryReportCsvFile = () => {
-      const apiUrl = locationName ? `http://localhost:5000/summarycsv?locationName=${locationName}` : 'http://localhost:5000/summarycsv';
+      const apiUrl = locationName ? `http://192.168.3.119:81/summarycsv?locationName=${locationName}` : 'http://192.168.3.119:81/summarycsv';
 
 
     axios.get(apiUrl, { responseType: 'blob' })
@@ -311,23 +192,9 @@ const Report = () => {
     };
 
 
-    // const fetchSummaryReportTableCsvFile = () => {
-    //   axios.get('http://localhost:5000/reporttablecsv', { responseType: 'blob' })
-    //     .then((response) => {
-    //       setReportCsv(response.data);
-
-
-    //     })
-    //     .catch((error) => {
-    //       console.error('Error in exporting data:', error);
-
-
-    //     });
-
-
-    // };
+    
     const fetchSummaryReportTableCsvFile = () => {
-      const apiUrl = locationName ? `http://localhost:5000/reporttablecsv?locationName=${locationName}` : 'http://localhost:5000/reporttablecsv';
+      const apiUrl = locationName ? `http://192.168.3.119:81/reporttablecsv?locationName=${locationName}` : 'http://192.168.3.119:81/reporttablecsv';
 
 
     axios.get(apiUrl, { responseType: 'blob' })
@@ -343,7 +210,7 @@ const Report = () => {
 
 
     const reportData = () => {
-      axios.get("http://localhost:5000/reportTable")
+      axios.get("http://192.168.3.119:81/reportTable")
         .then(response => setReport(response.data))
         .catch(error => console.error(error));
     };
@@ -352,7 +219,7 @@ const Report = () => {
         try {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:5000/reportLocationWiseTable?locationname=${location}`)
+            axios.get(`http://192.168.3.119:81/reportLocationWiseTable?locationname=${location}`)
             
           ));
           const locationData = locationDataResponses.map(response => response.data);
@@ -367,60 +234,12 @@ const Report = () => {
       }
     };
 
-
-
-    const fetchReportData = () => {
-      const apiUrl = locationName ? `http://localhost:5000/summarylocationname?locationname=${encodeURIComponent(locationName)}` : 'http://localhost:5000/summary';
-    
-      axios.get(apiUrl)
-        .then(response => {
-          setSummary(response.data);
-        })
-        .catch(error => {
-          console.error('Error fetching report data:', error);
-          // Optionally, you can set an error state here if needed
-        });
-    };
-    
-
-
-    // const fetchReportData = async () => {
-    //     let apiUrl = 'http://localhost:5000/summarylocationname?locationname=?';
-      
-    //     if (selectedLocations && selectedLocations.length > 0) {
-    //       const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
-    //       apiUrl += `?${locationQuery}`;
-    //     }
-      
-    //     axios.get(apiUrl)
-    //       .then(response => {
-    //         const apiData = response.data;
-    //         if (!apiData || apiData.length === 0) {
-    //           console.error('No data received from the API');
-    //           return;
-    //         }
-    //         setSummary(apiData)
-    //       })
-    //        .catch (error =>{
-    //         console.error('Error fetching location data:', error);
-           
-    //       })
-        
-    // };
-
-
-    
-    
-    
-
-
     fetchLocationData();
     fetchSummaryReportTableCsvFile();
     fetchSummaryReportCsvFile();
     summaryData();
     reportData();
     fetchLocationData();
-
 
     // const intervalId = setInterval(() => {
     //   fetchLocationData();
@@ -430,6 +249,8 @@ const Report = () => {
     //   fetchSummaryReportTableCsvFile();
     //   fetchReportData();
     // }, 5000);
+
+
     // return () => clearInterval(intervalId);
   }, [selectedLocations]);
 
@@ -556,7 +377,6 @@ const Report = () => {
                    
                   })}
                  
-
 
                   {summary && summary.map((elem, index) => {
                       if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {

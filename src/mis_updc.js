@@ -21,7 +21,7 @@ const MISUPDC = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("https://backend-nodejs-nine.vercel.app/userinfo", formData);
+            const response = await axios.post("https://192.168.3.119:81/userinfo", formData);
             console.log("Post created:", response.data);
         } catch (error) {
             console.error("Error creating post:", error);

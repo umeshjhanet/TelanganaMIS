@@ -22,7 +22,7 @@ const Header = () => {
   const [showReportDropdown, setShowReportDropdown] = useState(false);
   const [showMasterDropdown, setShowMasterDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState(false);
-
+ 
   const handleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown);
   }
@@ -59,7 +59,7 @@ const Header = () => {
                   <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                 </Link>
 
-                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:Admin</p>
               </form>
             </div>
           </div>

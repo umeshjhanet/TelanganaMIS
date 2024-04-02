@@ -15,7 +15,8 @@ const User_List = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10); // Set users per page
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [userIdToDelete, setUserIdToDelete] = useState(null);
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = user.slice(indexOfFirstUser, indexOfLastUser);
@@ -42,17 +43,40 @@ const User_List = () => {
 
 
 
+  // const handleDeleteUser = async (user_id) => {
+  //   try {
+  //     const response = await axios.delete(
+  //       `http://192.168.3.119:81/createuserdelete/${user_id}`
+  //     );
+  //     setUser(user.filter((elem) => elem.id !== user_id));
+  //     console.log("User Deleted:", response.data);
+     
+
+  //   } catch (error) {
+  //     console.error("There was an error in deleting data!", error);
+  //   }
+  // };
+
   const handleDeleteUser = async (user_id) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:5000/createuserdelete/${user_id}`
-      );
+      await axios.delete(`http://192.168.3.119:81/createuserdelete/${user_id}`);
+      // Filter out the deleted user from the users array
       setUser(user.filter((elem) => elem.id !== user_id));
-      console.log("User Deleted:", response.data);
+      console.log("User Deleted:", user_id);
+      setShowConfirmation(false);
     } catch (error) {
-      console.error("There was an error in deleting data!", error);
+      console.error("There was an error in deleting user!", error);
     }
   };
+
+  // Function to handle deletion confirmation
+  const handleDeleteUserId = (user_id) => {
+    // Set the user ID to delete and show confirmation dialog
+    setUserIdToDelete(user_id);
+    setShowConfirmation(true);
+  };
+
+ 
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -64,7 +88,7 @@ const User_List = () => {
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://localhost:5000/user_master")
+        .get("http://192.168.3.119:81/user_master")
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
@@ -72,7 +96,7 @@ const User_List = () => {
     };
 
     // const fetchLocation = () => {
-    //   axios.get("http://localhost:5000/locations")
+    //   axios.get("http://192.168.3.119:81/locations")
 
     //     .then(response => setLocation(response.data))
 
@@ -82,7 +106,7 @@ const User_List = () => {
 
     // }
     // const fetchLocation = () => {
-    //   axios.get("http://localhost:5000/locations")
+    //   axios.get("http://192.168.3.119:81/locations")
     //     .then(response => {
     //       console.log("Location data:", response.data);
     //       setLocation(response.data);
@@ -94,7 +118,7 @@ const User_List = () => {
 
     const fetchLocation = () => {
       axios
-        .get("http://localhost:5000/locations")
+        .get("http://192.168.3.119:81/locations")
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};
@@ -113,7 +137,7 @@ const User_List = () => {
 
     const fetchPrivileges = () => {
       axios
-        .get("http://localhost:5000/privilege")
+        .get("http://192.168.3.119:81/privilege")
         .then((response) => {
           
           setPrivileges(response.data);
@@ -224,15 +248,30 @@ const User_List = () => {
                       <td>{elem.phone_no}</td>
                       <td>{privileges.user_role}</td>
                       <td>{getLocationNameById(elem.locations)}</td>
-
                       <td>
                         <BiEdit onClick={handleOpenModal} style={{color:'blue', fontSize:'20px'}}/>
-                        / <RiDeleteBin5Line onClick={() => handleDeleteUser(elem.user_id)}  style={{color:'red', fontSize:'20px'}}/>
+                        / 
+                        <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
+
+
+      
+                       
+                        {/* <RiDeleteBin5Line onClick={() => handleDeleteUser(elem.user_id)}  style={{color:'red', fontSize:'20px'}}/> */}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              {showConfirmation && (
+        <div className="confirmation-dialog">
+          <div className="confirmation-content">
+            <p>Are you sure you want to delete?</p>
+            <button onClick={handleDeleteUser}>Yes</button>
+            <button onClick={() => setShowConfirmation(false)}>No</button>
+          </div>
+        </div>
+      )}
+       
               <div className="row">
                 <ul className="pagination justify-content-center">
                   {user.length > usersPerPage &&
