@@ -22,7 +22,12 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState(false);
   const [user, setUser] = useState();
 
+  // Retrieve user info from local storage
   const userLog = JSON.parse(localStorage.getItem('user'));
+
+  // Conditionally render sidebar and welcome message
+
+
 
   const handleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown);
@@ -67,7 +72,7 @@ const Header = () => {
                   <Link to='/'>
                     <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                   </Link>
-                    <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:{userLog ? userLog.first_name : 'Guest'}</p>
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:{userLog ? userLog.first_name : 'Guest'}</p>
                 </form>
               </div>
             </div>
@@ -306,8 +311,9 @@ const Header = () => {
 
   return (
     <>
-      {user && user.user_email_id === "rachna@gmail.com" ? normalUser() : adminUser()}
+      {userLog && userLog.user_email_id === "rachna@gmail.com" ? normalUser() : adminUser()}
 
+      <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p>
     </>
   )
 }
