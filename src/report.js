@@ -15,6 +15,7 @@ const Report = () => {
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [locationName, setLocationName] = useState('');
   const [locationData, setLocationData] = useState(null);
+  const[summaryLocationData,setSummaryLocationData]=useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchInput, setSearchInput] = useState('');
@@ -112,7 +113,7 @@ const Report = () => {
 
 
     const reportData = () => {
-      axios.get("http://192.168.3.119:81/reportTable")
+      axios.get("http://localhost:5000/reportTable")
         .then(response => setReport(response.data))
         .catch(error => console.error(error));
     };
@@ -136,12 +137,33 @@ const Report = () => {
       }
     };
 
+    const fetchSummaryLocationData = async () => {
+      if (selectedLocations.length > 0) {
+        try {
+          setIsLoading(true);
+          const locationDataResponses = await Promise.all(selectedLocations.map(location =>
+            axios.get(`http://localhost:5000/summarylocationname?locationname=${location}`)
+            
+          ));
+          const summaryLocationData = locationDataResponses.map(response => response.data);
+          setSummaryLocationData(summaryLocationData);
+          console.log("agra", summaryLocationData);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching location data:', error);
+          setError('Error fetching location data. Please try again.');
+          setIsLoading(false);
+        }
+      }
+    };
+
     fetchLocationData();
     fetchSummaryReportTableCsvFile();
     fetchSummaryReportCsvFile();
     summaryData();
     reportData();
     fetchLocationData();
+    fetchSummaryLocationData();
 
     // const intervalId = setInterval(() => {
     //   fetchLocationData();
@@ -261,8 +283,8 @@ const Report = () => {
               <div className='main-summary-card '>
                 <h5 className='mt-1 mb-2'>Total Location: 57</h5>
                 <div className='row'>
-                  {summary && summary.map((elem, index) => {
-                    if (elem && elem.LocationName && (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))) {
+                  {/* {summary && summary.map((elem, index) => {
+                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
                    
                       return (
                         <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
@@ -277,160 +299,280 @@ const Report = () => {
                     }
                     return null;
                    
-                  })}
+                  })} */}
+
+{summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
+                </div>
+                <p className='text-center'>Total Files: {elem.CollectionFiles || '0'} <br />Total Images: {elem.CollectionImages || '0'}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
+                  </div>
+                  <p className='text-center'>Total Files: {elem.CollectionFiles || '0'}<br />Total Images: {elem.CollectionImages || '0'}</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
                  
 
-                  {summary && summary.map((elem, index) => {
-                      if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                    
-                      return (
-                        <div className='col-lg-2 col-md-4 col-sm-6'>
-                          <div className='summary-card mt-3'>
-                            <div className='summary-title'>
-                              <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
-                            </div>
-                            <p className='text-center'>Total Files: {elem.ScannedFiles}<br />Total Images: {elem.ScannedImages}</p>
-                          </div>
-                        </div>
-                      );
-                      }
-                      return null;
-                   
-                  })}
-                  {summary && summary.map((elem, index) => {
-                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                      return(
-                    <div className='col-lg-2 col-md-4 col-sm-6'>
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>Image QC</h6>
-                        </div>
-                        <p className='text-center'>Total Files: {elem.QCFiles}<br />Total Images: {elem.QCImages}</p>
-                      </div>
-                    </div>
-                      )
-                     }
-                     return null;
-                  })}
-                  {summary && summary.map((elem, index) => {
-                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                      return(
-                    <div className='col-lg-2 col-md-4 col-sm-6'>
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
-                        </div>
-                        <p className='text-center'>Total Files: {elem.FlaggingFiles}<br />Total Images: {elem.FlaggingImages}</p>
-                      </div>
-                    </div>
-                      )
-                     }
-                     return null;
-                    })}
-                  {summary && summary.map((elem, index) => {
-                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                      return(
-                    <div className='col-lg-2 col-md-4 col-sm-6'>
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
-                        </div>
-                        <p className='text-center'>Total Files: {elem.IndexingFiles}<br />Total Images: {elem.IndexingImages}</p>
-                      </div>
-                    </div>
-                      )
-                     }
-                     return null;
-                    })}
-                  {summary && summary.map((elem, index) => {
-                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                      return (
-                    <div className='col-lg-2 col-md-4 col-sm-6'>
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
-                        </div>
-                        <p className='text-center'>Total Files: {elem.CBSL_QAFiles}<br />Total Images: {elem.CBSL_QAImages}</p>
-                      </div>
-                    </div>
-                      )
-                     }
-                      return null;
-                    })}
-                  {summary && summary.map((elem, index) => {
-                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                      return(
-                    <div className='col-lg-2 col-md-4 col-sm-6'>
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
-                        </div>
-                        <p className='text-center'>Total Files: {elem.Export_PdfFiles}<br />Total Images: {elem.Export_PdfImages}</p>
-                      </div>
-                    </div>
-                      )
-                     }
-                     return null;
-                    })}
-                  {summary && summary.map((elem, index) => {
-                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                      return(
-                    <div className='col-lg-2 col-md-4 col-sm-6'>
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
-                        </div>
-                        <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles}<br />Total Images: {elem.Client_QA_AcceptedImages}</p>
-                      </div>
-                    </div>
-                      )
-                     }
-                     return null;
-                    })}
-                  {summary && summary.map((elem, index) => {
-                     if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                      return(
-                    <div className='col-lg-2 col-md-4 col-sm-6'>
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
-                        </div>
-                        <p className='text-center'>Total Files: 0
-
-
-                          <br />Total Images: 0
-
-
-                        </p>
-                      </div>
-                    </div>
-                      )
-                     }
-                     return null;
-                    })}
-                  {summary && summary.map((elem, index) => {
-
-
-                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                      return(
-                    <div className='col-lg-2 col-md-4 col-sm-6'>
-                      <div className='summary-card mt-3'>
-                        <div className='summary-title'>
-                          <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
-                        </div>
-                        <p className='text-center'>Total Files: 0
-
-
-                          <br />Total Images: 0
-
-
-                        </p>
-                      </div>
-                    </div>
-                      )
-                    }
-                    return null;
-                  })}
+                 {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
+                </div>
+                <p className='text-center'>Total Files: {elem.ScannedFiles || '0'}<br />Total Images: {elem.ScannedImages || '0'}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
+                  </div>
+                  <p className='text-center'>Total Files: {elem.ScannedFiles || '0'}<br />Total Images: {elem.ScannedImages || '0'}</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
+                        {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>Image QC</h6>
+                </div>
+                <p className='text-center'>Total Files: {elem.QCFiles || '0'}<br />Total Images: {elem.QCImages || '0'}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
+                  </div>
+                  <p className='text-center'>Total Files: {elem.QCFiles || '0'}<br />Total Images: {elem.QCImages || '0'}</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
+                        {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
+                </div>
+                <p className='text-center'>Total Files: {elem.FlaggingFiles || '0'}<br />Total Images: {elem.FlaggingImages || '0'}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
+                  </div>
+                  <p className='text-center'>Total Files: {elem.FlaggingFiles || '0'}<br />Total Images: {elem.FlaggingImages || '0'}</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
+                         {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
+                </div>
+                <p className='text-center'>Total Files: {elem.IndexingFiles || '0'}<br />Total Images: {elem.IndexingImages || '0'}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
+                  </div>
+                  <p className='text-center'>Total Files: {elem.IndexingFiles || '0'}<br />Total Images: {elem.IndexingImages || '0'}</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
+                         {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
+                </div>
+                <p className='text-center'>Total Files: {elem.CBSL_QAFiles || '0'}<br />Total Images: {elem.CBSL_QAImages || '0'}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
+                  </div>
+                  <p className='text-center'>Total Files: {elem.CBSL_QAFiles || '0'}<br />Total Images: {elem.CBSL_QAImages || '0'}</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
+                         {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
+                </div>
+                <p className='text-center'>Total Files: {elem.Export_PdfFiles || '0'}<br />Total Images: {elem.Export_PdfImages || '0'}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
+                  </div>
+                  <p className='text-center'>Total Files: {elem.Export_PdfFiles || '0'}<br />Total Images: {elem.Export_PdfImages || '0'}</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
+                        {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
+                </div>
+                <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles || '0'}<br />Total Images: {elem.Client_QA_AcceptedImages || '0'}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
+                  </div>
+                  <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles || '0'}<br />Total Images: {elem.Client_QA_AcceptedImages || '0'}</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
+                         {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
+                </div>
+                <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
+                  </div>
+                  <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
+                        {summary && ( 
+        selectedLocations.length === 0 ? ( 
+          summary.map((elem, index) => (
+            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+              <div className='summary-card mt-3'>
+                <div className='summary-title'>
+                  <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
+                </div>
+                <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          report
+            .filter(elem => selectedLocations.includes(elem.LocationName))
+            .map((elem, index) => (
+              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                <div className='summary-card mt-3'>
+                  <div className='summary-title'>
+                    <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
+                  </div>
+                  <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
+                </div>
+              </div>
+            ))
+        )
+      )}
                 </div>
               </div>
             </div>
