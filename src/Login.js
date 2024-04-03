@@ -73,21 +73,21 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { uname, password } = event.target.elements;
-
+  
     // Send login request to backend
     try {
-      const response = await fetch("http://192.168.3.119:81/login", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ user_email_id: uname.value, password: password.value })
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        setUserDB(data); // Assuming the response contains user data
-        console.log("User logged in");
+        localStorage.setItem('user', JSON.stringify(data));
+        console.log("User information stored:", data);
         navigate('/dashboard');
       } else {
         if (response.status === 401) {
@@ -103,6 +103,7 @@ const Login = () => {
       setError("An unexpected error occurred. Please try again later.");
     }
   };
+  
 
   const renderErrorMessage = (name) =>
     name === errorMessages.name && (

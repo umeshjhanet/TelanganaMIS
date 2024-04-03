@@ -30,7 +30,7 @@ const Report = () => {
       setSelectedLocations([...selectedLocations, locationName]);
       setSearchInput('');
     }
-    setShowLocation(false); // Close the dropdown when a location is selected
+    setShowLocation(false); 
 
 
   };
@@ -40,104 +40,6 @@ const Report = () => {
   const removeLocation = (locationName) => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
-
-
-  // const handleExport = () => {
-  //   const headers = [
-  //     'Sr. No.',
-  //     'Location',
-  //     'Collection of Records',
-  //     '',
-  //     'Scanning ADF',
-  //     '',
-  //     'ImageQC',
-  //     '',
-  //     'Document Classification',
-  //     '',
-  //     'Indexing',
-  //     '',
-  //     'CBSLQA',
-  //     '',
-  //     'Export PDF',
-  //     '',
-  //     'Client QA',
-  //     '',
-  //     'CSV Generation',
-  //     '',
-  //     'Inventory Out',
-
-
-  //   ];
-
-
-  //   const csvRows = [];
-  //   csvRows.push(headers.join(','));
-  //   const fileImageHeaders = ['', '', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images',
-  //     'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images', 'Files', 'Images'];
-  //   csvRows.push(fileImageHeaders.join(','));
-  //   summary.forEach((elem, index) => {
-  //     const rowData = [
-  //       index + 1,
-  //       elem.TotalLocation,
-  //       elem.CollectionFiles || '0',
-  //       elem.CollectionImages || '0',
-
-
-  //       elem.ScannedFiles || '0',
-  //       elem.ScannedImages || '0',
-
-
-  //       elem.QCFiles || '0',
-  //       elem.QCImages || '0',
-
-
-  //       elem.FlaggingFiles || '0',
-  //       elem.FlaggingImages || '0',
-
-
-  //       elem.IndexingFiles || '0',
-  //       elem.IndexingImages || '0',
-
-
-  //       elem.CBSL_QAFiles || '0',
-  //       elem.CBSL_QAImages || '0',
-
-
-  //       elem.Export_PdfFiles || '0',
-  //       elem.Export_PdfImages || '0',
-
-
-  //       elem.Client_QA_AcceptedFiles || '0',
-  //       elem.Client_QA_AcceptedImages || '0',
-
-
-  //       '0',
-  //       '0',
-
-
-  //       '0',
-  //       '0',
-
-
-
-  //     ];
-
-
-  //     csvRows.push(rowData.join(','));
-  //   });
-  //   const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-  //   const url = window.URL.createObjectURL(csvBlob);
-  //   const link = document.createElement('a');
-  //   link.href = url;
-  //   link.setAttribute('download', 'export.csv');
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   window.URL.revokeObjectURL(url);
-  //   document.body.removeChild(link);
-
-
-  // };
-
 
   const handleExport = () => {
     if (csv) {
