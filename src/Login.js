@@ -330,21 +330,7 @@ const Login = () => {
    }
 
   return (
-    // <div>
-    //   <h2>Login</h2>
-    //   <form onSubmit={handleSubmit}>
-    //     <div>
-    //       <label htmlFor="username">Username:</label>
-    //       <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
-    //     </div>
-    //     <div>
-    //       <label htmlFor="password">Password:</label>
-    //       <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-    //     </div>
-    //     <button type="submit">Login</button>
-    //   </form>
-    //   {error && <div className="error">{error}</div>}
-    // </div>
+    
     <div className="">
       <div style={{
         backgroundImage: `url(${process.env.PUBLIC_URL + '/login_image.png'})`,
@@ -369,7 +355,7 @@ const Login = () => {
                 <span class="flex justify-around items-start">
                 <FaUserLarge className="me-2" size={20} color="gray"/>
               </span>
-              <input type="text" id="username"className='password-inputbox' value={username} onChange={(e) => setUsername(e.target.value)} />
+              <input type="text" placeholder ="username" id="username"className='password-inputbox' value={username} onChange={(e) => setUsername(e.target.value)} />
                 {/* <input type='email' name='uname' placeholder='Username' className='password-inputbox' /> */}
                 </div>
                 {renderErrorMessage('uname')}
