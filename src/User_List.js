@@ -5,6 +5,7 @@ import axios from "axios";
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import UpdateUserModal from "./Components/UpdateUserModal";
+import { ToastContainer } from "react-toastify";
 
 const User_List = () => {
   const [user, setUser] = useState([]);
@@ -198,9 +199,7 @@ const fetchLocation = () => {
                       <td>
                         <BiEdit onClick={handleOpenModal} style={{color:'blue', fontSize:'20px'}}/>
                         / 
-                        {/* <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} /> */}
-
-                        <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)}  style={{color:'red', fontSize:'20px'}}/>
+                        <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
                       </td>
                     </tr>
                   ))}
@@ -210,7 +209,7 @@ const fetchLocation = () => {
         <div className="confirmation-dialog">
           <div className="confirmation-content">
             <p>Are you sure you want to delete?</p>
-           <button onClick={() => handleDeleteUser(userIdToDelete)}>Yes</button>
+            <button onClick={()=>handleDeleteUser(userIdToDelete)}>Yes</button>
             <button onClick={() => setShowConfirmation(false)}>No</button>
           </div>
         </div>
@@ -244,6 +243,7 @@ const fetchLocation = () => {
           </div>
         </div>
       </div>
+      <ToastContainer/>
       <Footer />
     </>
   );

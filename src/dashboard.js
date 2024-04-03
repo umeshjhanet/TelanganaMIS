@@ -182,7 +182,6 @@ const Dashboard = () => {
   };
 
   const calculateColumnSum = ( ) => {
-    // Initialize variables to hold sum for each column
     let prevFilesSum = 0;
     let prevImagesSum = 0;
     let yesFilesSum = 0;
@@ -192,7 +191,7 @@ const Dashboard = () => {
     let totalFilesSum = 0;
     let totalImagesSum = 0;
 
-    // Iterate over tableData array
+
     tableData.forEach(elem => {
       if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
         prevFilesSum += parseInt(elem.Prev_Files) || 0;
@@ -206,7 +205,6 @@ const Dashboard = () => {
       }
     });
 
-    // Return an object containing the sums for each column
     return {
       prevFilesSum,
       prevImagesSum,
@@ -219,11 +217,6 @@ const Dashboard = () => {
     };
   }
 
-  
-  
-
-  
-  
   useEffect(() => {
 
     const fetchLocationData = async () => {
@@ -280,17 +273,6 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
-    
-    
-
-    // const fetchData = () => {
-    //   fetch("http://localhost:5000/locations")
-    //     .then(response => response.json())
-    //     .then(data => setLocations(data))
-    //     .catch(error => console.error( error));
-    // };
-    
-
 
     const fetchExportCsvFile = () => {
       const apiUrl = locationName ? `http://192.168.3.119:81/csv?locationName=${locationName}` : 'http://192.168.3.119:81/csv';
@@ -300,6 +282,7 @@ const Dashboard = () => {
         const blob = new Blob([response.data], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         setCsv(url);
+        console.log("CSV");
       })
       .catch(error => {
         console.error('Error in exporting data:', error);
@@ -500,31 +483,7 @@ const Dashboard = () => {
       console.error('Error fetching data:', error);
     });   
     }
-    
-    
-    
-    // const fetchScannedData = () => {
-    //   fetch('http://localhost:5000/scanned_images')
-    //     .then(response => {
-    //       const apiData = response.data[0];
-    //       const labels = Object.keys(apiData);
-    //       const data = Object.values(apiData);
-    //       console.log('Labels:', labels);
-    //       console.log('Data:', data);
-    //       setTodayImage({
-    //         labels: labels.filter(label => label !== 'id'),
-    //         datasets: [
-    //           {
-    //             ...todayImage.datasets[0],
-    //             data: data
-    //           },
-    //         ],
-    //       });
-    //     })
-    //     .catch(error => {
-    //       console.error('Error fetching data:', error);
-    //     });
-    // }
+
     const fetchCivilCaseGraphData = () => {
       let apiUrl = 'http://192.168.3.119:81/civil';
     
@@ -682,37 +641,11 @@ const Dashboard = () => {
         .catch(error => console.error(error));
     }
 
-
-    // const fetchLocationReportData = () => {
-    //   axios.get('http://localhost:5000/location_report')
-    //     .then(response => {
-    //       const apiData = response.data;
-    //       const labels = apiData.map(item => item.location_name);
-    //       const data = apiData.map(item => item.images);
-    //       setLocationReportData({
-    //         labels: labels,
-    //         datasets: [
-    //           {
-    //             label: 'Scanning',
-    //             backgroundColor: '#ae32c5',
-    //             data: data,
-    //           },
-    //         ],
-    //       });
-    //     })
-    //     .catch(error => {
-    //       // console.error('Error fetching data:', error);
-    //      });
-    //  }
-    // fetchGraphData();
-    // fetchData();
     fetchGraphFileData(locationName);
     fetchGraphImageData(locationName);
     fetchWeekFileGraphData(locationName);
     fetchWeekImageGraphData(locationName);
     fetchMonthImageGraphData(locationName);
-    // fetchScannedData();
-    // fetchLocationReportData();
     fetchTodayGraphFileData(locationName);
     fetchTodayGraphImageData(locationName);
     fetchCivilCaseGraphData(locationName);
@@ -721,30 +654,7 @@ const Dashboard = () => {
     fetchAllGraphImageData(locationName);
     fetchTableData();
     fetchExportCsvFile();
-    // fetchLocationData();
-    
-    
-  
-    // const intervalID =
-    //   setInterval(fetchGraphImageData,
-    //     // fetchData,
-    //     // fetchGraphFileData,
-    //     fetchTodayGraphFileData,
-    //     fetchTodayGraphImageData,
-    //     fetchWeekFileGraphData,
-    //     fetchWeekImageGraphData,
-    //     fetchMonthImageGraphData,
-    //     fetchCivilCaseGraphData,
-    //     fetchCriminalCaseGraphData,
-    //     fetchAllYesGraphImageData,
-    //     fetchAllGraphImageData,
-    //     fetchTableData,
-    //     fetchExportCsvFile,
-    //     fetchLocationData,
-    //     // fetchGraph1LocationData,
-      
-    //     );
-    // return () => clearInterval(intervalID);
+
   }, [selectedLocations]);
 
   const columnSums = calculateColumnSum();
@@ -756,9 +666,9 @@ const Dashboard = () => {
         <div className='row'>
           <div className='col-lg-2 col-md-2 '></div>
           <div className='col-lg-10 col-md-10'>
-            {/* <div className='container-fluid'> */}
               <div className='row'>
                 <p className='mt-1 fw-bold' style={{ color: '#4BC0C0', fontSize: '20px' }}>Dashboard</p>
+                <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You</p>
               </div>
               <div className='row  mt-2  search-report-card'>
               <div className='col-md-4 col-sm-12'>

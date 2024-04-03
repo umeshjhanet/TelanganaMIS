@@ -54,12 +54,12 @@ const UserRole = () => {
             </div>
             <div className='user-form-card mt-3'>
                 <div className='row'>
-                    <div className='col-3'>
+                    <div className='col-lg-3 col-md-3 col-sm-12'>
                         <button className='btn add-btn' onClick={handleOpenModal}>Add Role</button>
                     </div>
                     {isModalOpen && <AddGroupModal onClose={handleCloseModal} />}
-                    <div className='col-2'></div>
-                    <div className='col-5'>
+                    <div className='col-lg-2 col-md-2'></div>
+                    <div className='col-lg-5 col-md-9 col-sm-12'>
                     <input
                   type='text'
                   style={{ width: '300px', height: '40px' }}
