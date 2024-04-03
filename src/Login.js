@@ -18,14 +18,14 @@ const Login = () => {
   const [logoutTimer, setLogoutTimer] = useState(null);
 
   useEffect(() => {
-    console.log("Setting up logout timer...");
+    // console.log("Setting up logout timer...");
   
     const resetTimeout = () => {
       if (logoutTimer) clearTimeout(logoutTimer);
       const timer = setTimeout(() => {
         console.log("Logging out due to inactivity...");
         logout();
-      }, 60000); // 3 minutes
+      }, 9000000); // 3 minutes
       setLogoutTimer(timer);
     };
   
@@ -39,7 +39,7 @@ const Login = () => {
     ];
   
     const resetTimeoutHandler = () => {
-      console.log("Resetting logout timer...");
+      // console.log("Resetting logout timer...");
       resetTimeout();
     };
   
@@ -50,7 +50,7 @@ const Login = () => {
     resetTimeout();
   
     return () => {
-      console.log("Cleaning up logout timer...");
+      // console.log("Cleaning up logout timer...");
       if (logoutTimer) clearTimeout(logoutTimer);
       for (const event of events) {
         window.removeEventListener(event, resetTimeoutHandler);
@@ -87,6 +87,7 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         setUserDB(data); // Assuming the response contains user data
+        console.log("User logged in");
         navigate('/dashboard');
       } else {
         if (response.status === 401) {
