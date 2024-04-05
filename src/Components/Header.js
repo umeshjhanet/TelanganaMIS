@@ -14,13 +14,14 @@ import { HiMiniUserGroup, HiMiniUserPlus } from "react-icons/hi2";
 import { MdUpload } from "react-icons/md";
 import axios from 'axios';
 
+
 const Header = () => {
   const [showSideBar, setShowSideBar] = useState(false);
   const [showMobileSideBar, setShowMobileSideBar] = useState();
   const [showReportDropdown, setShowReportDropdown] = useState(false);
   const [showMasterDropdown, setShowMasterDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState(false);
-  const [user, setUser] = useState();
+  const [user, setUser] = useState([]);
  
   const handleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown);
@@ -39,17 +40,33 @@ const Header = () => {
   const handleMobileSideBar = () => {
     setShowMobileSideBar(!showMobileSideBar)
   }
-  useEffect (() => {
-    const fetchUser = () => {
-      axios
-        .get("http://localhost:5000/user_master")
-        .then((response) => setUser(response.data))
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/user_master");
+        setUser(response.data);
+  
+        // Log the entire response data to inspect its structure
+        console.log('Response Data:', response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
+  
     fetchUser();
-  })
+  }, []);
+  
+  
+
+if (!user || user.length === 0) {
+  return <div>Loading...</div>;
+}
+
+
+// const isAdmin = user.user_email_id && user.user_email_id.toLowerCase() === "rachna@gmail.com";
+const isAdmin = user && user.user_email_id && user.user_email_id.toLowerCase() === "rachna@gmail.com";
+console.log(isAdmin)
+
 const adminUser =() => {
   return(
     <>
@@ -286,14 +303,14 @@ const normalUser = () => {
                 </>
               )}
 
-              {showMasterDropdown && (
+              {/* {showMasterDropdown && (
                 <>
                   <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Group Manager<br /></Link><br />
                   <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />User Role<br /></Link><br />
                   <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Add User<br /></Link><br />
                   <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List<br /></Link><br />
                 </>
-              )}
+              )} */}
             </div>
           </div>
         }
@@ -302,13 +319,15 @@ const normalUser = () => {
   )
 }
 
-
   return (
     <>
-    {user && user.user_email_id === "rachna@gmail.com" ? normalUser() : adminUser() }
+    {user &&  user.user_email_id === "rachna@gmail.com" ? normalUser() : adminUser() }
+ 
 
     </>
   )
 }
 
 export default Header
+
+

@@ -181,6 +181,8 @@ const Dashboard = () => {
     }
   };
 
+ 
+
   const calculateColumnSum = ( ) => {
     let prevFilesSum = 0;
     let prevImagesSum = 0;
@@ -224,7 +226,7 @@ const Dashboard = () => {
         try {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://192.168.3.119:81/api/locationwisetabularData?locationName=?`)
+            axios.get(`http://localhost:5000/api/locationwisetabularData?locationName=?`)
           ));
           const locationData = locationDataResponses.map(response => response.data);
           setLocationData(locationData);
@@ -240,7 +242,7 @@ const Dashboard = () => {
     const locationName = selectedLocations;
 
     const fetchGraphFileData = (selectedLocations) => {
-      let apiUrl = 'http://192.168.3.119:81/graph1LocationWise';
+      let apiUrl = 'http://localhost:5000/graph1LocationWise';
     
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -274,23 +276,48 @@ const Dashboard = () => {
         });
     }
 
-    const fetchExportCsvFile = () => {
-      const apiUrl = locationName ? `http://192.168.3.119:81/csv?locationName=${locationName}` : 'http://192.168.3.119:81/csv';
+    // const fetchExportCsvFile = () => {
+    //   const apiUrl = locationName ? `http://localhost:5000/csv?locationName=${locationName}` : 'http://localhost:5000/csv';
 
-    axios.get(apiUrl, { responseType: 'blob' })
-      .then(response => {
-        const blob = new Blob([response.data], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        setCsv(url);
-        console.log("CSV");
-      })
-      .catch(error => {
-        console.error('Error in exporting data:', error);
-      });
+    // axios.get(apiUrl, { responseType: 'blob' })
+    //   .then(response => {
+    //     const blob = new Blob([response.data], { type: 'text/csv' });
+    //     const url = window.URL.createObjectURL(blob);
+    //     setCsv(url);
+    //     console.log("CSV");
+    //   })
+    //   .catch(error => {
+    //     console.error('Error in exporting data:', error);
+    //   });
+    // };
+
+    const fetchExportCsvFile = () => {
+      // Construct the API URL with multiple location names
+      const apiUrl = locationName ? `http://localhost:5000/csv?${locationName.map(name => `locationName=${name}`).join('&')}` : 'http://localhost:5000/csv';
+    
+      axios.get(apiUrl, { responseType: 'blob' })
+        .then(response => {
+          const blob = new Blob([response.data], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          setCsv(url);
+          console.log("CSV");
+        })
+        .catch(error => {
+          console.error('Error in exporting data:', error);
+        });
     };
+    
+
+
+   
+    
+    
+   
+    
+    
 
     const fetchGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://192.168.3.119:81/graph2';
+      let apiUrl = 'http://localhost:5000/graph2';
     
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -324,7 +351,7 @@ const Dashboard = () => {
         });
     }
     const fetchTodayGraphFileData = () => {
-      let apiUrl = 'http://192.168.3.119:81/graph7';
+      let apiUrl = 'http://localhost:5000/graph7';
     
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -359,7 +386,7 @@ const Dashboard = () => {
     }
     
     const fetchTodayGraphImageData = () => {
-      let apiUrl = 'http://192.168.3.119:81/graph8';
+      let apiUrl = 'http://localhost:5000/graph8';
     
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -399,7 +426,7 @@ const Dashboard = () => {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://192.168.3.119:81/graph5', params)
+      axios.get('http://localhost:5000/graph5', params)
         .then(response => {
           const apiData = response.data;
           const labels = apiData.map(item => item["scandate"]);
@@ -429,7 +456,7 @@ const Dashboard = () => {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://192.168.3.119:81/graph6', params)
+      axios.get('http://localhost:5000/graph6', params)
         .then(response => {
           const apiData = response.data;
           const labels = apiData.map(item => item["scandate"]);
@@ -460,7 +487,7 @@ const Dashboard = () => {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://192.168.3.119:81/graphmonth', params)
+      axios.get('http://localhost:5000/graphmonth', params)
         .then(response => {
           const apiData = response.data;
         const labels=apiData.map(item =>item['scandate'])
@@ -485,7 +512,7 @@ const Dashboard = () => {
     }
 
     const fetchCivilCaseGraphData = () => {
-      let apiUrl = 'http://192.168.3.119:81/civil';
+      let apiUrl = 'http://localhost:5000/civil';
     
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -523,7 +550,7 @@ const Dashboard = () => {
 
 
     const fetchCriminalCaseGraphData = () => {
-      let apiUrl = 'http://192.168.3.119:81/criminal';
+      let apiUrl = 'http://localhost:5000/criminal';
     
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -558,7 +585,7 @@ const Dashboard = () => {
         });
     }
     const fetchAllYesGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://192.168.3.119:81/graph9';
+      let apiUrl = 'http://localhost:5000/graph9';
     
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -597,7 +624,7 @@ const Dashboard = () => {
     
     
     const fetchAllGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://192.168.3.119:81/graph10';
+      let apiUrl = 'http://localhost:5000/graph10';
     
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -633,7 +660,7 @@ const Dashboard = () => {
     
     
     const fetchTableData = () => {
-      axios.get("http://192.168.3.119:81/tabularData")
+      axios.get("http://localhost:5000/tabularData")
         .then(response => {
           setTableData(response.data);
           console.log("Table Data", response.data); // Log inside the then block
