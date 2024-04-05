@@ -276,7 +276,7 @@ const Dashboard = () => {
     }
 
     const fetchExportCsvFile = () => {
-      const apiUrl = locationName ? `http://192.168.3.119:81/csv?locationName=${locationName}` : 'http://192.168.3.119:81/csv';
+      const apiUrl = locationName ? `http://localhost:5000/csv?locationName=${locationName}` : 'http://localhost:5000/csv';
 
     axios.get(apiUrl, { responseType: 'blob' })
       .then(response => {

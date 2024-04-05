@@ -15,7 +15,7 @@ const Report = () => {
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [locationName, setLocationName] = useState('');
   const [locationData, setLocationData] = useState(null);
-  const[summaryLocationData,setSummaryLocationData]=useState(null);
+  const [summaryLocationData, setSummaryLocationData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchInput, setSearchInput] = useState('');
@@ -31,7 +31,7 @@ const Report = () => {
       setSelectedLocations([...selectedLocations, locationName]);
       setSearchInput('');
     }
-    setShowLocation(false); 
+    setShowLocation(false);
 
 
   };
@@ -77,38 +77,38 @@ const Report = () => {
     };
 
 
-   
+
 
     const fetchSummaryReportCsvFile = () => {
-      const apiUrl = locationName ? `http://192.168.3.119:81/summarycsv?locationName=${locationName}` : 'http://192.168.3.119:81/summarycsv';
+      const apiUrl = locationName ? `http://localhost:5000/summarycsv?locationName=${locationName}` : 'http://localhost:5000/summarycsv';
 
 
-    axios.get(apiUrl, { responseType: 'blob' })
-      .then(response => {
-        const blob = new Blob([response.data], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        setCsv(url);
-      })
-      .catch(error => {
-        console.error('Error in exporting data:', error);
-      });
+      axios.get(apiUrl, { responseType: 'blob' })
+        .then(response => {
+          const blob = new Blob([response.data], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          setCsv(url);
+        })
+        .catch(error => {
+          console.error('Error in exporting data:', error);
+        });
     };
 
 
-    
+
     const fetchSummaryReportTableCsvFile = () => {
       const apiUrl = locationName ? `http://192.168.3.119:81/reporttablecsv?locationName=${locationName}` : 'http://192.168.3.119:81/reporttablecsv';
 
 
-    axios.get(apiUrl, { responseType: 'blob' })
-      .then(response => {
-        const blob = new Blob([response.data], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        setReportCsv(url);
-      })
-      .catch(error => {
-        console.error('Error in exporting data:', error);
-      });
+      axios.get(apiUrl, { responseType: 'blob' })
+        .then(response => {
+          const blob = new Blob([response.data], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          setReportCsv(url);
+        })
+        .catch(error => {
+          console.error('Error in exporting data:', error);
+        });
     };
 
 
@@ -123,7 +123,7 @@ const Report = () => {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
             axios.get(`http://192.168.3.119:81/reportLocationWiseTable?locationname=${location}`)
-            
+
           ));
           const locationData = locationDataResponses.map(response => response.data);
           setLocationData(locationData);
@@ -143,7 +143,7 @@ const Report = () => {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
             axios.get(`http://localhost:5000/summarylocationname?locationname=${location}`)
-            
+
           ));
           const summaryLocationData = locationDataResponses.map(response => response.data);
           setSummaryLocationData(summaryLocationData);
@@ -272,7 +272,7 @@ const Report = () => {
               </div>
             </div>
             <div className="row mt-3 me-1">
-              <div className='row' style={{ padding: '5px', backgroundColor: '#4BC0C0', paddingTop: '15px',marginLeft:'0' }}>
+              <div className='row' style={{ padding: '5px', backgroundColor: '#4BC0C0', paddingTop: '15px', marginLeft: '0' }}>
                 <div className='col-10' >
                   <h6 className='' style={{ color: 'white' }}>SUMMARY REPORT</h6>
                 </div>
@@ -283,310 +283,292 @@ const Report = () => {
               <div className='main-summary-card '>
                 <h5 className='mt-1 mb-2'>Total Location: 57</h5>
                 <div className='row'>
-                  {/* {summary && summary.map((elem, index) => {
-                    if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                   
-                      return (
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
                         <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
                           <div className='summary-card mt-3'>
                             <div className='summary-title'>
                               <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
                             </div>
-                            <p className='text-center'>Total Files: {elem.CollectionFiles}<br />Total Images: {elem.CollectionImages}</p>
+                            <p className='text-center'>Total Files: {elem.CollectionFiles || '0'} <br />Total Images: {elem.CollectionImages || '0'}</p>
                           </div>
                         </div>
-                      );
-                    }
-                    return null;
-                   
-                  })} */}
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
+                              </div>
+                              <p className='text-center'>Total Files: {elem.CollectionFiles || '0'}<br />Total Images: {elem.CollectionImages || '0'}</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
 
-{summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
-                </div>
-                <p className='text-center'>Total Files: {elem.CollectionFiles || '0'} <br />Total Images: {elem.CollectionImages || '0'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>Collection of Records</h6>
-                  </div>
-                  <p className='text-center'>Total Files: {elem.CollectionFiles || '0'}<br />Total Images: {elem.CollectionImages || '0'}</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                 
 
-                 {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
-                </div>
-                <p className='text-center'>Total Files: {elem.ScannedFiles || '0'}<br />Total Images: {elem.ScannedImages || '0'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
-                  </div>
-                  <p className='text-center'>Total Files: {elem.ScannedFiles || '0'}<br />Total Images: {elem.ScannedImages || '0'}</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                        {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>Image QC</h6>
-                </div>
-                <p className='text-center'>Total Files: {elem.QCFiles || '0'}<br />Total Images: {elem.QCImages || '0'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
-                  </div>
-                  <p className='text-center'>Total Files: {elem.QCFiles || '0'}<br />Total Images: {elem.QCImages || '0'}</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                        {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
-                </div>
-                <p className='text-center'>Total Files: {elem.FlaggingFiles || '0'}<br />Total Images: {elem.FlaggingImages || '0'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
-                  </div>
-                  <p className='text-center'>Total Files: {elem.FlaggingFiles || '0'}<br />Total Images: {elem.FlaggingImages || '0'}</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                         {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
-                </div>
-                <p className='text-center'>Total Files: {elem.IndexingFiles || '0'}<br />Total Images: {elem.IndexingImages || '0'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
-                  </div>
-                  <p className='text-center'>Total Files: {elem.IndexingFiles || '0'}<br />Total Images: {elem.IndexingImages || '0'}</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                         {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
-                </div>
-                <p className='text-center'>Total Files: {elem.CBSL_QAFiles || '0'}<br />Total Images: {elem.CBSL_QAImages || '0'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
-                  </div>
-                  <p className='text-center'>Total Files: {elem.CBSL_QAFiles || '0'}<br />Total Images: {elem.CBSL_QAImages || '0'}</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                         {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
-                </div>
-                <p className='text-center'>Total Files: {elem.Export_PdfFiles || '0'}<br />Total Images: {elem.Export_PdfImages || '0'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
-                  </div>
-                  <p className='text-center'>Total Files: {elem.Export_PdfFiles || '0'}<br />Total Images: {elem.Export_PdfImages || '0'}</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                        {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
-                </div>
-                <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles || '0'}<br />Total Images: {elem.Client_QA_AcceptedImages || '0'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
-                  </div>
-                  <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles || '0'}<br />Total Images: {elem.Client_QA_AcceptedImages || '0'}</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                         {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
-                </div>
-                <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
-                  </div>
-                  <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
-                        {summary && ( 
-        selectedLocations.length === 0 ? ( 
-          summary.map((elem, index) => (
-            <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-              <div className='summary-card mt-3'>
-                <div className='summary-title'>
-                  <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
-                </div>
-                <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          report
-            .filter(elem => selectedLocations.includes(elem.LocationName))
-            .map((elem, index) => (
-              <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
-                <div className='summary-card mt-3'>
-                  <div className='summary-title'>
-                    <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
-                  </div>
-                  <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
-                </div>
-              </div>
-            ))
-        )
-      )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
+                            </div>
+                            <p className='text-center'>Total Files: {elem.ScannedFiles || '0'}<br />Total Images: {elem.ScannedImages || '0'}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
+                              </div>
+                              <p className='text-center'>Total Files: {elem.ScannedFiles || '0'}<br />Total Images: {elem.ScannedImages || '0'}</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>Image QC</h6>
+                            </div>
+                            <p className='text-center'>Total Files: {elem.QCFiles || '0'}<br />Total Images: {elem.QCImages || '0'}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>Scanning ADF</h6>
+                              </div>
+                              <p className='text-center'>Total Files: {elem.QCFiles || '0'}<br />Total Images: {elem.QCImages || '0'}</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
+                            </div>
+                            <p className='text-center'>Total Files: {elem.FlaggingFiles || '0'}<br />Total Images: {elem.FlaggingImages || '0'}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>Document Classification</h6>
+                              </div>
+                              <p className='text-center'>Total Files: {elem.FlaggingFiles || '0'}<br />Total Images: {elem.FlaggingImages || '0'}</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
+                            </div>
+                            <p className='text-center'>Total Files: {elem.IndexingFiles || '0'}<br />Total Images: {elem.IndexingImages || '0'}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>Indexing</h6>
+                              </div>
+                              <p className='text-center'>Total Files: {elem.IndexingFiles || '0'}<br />Total Images: {elem.IndexingImages || '0'}</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
+                            </div>
+                            <p className='text-center'>Total Files: {elem.CBSL_QAFiles || '0'}<br />Total Images: {elem.CBSL_QAImages || '0'}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>CBSL QA</h6>
+                              </div>
+                              <p className='text-center'>Total Files: {elem.CBSL_QAFiles || '0'}<br />Total Images: {elem.CBSL_QAImages || '0'}</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
+                            </div>
+                            <p className='text-center'>Total Files: {elem.Export_PdfFiles || '0'}<br />Total Images: {elem.Export_PdfImages || '0'}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>Export PDF</h6>
+                              </div>
+                              <p className='text-center'>Total Files: {elem.Export_PdfFiles || '0'}<br />Total Images: {elem.Export_PdfImages || '0'}</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
+                            </div>
+                            <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles || '0'}<br />Total Images: {elem.Client_QA_AcceptedImages || '0'}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>Client QA</h6>
+                              </div>
+                              <p className='text-center'>Total Files: {elem.Client_QA_AcceptedFiles || '0'}<br />Total Images: {elem.Client_QA_AcceptedImages || '0'}</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
+                            </div>
+                            <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>CSV Generation</h6>
+                              </div>
+                              <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
+                  {summary && (
+                    selectedLocations.length === 0 ? (
+                      summary.map((elem, index) => (
+                        <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                          <div className='summary-card mt-3'>
+                            <div className='summary-title'>
+                              <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
+                            </div>
+                            <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      report
+                        .filter(elem => selectedLocations.includes(elem.LocationName))
+                        .map((elem, index) => (
+                          <div className='col-lg-2 col-md-4 col-sm-6' key={index}>
+                            <div className='summary-card mt-3'>
+                              <div className='summary-title'>
+                                <h6 style={{ textTransform: 'capitalize' }}>Inventory Out</h6>
+                              </div>
+                              <p className='text-center'>Total Files: 0<br />Total Images: 0</p>
+                            </div>
+                          </div>
+                        ))
+                    )
+                  )}
                 </div>
               </div>
             </div>
             <div className="row mt-3 me-1">
               <div className="table-card">
-                
+
                 <div className='row' style={{ padding: '5px', backgroundColor: '#4BC0C0', paddingTop: '15px' }}>
-                <div className='col-10' >
-                  <h6 className='' style={{ color: 'white' }}>LOCATION WISE DETAILED CUMULATIVE REPORT</h6>
+                  <div className='col-10' >
+                    <h6 className='' style={{ color: 'white' }}>LOCATION WISE DETAILED CUMULATIVE REPORT</h6>
+                  </div>
+                  <div className='col-2'>
+                    <h6 style={{ color: 'white' }} onClick={handleReportCsv}> <MdFileDownload style={{ fontSize: '20px' }} />Export CSV</h6>
+                  </div>
                 </div>
-                <div className='col-2'>
-                  <h6 style={{ color: 'white' }} onClick={handleReportCsv}> <MdFileDownload style={{ fontSize: '20px' }} />Export CSV</h6>
-                </div>
-              </div>
                 <div
                   className="row mt-5 ms-2 me-2"
                   style={{ overflowX: "auto" }}
@@ -632,13 +614,13 @@ const Report = () => {
                         <th>Images</th>
                       </tr>
                     </thead>
-                    <tbody className="scrollable" style={{ color: 'black',height:'200px' }} >
+                    <tbody className="scrollable" style={{ color: 'black', height: '200px' }} >
 
 
                       {report && report.map((elem, index) => {
                         if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
                           return (
-                            <tr key={index} style={{backgroundColor:'white'}}>
+                            <tr key={index} style={{ backgroundColor: 'white' }}>
                               <td>{elem.LocationName}</td>
                               <td>{elem.CollectionFiles || '0'}</td>
                               <td>{elem.CollectionImages || '0'}</td>
