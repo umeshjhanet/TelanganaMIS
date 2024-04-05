@@ -220,6 +220,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
+    
 
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {

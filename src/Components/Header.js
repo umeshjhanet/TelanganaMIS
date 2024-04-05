@@ -77,231 +77,230 @@ const adminUser =() => {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
 
-          </ul>
-          <form className="d-flex">
-            <Link to='/'>
-              <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-            </Link>
-
-            <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:Admin</p>
-          </form>
-        </div>
-      </div>
-    </nav>
-
-    {showSideBar ? (
-      <>
-        <div className='row'>
-          <div className='col-1'>
-            <div className='shrink-sidebar'>
-              <div className='row shrink-header-image' >
-                <img src='ezeefile.png' />
-              </div>
-              <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color:'#107393' }} /></p></Link>
-              <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color:'#107393' }} /></p></Link>
-              <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color:'#107393' }} /></p></Link>
-              <Link to='/User_List'><p className='ms-4 '><FaUserAlt style={{ marginRight: '10px', color:'#107393' }} /></p></Link>
-            </div>
-          </div>
-          <div className='col-11'></div>
-        </div>
-      </>
-    ) : (
-      <>
-          <div className='row' style={{marginLeft:'0'}}>
-            <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-              <div className='sidebar'>
-                <div className='row header-image'>
-                  <img src='ezeefile.png'/>
-                </div>
-                <div className='row' onClick={handleActiveTab}>
-                  <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Dashboard</Link>
-                </div>
-                <div className='row' onClick={handleActiveTab}>
-                  <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdUpload style={{ marginRight: '10px' ,fontSize:'20px', color:'#107393'}} />Upload Database</Link>
-                </div>
-                <div className='row' onClick={handleActiveTab}>
-                  <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
-                </div>
-                {showReportDropdown && (
-                  <>
-                  <hr/>
-                    <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Location Wise Report</Link>
-                    <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Last Upload File</Link>
-                    <hr/> 
-                  </>
-                )}
-                <div className='row' onClick={handleActiveTab}>
-                  <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaUserAlt  style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
-                </div>
-                {showMasterDropdown && (
-            <>
-            <hr/>
-              <Link to='/groupManager' className='ms-1' style={{ color: 'black', textDecoration: 'none', }}><FaUsers  style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Group Manager<br /></Link>
-              <Link to='/userRole' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><RiUserFill  style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />User Role<br /></Link>
-              <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><HiMiniUserPlus  style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Add User<br /></Link>
-              <Link to='/User_List' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><HiMiniUserGroup  style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />User List<br /></Link>
-            <hr/>
-            </>
-          )}
+                </ul>
+                <form className="d-flex">
+                  <Link to='/'>
+                    <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  </Link>
+                  {/* <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:{userLog ? userLog.first_name : 'Guest'}</p> */}
+                </form>
               </div>
             </div>
-            <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px'}}></div>
-          </div>
-      </>
-    )}
-  </div>
-  <div className='d-block d-xl-none d-md-none d-sm-block'>
-    <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-      <div className="container-fluid" >
-        <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
-        <form className="d-flex">
-          <Link to='/'>
-            <button className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-          </Link>
-          <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
-        </form>
-      </div>
-    </nav>
-    {showMobileSideBar &&
-      <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-        <div className='mobile-sidebar'>
-          <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-            <img src='ezeefile.png' />
-          </div>
-          <div className='row' onClick={handleActiveTab}>
-            <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
-          </div>
-          <div className='row' onClick={handleActiveTab}>
-            <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
-          </div>
-          <div className='row' onClick={handleActiveTab}>
-            <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
-          </div>
-          {showReportDropdown && (
+          </nav>
+
+          {showSideBar ? (
             <>
-              <Link to='/report' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Location Wise Report</Link>
-              <Link to='/file' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />Last Upload File</Link>
-            </>
-          )}
-
-          {showMasterDropdown && (
-            <>
-              <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Group Manager<br /></Link><br />
-              <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />User Role<br /></Link><br />
-              <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Add User<br /></Link><br />
-              <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List<br /></Link><br />
-            </>
-          )}
-        </div>
-      </div>
-    }
-  </div>
-  </>
-  )
-}
-const normalUser = () => {
-  return (
-    <>
-     <div className='d-none d-xl-block d-md-block d-sm-none'>
-        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-          <div className="container-fluid" >
-            <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-
-              </ul>
-              <form className="d-flex">
-                <Link to='/'>
-                  <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-                </Link>
-
-                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:Admin</p>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        {showSideBar ? (
-          <>
-            <div className='row'>
-              <div className='col-1'>
-                <div className='shrink-sidebar'>
-                  <div className='row shrink-header-image' >
-                    <img src='ezeefile.png' />
+              <div className='row'>
+                <div className='col-1'>
+                  <div className='shrink-sidebar'>
+                    <div className='row shrink-header-image' >
+                      <img src='ezeefile.png' />
+                    </div>
+                    <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <Link to='/User_List'><p className='ms-4 '><FaUserAlt style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                   </div>
-                  <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color:'#107393' }} /></p></Link>
-                  
-                  <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color:'#107393' }} /></p></Link>
-        
                 </div>
+                <div className='col-11'></div>
               </div>
-              <div className='col-11'></div>
-            </div>
-          </>
-        ) : (
-          <>
-              <div className='row' style={{marginLeft:'0'}}>
+            </>
+          ) : (
+            <>
+              <div className='row' style={{ marginLeft: '0' }}>
                 <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
                   <div className='sidebar'>
                     <div className='row header-image'>
-                      <img src='ezeefile.png'/>
+                      <img src='ezeefile.png' />
                     </div>
                     <div className='row' onClick={handleActiveTab}>
-                      <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Dashboard</Link>
+                      <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
                     </div>
-                    
                     <div className='row' onClick={handleActiveTab}>
-                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                      <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
+                    </div>
+                    <div className='row' onClick={handleActiveTab}>
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                     </div>
                     {showReportDropdown && (
                       <>
-                      <hr/>
-                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Location Wise Report</Link>
-                        <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px',fontSize:'20px', color:'#107393' }} />Last Upload File</Link>
-                        <hr/> 
+                        <hr />
+                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                        <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
+                        <hr />
+                      </>
+                    )}
+                    <div className='row' onClick={handleActiveTab}>
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
+                    </div>
+                    {showMasterDropdown && (
+                      <>
+                        <hr />
+                        <Link to='/groupManager' className='ms-1' style={{ color: 'black', textDecoration: 'none', }}><FaUsers style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Group Manager<br /></Link>
+                        <Link to='/userRole' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><RiUserFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Role<br /></Link>
+                        <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><HiMiniUserPlus style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add User<br /></Link>
+                        <Link to='/User_List' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><HiMiniUserGroup style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User List<br /></Link>
+                        <hr />
                       </>
                     )}
                   </div>
                 </div>
-                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px'}}></div>
+                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
               </div>
-          </>
-        )}
-      </div>
-      <div className='d-block d-xl-none d-md-none d-sm-block'>
-        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-          <div className="container-fluid" >
-            <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
-            <form className="d-flex">
-              <Link to='/'>
-                <button className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-              </Link>
-              <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
-            </form>
-          </div>
-        </nav>
-        {showMobileSideBar &&
-          <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-            <div className='mobile-sidebar'>
-              <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                <img src='ezeefile.png' />
+            </>
+          )}
+        </div>
+        <div className='d-block d-xl-none d-md-none d-sm-block'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
+              <form className="d-flex">
+                <Link to='/'>
+                  <button className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                </Link>
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
+              </form>
+            </div>
+          </nav>
+          {showMobileSideBar &&
+            <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+              <div className='mobile-sidebar'>
+                <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                  <img src='ezeefile.png' />
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
+                </div>
+                {showReportDropdown && (
+                  <>
+                    <Link to='/report' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Location Wise Report</Link>
+                    <Link to='/file' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />Last Upload File</Link>
+                  </>
+                )}
+
+                {showMasterDropdown && (
+                  <>
+                    <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Group Manager<br /></Link><br />
+                    <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />User Role<br /></Link><br />
+                    <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Add User<br /></Link><br />
+                    <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List<br /></Link><br />
+                  </>
+                )}
               </div>
-              <div className='row' onClick={handleActiveTab}>
-                <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
+            </div>
+          }
+        </div>
+      </>
+    )
+  }
+  const normalUser = () => {
+    return (
+      <>
+        <div className='d-none d-xl-block d-md-block d-sm-none'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+
+                </ul>
+                <form className="d-flex">
+                  <Link to='/'>
+                    <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  </Link>
+
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:Admin</p>
+                </form>
               </div>
-              <div className='row' onClick={handleActiveTab}>
-                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+            </div>
+          </nav>
+
+          {showSideBar ? (
+            <>
+              <div className='row'>
+                <div className='col-1'>
+                  <div className='shrink-sidebar'>
+                    <div className='row shrink-header-image' >
+                      <img src='ezeefile.png' />
+                    </div>
+                    <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+
+                    <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+
+                  </div>
+                </div>
+                <div className='col-11'></div>
               </div>
-              <div className='row' onClick={handleActiveTab}>
-                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
+            </>
+          ) : (
+            <>
+              <div className='row' style={{ marginLeft: '0' }}>
+                <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+                  <div className='sidebar'>
+                    <div className='row header-image'>
+                      <img src='ezeefile.png' />
+                    </div>
+                    <div className='row' onClick={handleActiveTab}>
+                      <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                    </div>
+
+                    <div className='row' onClick={handleActiveTab}>
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                    </div>
+                    {showReportDropdown && (
+                      <>
+                        <hr />
+                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                        <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
+                        <hr />
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
               </div>
-              {showReportDropdown && (
-                <>
-                  <Link to='/report' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Location Wise Report</Link>
-                  <Link to='/file' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />Last Upload File</Link>
-                </>
-              )}
+            </>
+          )}
+        </div>
+        <div className='d-block d-xl-none d-md-none d-sm-block'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
+              <form className="d-flex">
+                <Link to='/'>
+                  <button className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                </Link>
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
+              </form>
+            </div>
+          </nav>
+          {showMobileSideBar &&
+            <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+              <div className='mobile-sidebar'>
+                <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                  <img src='ezeefile.png' />
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
+                </div>
+                {showReportDropdown && (
+                  <>
+                    <Link to='/report' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Location Wise Report</Link>
+                    <Link to='/file' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />Last Upload File</Link>
+                  </>
+                )}
 
               {/* {showMasterDropdown && (
                 <>
@@ -324,6 +323,7 @@ const normalUser = () => {
     {user &&  user.user_email_id === "rachna@gmail.com" ? normalUser() : adminUser() }
  
 
+      {/* <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p> */}
     </>
   )
 }
