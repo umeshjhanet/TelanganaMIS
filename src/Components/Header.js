@@ -4,6 +4,7 @@ import { IoLogOut } from "react-icons/io5";
 import { FaHome } from "react-icons/fa";
 import { VscGraph } from "react-icons/vsc";
 import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from 'react-router-dom';
 import { BsFillCloudArrowUpFill } from "react-icons/bs";
 import { BsCloudyFill } from "react-icons/bs";
 import { BrowserRouter, Routes, Route, Link, Router } from "react-router-dom";
@@ -15,6 +16,8 @@ import { MdUpload } from "react-icons/md";
 import axios from 'axios';
 
 
+
+
 const Header = () => {
   const [showSideBar, setShowSideBar] = useState(false);
   const [showMobileSideBar, setShowMobileSideBar] = useState();
@@ -22,6 +25,7 @@ const Header = () => {
   const [showMasterDropdown, setShowMasterDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState(false);
   const [user, setUser] = useState([]);
+  const navigate = useNavigate();
  
   const handleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown);
@@ -40,6 +44,20 @@ const Header = () => {
   const handleMobileSideBar = () => {
     setShowMobileSideBar(!showMobileSideBar)
   }
+
+  const handleLogout = async () => {
+    try {
+      // Send a POST request to your logout API endpoint
+      await axios.post('http://localhost:5000/logout');
+      navigate('/');
+      
+      // After successful logout, you can perform additional actions such as redirecting the user to the login page or updating the UI
+      console.log('Logout successful');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -79,9 +97,10 @@ const adminUser =() => {
 
                 </ul>
                 <form className="d-flex">
-                  <Link to='/'>
+                   <Link to='/'>
                     <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-                  </Link>
+                  </Link> 
+                 
                   {/* <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:{userLog ? userLog.first_name : 'Guest'}</p> */}
                 </form>
               </div>
@@ -156,7 +175,8 @@ const adminUser =() => {
               <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
               <form className="d-flex">
                 <Link to='/'>
-                  <button className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  {/* <button className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />onClick={handleLogout}</button> */}
+                  <button onClick={handleLogout}>Logout</button>
                 </Link>
                 <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
               </form>
@@ -212,7 +232,8 @@ const adminUser =() => {
                 </ul>
                 <form className="d-flex">
                   <Link to='/'>
-                    <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  <button onClick={handleLogout}>Logout</button>
+                    {/* <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button> */}
                   </Link>
 
                   <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:Admin</p>
