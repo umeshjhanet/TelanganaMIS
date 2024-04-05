@@ -77,8 +77,6 @@ const Header = () => {
     fetchUser();
   }, []);
 
-
-
 const adminUser =() => {
   return(
     <>
@@ -335,9 +333,7 @@ const adminUser =() => {
 
   return (
     <>
-      {userLog && userLog.first_name === "Pooja" ? adminUser() : normalUser()}
-
-      
+      {userLog && userLog.first_name === "Pooja" ? adminUser() : normalUser()}      
     </>
   )
 }

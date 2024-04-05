@@ -90,7 +90,7 @@ const Report = () => {
     const locationName = selectedLocations;
     const summaryData = () => {
       axios
-        .get("http://localhost:5000/summary")
+        .get("http://192.168.3.119:81/summary")
         .then((response) => setSummary(response.data))
 
         .catch((error) => console.error(error));
@@ -99,10 +99,10 @@ const Report = () => {
     const fetchSummaryReportCsvFile = () => {
       // const apiUrl = locationName ? `http://192.168.3.119:81/summarycsv?locationName=${locationName}` : 'http://192.168.3.119:81/summarycsv';
       const apiUrl = locationName
-        ? `http://localhost:5000/summarycsv?${locationName
+        ? `http://192.168.3.119:81/summarycsv?${locationName
             .map((name) => `locationName=${name}`)
             .join("&")}`
-        : "http://localhost:5000/summarycsv";
+        : "http://192.168.3.119:81/summarycsv";
 
       axios
         .get(apiUrl, { responseType: "blob" })
@@ -117,12 +117,12 @@ const Report = () => {
     };
 
     const fetchSummaryReportTableCsvFile = () => {
-      // const apiUrl = locationName ? `http://localhost:5000/reporttablecsv?locationName=${locationName}` : 'http://localhost:5000/reporttablecsv';
+      // const apiUrl = locationName ? `http://192.168.3.119:81/reporttablecsv?locationName=${locationName}` : 'http://192.168.3.119:81/reporttablecsv';
       const apiUrl = locationName
-        ? `http://localhost:5000/reporttablecsv?${locationName
+        ? `http://192.168.3.119:81/reporttablecsv?${locationName
             .map((name) => `locationName=${name}`)
             .join("&")}`
-        : "http://localhost:5000/reporttablecsv";
+        : "http://192.168.3.119:81/reporttablecsv";
 
       axios
         .get(apiUrl, { responseType: "blob" })
@@ -138,7 +138,7 @@ const Report = () => {
 
     const reportData = () => {
       axios
-        .get("http://localhost:5000/reportTable")
+        .get("http://192.168.3.119:81/reportTable")
         .then((response) => setReport(response.data))
         .catch((error) => console.error(error));
     };
@@ -174,7 +174,7 @@ const Report = () => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://localhost:5000/summarylocationname?locationname=${location}`
+                `http://192.168.3.119:81/summarylocationname?locationname=${location}`
               )
             )
           );
