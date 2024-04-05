@@ -14,6 +14,7 @@ import { HiMiniUserGroup, HiMiniUserPlus } from "react-icons/hi2";
 import { MdUpload } from "react-icons/md";
 import axios from 'axios';
 
+
 const Header = () => {
   const [showSideBar, setShowSideBar] = useState(false);
   const [showMobileSideBar, setShowMobileSideBar] = useState();
@@ -44,25 +45,41 @@ const Header = () => {
     setShowMobileSideBar(!showMobileSideBar)
   }
   useEffect(() => {
-    const fetchUser = () => {
-      axios
-        .get("http://localhost:5000/user_master")
-        .then((response) => setUser(response.data))
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/user_master");
+        setUser(response.data);
+  
+        // Log the entire response data to inspect its structure
+        console.log('Response Data:', response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
+  
     fetchUser();
-  })
-  const adminUser = () => {
-    return (
-      <>
-        <div className='d-none d-xl-block d-md-block d-sm-none'>
-          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-            <div className="container-fluid" >
-              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
-              <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+  }, []);
+  
+  
+
+if (!user || user.length === 0) {
+  return <div>Loading...</div>;
+}
+
+
+// const isAdmin = user.user_email_id && user.user_email_id.toLowerCase() === "rachna@gmail.com";
+const isAdmin = user && user.user_email_id && user.user_email_id.toLowerCase() === "rachna@gmail.com";
+console.log(isAdmin)
+
+const adminUser =() => {
+  return(
+    <>
+    <div className='d-none d-xl-block d-md-block d-sm-none'>
+    <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+      <div className="container-fluid" >
+        <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
 
                 </ul>
                 <form className="d-flex">
@@ -289,22 +306,21 @@ const Header = () => {
                   </>
                 )}
 
-                {showMasterDropdown && (
-                  <>
-                    <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Group Manager<br /></Link><br />
-                    <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />User Role<br /></Link><br />
-                    <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Add User<br /></Link><br />
-                    <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List<br /></Link><br />
-                  </>
-                )}
-              </div>
+              {/* {showMasterDropdown && (
+                <>
+                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Group Manager<br /></Link><br />
+                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />User Role<br /></Link><br />
+                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Add User<br /></Link><br />
+                  <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List<br /></Link><br />
+                </>
+              )} */}
             </div>
-          }
-        </div>
-      </>
-    )
-  }
-
+          </div>
+        }
+      </div>
+    </>
+  )
+}
 
   return (
     <>
@@ -316,3 +332,5 @@ const Header = () => {
 }
 
 export default Header
+
+

@@ -3,7 +3,7 @@ import Header from './Components/Header'
 import Footer from './Footer'
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 const User_Form = () => {
@@ -178,7 +178,7 @@ const [formData,setFormData]=useState({
     try {
       const response = await axios.post("http://localhost:5000/createuser", formData);
       console.log("Post created:", response.data);
-      toast("User created successfully");
+      toast.success("User created successfully");
     } catch (error) {
      
       if (error.response && error.response.status === 409) {
@@ -190,10 +190,6 @@ const [formData,setFormData]=useState({
     }
   
   }
-
-
-
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value, group_id: selectedGroupId, locations:selectedLocationId,role_id: selectedPrivilegeId, sl_id: selectedStorageId, user_id: selectedReportingId});
@@ -207,6 +203,7 @@ const [formData,setFormData]=useState({
   return (
     <>
       <Header />
+      <ToastContainer />
       <div className='container-fluid'>
         <div className='row'>
           <div className='col-lg-2 col-md-2'></div>
