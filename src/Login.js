@@ -76,21 +76,20 @@ const Login = () => {
   
     // Send login request to backend
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch("http://192.168.3.119:81/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ user_email_id: uname.value, password: password.value })
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        console.log("User information received:", data);
+        console.log("Data received from backend:", data);
         localStorage.setItem('user', JSON.stringify(data));
-        console.log("User information stored in local storage:", data);
         navigate('/dashboard');
-      }
+      }  
       else {
         if (response.status === 401) {
           setError(errors.username); // Invalid username

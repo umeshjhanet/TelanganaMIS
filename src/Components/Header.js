@@ -47,7 +47,7 @@ const Header = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/user_master");
+        const response = await axios.get("http://192.168.3.119:81/user_master");
         setUser(response.data);
   
         // Log the entire response data to inspect its structure
@@ -59,17 +59,6 @@ const Header = () => {
   
     fetchUser();
   }, []);
-  
-  
-
-if (!user || user.length === 0) {
-  return <div>Loading...</div>;
-}
-
-
-// const isAdmin = user.user_email_id && user.user_email_id.toLowerCase() === "rachna@gmail.com";
-const isAdmin = user && user.user_email_id && user.user_email_id.toLowerCase() === "rachna@gmail.com";
-console.log(isAdmin)
 
 const adminUser =() => {
   return(
@@ -86,7 +75,7 @@ const adminUser =() => {
                   <Link to='/'>
                     <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                   </Link>
-                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.user.first_name : 'Guest'}</p>
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p>
                 </form>
               </div>
             </div>
@@ -219,7 +208,7 @@ const adminUser =() => {
                     <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                   </Link>
 
-                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.user.first_name}</p>
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.first_name}</p>
                 </form>
               </div>
             </div>
@@ -324,9 +313,7 @@ const adminUser =() => {
 
   return (
     <>
-      {userLog && userLog.user.first_name === "Pooja" ? adminUser() : normalUser()}
-
-      
+      {userLog && userLog.first_name === "Pooja" ? adminUser() : normalUser()}      
     </>
   )
 }
