@@ -24,9 +24,12 @@ const Header = () => {
   const [showReportDropdown, setShowReportDropdown] = useState(false);
   const [showMasterDropdown, setShowMasterDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState(false);
-  const [user, setUser] = useState([]);
-  const navigate = useNavigate();
- 
+  const [user, setUser] = useState();
+
+  // Retrieve user info from local storage
+  const userLog = JSON.parse(localStorage.getItem('user'));
+  console.log("User's Info", userLog);
+
   const handleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown);
   }
@@ -99,9 +102,8 @@ const adminUser =() => {
                 <form className="d-flex">
                    <Link to='/'>
                     <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-                  </Link> 
-                 
-                  {/* <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:{userLog ? userLog.first_name : 'Guest'}</p> */}
+                  </Link>
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.user.first_name : 'Guest'}</p>
                 </form>
               </div>
             </div>
@@ -236,7 +238,7 @@ const adminUser =() => {
                     {/* <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button> */}
                   </Link>
 
-                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome:Admin</p>
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.user.first_name}</p>
                 </form>
               </div>
             </div>
@@ -341,10 +343,9 @@ const adminUser =() => {
 
   return (
     <>
-    {user &&  user.user_email_id === "rachna@gmail.com" ? normalUser() : adminUser() }
- 
+      {userLog && userLog.user.first_name === "Pooja" ? adminUser() : normalUser()}
 
-      {/* <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p> */}
+      
     </>
   )
 }

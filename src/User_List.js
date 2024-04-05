@@ -208,9 +208,9 @@ const fetchLocation = () => {
               {showConfirmation && (
         <div className="confirmation-dialog">
           <div className="confirmation-content">
-            <p>Are you sure you want to delete?</p>
-            <button onClick={()=>handleDeleteUser(userIdToDelete)}>Yes</button>
-            <button onClick={() => setShowConfirmation(false)}>No</button>
+            <p className="fw-bold">Are you sure you want to delete?</p>
+            <button className="btn btn-success mt-3 ms-5" onClick={()=>handleDeleteUser(userIdToDelete)}>Yes</button>
+            <button className="btn btn-danger ms-3 mt-3" onClick={() => setShowConfirmation(false)}>No</button>
           </div>
         </div>
       )}

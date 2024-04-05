@@ -86,10 +86,12 @@ const Login = () => {
   
       if (response.ok) {
         const data = await response.json();
+        console.log("User information received:", data);
         localStorage.setItem('user', JSON.stringify(data));
-        console.log("User information stored:", data);
+        console.log("User information stored in local storage:", data);
         navigate('/dashboard');
-      } else {
+      }
+      else {
         if (response.status === 401) {
           setError(errors.username); // Invalid username
         } else if (response.status === 403) {

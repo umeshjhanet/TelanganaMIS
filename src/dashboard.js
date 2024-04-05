@@ -277,20 +277,7 @@ const Dashboard = () => {
         });
     }
 
-    // const fetchExportCsvFile = () => {
-    //   const apiUrl = locationName ? `http://localhost:5000/csv?locationName=${locationName}` : 'http://localhost:5000/csv';
-
-    // axios.get(apiUrl, { responseType: 'blob' })
-    //   .then(response => {
-    //     const blob = new Blob([response.data], { type: 'text/csv' });
-    //     const url = window.URL.createObjectURL(blob);
-    //     setCsv(url);
-    //     console.log("CSV");
-    //   })
-    //   .catch(error => {
-    //     console.error('Error in exporting data:', error);
-    //   });
-    // };
+   
 
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
