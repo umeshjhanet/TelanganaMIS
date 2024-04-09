@@ -176,7 +176,7 @@ const [formData,setFormData]=useState({
       return;
     }
     try {
-      const response = await axios.post("http://192.168.3.119:81/createuser", formData);
+      const response = await axios.post("http://localhost:3001/createuser", formData);
       console.log("Post created:", response.data);
       toast.success("User created successfully");
     } catch (error) {
