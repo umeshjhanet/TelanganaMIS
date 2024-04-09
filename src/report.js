@@ -8,8 +8,8 @@ import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
 
 const Report = () => {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [locationName, setLocationName] = useState("");
@@ -23,6 +23,7 @@ const Report = () => {
   const [csv, setCsv] = useState(null);
   const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
+  
 
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
@@ -37,32 +38,6 @@ const Report = () => {
       selectedLocations.filter((loc) => loc !== locationName)
     );
   };
-
-  // const handleExport = () => {
-  //   const headers = [
-  //     'Sr. No.',
-  //     'Location',
-  //     'Collection of Records',
-  //     '',
-  //     'Scanning ADF',
-  //     '',
-  //     'ImageQC',
-  //     '',
-  //     'Document Classification',
-  //     '',
-  //     'Indexing',
-  //     '',
-  //     'CBSLQA',
-  //     '',
-  //     'Export PDF',
-  //     '',
-  //     'Client QA',
-  //     '',
-  //     'CSV Generation',
-  //     '',
-  //     'Inventory Out',
-
-  //   ];
 
   const handleExport = () => {
     if (csv) {
@@ -88,60 +63,145 @@ const Report = () => {
 
   useEffect(() => {
     const locationName = selectedLocations;
-    const summaryData = () => {
-      axios
-        .get("http://192.168.3.119:81/summary")
-        .then((response) => setSummary(response.data))
-
-        .catch((error) => console.error(error));
+    
+    const summaryData = async () => {
+      try {
+        setIsLoading(true);
+        let apiUrl = "http://localhost:5000/summary";
+        const queryParams = {};
+        if (startDate && endDate) {
+          const formattedStartDate = startDate.toISOString().split('T')[0];
+          const formattedEndDate = endDate.toISOString().split('T')[0];
+          apiUrl += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+        }
+        const response = await axios.get(apiUrl, { params: queryParams });
+        setSummary(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching summary data:", error);
+        setError("Error fetching summary data. Please try again.");
+        setIsLoading(false);
+      }
     };
+    
 
-    const fetchSummaryReportCsvFile = () => {
-      // const apiUrl = locationName ? `http://192.168.3.119:81/summarycsv?locationName=${locationName}` : 'http://192.168.3.119:81/summarycsv';
-      const apiUrl = locationName
-        ? `http://192.168.3.119:81/summarycsv?${locationName
-            .map((name) => `locationName=${name}`)
-            .join("&")}`
-        : "http://192.168.3.119:81/summarycsv";
+   
+    // const fetchSummaryReportCsvFile = () => {
+    //   // const apiUrl = locationName ? `http://localhost:5000/summarycsv?locationName=${locationName}` : 'http://localhost:5000/summarycsv';
+    //   const apiUrl = locationName
+    //     ? `http://localhost:5000/summarycsv?${locationName
+    //         .map((name) => `locationName=${name}`)
+    //         .join("&")}`
+    //     : "http://localhost:5000/summarycsv";
 
-      axios
-        .get(apiUrl, { responseType: "blob" })
-        .then((response) => {
-          const blob = new Blob([response.data], { type: "text/csv" });
-          const url = window.URL.createObjectURL(blob);
-          setCsv(url);
-        })
-        .catch((error) => {
-          console.error("Error in exporting data:", error);
-        });
+    //   axios
+    //     .get(apiUrl, { responseType: "blob" })
+    //     .then((response) => {
+    //       const blob = new Blob([response.data], { type: "text/csv" });
+    //       const url = window.URL.createObjectURL(blob);
+    //       setCsv(url);
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error in exporting data:", error);
+    //     });
+    // };
+    const fetchSummaryReportCsvFile = (locationName, startDate, endDate) => {
+      const formattedStartDate = startDate ? new Date(startDate) : null;
+      const formattedEndDate = endDate ? new Date(endDate) : null;
+      const formatDate = (date) => {
+        return date.toISOString().split('T')[0];
+      };
+    
+    
+      let apiUrl = "http://localhost:5000/summarycsv";
+      if (locationName && formattedStartDate && formattedEndDate) {
+        apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+      } else if (locationName) {
+        apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
+      } else if (formattedStartDate && formattedEndDate) {
+        apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+      }
+      
+      axios.get(apiUrl, { responseType: "blob" })
+          .then((response) => {
+              const blob = new Blob([response.data], { type: "text/csv" });
+              const url = window.URL.createObjectURL(blob);
+              setCsv(url);
+          })
+          .catch((error) => {
+              console.error("Error in exporting data:", error);
+          });
     };
+    
 
-    const fetchSummaryReportTableCsvFile = () => {
-      // const apiUrl = locationName ? `http://192.168.3.119:81/reporttablecsv?locationName=${locationName}` : 'http://192.168.3.119:81/reporttablecsv';
-      const apiUrl = locationName
-        ? `http://192.168.3.119:81/reporttablecsv?${locationName
-            .map((name) => `locationName=${name}`)
-            .join("&")}`
-        : "http://192.168.3.119:81/reporttablecsv";
 
-      axios
-        .get(apiUrl, { responseType: "blob" })
-        .then((response) => {
+    // const fetchSummaryReportTableCsvFile = () => {
+    //   const apiUrl = locationName
+    //     ? `http://localhost:5000/reporttablecsv?${locationName
+    //         .map((name) => `locationName=${name}`)
+    //         .join("&")}`
+    //     : "http://localhost:5000/reporttablecsv";
+       
+    //   axios
+    //     .get(apiUrl, { responseType: "blob" })
+    //     .then((response) => {
+    //       const blob = new Blob([response.data], { type: "text/csv" });
+    //       const url = window.URL.createObjectURL(blob);
+    //       setReportCsv(url);
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error in exporting data:", error);
+    //     });
+    // };
+const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
+  const formattedStartDate = startDate ? new Date(startDate) : null;
+  const formattedEndDate = endDate ? new Date(endDate) : null;
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+
+  let apiUrl = "http://localhost:5000/reporttablecsv";
+  if (locationName && formattedStartDate && formattedEndDate) {
+    apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+  } else if (locationName) {
+    apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
+  } else if (formattedStartDate && formattedEndDate) {
+    apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+  }
+  
+  axios.get(apiUrl, { responseType: "blob" })
+      .then((response) => {
           const blob = new Blob([response.data], { type: "text/csv" });
           const url = window.URL.createObjectURL(blob);
           setReportCsv(url);
-        })
-        .catch((error) => {
+      })
+      .catch((error) => {
           console.error("Error in exporting data:", error);
-        });
-    };
+      });
+};
 
-    const reportData = () => {
-      axios
-        .get("http://192.168.3.119:81/reportTable")
-        .then((response) => setReport(response.data))
-        .catch((error) => console.error(error));
+    const fetchReportData = async () => {
+      try {
+        setIsLoading(true); 
+        let apiUrl = "http://localhost:5000/reportTable"; 
+        if (startDate && endDate) {
+          const formattedStartDate = startDate.toISOString().split('T')[0];
+          const formattedEndDate = endDate.toISOString().split('T')[0];
+          apiUrl += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+        }
+        console.log("API URL:", apiUrl); // Log the constructed API URL
+        const response = await axios.get(apiUrl);
+        console.log("API Response:", response.data); // Log the API response
+        setReport(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching report data:", error);
+        setError("Error fetching report data. Please try again.");
+        setIsLoading(false);
+      }
     };
+    
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
         try {
@@ -149,7 +209,7 @@ const Report = () => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://192.168.3.119:81/reportLocationWiseTable?locationname=${location}`
+                `http://localhost:5000/reportLocationWiseTable?locationname=${location}`
               )
             )
           );
@@ -174,7 +234,7 @@ const Report = () => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://192.168.3.119:81/summarylocationname?locationname=${location}`
+                `http://localhost:5000/summarylocationname?locationname=${location}`
               )
             )
           );
@@ -193,10 +253,11 @@ const Report = () => {
     };
 
     fetchLocationData();
-    fetchSummaryReportTableCsvFile();
-    fetchSummaryReportCsvFile();
+    fetchSummaryReportTableCsvFile(locationName, startDate, endDate);
+    fetchSummaryReportCsvFile(locationName, startDate, endDate);
     summaryData();
-    reportData();
+    // reportData();
+    fetchReportData();
     fetchLocationData();
     fetchSummaryLocationData();
 
@@ -210,7 +271,7 @@ const Report = () => {
     // }, 5000);
 
     // return () => clearInterval(intervalId);
-  }, [selectedLocations]);
+  }, [selectedLocations,startDate,endDate]);
 
   return (
     <>
@@ -398,6 +459,7 @@ const Report = () => {
                       )}
                     </>
                   )}
+
                    {summary && (
                     <>
                       {selectedLocations.length === 0 ? (
