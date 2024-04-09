@@ -33,6 +33,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [locationName, setLocationName] = useState('');
   
+  const userLog = JSON.parse(localStorage.getItem('user'));
+  console.log("User's Info", userLog);
+
   const [barFile, setBarFile] = useState({
     
     labels: [],
@@ -294,14 +297,6 @@ const Dashboard = () => {
           console.error('Error in exporting data:', error);
         });
     };
-    
-
-
-   
-    
-    
-   
-    
     
 
     const fetchGraphImageData = (selectedLocations) => {
@@ -668,6 +663,7 @@ const Dashboard = () => {
     fetchAllYesGraphImageData(locationName);
     fetchAllGraphImageData(locationName);
     fetchTableData();
+    
     fetchExportCsvFile();
 
   }, [selectedLocations]);
@@ -683,7 +679,15 @@ const Dashboard = () => {
           <div className='col-lg-10 col-md-10'>
               <div className='row'>
                 <p className='mt-1 fw-bold' style={{ color: '#4BC0C0', fontSize: '20px' }}>Dashboard</p>
-                <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You</p>
+                {/* <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You  last Active Login: {userLog ? userLog.last_active_login : 'Guest'}</p> */}
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+  <p style={{ fontSize: '16px' }}>Telangana Dashboard Welcomes You</p>
+  <p style={{ fontSize: '16px', marginTop:'-15px', textAlign: 'right' }}>
+    Last Active Login: {userLog ? userLog.last_active_login : 'Guest'}
+  </p>
+</div>
+
+                
               </div>
               <div className='row  mt-2  search-report-card'>
               <div className='col-md-4 col-sm-12'>
@@ -718,7 +722,10 @@ const Dashboard = () => {
 
               <div className='col-md-2 col-sm-12'>
                 <button className='btn search-btn' >Search</button>
+                
+            
               </div>
+
               <div className='col-md-6'></div>
             </div>
               <div className='row mt-2'>
