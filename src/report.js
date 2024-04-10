@@ -160,7 +160,6 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
     return date.toISOString().split('T')[0];
   };
 
-
   let apiUrl = "http://localhost:5000/reporttablecsv";
   if (locationName && formattedStartDate && formattedEndDate) {
     apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
@@ -169,7 +168,6 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
   } else if (formattedStartDate && formattedEndDate) {
     apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
   }
-  
   axios.get(apiUrl, { responseType: "blob" })
       .then((response) => {
           const blob = new Blob([response.data], { type: "text/csv" });
@@ -180,7 +178,6 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
           console.error("Error in exporting data:", error);
       });
 };
-
     const fetchReportData = async () => {
       try {
         setIsLoading(true); 
@@ -344,12 +341,12 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
               </div>
               <div className="col-md-6 col-sm-12">
                 <DatePicker
-                  className="date-field"
+                  className="date-field" placeholder="start"
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
                 />
                 <button
-                  className="btn ms-1 me-1"
+                  className="btn ms-1 me-1" 
                   style={{
                     height: "40px",
                     backgroundColor: "#4BC0C0",
@@ -360,13 +357,13 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                   To
                 </button>
                 <DatePicker
-                  className="date-field"
+                  className="date-field" placeholder="end"
                   selected={endDate}
                   onChange={(date) => setEndDate(date)}
                 />
               </div>
               <div className="col-md-2 col-sm-12">
-                <button className="btn search-btn">Search</button>
+                <button className="btn search-btn" placeholder="search">Search</button>
               </div>
             </div>
             <div className="row mt-3 me-1">
