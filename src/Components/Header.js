@@ -28,7 +28,7 @@ const Header = () => {
 
   // Retrieve user info from local storage
   const userLog = JSON.parse(localStorage.getItem('user'));
-  console.log("User's Info", userLog);
+  // console.log("User's Info", userLog);
 
   const handleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown);

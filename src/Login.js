@@ -76,7 +76,7 @@ const Login = () => {
   
     // Send login request to backend
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch("http://192.168.10.41:5000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

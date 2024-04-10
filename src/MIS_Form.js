@@ -5,6 +5,8 @@ import DatePicker from 'react-datepicker';
 import { ProcessCardData } from './ProcessCardData';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
+import * as XLSX from 'xlsx';
+
 
 const MIS_Form = () => {
   const [blrData, setBLRData] = useState();
@@ -34,6 +36,8 @@ const MIS_Form = () => {
   const [newData, setNewData] = useState({ Desig_ID: '', Desig_name: '' });
   const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
   const [errorMessage, setErrorMessage] = useState('');
+  const [fileUploaded, setFileUploaded] = useState(false);
+const [excelData, setExcelData] = useState(null);
   useEffect(() => {
     // const fetchData = () => {
     //   fetch("http://localhost:3001/users")
@@ -44,20 +48,20 @@ const MIS_Form = () => {
 
     // }
     const locationData = () => {
-      fetch("http://192.168.3.119:81/locations")
+      fetch("http://localhost:3001/locations")
         .then(respsone => respsone.json())
         .then(data => setLocation(data))
         .catch(error => console.error(error))
       console.log("Locations", location);
     }
     const designationData = () => {
-      fetch("http://192.168.3.119:81/designations")
+      fetch("http://localhost:3001/designations")
         .then(respsone => respsone.json())
         .then(data => setDesignation(data))
         .catch(error => console.error(error))
     }
     const usermasterData = () => {
-      fetch("http://192.168.3.119:81/usermaster")
+      fetch("http://localhost:3001/usermaster")
         .then(respsone => respsone.json())
         .then(data => setUsermaster(data))
         .catch(error => console.error(error))
@@ -65,7 +69,7 @@ const MIS_Form = () => {
     }
     const fetchLastInsertedData = async () => {
       try {
-        const response = await axios.get("http://192.168.3.119:81/site_MPData");
+        const response = await axios.get("http://localhost:3001/site_MPData");
         const site_MPData = response.data;
 
         console.log("Manpower Data" , site_MPData);
@@ -117,7 +121,7 @@ const MIS_Form = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://192.168.3.119:81/usermasterinfo", formData);
+      const response = await axios.post("http://localhost:3001/usermasterinfo", formData);
       console.log("Post created:", response.data);
     }
     catch (error) {
@@ -127,7 +131,7 @@ const MIS_Form = () => {
   const handleEditDesignation = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`http://192.168.3.119:81/usermasterupdate/${formData.Desig_ID}`, newData);
+      const response = await axios.put(`http://localhost:3001/usermasterupdate/${formData.Desig_ID}`, newData);
       console.log("User updated:", response.data);
     } catch (error) {
       console.error("Error updating user:", error);
@@ -136,7 +140,7 @@ const MIS_Form = () => {
 
   const handleDeleteDesignation = async (Desig_ID) => {
     try {
-      const response = await axios.delete(`http://192.168.3.119:81/usermasterdelete/${Desig_ID}`)
+      const response = await axios.delete(`http://localhost:3001/usermasterdelete/${Desig_ID}`)
       setDesignation(designation.filter(elem => elem.id !== Desig_ID));
       console.log("User Deleted:", response.data)
     }
@@ -169,27 +173,42 @@ const MIS_Form = () => {
 
   const handleManPowerForm = async (e) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.post("http://192.168.3.119:81/site_MP", manpowerForm);
-      <Alert severity="success">This is a success Alert.</Alert>
-      console.log("Post created:", response.data);
-    }
-    catch (error) {
-      console.error("Error creating post:", error);
-    }
-    const requiredFields = ['PH_Id', 'PO_Id', 'PM_Id', 'PCo_Id', 'SM_Id', 'Coll_Index_MP', 'Barc_MP', 'Barc_TF', 'Barc_TI', 'Page_No_MP', 'Prepare_MP', 'Prepare_TF', 'Prepare_TI', 'Scan_MP', 'Cover_Page_MP', 'Cover_Page_TF', 'Rescan_MP', 'Image_QC_MP', 'Doc_MP', 'Index_MP', 'CBSL_QA_MP', 'Ready_Cust_QA_MP', 'Cust_QA_Done_MP', 'PDF_Export_MP', 'Refilling_Files_MP', 'Refilling_Files_TF', 'Refilling_Files_TI', 'Inventory_MP', 'Location_Id',]; // Add other required field names here
-    for (const field of requiredFields) {
-      if (!manpowerForm[field]) {
-        setErrorMessage(`Please fill out all fields.`);
-        return;
+  
+    if (fileUploaded) {
+      // If an Excel file is uploaded, process its data
+      try {
+        const response = await axios.post("http://localhost:3001/site_MP", excelData);
+        console.log("Data from Excel file submitted:", response.data);
+      } catch (error) {
+        console.error("Error submitting data from Excel file:", error);
+      }
+    } else {
+      // If no Excel file is uploaded, submit the form with manually entered data
+      try {
+        const response = await axios.post("http://localhost:3001/site_MP", manpowerForm);
+        console.log("Data from input fields submitted:", response.data);
+      } catch (error) {
+        console.error("Error submitting data from input fields:", error);
       }
     }
-    setErrorMessage('');
-
-    console.log("Selected PM ID:", selectedPMId);
-    console.log("Selected SM ID:", selectedSMId);
-  }
+  };
+  
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const data = evt.target.result;
+      const workbook = XLSX.read(data, { type: 'binary' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const extractedData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      setExcelData(extractedData);
+      setFileUploaded(true);
+      console.log(extractedData);
+    };
+    reader.readAsBinaryString(file);
+  };
+  
 
 
   // if (!designation)
@@ -305,6 +324,8 @@ const MIS_Form = () => {
             </div>
             <div className='row mt-4 mb-4'>
               <h5 className='text-center'>Process Details</h5>
+              <input type="file" onChange={handleFileUpload} accept=".xlsx, .xls" />
+
               <h6 className=' mt-2'>Collection(Indexing IN)</h6>
               <div className='row process-card'>
                 <div className='col-4'>
@@ -445,142 +466,7 @@ const MIS_Form = () => {
                   <input type='text' name='Inventory_MP' onChange={handleInputChange} required /><br />
                 </div>
               </div>
-              {/* <div className='col-3 mt-2' >
-                <div className='process-card'>
-                  <h6 className='text-center'>Collection(Indexing IN)</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Coll_Index_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Barcoding</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Barc_MP' onChange={handleInputChange} required /><br />
-                  <span>Total Files:</span>
-                  <input type='text' name='Barc_TF' onChange={handleInputChange} required />
-                  <br />
-                  <span>Total Images:</span>
-                  <input type='text' name='Barc_TI' onChange={handleInputChange} required />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Page Numbering</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Page_No_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Preparation</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Prepare_MP' onChange={handleInputChange} required /><br />
-                  <span>Total Files:</span>
-                  <input type='text' name='Prepare_TF' onChange={handleInputChange} required />
-                  <br />
-                  <span>Total Images:</span>
-                  <input type='text' name='Prepare_TI' onChange={handleInputChange} required />
-                </div>
-              </div>
-            </div>
-            <div className='row mt-4 mb-4'>
-              <div className='col-3 mt-2' >
-                <div className='process-card'>
-                  <h6 className='text-center'>Scanning(ADF)</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Scan_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Cover Page Scanning</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Cover_Page_MP' onChange={handleInputChange} required /><br />
-                  <span>Total Files:</span>
-                  <input type='text' name='Cover_Page_TF' onChange={handleInputChange} required />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Rescanning</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Rescan_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Image QC</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Image_QC_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-            </div>
-            <div className='row mt-4 mb-4'>
-              <div className='col-3 mt-2' >
-                <div className='process-card'>
-                  <h6 className='text-center'>Document Classification(Flagging)</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Doc_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Indexing(Data Entry)</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Index_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>CBSL QA</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='CBSL_QA_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Ready For Customer QA</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Ready_Cust_QA_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-            </div>
-            <div className='row mt-4 mb-4'>
-              <div className='col-3 mt-2' >
-                <div className='process-card'>
-                  <h6 className='text-center'>Customer QA Done</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Cust_QA_Done_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>PDF Upload to DMS(Export)</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='PDF_Export_MP' onChange={handleInputChange} required /><br />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Refilling of Files</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Refilling_Files_MP' onChange={handleInputChange} required /><br />
-                  <span>Total Files:</span>
-                  <input type='text' name='Refilling_Files_TF' onChange={handleInputChange} required />
-                  <br />
-                  <span>Total Images:</span>
-                  <input type='text' name='Refilling_Files_TI' onChange={handleInputChange} required />
-                </div>
-              </div>
-              <div className='col-3 mt-2'>
-                <div className='process-card'>
-                  <h6 className='text-center'>Inventory Out</h6>
-                  <span>MP Used:</span>
-                  <input type='text' name='Inventory_MP' onChange={handleInputChange} required /><br />
-
-                </div>
-              </div> */}
+              
             </div>
 
             <div className='row mt-3 btn-row'>
@@ -591,277 +477,7 @@ const MIS_Form = () => {
           </div>
         </div>
       </div>
-      {/* <div className='container main-master'>
-        <div className='row'>
-          <div className='col-2'></div>
-          <div className='col-10'>
-            <h3 className='text-center'>Adding Master</h3>
-            <div className='row mt-2'>
-              <div className='col-6'>
-                <div className='master-card'>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Head Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Mobile Number: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='number' /><br />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Email: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='email' />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className='col-6'>
-                <div className='master-card'>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Head Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PH Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Owner Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Mobile Number: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='number' /><br />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Email: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='email' />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className='row mt-2'>
-              <div className='col-6'>
-                <div className='master-card'>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Head Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PH Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Owner Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PO Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>PM Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Mobile Number: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='number' /><br />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Email: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='email' />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className='col-6'>
-                <div className='master-card'>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Head Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PH Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Owner Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PO Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>PM Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PM Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>PCo Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Mobile Number: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='number' /><br />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Email: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='email' />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className='row mt-2'>
-              <div className='col-6'>
-                <div className='master-card'>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Head Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PH Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Project Owner Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PO Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>PM Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PM Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>PCo Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' placeholder='Select PCo Name' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Site Manager Name: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='text' />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Mobile Number: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='number' /><br />
-                    </div>
-                  </div>
-                  <div className='row mt-2'>
-                    <div className='col-4'>
-                      <span>Email: </span>
-                    </div>
-                    <div className='col-8'>
-                      <input type='email' />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div> */}
-      {/* <div className='container'>
-        <div className='row'>
-          <div className='col-2'></div>
-          <div className='col-10'>
-            <form onSubmit={handleFormSubmit}>
-              <input type='number' placeholder='Enter ID' name='Desig_ID' onChange={handleChange} />
-              <input type='text' placeholder='Enter Designation' name='Desig_name' onChange={handleChange} />
-              <input type='submit' />
-              <button className='btn process-btn' onClick={handleEditDesignation}>Edit</button>
-              
-            </form>
-            <table className='table-bordered'>
-              <thead>
-                <tr>
-                  <th>D_ID</th>
-                  <th>D_Name</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
-              <tbody>
-                {designation.map((elem, index) => (
-                  <tr key={index}>
-                    <td>{elem.Desig_ID}</td>
-                    <td>{elem.Desig_name}</td>
-
-                    <td>
-                      <button className='btn process-btn' onClick={() => handleDeleteDesignation(elem.Desig_ID)}>Delete</button>
-                    </td>
-                  </tr>
-                ))}
-
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div> */}
+      
       <Footer />
     </>
   )
