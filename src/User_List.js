@@ -68,7 +68,7 @@ const User_List = () => {
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://localhost:3001/user_master")
+        .get("http://localhost:5000/user_master")
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);

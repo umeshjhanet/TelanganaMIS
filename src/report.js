@@ -169,7 +169,6 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
   } else if (formattedStartDate && formattedEndDate) {
     apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
   }
-  
   axios.get(apiUrl, { responseType: "blob" })
       .then((response) => {
           const blob = new Blob([response.data], { type: "text/csv" });
@@ -180,7 +179,6 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
           console.error("Error in exporting data:", error);
       });
 };
-
     const fetchReportData = async () => {
       try {
         setIsLoading(true); 
@@ -290,7 +288,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                 </h6>
               </div>
             </div>
-            <div className="row mt-2 me-1 search-report-card">
+            <div className="row mt-2 me-1 search-report-card" >
               <div className="col-md-4 col-sm-12">
                 <div
                   ref={dropdownRef}
@@ -301,9 +299,13 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                     borderRadius: "5px",
                     minHeight: "30px",
                   }}
+                 
                   contentEditable={true}
                   onClick={() => setShowLocation(!showLocation)}
                 >
+                   {selectedLocations.length === 0 && !showLocation && (
+        <span className="placeholder-text">Search Locations...</span>
+      )}
                   {selectedLocations.map((location, index) => (
                     <span key={index} className="selected-location">
                       {location}
@@ -342,14 +344,15 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                   </>
                 )}
               </div>
-              <div className="col-md-6 col-sm-12">
+              <div className="col-md-6 col-sm-12" >
                 <DatePicker
-                  className="date-field"
+                  className="date-field" 
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
+                  placeholderText="Start Date"
                 />
                 <button
-                  className="btn ms-1 me-1"
+                  className="btn ms-1 me-1" 
                   style={{
                     height: "40px",
                     backgroundColor: "#4BC0C0",
@@ -360,9 +363,10 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                   To
                 </button>
                 <DatePicker
-                  className="date-field"
+                  className="date-field" 
                   selected={endDate}
                   onChange={(date) => setEndDate(date)}
+                  placeholderText="End Date"
                 />
               </div>
               <div className="col-md-2 col-sm-12">

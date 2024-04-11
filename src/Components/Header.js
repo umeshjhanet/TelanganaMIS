@@ -64,7 +64,7 @@ const Header = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://192.168.3.119:81/user_master");
+        const response = await axios.get("http://localhost:5000/user_master");
         setUser(response.data);
   
         // Log the entire response data to inspect its structure
@@ -330,11 +330,17 @@ const adminUser =() => {
     </>
   )
 }
+const isAdmin = userLog && userLog.user_roles.includes("Admin");
 
   return (
     <>
-      {userLog && userLog.first_name === "Pooja" ? adminUser() : normalUser()}      
+      {/* {userLog && userLog.user_roles === "Admin" ? adminUser() : normalUser()}       */}
+    
+      {isAdmin ? adminUser() : normalUser()}
+
+
     </>
+
   )
 }
 
