@@ -330,11 +330,17 @@ const adminUser =() => {
     </>
   )
 }
+const isAdmin = userLog && userLog.user_roles.includes("Admin");
 
   return (
     <>
-      {userLog && userLog.first_name === "Rachna" ? adminUser() : normalUser()}      
+      {/* {userLog && userLog.user_roles === "Admin" ? adminUser() : normalUser()}       */}
+    
+      {isAdmin ? adminUser() : normalUser()}
+
+
     </>
+
   )
 }
 

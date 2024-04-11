@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker';
 import { ProcessCardData } from './ProcessCardData';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
 
 
 const MIS_Form = () => {
@@ -193,21 +193,21 @@ const [excelData, setExcelData] = useState(null);
     }
   };
   
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const data = evt.target.result;
-      const workbook = XLSX.read(data, { type: 'binary' });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const extractedData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-      setExcelData(extractedData);
-      setFileUploaded(true);
-      console.log(extractedData);
-    };
-    reader.readAsBinaryString(file);
-  };
+  // const handleFileUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   const reader = new FileReader();
+  //   reader.onload = (evt) => {
+  //     const data = evt.target.result;
+  //     const workbook = XLSX.read(data, { type: 'binary' });
+  //     const sheetName = workbook.SheetNames[0];
+  //     const sheet = workbook.Sheets[sheetName];
+  //     const extractedData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+  //     setExcelData(extractedData);
+  //     setFileUploaded(true);
+  //     console.log(extractedData);
+  //   };
+  //   reader.readAsBinaryString(file);
+  // };
   
 
 
@@ -324,7 +324,7 @@ const [excelData, setExcelData] = useState(null);
             </div>
             <div className='row mt-4 mb-4'>
               <h5 className='text-center'>Process Details</h5>
-              <input type="file" onChange={handleFileUpload} accept=".xlsx, .xls" />
+              {/* <input type="file" onChange={handleFileUpload} accept=".xlsx, .xls" /> */}
 
               <h6 className=' mt-2'>Collection(Indexing IN)</h6>
               <div className='row process-card'>
