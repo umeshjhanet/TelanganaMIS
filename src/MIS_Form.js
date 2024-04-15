@@ -5,6 +5,10 @@ import DatePicker from 'react-datepicker';
 import { ProcessCardData } from './ProcessCardData';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
+import readXlsxFile from 'read-excel-file';
+
+
+
 
 const MIS_Form = () => {
   const [blrData, setBLRData] = useState();
@@ -29,16 +33,16 @@ const MIS_Form = () => {
   const [manpowerForm, setManpowerForm] = useState({
     PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Id: '', Coll_Index_MP: '', Barc_MP: '', Barc_TF: '', Barc_TI: '', Page_No_MP: '', Prepare_MP: '',
     Prepare_TF: '', Prepare_TI: '', Scan_MP: '', Cover_Page_MP: '', Cover_Page_TF: '', Rescan_MP: '', Image_QC_MP: '', Doc_MP: '', Index_MP: '', CBSL_QA_MP: '',
-    Ready_Cust_QA_MP: '', Cust_QA_Done_MP: '', PDF_Export_MP: '', Refilling_Files_MP: '', Inventory_MP: '', Location_Id: '',
+    Ready_Cust_QA_MP: '', Cust_QA_Done_MP: '', PDF_Export_MP: '', Refilling_Files_MP: '', Inventory_MP: '', Location_ID: '',
   })
-  const [newData, setNewData] = useState({ Desig_ID: '', Desig_name: '' });
+  const [newData, setNewData] = useState({ PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Id: '', Location_Id: '', });
   const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
   const [errorMessage, setErrorMessage] = useState('');
-  const [fileUploaded, setFileUploaded] = useState(false);
-const [excelData, setExcelData] = useState(null);
+  const[excelData,setExcelData]=useState('');
+  
   useEffect(() => {
     // const fetchData = () => {
-    //   fetch("http://localhost:3001/users")
+    //   fetch("http://localhost:5000/users")
     //   .then(response => response.json())
     //   .then(data => setBLRData(data))
     //   .catch(error => console.error(error))
@@ -47,20 +51,20 @@ const [excelData, setExcelData] = useState(null);
 
     // }
     const locationData = () => {
-      fetch("http://localhost:3001/locations")
+      fetch("http://localhost:5000/locations")
         .then(respsone => respsone.json())
         .then(data => setLocation(data))
         .catch(error => console.error(error))
       console.log("Locations", location);
     }
     const designationData = () => {
-      fetch("http://localhost:3001/designations")
+      fetch("http://localhost:5000/designations")
         .then(respsone => respsone.json())
         .then(data => setDesignation(data))
         .catch(error => console.error(error))
     }
     const usermasterData = () => {
-      fetch("http://localhost:3001/usermaster")
+      fetch("http://localhost:5000/usermaster")
         .then(respsone => respsone.json())
         .then(data => setUsermaster(data))
         .catch(error => console.error(error))
@@ -68,7 +72,7 @@ const [excelData, setExcelData] = useState(null);
     }
     const fetchLastInsertedData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/site_MPData");
+        const response = await axios.get("http://localhost:5000/site_MPData");
         const site_MPData = response.data;
 
 
@@ -121,36 +125,34 @@ const [excelData, setExcelData] = useState(null);
   };
 
 
+  // const handleFormSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await axios.post("http://localhost:5000/usermasterinfo", formData);
+  //     console.log("Post created:", response.data);
+  //   }
+  //   catch (error) {
+  //     console.error("Error creating post:", error);
+  //   }
+  // }
+  // const handleEditDesignation = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await axios.put(`http://localhost:5000/usermasterupdate/${formData.Desig_ID}`, newData);
+  //     console.log("User updated:", response.data);
+  //   } catch (error) {
+  //     console.error("Error updating user:", error);
+  //   }
+  // }
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:3001/usermasterinfo", formData);
-      console.log("Post created:", response.data);
-    }
-    catch (error) {
-      console.error("Error creating post:", error);
-    }
-  }
-  const handleEditDesignation = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.put(`http://localhost:3001/usermasterupdate/${formData.Desig_ID}`, newData);
-      console.log("User updated:", response.data);
-    } catch (error) {
-      console.error("Error updating user:", error);
-    }
-  }
-
-
-  const handleDeleteDesignation = async (Desig_ID) => {
-    try {
-      const response = await axios.delete(`http://localhost:3001/usermasterdelete/${Desig_ID}`)
-      setDesignation(designation.filter(elem => elem.id !== Desig_ID));
-      console.log("User Deleted:", response.data)
-    }
-    catch (error) { console.error('There was an error in deleting data!', error) }
-  }
+  // const handleDeleteDesignation = async (Desig_ID) => {
+  //   try {
+  //     const response = await axios.delete(`http://localhost:5000/usermasterdelete/${Desig_ID}`)
+  //     setDesignation(designation.filter(elem => elem.id !== Desig_ID));
+  //     console.log("User Deleted:", response.data)
+  //   }
+  //   catch (error) { console.error('There was an error in deleting data!', error) }
+  // }
   const handleSelectPH = (id, name) => {
     setSelectedPH(name);
     setSelectedPHId(parseInt(id));
@@ -173,9 +175,8 @@ const [excelData, setExcelData] = useState(null);
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, SM_Id: selectedSMId, PH_Id: selectedPHId, Location_Id: selectedLocationId });
+    setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, SM_Id: selectedSMId, PH_Id: selectedPHId, Location_ID: selectedLocationId });
   }
-
 
   // const handleManPowerForm = async (e) => {
   //   e.preventDefault();
@@ -183,7 +184,7 @@ const [excelData, setExcelData] = useState(null);
   //   if (fileUploaded) {
   //     // If an Excel file is uploaded, process its data
   //     try {
-  //       const response = await axios.post("http://localhost:3001/site_MP", excelData);
+  //       const response = await axios.post("http://localhost:5000/site_MP", excelData);
   //       console.log("Data from Excel file submitted:", response.data);
   //     } catch (error) {
   //       console.error("Error submitting data from Excel file:", error);
@@ -191,20 +192,70 @@ const [excelData, setExcelData] = useState(null);
   //   } else {
   //     // If no Excel file is uploaded, submit the form with manually entered data
   //     try {
-  //       const response = await axios.post("http://localhost:3001/site_MP", manpowerForm);
+  //       const response = await axios.post("http://localhost:5000/site_MP", manpowerForm);
   //       console.log("Data from input fields submitted:", response.data);
   //     } catch (error) {
   //       console.error("Error submitting data from input fields:", error);
   //     }
   //   }
   // };
+  // const handleManPowerForm = async () => {
+   
+  //   const formData = new FormData();
+  //   formData.append('file', excelData);
+        
+  //   try {
+  //     if (excelData) {
+  //       // If an Excel file is uploaded, call the uploadExcel API
+  //       const response = await axios.post("http://localhost:5000/uploadExcel" ,newData, formData,{
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //     });
+  //       console.log("Data from Excel file submitted:", response.data);
+  //     } else {
+  //       // If no Excel file is uploaded, submit the form with manually entered data using the site_MP API
+  //       const response = await axios.post("http://localhost:5000/site_MP", manpowerForm);
+  //       console.log("Data from input fields submitted:", response.data);
+  //     }
+  //     setErrorMessage('');
+  //   } catch (error) {
+  //     setErrorMessage('Error submitting data. Please try again.');
+  //     console.error("Error submitting data:", error);
+  //   }
+  // };
+
   const handleManPowerForm = async () => {
+    const formData = new FormData();
+    formData.append('file', excelData);
+  
+    // Append other fields to 
+    formData.append('PH_Id', selectedPHId);
+    formData.append('PO_Id',23);
+    formData.append('PM_Id', selectedPMId);
+    formData.append('PCo_Id', '59');
+    formData.append('SM_Id', selectedSMId);
+    formData.append('Location_ID', selectedLocationId);
+  
+    // Append manpowerForm fields to FormData if not using Excel data
+    if (!excelData) {
+      Object.entries(manpowerForm).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+    }
+  
     try {
       if (excelData) {
-        const response = await axios.post("http://localhost:3001/site_MP", { excelData });
+        // If an Excel file is uploaded, call the uploadExcel API
+        const response = await axios.post("http://localhost:5000/uploadExcel", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
         console.log("Data from Excel file submitted:", response.data);
       } else {
-        const response = await axios.post("http://localhost:3001/site_MP", manpowerForm);
+        // If no Excel file is uploaded, submit the form with manually entered data using the site_MP API
+        const response = await axios.post("http://localhost:5000/site_MP", manpowerForm);
         console.log("Data from input fields submitted:", response.data);
       }
       setErrorMessage('');
@@ -213,27 +264,17 @@ const [excelData, setExcelData] = useState(null);
       console.error("Error submitting data:", error);
     }
   };
-
-
   
   
   const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-  
-    reader.onload = async (evt) => {
-      const arrayBuffer = evt.target.result;
-      // Parse the Excel data and set it in the state
-      const data = new Uint8Array(arrayBuffer);
-      setExcelData(data);
-    };
-  
-    reader.readAsArrayBuffer(file);
-  };
-  
+    setExcelData(e.target.files[0]);
+};
   
   
 
+  
+  
+  
 
 
   // if (!designation)
@@ -355,7 +396,6 @@ const [excelData, setExcelData] = useState(null);
             <div className='row mt-4 mb-4'>
               <h5 className='text-center'>Process Details</h5>
               <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
-
 
               <h6 className=' mt-2'>Collection(Indexing IN)</h6>
               <div className='row process-card'>
