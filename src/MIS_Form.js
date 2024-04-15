@@ -38,6 +38,8 @@ const MIS_Form = () => {
   const [newData, setNewData] = useState({ PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Id: '', Location_Id: '', });
   const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
   const [errorMessage, setErrorMessage] = useState('');
+  const[excelData,setExcelData]=useState('');
+  
   useEffect(() => {
     // const fetchData = () => {
     //   fetch("http://localhost:5000/users")
