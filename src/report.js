@@ -67,7 +67,7 @@ const Report = () => {
     const summaryData = async () => {
       try {
         setIsLoading(true);
-        let apiUrl = "http://localhost:5000/summary";
+        let apiUrl = "http://localhost:3001/summary";
         const queryParams = {};
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
@@ -87,12 +87,12 @@ const Report = () => {
 
    
     // const fetchSummaryReportCsvFile = () => {
-    //   // const apiUrl = locationName ? `http://localhost:5000/summarycsv?locationName=${locationName}` : 'http://localhost:5000/summarycsv';
+    //   // const apiUrl = locationName ? `http://localhost:3001/summarycsv?locationName=${locationName}` : 'http://localhost:3001/summarycsv';
     //   const apiUrl = locationName
-    //     ? `http://localhost:5000/summarycsv?${locationName
+    //     ? `http://localhost:3001/summarycsv?${locationName
     //         .map((name) => `locationName=${name}`)
     //         .join("&")}`
-    //     : "http://localhost:5000/summarycsv";
+    //     : "http://localhost:3001/summarycsv";
 
     //   axios
     //     .get(apiUrl, { responseType: "blob" })
@@ -113,7 +113,7 @@ const Report = () => {
       };
     
     
-      let apiUrl = "http://localhost:5000/summarycsv";
+      let apiUrl = "http://localhost:3001/summarycsv";
       if (locationName && formattedStartDate && formattedEndDate) {
         apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
       } else if (locationName) {
@@ -137,10 +137,10 @@ const Report = () => {
 
     // const fetchSummaryReportTableCsvFile = () => {
     //   const apiUrl = locationName
-    //     ? `http://localhost:5000/reporttablecsv?${locationName
+    //     ? `http://localhost:3001/reporttablecsv?${locationName
     //         .map((name) => `locationName=${name}`)
     //         .join("&")}`
-    //     : "http://localhost:5000/reporttablecsv";
+    //     : "http://localhost:3001/reporttablecsv";
        
     //   axios
     //     .get(apiUrl, { responseType: "blob" })
@@ -160,7 +160,8 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
     return date.toISOString().split('T')[0];
   };
 
-  let apiUrl = "http://localhost:5000/reporttablecsv";
+
+  let apiUrl = "http://localhost:3001/reporttablecsv";
   if (locationName && formattedStartDate && formattedEndDate) {
     apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
   } else if (locationName) {
@@ -181,7 +182,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
     const fetchReportData = async () => {
       try {
         setIsLoading(true); 
-        let apiUrl = "http://localhost:5000/reportTable"; 
+        let apiUrl = "http://localhost:3001/reportTable"; 
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
           const formattedEndDate = endDate.toISOString().split('T')[0];
@@ -206,7 +207,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://localhost:5000/reportLocationWiseTable?locationname=${location}`
+                `http://localhost:3001/reportLocationWiseTable?locationname=${location}`
               )
             )
           );
