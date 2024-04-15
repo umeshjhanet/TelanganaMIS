@@ -25,13 +25,13 @@ const File = () => {
 
     useEffect(() => {
         const fetchData = () => {
-            fetch("http://192.168.3.119:81/locations")
+            fetch("http://localhost:3001/locations")
                 .then(response => response.json())
                 .then(data => setLocations(data))
                 .catch(error => console.error(error));
         };
         const fetchTableData = () => {
-            fetch("http://192.168.3.119:81/api/uploadlog")
+            fetch("http://localhost:3001/api/uploadlog")
                 .then(response => response.json())
                 .then(data => setTableData(data))
                 .catch(error => console.error(error));

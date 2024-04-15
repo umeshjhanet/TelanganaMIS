@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { CCard, CCardBody, CCol, CCardHeader, CRow } from '@coreui/react'
 import { CChartBar, CChartDoughnut, CChartLine, CChartPie, CChartPolarArea, CChartRadar } from '@coreui/react-chartjs'
 import Header from './Components/Header';
@@ -18,8 +18,8 @@ const Dashboard = () => {
   const formattedYesterdayDate = format(yesterdayDate, 'dd-MM-yyyy');
   const formattedPreviousDate = format(previousDate, 'dd-MM-yyyy');
   const [tableData, setTableData] = useState([]);
-  const[csv,setCsv]=useState(null);
-  const[locationWiseCsv,setLocationWiseCsv]=useState();
+  const [csv, setCsv] = useState(null);
+  const [locationWiseCsv, setLocationWiseCsv] = useState();
   const dropdownRef = useRef(null);
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
@@ -32,12 +32,12 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [locationName, setLocationName] = useState('');
-  
+
   const userLog = JSON.parse(localStorage.getItem('user'));
   console.log("User's Info", userLog);
 
   const [barFile, setBarFile] = useState({
-    
+
     labels: [],
     datasets: [
       {
@@ -166,13 +166,13 @@ const Dashboard = () => {
       setSearchInput('');
     }
     setShowLocation(false); // Close the dropdown when a location is selected
-    
+
   };
 
   const removeLocation = (locationName) => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
   };
- 
+
   const handleExport = () => {
     if (csv) {
       const link = document.createElement('a');
@@ -184,9 +184,9 @@ const Dashboard = () => {
     }
   };
 
- 
 
-  const calculateColumnSum = ( ) => {
+
+  const calculateColumnSum = () => {
     let prevFilesSum = 0;
     let prevImagesSum = 0;
     let yesFilesSum = 0;
@@ -223,18 +223,18 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    
+
 
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
         try {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:5000/api/locationwisetabularData?locationName=?`)
+            axios.get(`http://localhost:3001/api/locationwisetabularData?locationName=?`)
           ));
           const locationData = locationDataResponses.map(response => response.data);
           setLocationData(locationData);
-          console.log("agra",locationData);
+          console.log("agra", locationData);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching location data:', error);
@@ -246,13 +246,13 @@ const Dashboard = () => {
     const locationName = selectedLocations;
 
     const fetchGraphFileData = (selectedLocations) => {
-      let apiUrl = 'http://localhost:5000/graph1LocationWise';
-    
+      let apiUrl = 'http://localhost:3001/graph1LocationWise';
+
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
       }
-    
+
       axios.get(apiUrl)
         .then(response => {
           const apiData = response.data;
@@ -260,7 +260,7 @@ const Dashboard = () => {
             console.error('No data received from the API');
             return;
           }
-    
+
           const labels = Object.keys(apiData[0]).filter(label => label !== 'locationid' && label !== 'LocationName');
           const datasets = apiData.map(locationData => {
             return {
@@ -269,7 +269,7 @@ const Dashboard = () => {
               backgroundColor: '#ad33ff', // Change the background color here
             };
           });
-    
+
           setBarFile({
             labels: labels,
             datasets: datasets
@@ -280,12 +280,12 @@ const Dashboard = () => {
         });
     }
 
-   
+
 
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
-      const apiUrl = locationName ? `http://localhost:5000/csv?${locationName.map(name => `locationName=${name}`).join('&')}` : 'http://localhost:5000/csv';
-    
+      const apiUrl = locationName ? `http://localhost:3001/csv?${locationName.map(name => `locationName=${name}`).join('&')}` : 'http://localhost:3001/csv';
+
       axios.get(apiUrl, { responseType: 'blob' })
         .then(response => {
           const blob = new Blob([response.data], { type: 'text/csv' });
@@ -297,16 +297,16 @@ const Dashboard = () => {
           console.error('Error in exporting data:', error);
         });
     };
-    
+
 
     const fetchGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://localhost:5000/graph2';
-    
+      let apiUrl = 'http://localhost:3001/graph2';
+
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
       }
-    
+
       axios.get(apiUrl)
         .then(response => {
           const apiData = response.data;
@@ -314,7 +314,7 @@ const Dashboard = () => {
             console.error('No data received from the API');
             return;
           }
-    console.log("Api Data",apiData);
+          console.log("Api Data", apiData);
           const labels = Object.keys(apiData[0]).filter(label => label !== 'locationid' && label !== 'LocationName');
           const datasets = apiData.map(locationData => {
             return {
@@ -323,7 +323,7 @@ const Dashboard = () => {
               backgroundColor: '#ad33ff', // Change the background color here
             };
           });
-    
+
           setBarImage({
             labels: labels,
             datasets: datasets
@@ -334,13 +334,13 @@ const Dashboard = () => {
         });
     }
     const fetchTodayGraphFileData = () => {
-      let apiUrl = 'http://localhost:5000/graph7';
-    
+      let apiUrl = 'http://localhost:3001/graph7';
+
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
       }
-    
+
       axios.get(apiUrl)
         .then(response => {
           const apiData = response.data;
@@ -348,7 +348,7 @@ const Dashboard = () => {
             console.error('No data received from the API');
             return;
           }
-    
+
           const labels = Object.keys(apiData[0]).filter(label => label !== 'locationid' && label !== 'LocationName');
           const datasets = apiData.map(locationData => {
             return {
@@ -357,7 +357,7 @@ const Dashboard = () => {
               backgroundColor: '#ad33ff', // Change the background color here
             };
           });
-    
+
           setTodayFile({
             labels: labels,
             datasets: datasets
@@ -367,15 +367,15 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
-    
+
     const fetchTodayGraphImageData = () => {
-      let apiUrl = 'http://localhost:5000/graph8';
-    
+      let apiUrl = 'http://localhost:3001/graph8';
+
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
       }
-    
+
       axios.get(apiUrl)
         .then(response => {
           const apiData = response.data;
@@ -383,7 +383,7 @@ const Dashboard = () => {
             console.error('No data received from the API');
             return;
           }
-    
+
           const labels = Object.keys(apiData[0]).filter(label => label !== 'locationid' && label !== 'LocationName');
           const datasets = apiData.map(locationData => {
             return {
@@ -392,7 +392,7 @@ const Dashboard = () => {
               backgroundColor: '#ad33ff', // Change the background color here
             };
           });
-    
+
           setTodayImage({
             labels: labels,
             datasets: datasets
@@ -409,7 +409,7 @@ const Dashboard = () => {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://localhost:5000/graph5', params)
+      axios.get('http://localhost:3001/graph5', params)
         .then(response => {
           const apiData = response.data;
           const labels = apiData.map(item => item["scandate"]);
@@ -432,14 +432,14 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     };
-    
+
     const fetchWeekImageGraphData = () => {
       const params = {
         params: {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://localhost:5000/graph6', params)
+      axios.get('http://localhost:3001/graph6', params)
         .then(response => {
           const apiData = response.data;
           const labels = apiData.map(item => item["scandate"]);
@@ -462,46 +462,46 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     };
-    
 
-    const fetchMonthImageGraphData=()=>{
+
+    const fetchMonthImageGraphData = () => {
       const params = {
         params: {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://localhost:5000/graphmonth', params)
+      axios.get('http://localhost:3001/graphmonth', params)
         .then(response => {
           const apiData = response.data;
-        const labels=apiData.map(item =>item['scandate'])
-        const data=apiData.map(item =>item['Scanned No Of Images'])
-        console.log("lables",labels);
-        console.log("images",data);
-        setMonthImage({
-        labels: labels.filter(label => label !== 'id'),
-        datasets:[
-          {
-            ...monthImage.datasets[0],
-            data: data
-          },
-        ],
-        
-      });
-      console.log("Monthly  data fetch",monthImage)
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });   
+          const labels = apiData.map(item => item['scandate'])
+          const data = apiData.map(item => item['Scanned No Of Images'])
+          console.log("lables", labels);
+          console.log("images", data);
+          setMonthImage({
+            labels: labels.filter(label => label !== 'id'),
+            datasets: [
+              {
+                ...monthImage.datasets[0],
+                data: data
+              },
+            ],
+
+          });
+          console.log("Monthly  data fetch", monthImage)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
     }
 
     const fetchCivilCaseGraphData = () => {
-      let apiUrl = 'http://localhost:5000/civil';
-    
+      let apiUrl = 'http://localhost:3001/civil';
+
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
       }
-    
+
       axios.get(apiUrl)
         .then(response => {
           const apiData = response.data;
@@ -529,17 +529,17 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
-    
+
 
 
     const fetchCriminalCaseGraphData = () => {
-      let apiUrl = 'http://localhost:5000/criminal';
-    
+      let apiUrl = 'http://localhost:3001/criminal';
+
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
       }
-    
+
       axios.get(apiUrl)
         .then(response => {
           const apiData = response.data;
@@ -568,13 +568,13 @@ const Dashboard = () => {
         });
     }
     const fetchAllYesGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://localhost:5000/graph9';
-    
+      let apiUrl = 'http://localhost:3001/graph9';
+
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
       }
-    
+
       axios.get(apiUrl)
         .then(response => {
           const apiData = response.data;
@@ -582,18 +582,18 @@ const Dashboard = () => {
             console.error('No data received from the API');
             return;
           }
-    
+
           const labels = apiData.map(item => item["Location Name"]);
           const data = apiData.map(item => item["Images"]);
-    
+
           console.log('TodayLabels:', labels);
           console.log('TodayData:', data);
-    
+
           setAllLocationYesImage({
             labels: labels,
             datasets: [
               {
-                label:'No. of Images',
+                label: 'No. of Images',
                 data: data,
                 backgroundColor: '#02B2AF', // Set the background color
               },
@@ -604,16 +604,16 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
-    
-    
+
+
     const fetchAllGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://localhost:5000/graph10';
-    
+      let apiUrl = 'http://localhost:3001/graph10';
+
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
       }
-    
+
       axios.get(apiUrl)
         .then(response => {
           const apiData = response.data;
@@ -629,7 +629,7 @@ const Dashboard = () => {
             labels: labels,
             datasets: [
               {
-                label:'No. of Images',
+                label: 'No. of Images',
                 data: data,
                 backgroundColor: '#02B2AF',
               },
@@ -640,10 +640,10 @@ const Dashboard = () => {
           console.error('Error fetching data:', error);
         });
     }
-    
-    
+
+
     const fetchTableData = () => {
-      axios.get("http://localhost:5000/tabularData")
+      axios.get("http://localhost:3001/tabularData")
         .then(response => {
           setTableData(response.data);
           console.log("Table Data", response.data); // Log inside the then block
@@ -663,7 +663,7 @@ const Dashboard = () => {
     fetchAllYesGraphImageData(locationName);
     fetchAllGraphImageData(locationName);
     fetchTableData();
-    
+
     fetchExportCsvFile();
 
   }, [selectedLocations]);
@@ -677,19 +677,19 @@ const Dashboard = () => {
         <div className='row'>
           <div className='col-lg-2 col-md-2 '></div>
           <div className='col-lg-10 col-md-10'>
-              <div className='row'>
-                <p className='mt-1 fw-bold' style={{ color: '#4BC0C0', fontSize: '20px' }}>Dashboard</p>
-                {/* <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You  last Active Login: {userLog ? userLog.last_active_login : 'Guest'}</p> */}
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-  <p style={{ fontSize: '16px' }}>Telangana Dashboard Welcomes You</p>
-  <p style={{ fontSize: '16px', marginTop:'-15px', textAlign: 'right' }}>
-    Last Active Login: {userLog ? userLog.last_active_login : 'Guest'}
-  </p>
-</div>
-
-                
+            <div className='row'>
+              <p className='mt-1 fw-bold' style={{ color: '#4BC0C0', fontSize: '20px' }}>Dashboard</p>
+              {/* <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You  last Active Login: {userLog ? userLog.last_active_login : 'Guest'}</p> */}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <p style={{ fontSize: '16px' }}>Telangana Dashboard Welcomes You</p>
+                <p style={{ fontSize: '16px', marginTop: '-15px', textAlign: 'right' }}>
+                  Last Active Login: {userLog ? userLog.last_active_login : 'Guest'}
+                </p>
               </div>
-              <div className='row  mt-2  search-report-card'>
+
+
+            </div>
+            <div className='row  mt-2  search-report-card'>
               <div className='col-md-4 col-sm-12'>
                 <div
                   ref={dropdownRef}
@@ -722,255 +722,255 @@ const Dashboard = () => {
 
               <div className='col-md-2 col-sm-12'>
                 <button className='btn search-btn' >Search</button>
-                
-            
+
+
               </div>
 
               <div className='col-md-6'></div>
             </div>
-              <div className='row mt-2'>
-                <div className='card'>
-                  <h4 className='ms-1'>SCANNING REPORT OF LAST 30 DAYS</h4>
-                  <h5 className='ms-1'>All Location: Images</h5>
-                  <CCard>
-                    <CCardBody>
-                      <CChartBar
-                        data={monthImage}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>               
-                  <div>
-                    {scannedData && (
-                      <BarChart
-                        className='scanned-chart'
-                        xAxis={scannedData.xAxis}
-                        series={scannedData.series}
-                        width={scannedData.width}
-                        height={scannedData.height}
-                      />
-                    )}
-                  </div>
+            <div className='row mt-2'>
+              <div className='card'>
+                <h4 className='ms-1'>SCANNING REPORT OF LAST 30 DAYS</h4>
+                <h5 className='ms-1'>All Location: Images</h5>
+                <CCard>
+                  <CCardBody>
+                    <CChartBar
+                      data={monthImage}
+                      labels="months"
+                    />
+                  </CCardBody>
+                </CCard>
+                <div>
+                  {scannedData && (
+                    <BarChart
+                      className='scanned-chart'
+                      xAxis={scannedData.xAxis}
+                      series={scannedData.series}
+                      width={scannedData.width}
+                      height={scannedData.height}
+                    />
+                  )}
                 </div>
               </div>
-              <div className='row mt-2'>
-                <div className='table-card'>
-                  <div className='row'style={{ padding: '5px', backgroundColor: '#4BC0C0',paddingTop:'15px' }}>
-                    <div className='col-10' >
-                      <h6 className='text-center' style={{ color: 'white' }}>PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE RECORDS FOR DISTRICT COURT OF UTTAR PRADESH</h6>
-                      </div>
-                      <div className='col-2' >
-                      <h6 style={{ color: 'white' }} onClick={handleExport}> <MdFileDownload style={{fontSize:'20px'}}/>Export CSV</h6>
-                    </div>
+            </div>
+            <div className='row mt-2'>
+              <div className='table-card'>
+                <div className='row' style={{ padding: '5px', backgroundColor: '#4BC0C0', paddingTop: '15px' }}>
+                  <div className='col-10' >
+                    <h6 className='text-center' style={{ color: 'white' }}>PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE RECORDS FOR DISTRICT COURT OF UTTAR PRADESH</h6>
                   </div>
-                  <div className='row mt-5 ms-2 me-2' style={{ overflowX: 'auto' }}>
-                    <table class="table table-hover table-bordered table-responsive data-table" >
-                      <thead style={{ color: '#4BC0C0' }}>
-                        <tr>
-                          <th rowspan="2">Sr. No.</th>
-                          <th rowspan="2">Location</th>
-                          <th colspan="2">Scanned ({formattedPreviousDate})</th>
-                          <th colspan="2">Scanned ({formattedYesterdayDate})</th>
-                          <th colspan="2">Scanned ({formattedCurrentDate})</th>
-                          <th colspan="2">Cumulative till date</th>
-                          <th rowspan="2">Remarks</th>
-                        </tr>
-                        <tr>
-                          <th>Files</th>
-                          <th>Images</th>
-                          <th>Files</th>
-                          <th>Images</th>
-                          <th>Files</th>
-                          <th>Images</th>
-                          <th>Files</th>
-                          <th>Images</th>
-                        </tr>
-                      </thead>
-                    
-                      <tbody style={{ color: 'gray' }}>
-                    
-                       
-                        {tableData && tableData.map((elem, index) => {
-                          if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
-                            return (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{elem.LocationName }</td>
-                            <td>{elem.Prev_Files || '0'}</td>
-                            <td>{elem.Prev_Images || '0' }</td>
-                            <td>{elem.Yes_Files || '0' }</td>
-                            <td>{elem.Yes_Images || '0'}</td>
-                            <td>{elem.Today_Files || '0'}</td>
-                            <td>{elem.Today_Images || '0'}</td>
-                            <td>{elem.Total_Files || '0'}</td>
-                            <td>{elem.Total_Images || '0'}</td>
-                            <td></td>
-                          </tr>
-                          
+                  <div className='col-2' >
+                    <h6 style={{ color: 'white' }} onClick={handleExport}> <MdFileDownload style={{ fontSize: '20px' }} />Export CSV</h6>
+                  </div>
+                </div>
+                <div className='row mt-5 ms-2 me-2' style={{ overflowX: 'auto' }}>
+                  <table class="table table-hover table-bordered table-responsive data-table" >
+                    <thead style={{ color: '#4BC0C0' }}>
+                      <tr>
+                        <th rowspan="2">Sr. No.</th>
+                        <th rowspan="2">Location</th>
+                        <th colspan="2">Scanned ({formattedPreviousDate})</th>
+                        <th colspan="2">Scanned ({formattedYesterdayDate})</th>
+                        <th colspan="2">Scanned ({formattedCurrentDate})</th>
+                        <th colspan="2">Cumulative till date</th>
+                        <th rowspan="2">Remarks</th>
+                      </tr>
+                      <tr>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                      </tr>
+                    </thead>
+
+                    <tbody style={{ color: 'gray' }}>
+
+
+                      {tableData && tableData.map((elem, index) => {
+                        if (selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName)) {
+                          return (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td>{elem.LocationName}</td>
+                              <td>{elem.Prev_Files || '0'}</td>
+                              <td>{elem.Prev_Images || '0'}</td>
+                              <td>{elem.Yes_Files || '0'}</td>
+                              <td>{elem.Yes_Images || '0'}</td>
+                              <td>{elem.Today_Files || '0'}</td>
+                              <td>{elem.Today_Images || '0'}</td>
+                              <td>{elem.Total_Files || '0'}</td>
+                              <td>{elem.Total_Images || '0'}</td>
+                              <td></td>
+                            </tr>
+
                           );
                         }
                         return null;
-                        })}
+                      })}
 
-                        <tr style={{ color: 'black' }}>
-                          <td colspan="2"><strong>Total</strong></td>
-                         
-                          <td><strong>{columnSums.prevFilesSum}</strong></td>
-        <td><strong>{columnSums.prevImagesSum}</strong></td>
-        <td><strong>{columnSums.yesFilesSum}</strong></td>
-        <td><strong>{columnSums.yesImagesSum}</strong></td>
-        <td><strong>{columnSums.todayFilesSum}</strong></td>
-        <td><strong>{columnSums.todayImagesSum}</strong></td>
-        <td><strong>{columnSums.totalFilesSum}</strong></td>
-        <td><strong>{columnSums.totalImagesSum}</strong></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
+                      <tr style={{ color: 'black' }}>
+                        <td colspan="2"><strong>Total</strong></td>
 
-                    </table>
-                  </div>
+                        <td><strong>{columnSums.prevFilesSum}</strong></td>
+                        <td><strong>{columnSums.prevImagesSum}</strong></td>
+                        <td><strong>{columnSums.yesFilesSum}</strong></td>
+                        <td><strong>{columnSums.yesImagesSum}</strong></td>
+                        <td><strong>{columnSums.todayFilesSum}</strong></td>
+                        <td><strong>{columnSums.todayImagesSum}</strong></td>
+                        <td><strong>{columnSums.totalFilesSum}</strong></td>
+                        <td><strong>{columnSums.totalImagesSum}</strong></td>
+                        <td></td>
+                      </tr>
+                    </tbody>
 
+                  </table>
                 </div>
+
               </div>
-              
-              <div className='row'>
-                <div className='col-md-6 col-sm-12'>
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Cumulative Report</h4>
-                    <h5 className='ms-1'>All Location: Files</h5>
-                    <CCardBody>
-          
-                          <CChartBar
-                          data={barFile}
-                          labels="months"
-                        />
-                        
-                      
-                    </CCardBody>
-                  </CCard>
-                </div>
-                <div className='col-md-6 col-sm-12' >
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Cumulative Report</h4>
-                    <h5 className='ms-1'>All Location: Images</h5>
-                    <CCardBody>
-                    
-                        <CChartBar
-                          data={barImage}
-                          labels="months"
-                        />
-                     
-                    </CCardBody>
-                  </CCard>
-                </div>
-              </div>
-              <div className='row'>
-                <div className='col-md-6 col-sm-12'>
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Case Type Report</h4>
-                    <h5 className='ms-1'>Civil Cases</h5>
-                    <CCardBody>
-                      <CChartBar
-                        data={civilCase}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
-                </div>
-                <div className='col-md-6 col-sm-12' >
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Case Type Report</h4>
-                    <h5 className='ms-1'>Criminal Cases</h5>
-                    <CCardBody>
-                      <CChartBar
-                        data={criminalCase}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
-                </div>
-              </div>
-              <div className='row'>
-                <div className='col-md-6 col-sm-12'>
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>PRODUCTION REPORT FOR ({formattedYesterdayDate})</h4>
-                    <h5 className='ms-1'>All Location: Files</h5>
-                    <CCardBody>
-                      <CChartBar
-                        data={todayFile}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
-                </div>
-                <div className='col-md-6 col-sm-12' >
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>PRODUCTION REPORT FOR ({formattedYesterdayDate})</h4>
-                    <h5 className='ms-1'>All Location: Images</h5>
-                    <CCardBody>
-                      <CChartBar
-                        data={todayImage}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
-                </div>
-              </div>
-              <div className='row'>
-                <div className='col-md-6 col-sm-12' >
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Weekly Report</h4>
-                    <h5 className='ms-1'>All Location: Files</h5>
-                    <CCardBody>
-                      <CChartDoughnut
-                        data={weekFile}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
+            </div>
+
+            <div className='row'>
+              <div className='col-md-6 col-sm-12'>
+                <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                  <h4 className='ms-1'>Cumulative Report</h4>
+                  <h5 className='ms-1'>All Location: Files</h5>
+                  <CCardBody>
+
+                    <CChartBar
+                      data={barFile}
+                      labels="months"
+                    />
+
+
+                  </CCardBody>
+                </CCard>
               </div>
               <div className='col-md-6 col-sm-12' >
-                  <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
-                    <h4 className='ms-1'>Weekly Report</h4>
-                    <h5 className='ms-1'>All Location: Images</h5>
-                    <CCardBody>
-                      <CChartDoughnut
-                        data={weekImage}
-                        labels="months"
-                      />
-                    </CCardBody>
-                  </CCard>
-                </div>
-                </div>
-                
-               <div className='row'>
-                <CCard>
-                  <h4 className='ms-1'>SCANNED REPORT FOR ({formattedYesterdayDate})</h4>
+                <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                  <h4 className='ms-1'>Cumulative Report</h4>
                   <h5 className='ms-1'>All Location: Images</h5>
                   <CCardBody>
-                    <CChartBar
-                      data={allLocationYesImage}
-                      labels="months"
 
-                    >
-                    </CChartBar>
+                    <CChartBar
+                      data={barImage}
+                      labels="months"
+                    />
+
                   </CCardBody>
                 </CCard>
               </div>
-              <div className='row mt-2'>
-                <CCard>
-                  <h4 className='ms-1'>CUMULATIVE SCANNED TILL DATE</h4>
-                  <h5 className='ms-1'>All Location: Images</h5>
+            </div>
+            <div className='row'>
+              <div className='col-md-6 col-sm-12'>
+                <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                  <h4 className='ms-1'>Case Type Report</h4>
+                  <h5 className='ms-1'>Civil Cases</h5>
                   <CCardBody>
                     <CChartBar
-                      data={allLocationImage}
+                      data={civilCase}
                       labels="months"
-
-                    >
-                    </CChartBar>
+                    />
                   </CCardBody>
                 </CCard>
               </div>
+              <div className='col-md-6 col-sm-12' >
+                <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                  <h4 className='ms-1'>Case Type Report</h4>
+                  <h5 className='ms-1'>Criminal Cases</h5>
+                  <CCardBody>
+                    <CChartBar
+                      data={criminalCase}
+                      labels="months"
+                    />
+                  </CCardBody>
+                </CCard>
+              </div>
+            </div>
+            <div className='row'>
+              <div className='col-md-6 col-sm-12'>
+                <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                  <h4 className='ms-1'>PRODUCTION REPORT FOR ({formattedYesterdayDate})</h4>
+                  <h5 className='ms-1'>All Location: Files</h5>
+                  <CCardBody>
+                    <CChartBar
+                      data={todayFile}
+                      labels="months"
+                    />
+                  </CCardBody>
+                </CCard>
+              </div>
+              <div className='col-md-6 col-sm-12' >
+                <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                  <h4 className='ms-1'>PRODUCTION REPORT FOR ({formattedYesterdayDate})</h4>
+                  <h5 className='ms-1'>All Location: Images</h5>
+                  <CCardBody>
+                    <CChartBar
+                      data={todayImage}
+                      labels="months"
+                    />
+                  </CCardBody>
+                </CCard>
+              </div>
+            </div>
+            <div className='row'>
+              <div className='col-md-6 col-sm-12' >
+                <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                  <h4 className='ms-1'>Weekly Report</h4>
+                  <h5 className='ms-1'>All Location: Files</h5>
+                  <CCardBody>
+                    <CChartDoughnut
+                      data={weekFile}
+                      labels="months"
+                    />
+                  </CCardBody>
+                </CCard>
+              </div>
+              <div className='col-md-6 col-sm-12' >
+                <CCard className="mb-4" style={{ marginLeft: '0px', marginRight: '0px' }}>
+                  <h4 className='ms-1'>Weekly Report</h4>
+                  <h5 className='ms-1'>All Location: Images</h5>
+                  <CCardBody>
+                    <CChartDoughnut
+                      data={weekImage}
+                      labels="months"
+                    />
+                  </CCardBody>
+                </CCard>
+              </div>
+            </div>
+
+            <div className='row'>
+              <CCard>
+                <h4 className='ms-1'>SCANNED REPORT FOR ({formattedYesterdayDate})</h4>
+                <h5 className='ms-1'>All Location: Images</h5>
+                <CCardBody>
+                  <CChartBar
+                    data={allLocationYesImage}
+                    labels="months"
+
+                  >
+                  </CChartBar>
+                </CCardBody>
+              </CCard>
+            </div>
+            <div className='row mt-2'>
+              <CCard>
+                <h4 className='ms-1'>CUMULATIVE SCANNED TILL DATE</h4>
+                <h5 className='ms-1'>All Location: Images</h5>
+                <CCardBody>
+                  <CChartBar
+                    data={allLocationImage}
+                    labels="months"
+
+                  >
+                  </CChartBar>
+                </CCardBody>
+              </CCard>
+            </div>
           </div>
         </div>
       </div>

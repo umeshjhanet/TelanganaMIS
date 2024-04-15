@@ -6,7 +6,6 @@ import { ProcessCardData } from './ProcessCardData';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
 
-
 const MIS_Form = () => {
   const [blrData, setBLRData] = useState();
   const [startDate, setStartDate] = useState(new Date());
@@ -35,6 +34,8 @@ const MIS_Form = () => {
   const [newData, setNewData] = useState({ Desig_ID: '', Desig_name: '' });
   const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
   const [errorMessage, setErrorMessage] = useState('');
+  const [fileUploaded, setFileUploaded] = useState(false);
+const [excelData, setExcelData] = useState(null);
   useEffect(() => {
     // const fetchData = () => {
     //   fetch("http://localhost:3001/users")
@@ -42,6 +43,7 @@ const MIS_Form = () => {
     //   .then(data => setBLRData(data))
     //   .catch(error => console.error(error))
     //   console.log("Data",blrData);
+
 
     // }
     const locationData = () => {
@@ -69,6 +71,7 @@ const MIS_Form = () => {
         const response = await axios.get("http://localhost:3001/site_MPData");
         const site_MPData = response.data;
 
+
         console.log("Manpower Data" , site_MPData);
         setFormData({
           // PM_Id: site_MPData.PM_Id || '',
@@ -81,7 +84,9 @@ const MIS_Form = () => {
       }
     };
 
+
     fetchLastInsertedData();
+
 
 
     // fetchData();
@@ -89,6 +94,7 @@ const MIS_Form = () => {
     designationData();
     usermasterData();
     const intervalId = setInterval(designationData, usermasterData, 2000);
+
 
     return () => clearInterval(intervalId);
   }, [])
@@ -115,6 +121,7 @@ const MIS_Form = () => {
   };
 
 
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -134,6 +141,7 @@ const MIS_Form = () => {
       console.error("Error updating user:", error);
     }
   }
+
 
   const handleDeleteDesignation = async (Desig_ID) => {
     try {
@@ -168,44 +176,64 @@ const MIS_Form = () => {
     setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, SM_Id: selectedSMId, PH_Id: selectedPHId, Location_Id: selectedLocationId });
   }
 
-  const handleManPowerForm = async (e) => {
-    e.preventDefault();
+
+  // const handleManPowerForm = async (e) => {
+  //   e.preventDefault();
   
-    if (fileUploaded) {
-      // If an Excel file is uploaded, process its data
-      try {
-        const response = await axios.post("http://localhost:3001/site_MP", excelData);
+  //   if (fileUploaded) {
+  //     // If an Excel file is uploaded, process its data
+  //     try {
+  //       const response = await axios.post("http://localhost:3001/site_MP", excelData);
+  //       console.log("Data from Excel file submitted:", response.data);
+  //     } catch (error) {
+  //       console.error("Error submitting data from Excel file:", error);
+  //     }
+  //   } else {
+  //     // If no Excel file is uploaded, submit the form with manually entered data
+  //     try {
+  //       const response = await axios.post("http://localhost:3001/site_MP", manpowerForm);
+  //       console.log("Data from input fields submitted:", response.data);
+  //     } catch (error) {
+  //       console.error("Error submitting data from input fields:", error);
+  //     }
+  //   }
+  // };
+  const handleManPowerForm = async () => {
+    try {
+      if (excelData) {
+        const response = await axios.post("http://localhost:3001/site_MP", { excelData });
         console.log("Data from Excel file submitted:", response.data);
-      } catch (error) {
-        console.error("Error submitting data from Excel file:", error);
-      }
-    } else {
-      // If no Excel file is uploaded, submit the form with manually entered data
-      try {
+      } else {
         const response = await axios.post("http://localhost:3001/site_MP", manpowerForm);
         console.log("Data from input fields submitted:", response.data);
-      } catch (error) {
-        console.error("Error submitting data from input fields:", error);
       }
+      setErrorMessage('');
+    } catch (error) {
+      setErrorMessage('Error submitting data. Please try again.');
+      console.error("Error submitting data:", error);
     }
   };
+
+
   
-  // const handleFileUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   const reader = new FileReader();
-  //   reader.onload = (evt) => {
-  //     const data = evt.target.result;
-  //     const workbook = XLSX.read(data, { type: 'binary' });
-  //     const sheetName = workbook.SheetNames[0];
-  //     const sheet = workbook.Sheets[sheetName];
-  //     const extractedData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-  //     setExcelData(extractedData);
-  //     setFileUploaded(true);
-  //     console.log(extractedData);
-  //   };
-  //   reader.readAsBinaryString(file);
-  // };
   
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+  
+    reader.onload = async (evt) => {
+      const arrayBuffer = evt.target.result;
+      // Parse the Excel data and set it in the state
+      const data = new Uint8Array(arrayBuffer);
+      setExcelData(data);
+    };
+  
+    reader.readAsArrayBuffer(file);
+  };
+  
+  
+  
+
 
 
   // if (!designation)
@@ -245,6 +273,7 @@ const MIS_Form = () => {
             <h3 className='text-center'>UPDC MIS</h3>
             <h5 className='text-center'>Input Screen for user at site to enter the data on daily basis</h5>
 
+
             <div className='row mt-4 main-updc'>
               <div className='col-5'>
                 <div className='row mt-5'>
@@ -277,6 +306,7 @@ const MIS_Form = () => {
                         </div>
                       ))}
 
+
                     </div>
                   )}
                 </div>
@@ -294,6 +324,7 @@ const MIS_Form = () => {
                           <p>{elem.first_name} {elem.last_name}</p>
                         </div>
                       ))}
+
 
                     </div>
                   )}
@@ -313,15 +344,19 @@ const MIS_Form = () => {
                         </div>
                       ))}
 
+
                     </div>
                   )}
                 </div>
               </div>
 
+
             </div>
             <div className='row mt-4 mb-4'>
               <h5 className='text-center'>Process Details</h5>
-              <input type='file'/>
+              <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
+
+
               <h6 className=' mt-2'>Collection(Indexing IN)</h6>
               <div className='row process-card'>
                 <div className='col-4'>
@@ -465,6 +500,7 @@ const MIS_Form = () => {
               
             </div>
 
+
             <div className='row mt-3 btn-row'>
               {errorMessage && <span className="error-message" style={{ color: 'red' }}>{errorMessage}</span>}
               <button className='btn process-btn me-2'>View/Edit</button>
@@ -478,5 +514,6 @@ const MIS_Form = () => {
     </>
   )
 }
+
 
 export default MIS_Form;
