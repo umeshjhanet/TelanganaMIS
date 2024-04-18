@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Header from './Components/Header'
 import Footer from './Footer'
+import { API_URL } from './Api';
 
 const UploadDatabase = () => {
 
@@ -29,7 +30,7 @@ const UploadDatabase = () => {
         formData.append('file', file, fileName);
 
         try {
-            const response = await fetch('http://192.168.3.119:81/upload', {
+            const response = await fetch(`${API_URL}/upload`, {
                 method: 'POST',
                 body: formData,
             });

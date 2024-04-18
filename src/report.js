@@ -6,6 +6,7 @@ import Header from "./Components/Header";
 import Footer from "./Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
+import { API_URL } from "./Api";
 
 const Report = () => {
   const [startDate, setStartDate] = useState('');
@@ -15,7 +16,7 @@ const Report = () => {
   const [locationName, setLocationName] = useState("");
   const [locationData, setLocationData] = useState(null);
   const [summaryLocationData, setSummaryLocationData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchInput, setSearchInput] = useState("");
   const [summary, setSummary] = useState();
@@ -23,7 +24,7 @@ const Report = () => {
   const [csv, setCsv] = useState(null);
   const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
-  
+
 
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
@@ -63,11 +64,11 @@ const Report = () => {
 
   useEffect(() => {
     const locationName = selectedLocations;
-    
+
     const summaryData = async () => {
       try {
         setIsLoading(true);
-        let apiUrl = "http://localhost:3001/summary";
+        let apiUrl = `${API_URL}/summary`;
         const queryParams = {};
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
@@ -83,16 +84,16 @@ const Report = () => {
         setIsLoading(false);
       }
     };
-    
 
-   
+
+
     // const fetchSummaryReportCsvFile = () => {
-    //   // const apiUrl = locationName ? `http://localhost:3001/summarycsv?locationName=${locationName}` : 'http://localhost:3001/summarycsv';
+    //   // const apiUrl = locationName ? `${API_URL}/summarycsv?locationName=${locationName}` : '${API_URL}/summarycsv';
     //   const apiUrl = locationName
-    //     ? `http://localhost:3001/summarycsv?${locationName
+    //     ? `${API_URL}/summarycsv?${locationName
     //         .map((name) => `locationName=${name}`)
     //         .join("&")}`
-    //     : "http://localhost:3001/summarycsv";
+    //     : "${API_URL}/summarycsv";
 
     //   axios
     //     .get(apiUrl, { responseType: "blob" })
@@ -111,9 +112,9 @@ const Report = () => {
       const formatDate = (date) => {
         return date.toISOString().split('T')[0];
       };
-    
-    
-      let apiUrl = "http://localhost:3001/summarycsv";
+
+
+      let apiUrl = `${API_URL}/summarycsv`;
       if (locationName && formattedStartDate && formattedEndDate) {
         apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
       } else if (locationName) {
@@ -121,27 +122,27 @@ const Report = () => {
       } else if (formattedStartDate && formattedEndDate) {
         apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
       }
-      
+
       axios.get(apiUrl, { responseType: "blob" })
-          .then((response) => {
-              const blob = new Blob([response.data], { type: "text/csv" });
-              const url = window.URL.createObjectURL(blob);
-              setCsv(url);
-          })
-          .catch((error) => {
-              console.error("Error in exporting data:", error);
-          });
+        .then((response) => {
+          const blob = new Blob([response.data], { type: "text/csv" });
+          const url = window.URL.createObjectURL(blob);
+          setCsv(url);
+        })
+        .catch((error) => {
+          console.error("Error in exporting data:", error);
+        });
     };
-    
+
 
 
     // const fetchSummaryReportTableCsvFile = () => {
     //   const apiUrl = locationName
-    //     ? `http://localhost:3001/reporttablecsv?${locationName
+    //     ? `${API_URL}/reporttablecsv?${locationName
     //         .map((name) => `locationName=${name}`)
     //         .join("&")}`
-    //     : "http://localhost:3001/reporttablecsv";
-       
+    //     : "${API_URL}/reporttablecsv";
+
     //   axios
     //     .get(apiUrl, { responseType: "blob" })
     //     .then((response) => {
@@ -153,36 +154,36 @@ const Report = () => {
     //       console.error("Error in exporting data:", error);
     //     });
     // };
-const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
-  const formattedStartDate = startDate ? new Date(startDate) : null;
-  const formattedEndDate = endDate ? new Date(endDate) : null;
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
-  };
+    const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
+      const formattedStartDate = startDate ? new Date(startDate) : null;
+      const formattedEndDate = endDate ? new Date(endDate) : null;
+      const formatDate = (date) => {
+        return date.toISOString().split('T')[0];
+      };
 
 
-  let apiUrl = "http://localhost:3001/reporttablecsv";
-  if (locationName && formattedStartDate && formattedEndDate) {
-    apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-  } else if (locationName) {
-    apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
-  } else if (formattedStartDate && formattedEndDate) {
-    apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-  }
-  axios.get(apiUrl, { responseType: "blob" })
-      .then((response) => {
+      let apiUrl = `${API_URL}/reporttablecsv`;
+      if (locationName && formattedStartDate && formattedEndDate) {
+        apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+      } else if (locationName) {
+        apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
+      } else if (formattedStartDate && formattedEndDate) {
+        apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+      }
+      axios.get(apiUrl, { responseType: "blob" })
+        .then((response) => {
           const blob = new Blob([response.data], { type: "text/csv" });
           const url = window.URL.createObjectURL(blob);
           setReportCsv(url);
-      })
-      .catch((error) => {
+        })
+        .catch((error) => {
           console.error("Error in exporting data:", error);
-      });
-};
+        });
+    };
     const fetchReportData = async () => {
       try {
-        setIsLoading(true); 
-        let apiUrl = "http://localhost:3001/reportTable"; 
+        setIsLoading(true);
+        let apiUrl = `${API_URL}/reportTable`;
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
           const formattedEndDate = endDate.toISOString().split('T')[0];
@@ -199,7 +200,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
         setIsLoading(false);
       }
     };
-    
+
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
         try {
@@ -207,7 +208,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://localhost:3001/reportLocationWiseTable?locationname=${location}`
+                `${API_URL}/reportLocationWiseTable?locationname=${location}`
               )
             )
           );
@@ -232,7 +233,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://localhost:5000/summarylocationname?locationname=${location}`
+                `${API_URL}/summarylocationname?locationname=${location}`
               )
             )
           );
@@ -269,12 +270,12 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
     // }, 5000);
 
     // return () => clearInterval(intervalId);
-  }, [selectedLocations,startDate,endDate]);
+  }, [selectedLocations, startDate, endDate]);
 
   return (
     <>
       <Header />
-      <div className="container-fluid">
+      <div className={`container-fluid ${isLoading ? 'loading' : ''}`}>
         <div className="row">
           <div className="col-lg-2 col-md-2 "></div>
           <div className="col-lg-10 col-md-9 col-sm-12">
@@ -299,13 +300,13 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                     borderRadius: "5px",
                     minHeight: "30px",
                   }}
-                 
+
                   contentEditable={true}
                   onClick={() => setShowLocation(!showLocation)}
                 >
-                   {selectedLocations.length === 0 && !showLocation && (
-        <span className="placeholder-text">Search Locations...</span>
-      )}
+                  {selectedLocations.length === 0 && !showLocation && (
+                    <span className="placeholder-text">Search Locations...</span>
+                  )}
                   {selectedLocations.map((location, index) => (
                     <span key={index} className="selected-location">
                       {location}
@@ -346,13 +347,13 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
               </div>
               <div className="col-md-6 col-sm-12" >
                 <DatePicker
-                  className="date-field" 
+                  className="date-field"
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
                   placeholderText="Start Date"
                 />
                 <button
-                  className="btn ms-1 me-1" 
+                  className="btn ms-1 me-1"
                   style={{
                     height: "40px",
                     backgroundColor: "#4BC0C0",
@@ -363,7 +364,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                   To
                 </button>
                 <DatePicker
-                  className="date-field" 
+                  className="date-field"
                   selected={endDate}
                   onChange={(date) => setEndDate(date)}
                   placeholderText="End Date"
@@ -396,17 +397,40 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                   </h6>
                 </div>
               </div>
-              <div className="main-summary-card ">
-                <h5 className="mt-1 mb-2">Total Location: 57</h5>
-                <div className="row">
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+              <div className={`main-summary-card ${isLoading ? 'loading' : ''}`}>
+                <h5 className="mt-1 mb-2">Total Location: 61</h5>
+                {isLoading ? (
+                  <>
+                    <div className="loader-container">
+                      <div className="loader"></div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="row">
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Collection of Records
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: {elem.CollectionFiles || "0"}{" "}
+                                  <br />
+                                  Total Images: {elem.CollectionImages || "0"}
+                                </p>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
@@ -414,128 +438,124 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: {elem.CollectionFiles || "0"}{" "}
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.CollectionFiles) ||
+                                      0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
                                 <br />
-                                Total Images: {elem.CollectionImages || "0"}
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.CollectionImages) ||
+                                      0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Collection of Records
-                              </h6>
-                            </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CollectionFiles) ||
-                                      0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CollectionImages) ||
-                                      0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+                        )}
+                      </>
+                    )}
 
-                   {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Scanning ADF
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: {elem.ScannedFiles || "0"} <br />
+                                  Total Images: {elem.ScannedImages || "0"}
+                                </p>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
-                                 Scanning ADF
+                                  Scanning ADF
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: {elem.ScannedFiles || "0"} <br />
-                                Total Images: {elem.ScannedImages || "0"}
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.ScannedFiles) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.ScannedImages) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                               Scanning ADF
-                              </h6>
+                        )}
+                      </>
+                    )}
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Image QC
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: {elem.QCFiles || "0"} <br />
+                                  Total Images: {elem.QCImages || "0"}
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.ScannedFiles) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.ScannedImages) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  
-
-{summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
@@ -543,60 +563,60 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: {elem.QCFiles || "0"} <br />
-                                Total Images: {elem.QCImages || "0"}
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.QCFiles) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.QCImages) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Image QC
-                              </h6>
+                        )}
+                      </>
+                    )}
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Document Classification
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: {elem.FlaggingFiles || "0"} <br />
+                                  Total Images: {elem.FlaggingImages || "0"}
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.QCFiles) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.QCImages) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
@@ -604,60 +624,60 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: {elem.FlaggingFiles || "0"} <br />
-                                Total Images: {elem.FlaggingImages|| "0"}
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.FlaggingFiles) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.FlaggingImages) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Document Classification
-                              </h6>
+                        )}
+                      </>
+                    )}
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Indexing
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: {elem.IndexingFiles || "0"} <br />
+                                  Total Images: {elem.IndexingImages || "0"}
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.FlaggingFiles) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.FlaggingImages) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
@@ -665,361 +685,344 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: {elem.IndexingFiles || "0"} <br />
-                                Total Images: {elem.IndexingImages || "0"}
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.IndexingFiles) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.IndexingImages) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Indexing
-                              </h6>
+                        )}
+                      </>
+                    )}
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    CBSL QA
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: {elem.CBSL_QAFiles || "0"} <br />
+                                  Total Images: {elem.CBSL_QAImages || "0"}
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.IndexingFiles) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.IndexingImages) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                
-                
-                 
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
-                                 CBSL QA
+                                  CBSL QA
                                 </h6>
                               </div>
                               <p className="text-center">
-                              Total Files: {elem.CBSL_QAFiles || "0"} <br />
-                                Total Images: {elem.CBSL_QAImages|| "0"}
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.CBSL_QAFiles) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.CBSL_QAImages) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                               CBSL QA
-                              </h6>
+                        )}
+                      </>
+                    )}
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Export PDF
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: {elem.Export_PdfFiles || "0"} <br />
+                                  Total Images: {elem.Export_PdfImages || "0"}
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CBSL_QAFiles) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CBSL_QAImages) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
-                                 Export PDF
+                                  Export PDF
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: {elem.Export_PdfFiles || "0"} <br />
-                                Total Images: {elem.Export_PdfImages || "0"}
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.Export_PdfFiles) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.Export_PdfImages) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                               Export PDF
-                              </h6>
+                        )}
+                      </>
+                    )}
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Client QA
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: {elem.Client_QA_AcceptedFiles || "0"} <br />
+                                  Total Images: {elem.Client_QA_AcceptedImages || "0"}
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Export_PdfFiles) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Export_PdfImages) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
-                                 Client QA
+                                  Client QA
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: {elem.Client_QA_AcceptedFiles || "0"} <br />
-                                Total Images: {elem.Client_QA_AcceptedImages || "0"}
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.Client_QA_AcceptedFiles) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(locationData.Client_QA_AcceptedImages) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Client QA
-                              </h6>
+                        )}
+                      </>
+                    )}
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    CSV Generation
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: 0 <br />
+                                  Total Images:0
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Client_QA_AcceptedFiles) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Client_QA_AcceptedImages) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                   {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
-                                 CSV Generation
+                                  CSV Generation
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: 0 <br />
-                                Total Images:0
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(0) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(0) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                              CSV Generation
-                              </h6>
+                        )}
+                      </>
+                    )}
+                    {summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Inventory Out
+                                  </h6>
+                                </div>
+                                <p className="text-center">
+                                  Total Files: 0 <br />
+                                  Total Images:0
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                 {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
-                                 Inventory Out
+                                  Inventory Out
                                 </h6>
                               </div>
                               <p className="text-center">
-                                Total Files: 0 <br />
-                                Total Images:0
+                                Total Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(0) || 0
+                                      : 0)
+                                  );
+                                }, 0)}{" "}
+                                <br />
+                                Total Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find(
+                                    (elem) => elem.LocationName === location
+                                  );
+                                  return (
+                                    acc +
+                                    (locationData
+                                      ? parseInt(0) || 0
+                                      : 0)
+                                  );
+                                }, 0)}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                               Inventory Out
-                              </h6>
-                            </div>
-                            <p className="text-center">
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             <div className="row mt-3 me-1">
@@ -1092,6 +1095,13 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                         <th>Images</th>
                       </tr>
                     </thead>
+                    {isLoading ? (
+                  <>
+                    <div className="loader-container">
+                      <div className="loader"></div>
+                    </div>
+                  </>
+                ) : (
                     <tbody
                       className="scrollable"
                       style={{ color: "black", height: "200px" }}
@@ -1137,6 +1147,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                           return null;
                         })}
                     </tbody>
+                )}
                   </table>
                 </div>
               </div>
@@ -1145,6 +1156,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
         </div>
       </div>
       <Footer />
+
     </>
   );
 };

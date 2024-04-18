@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { useState,useEffect } from 'react';
+import { API_URL } from '../Api';
 
 const UpdateUserModal = ({onClose}) => {
     const[group, setGroup] = useState();
@@ -78,31 +79,31 @@ const [newData, setNewData] = useState({
 
   useEffect(() => {
     const fetchGroup = () => {
-      fetch("http://192.168.3.119:81/group_master")
+      fetch(`${API_URL}/group_master`)
       .then(response => response.json())
       .then(data => setGroup(data))
       .catch(error => console.error(error))
     }
     const fetchLocation = () => {
-      fetch("http://192.168.3.119:81/locations")
+      fetch(`${API_URL}/locations`)
       .then(response => response.json())
       .then(data => setLocation(data))
       .catch(error => console.error(error))
     }
     const fetchPrivilege = () => {
-      fetch("http://192.168.3.119:81/privilege")
+      fetch(`${API_URL}/privilege`)
       .then(response => response.json())
       .then(data => setPrivilege(data))
       .catch(error => console.error(error))
     }
     const fetchStorage = () => {
-      fetch("http://localhost:5000/storage")
+      fetch(`${API_URL}/storage`)
       .then(response => response.json())
       .then(data => setStorage(data))
       .catch(error => console.error(error))
     }
     const fetchEmail = () => {
-      fetch("http://192.168.3.119:81/user_email")
+      fetch(`${API_URL}/user_email`)
       .then(response => response.json())
       .then(data => setEmail(data))
       .catch(error => console.error(error))
@@ -110,7 +111,7 @@ const [newData, setNewData] = useState({
    
    
     const fetchReporting = () => {
-      fetch("http://192.168.3.119:81/reporting")
+      fetch(`${API_URL}/reporting`)
       .then(response => response.json())
       .then(data => setReporting(data))
       .catch(error => console.error(error))
@@ -133,7 +134,7 @@ const [newData, setNewData] = useState({
     console.log("click outside");
     try {
       const response = await axios.put(
-        `http://192.168.3.119:81/createuserupdate/${formData.user_id}`,
+        `http://localhost:3001/createuserupdate/${formData.user_id}`,
         newData
       );
       onClose(); 

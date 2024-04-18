@@ -6,6 +6,7 @@ import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import UpdateUserModal from "./Components/UpdateUserModal";
 import { ToastContainer } from "react-toastify";
+import { API_URL } from "./Api";
 
 const User_List = () => {
   const [user, setUser] = useState([]);
@@ -44,7 +45,7 @@ const User_List = () => {
   const handleDeleteUser = async (user_id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/createuserdelete/${user_id}`
+        `${API_URL}/createuserdelete/${user_id}`
       );
       setUser(user.filter((elem) => elem.user_id !== user_id));
       console.log("User Deleted:", response.data);
@@ -68,7 +69,7 @@ const User_List = () => {
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://localhost:3001/user_master")
+        .get(`${API_URL}/user_master`)
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
@@ -76,7 +77,7 @@ const User_List = () => {
     };
 const fetchLocation = () => {
       axios
-        .get("http://localhost:3001/locations")
+        .get(`${API_URL}/locations`)
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};

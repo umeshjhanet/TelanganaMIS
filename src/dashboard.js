@@ -8,6 +8,7 @@ import Footer from './Footer';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { format, sub } from 'date-fns';
 import { MdFileDownload } from "react-icons/md";
+import { API_URL } from './Api';
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
@@ -27,10 +28,9 @@ const Dashboard = () => {
   const [searchInput, setSearchInput] = useState('');
   const [locationData, setLocationData] = useState(null);
   const [locationGraphData, setLocationGraphData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [locationName, setLocationName] = useState('');
 
   const userLog = JSON.parse(localStorage.getItem('user'));
@@ -160,14 +160,28 @@ const Dashboard = () => {
     ],
   })
   const random = () => Math.round(Math.random() * 100)
-  const handleLocation = (locationName) => {
-    if (!selectedLocations.includes(locationName)) {
-      setSelectedLocations([...selectedLocations, locationName]);
-      setSearchInput('');
-    }
-    setShowLocation(false); // Close the dropdown when a location is selected
 
-  };
+  useEffect(() => {
+          const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+             setShowLocation(false);
+           }
+          };
+          document.addEventListener("click", handleClickOutside);
+          return () => {
+            document.removeEventListener("click", handleClickOutside);
+          };
+        }, [dropdownRef]);
+
+  const handleLocation = (locationName) => {
+         if (!selectedLocations.includes(locationName)) {
+           setSelectedLocations([...selectedLocations, locationName]);
+    
+    
+          setSearchInput("");
+         }
+         setShowLocation(false); // Close the dropdown when a location is selected
+       };
 
   const removeLocation = (locationName) => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== locationName));
@@ -230,7 +244,7 @@ const Dashboard = () => {
         try {
           setIsLoading(true);
           const locationDataResponses = await Promise.all(selectedLocations.map(location =>
-            axios.get(`http://localhost:3001/api/locationwisetabularData?locationName=?`)
+            axios.get(`${API_URL}/api/locationwisetabularData?locationName=?`)
           ));
           const locationData = locationDataResponses.map(response => response.data);
           setLocationData(locationData);
@@ -246,7 +260,7 @@ const Dashboard = () => {
     const locationName = selectedLocations;
 
     const fetchGraphFileData = (selectedLocations) => {
-      let apiUrl = 'http://localhost:3001/graph1LocationWise';
+      let apiUrl = `${API_URL}/graph1LocationWise`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -274,6 +288,7 @@ const Dashboard = () => {
             labels: labels,
             datasets: datasets
           });
+          setIsLoading(false);
         })
         .catch(error => {
           console.error('Error fetching data:', error);
@@ -284,7 +299,7 @@ const Dashboard = () => {
 
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
-      const apiUrl = locationName ? `http://localhost:3001/csv?${locationName.map(name => `locationName=${name}`).join('&')}` : 'http://localhost:3001/csv';
+      const apiUrl = locationName ? `${API_URL}/csv?${locationName.map(name => `locationName=${name}`).join('&')}` : `${API_URL}/csv`;
 
       axios.get(apiUrl, { responseType: 'blob' })
         .then(response => {
@@ -300,7 +315,7 @@ const Dashboard = () => {
 
 
     const fetchGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://localhost:3001/graph2';
+      let apiUrl = `${API_URL}/graph2`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -328,13 +343,14 @@ const Dashboard = () => {
             labels: labels,
             datasets: datasets
           });
+          setIsLoading(false);
         })
         .catch(error => {
           console.error('Error fetching data:', error);
         });
     }
     const fetchTodayGraphFileData = () => {
-      let apiUrl = 'http://localhost:3001/graph7';
+      let apiUrl = `${API_URL}/graph7`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -362,6 +378,7 @@ const Dashboard = () => {
             labels: labels,
             datasets: datasets
           });
+          setIsLoading(false);
         })
         .catch(error => {
           console.error('Error fetching data:', error);
@@ -369,7 +386,7 @@ const Dashboard = () => {
     }
 
     const fetchTodayGraphImageData = () => {
-      let apiUrl = 'http://localhost:3001/graph8';
+      let apiUrl = `${API_URL}/graph8`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -397,6 +414,7 @@ const Dashboard = () => {
             labels: labels,
             datasets: datasets
           });
+          setIsLoading(false);
         })
         .catch(error => {
           console.error('Error fetching data:', error);
@@ -409,7 +427,7 @@ const Dashboard = () => {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://localhost:3001/graph5', params)
+      axios.get(`${API_URL}/graph5`, params)
         .then(response => {
           const apiData = response.data;
           const labels = apiData.map(item => item["scandate"]);
@@ -426,6 +444,7 @@ const Dashboard = () => {
               },
             ],
           });
+          setIsLoading(false);
           console.log("weekly data fetch", weekFile);
         })
         .catch(error => {
@@ -439,7 +458,7 @@ const Dashboard = () => {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://localhost:3001/graph6', params)
+      axios.get(`${API_URL}/graph6`, params)
         .then(response => {
           const apiData = response.data;
           const labels = apiData.map(item => item["scandate"]);
@@ -456,6 +475,7 @@ const Dashboard = () => {
               },
             ],
           });
+          setIsLoading(false);
           console.log("weekly data fetch", weekImage);
         })
         .catch(error => {
@@ -470,7 +490,7 @@ const Dashboard = () => {
           locationNames: selectedLocations // Assuming selectedLocations is an array of location names
         }
       };
-      axios.get('http://localhost:3001/graphmonth', params)
+      axios.get(`${API_URL}/graphmonth`, params)
         .then(response => {
           const apiData = response.data;
           const labels = apiData.map(item => item['scandate'])
@@ -487,6 +507,7 @@ const Dashboard = () => {
             ],
 
           });
+          setIsLoading(false);
           console.log("Monthly  data fetch", monthImage)
         })
         .catch(error => {
@@ -495,7 +516,7 @@ const Dashboard = () => {
     }
 
     const fetchCivilCaseGraphData = () => {
-      let apiUrl = 'http://localhost:3001/civil';
+      let apiUrl = `${API_URL}/civil`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -528,12 +549,13 @@ const Dashboard = () => {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
+      setIsLoading(false);
     }
 
 
 
     const fetchCriminalCaseGraphData = () => {
-      let apiUrl = 'http://localhost:3001/criminal';
+      let apiUrl = `${API_URL}/criminal`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -566,9 +588,10 @@ const Dashboard = () => {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
+      setIsLoading(false);
     }
     const fetchAllYesGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://localhost:3001/graph9';
+      let apiUrl = `${API_URL}/graph9`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -603,11 +626,12 @@ const Dashboard = () => {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
+      setIsLoading(false);
     }
 
 
     const fetchAllGraphImageData = (selectedLocations) => {
-      let apiUrl = 'http://localhost:3001/graph10';
+      let apiUrl = `${API_URL}/graph10`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
@@ -639,16 +663,18 @@ const Dashboard = () => {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
+      setIsLoading(false);
     }
 
 
     const fetchTableData = () => {
-      axios.get("http://localhost:3001/tabularData")
+      axios.get(`${API_URL}/tabularData`)
         .then(response => {
           setTableData(response.data);
           console.log("Table Data", response.data); // Log inside the then block
         })
         .catch(error => console.error(error));
+      setIsLoading(false);
     }
 
     fetchGraphFileData(locationName);
@@ -670,10 +696,11 @@ const Dashboard = () => {
 
   const columnSums = calculateColumnSum();
 
+
   return (
     <>
       <Header />
-      <div className='container-fluid'>
+      <div className={`container-fluid ${isLoading ? 'loading' : ''}`}>
         <div className='row'>
           <div className='col-lg-2 col-md-2 '></div>
           <div className='col-lg-10 col-md-10'>
@@ -734,10 +761,19 @@ const Dashboard = () => {
                 <h5 className='ms-1'>All Location: Images</h5>
                 <CCard>
                   <CCardBody>
-                    <CChartBar
-                      data={monthImage}
-                      labels="months"
-                    />
+                    {isLoading ? (
+                      <>
+                        <div className="loader-container">
+                          <div className="loader"></div>
+                        </div>
+                      </>
+                      ) : (
+                      <>
+                        <CChartBar
+                          data={monthImage}
+                          labels="months"
+                        />
+                      </>)}
                   </CCardBody>
                 </CCard>
                 <div>
@@ -786,7 +822,13 @@ const Dashboard = () => {
                         <th>Images</th>
                       </tr>
                     </thead>
-
+                    {isLoading ? (
+                      <>
+                        <div className="loader-container">
+                          <div className="loader"></div>
+                        </div>
+                      </>
+                      ) : (
                     <tbody style={{ color: 'gray' }}>
 
 
@@ -826,7 +868,7 @@ const Dashboard = () => {
                         <td></td>
                       </tr>
                     </tbody>
-
+                      )}
                   </table>
                 </div>
 
@@ -976,16 +1018,8 @@ const Dashboard = () => {
       </div>
       <Footer />
     </>
+
   )
 }
 
 export default Dashboard
-
-
-
-
-
-
-
-
-
