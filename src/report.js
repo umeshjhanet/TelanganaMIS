@@ -24,7 +24,21 @@ const Report = () => {
   const [csv, setCsv] = useState(null);
   const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
+  
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowLocation(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
@@ -68,7 +82,7 @@ const Report = () => {
     const summaryData = async () => {
       try {
         setIsLoading(true);
-        let apiUrl = `${API_URL}/summary`;
+        let apiUrl = "http://localhost:5000/summary";
         const queryParams = {};
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];

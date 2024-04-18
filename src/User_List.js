@@ -19,9 +19,11 @@ const User_List = () => {
   const [usersPerPage] = useState(10); // Set users per page
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
+  const[userIdToEdit,setUserIdToEdit]=useState(null);
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = user.slice(indexOfFirstUser, indexOfLastUser);
+
 
   const [formData, setFormData] = useState({
     user_email_id: "",
@@ -55,12 +57,18 @@ const User_List = () => {
     }
   };
 
+// const handleEditUserId=(user_id)=>{
+//   setUserIdToEdit(user_id);
+
+// }
+
   const handleDeleteUserId = (user_id) => {
     setUserIdToDelete(user_id);
     setShowConfirmation(true);
   };
-  const handleOpenModal = () => {
+  const handleOpenModal = (user_id) => {
     setIsModalOpen(true);
+   
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -93,6 +101,7 @@ const fetchLocation = () => {
           console.error("Error fetching location data:", error);
         });
     };
+   
     fetchUser();
     fetchLocation();
 
@@ -181,7 +190,7 @@ const fetchLocation = () => {
                       <td>{elem.user_role}</td>
                       <td>{getLocationNameById(elem.locations)}</td>
                       <td>
-                        <BiEdit onClick={handleOpenModal} style={{color:'blue', fontSize:'20px'}}/>
+                        <BiEdit onClick={handleOpenModal}  style={{color:'blue', fontSize:'20px'}}/>
                         / 
                         <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
                       </td>
@@ -222,7 +231,7 @@ const fetchLocation = () => {
 
               </div>
 
-              {isModalOpen && <UpdateUserModal onClose={handleCloseModal} />}
+              {isModalOpen && <UpdateUserModal onClose={handleCloseModal}  />}
             </div>
           </div>
         </div>
