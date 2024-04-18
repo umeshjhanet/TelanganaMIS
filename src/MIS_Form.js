@@ -48,6 +48,7 @@ const MIS_Form = () => {
     //   .catch(error => console.error(error))
     //   console.log("Data",blrData);
 
+
     // }
     const locationData = () => {
       fetch("http://localhost:5000/locations")
@@ -74,6 +75,7 @@ const MIS_Form = () => {
         const response = await axios.get("http://localhost:5000/site_MPData");
         const site_MPData = response.data;
 
+
         console.log("Manpower Data" , site_MPData);
         setFormData({
           // PM_Id: site_MPData.PM_Id || '',
@@ -86,7 +88,9 @@ const MIS_Form = () => {
       }
     };
 
+
     fetchLastInsertedData();
+
 
 
     // fetchData();
@@ -94,6 +98,7 @@ const MIS_Form = () => {
     designationData();
     usermasterData();
     const intervalId = setInterval(designationData, usermasterData, 2000);
+
 
     return () => clearInterval(intervalId);
   }, [])
@@ -112,12 +117,12 @@ const MIS_Form = () => {
   const handleShowSiteMan = () => {
     showSiteMan(!siteMan);
   }
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   console.log(name, value); // Log the name and value to verify
-  //   setFormData({ ...formData, [name]: value });
-  //   setNewData({ ...newData, [name]: value });
-  // };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    console.log(name, value); // Log the name and value to verify
+    setFormData({ ...formData, [name]: value });
+    setNewData({ ...newData, [name]: value });
+  };
 
 
   // const handleFormSubmit = async (e) => {
@@ -303,6 +308,7 @@ const MIS_Form = () => {
             <h3 className='text-center'>UPDC MIS</h3>
             <h5 className='text-center'>Input Screen for user at site to enter the data on daily basis</h5>
 
+
             <div className='row mt-4 main-updc'>
               <div className='col-5'>
                 <div className='row mt-5'>
@@ -335,6 +341,7 @@ const MIS_Form = () => {
                         </div>
                       ))}
 
+
                     </div>
                   )}
                 </div>
@@ -352,6 +359,7 @@ const MIS_Form = () => {
                           <p>{elem.first_name} {elem.last_name}</p>
                         </div>
                       ))}
+
 
                     </div>
                   )}
@@ -371,10 +379,12 @@ const MIS_Form = () => {
                         </div>
                       ))}
 
+
                     </div>
                   )}
                 </div>
               </div>
+
 
             </div>
             <div className='row mt-4 mb-4'>
@@ -524,6 +534,7 @@ const MIS_Form = () => {
               
             </div>
 
+
             <div className='row mt-3 btn-row'>
               {errorMessage && <span className="error-message" style={{ color: 'red' }}>{errorMessage}</span>}
               <button className='btn process-btn me-2'>View/Edit</button>
@@ -537,5 +548,6 @@ const MIS_Form = () => {
     </>
   )
 }
+
 
 export default MIS_Form;

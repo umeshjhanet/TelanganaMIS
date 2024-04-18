@@ -20,7 +20,7 @@ const UserRole = () => {
 
     useEffect(() => {
         const fetchGroupData = () => {
-            axios.get("http://localhost:5000/group_master")
+            axios.get("http://localhost:3001/group_master")
             .then(response => setGroup(response.data))
             .catch(error => console.error(error))
         }
