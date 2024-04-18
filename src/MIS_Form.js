@@ -38,7 +38,7 @@ const MIS_Form = () => {
   const [newData, setNewData] = useState({ PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Id: '', Location_Id: '', });
   const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
   const [errorMessage, setErrorMessage] = useState('');
-  const[excelData,setExcelData]=useState('');
+  const[excelData,setExcelData]=useState(null);
   
   useEffect(() => {
     // const fetchData = () => {
@@ -264,13 +264,7 @@ const MIS_Form = () => {
   const handleFileUpload = (e) => {
     setExcelData(e.target.files[0]);
 };
-  
-  
-
-  
-  
-  
-
+                                                                      
 
   // if (!designation)
   //   return (

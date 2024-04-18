@@ -25,6 +25,20 @@ const Report = () => {
   const dropdownRef = useRef(null);
   
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowLocation(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [dropdownRef]);
+
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
       setSelectedLocations([...selectedLocations, locationName]);
@@ -67,7 +81,7 @@ const Report = () => {
     const summaryData = async () => {
       try {
         setIsLoading(true);
-        let apiUrl = "http://localhost:3001/summary";
+        let apiUrl = "http://localhost:5000/summary";
         const queryParams = {};
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
@@ -113,7 +127,7 @@ const Report = () => {
       };
     
     
-      let apiUrl = "http://localhost:3001/summarycsv";
+      let apiUrl = "http://localhost:5000/summarycsv";
       if (locationName && formattedStartDate && formattedEndDate) {
         apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
       } else if (locationName) {
@@ -161,7 +175,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
   };
 
 
-  let apiUrl = "http://localhost:3001/reporttablecsv";
+  let apiUrl = "http://localhost:5000/reporttablecsv";
   if (locationName && formattedStartDate && formattedEndDate) {
     apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
   } else if (locationName) {
@@ -182,7 +196,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
     const fetchReportData = async () => {
       try {
         setIsLoading(true); 
-        let apiUrl = "http://localhost:3001/reportTable"; 
+        let apiUrl = "http://localhost:5000/reportTable"; 
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
           const formattedEndDate = endDate.toISOString().split('T')[0];
@@ -207,7 +221,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://localhost:3001/reportLocationWiseTable?locationname=${location}`
+                `http://localhost:5000/reportLocationWiseTable?locationname=${location}`
               )
             )
           );

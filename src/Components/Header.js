@@ -438,8 +438,121 @@ const clientUser =()=>{
 )
 
 }
+
+const districtHeadUser = () => {
+  return (
+    <>
+      <div className='d-none d-xl-block d-md-block d-sm-none'>
+        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+          <div className="container-fluid" >
+            <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+            <div className="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+
+              </ul>
+              <form className="d-flex">
+                <Link to='/'>
+                {/* <button onClick={handleLogout}>Logout</button> */}
+                  <button href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                </Link>
+
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.first_name}</p>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        {showSideBar ? (
+          <>
+            <div className='row'>
+              <div className='col-1'>
+                <div className='shrink-sidebar'>
+                  <div className='row shrink-header-image' >
+                    <img src='ezeefile.png' />
+                  </div>
+                  <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+
+                  <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+
+                </div>
+              </div>
+              <div className='col-11'></div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className='row' style={{ marginLeft: '0' }}>
+              <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+                <div className='sidebar'>
+                  <div className='row header-image'>
+                    <img src='ezeefile.png' />
+                  </div>
+                  <div className='row' onClick={handleActiveTab}>
+                    <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                  </div>
+
+                  <div className='row' onClick={handleActiveTab}>
+                    <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                  </div>
+                  {showReportDropdown && (
+                    <>
+                      <hr />
+                      <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+             
+                      <hr />
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
+            </div>
+          </>
+        )}
+      </div>
+      <div className='d-block d-xl-none d-md-none d-sm-block'>
+        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+          <div className="container-fluid" >
+            <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
+            <form className="d-flex">
+              <Link to='/'>
+                <button className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+              </Link>
+              <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
+            </form>
+          </div>
+        </nav>
+        {showMobileSideBar &&
+          <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+            <div className='mobile-sidebar'>
+              <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                <img src='ezeefile.png' />
+              </div>
+              <div className='row' onClick={handleActiveTab}>
+                <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
+              </div>
+              <div className='row' onClick={handleActiveTab}>
+                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+              </div>
+              <div className='row' onClick={handleActiveTab}>
+                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
+              </div>
+              {showReportDropdown && (
+                <>
+                  <Link to='/report' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Location Wise Report</Link>
+                 
+                </>
+              )}
+          </div>
+        </div>
+      }
+    </div>
+  </>
+)
+}
+
 const isAdmin = userLog && userLog.user_roles.includes("Admin");
 const isCbslUser = userLog && userLog.user_roles.includes("Cbsl User");
+const isDistrictHeadUser=userLog && userLog.user_roles.includes("All District Head");
 
   return (
     <>
@@ -448,7 +561,8 @@ const isCbslUser = userLog && userLog.user_roles.includes("Cbsl User");
       {/* {isAdmin ? adminUser() : normalUser()} */}
       {isAdmin && adminUser()}
     {isCbslUser && clientUser()}
-    {!isAdmin && !isCbslUser && normalUser()}
+    {isDistrictHeadUser && districtHeadUser()}
+    {!isAdmin && !isCbslUser && !isDistrictHeadUser && normalUser()}
 
 
     </>

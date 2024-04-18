@@ -29,7 +29,7 @@ const UpdateUserModal = ({onClose}) => {
   const [selectedReportingId, setSelectedReportingId] = useState('');
   const [selectedReporting, setSelectedReporting] = useState(null);
   const [showReporting, setShowReporting] = useState(false);
-
+  
 const [formData,setFormData]=useState({
     user_email_id:'',
     first_name:'', 
@@ -77,20 +77,50 @@ const [newData, setNewData] = useState({
 
 
   useEffect(() => {
+
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/user/180`);
+        const userData = response.data; // Assuming the response contains user data
+        setFormData({
+          ...formData,
+          user_email_id: userData.user_email_id,
+          first_name: userData.first_name,
+          middle_name: userData.middle_name,
+          last_name: userData.last_name,
+          designation: userData.designation,
+          phone_no: userData.phone_no,
+          profile_picture: userData.profile_picture,
+          login_disabled_date: userData.login_disabled_date,
+          emp_id: userData.emp_id,
+          locations: userData.locations,
+          user_type: userData.user_type,
+          // Add other fields as needed
+        });
+        console.log('Fetched user data:', userData);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+
+  
+    
+   
     const fetchGroup = () => {
-      fetch("http://192.168.3.119:81/group_master")
+      fetch("http://localhost:5000/group_master")
       .then(response => response.json())
       .then(data => setGroup(data))
       .catch(error => console.error(error))
     }
     const fetchLocation = () => {
-      fetch("http://192.168.3.119:81/locations")
+      fetch("http://localhost:5000/locations")
       .then(response => response.json())
       .then(data => setLocation(data))
       .catch(error => console.error(error))
     }
     const fetchPrivilege = () => {
-      fetch("http://192.168.3.119:81/privilege")
+      fetch("http://localhost:5000/privilege")
       .then(response => response.json())
       .then(data => setPrivilege(data))
       .catch(error => console.error(error))
@@ -102,15 +132,15 @@ const [newData, setNewData] = useState({
       .catch(error => console.error(error))
     }
     const fetchEmail = () => {
-      fetch("http://192.168.3.119:81/user_email")
+      fetch("http://localhost:5000/user_email")
       .then(response => response.json())
       .then(data => setEmail(data))
       .catch(error => console.error(error))
     }
-   
+    
    
     const fetchReporting = () => {
-      fetch("http://192.168.3.119:81/reporting")
+      fetch("http://localhost:5000/reporting")
       .then(response => response.json())
       .then(data => setReporting(data))
       .catch(error => console.error(error))
@@ -125,15 +155,17 @@ const [newData, setNewData] = useState({
     fetchPrivilege();
     fetchStorage();
     fetchReporting();
+    fetchUserDetails();
   },[])
+  
 
  
-  const handleEditUser = async (e) => {
+  const handleEditSubmitUser = async (e) => {
     e.preventDefault();
     console.log("click outside");
     try {
       const response = await axios.put(
-        `http://192.168.3.119:81/createuserupdate/${formData.user_id}`,
+        `http://localhost:5000/createuserupdate/${formData.user_id}`,
         newData
       );
       onClose(); 
@@ -142,6 +174,8 @@ const [newData, setNewData] = useState({
       console.error("Error updating user:", error);
     }
   };
+
+  
 
   const handleGroupDropdown = () => {
     setGroupDropdown(!groupDropdown);
@@ -167,26 +201,31 @@ const [newData, setNewData] = useState({
     setSelectedLocation(name);
     setSelectedLocationId(parseInt(id));
     setShowLocation(!showLocation);
+    setLocationDropdown(false);
   };
   const handleSelectGroup = (id, name) => {
     setSelectedGroup(name);
     setSelectedGroupId(parseInt(id));
     setShowGroup(!showLocation);
+    setGroupDropdown(false);
   };
   const handleSelectPrivilege = (id, name) => {
     setSelectedPrivilege(name);
     setSelectedPrivilegeId(parseInt(id));
     setShowPrivilege(!showLocation);
+    setPrivilegeDropdown(false);
   };
   const handleSelectStorage = (id, name) => {
     setSelectedStorage(name);
     setSelectedStorageId(parseInt(id));
     setShowStorage(!showLocation);
+    setStorageDropdown(false);
   };
   const handleSelectReporting = (id, name) => {
     setSelectedReporting(name);
     setSelectedReportingId(parseInt(id));
     setShowReporting(!showLocation);
+    setReportingDropdown(false)
   };
 
   console.log(formData)
@@ -308,7 +347,7 @@ const [newData, setNewData] = useState({
                     <input type='date' placeholder='13-03-24' name="login_disabled_date" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
                     <label className='mt-1'>Profile Picture<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='file' name="profile_picture" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
-                    <input type='submit' className='mt-3' onClick={handleEditUser}  />
+                    <input type='submit' className='mt-3' onClick={handleEditSubmitUser}  />
                   </div>
                 </div>
               </div>
