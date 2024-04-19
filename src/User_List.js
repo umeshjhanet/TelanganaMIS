@@ -5,6 +5,8 @@ import axios from "axios";
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import UpdateUserModal from "./Components/UpdateUserModal";
+import { ToastContainer } from "react-toastify";
+import { API_URL } from "./Api";
 
 const User_List = () => {
   const [user, setUser] = useState([]);
@@ -13,6 +15,15 @@ const User_List = () => {
   const [locationsMap, setLocationsMap] = useState({});
   const [privileges, setPrivileges] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(10); // Set users per page
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [userIdToDelete, setUserIdToDelete] = useState(null);
+  const[userIdToEdit,setUserIdToEdit]=useState(null);
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = user.slice(indexOfFirstUser, indexOfLastUser);
+
 
   const [formData, setFormData] = useState({
     user_email_id: "",
@@ -33,23 +44,31 @@ const User_List = () => {
     sl_id: "",
   });
 
-  
- 
-
   const handleDeleteUser = async (user_id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/createuserdelete/${user_id}`
+        `${API_URL}/createuserdelete/${user_id}`
       );
-      setUser(user.filter((elem) => elem.id !== user_id));
+      setUser(user.filter((elem) => elem.user_id !== user_id));
       console.log("User Deleted:", response.data);
+      setShowConfirmation(false);
     } catch (error) {
       console.error("There was an error in deleting data!", error);
     }
   };
 
-  const handleOpenModal = () => {
+// const handleEditUserId=(user_id)=>{
+//   setUserIdToEdit(user_id);
+
+// }
+
+  const handleDeleteUserId = (user_id) => {
+    setUserIdToDelete(user_id);
+    setShowConfirmation(true);
+  };
+  const handleOpenModal = (user_id) => {
     setIsModalOpen(true);
+   
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -58,37 +77,15 @@ const User_List = () => {
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://localhost:5000/user_master")
+        .get(`${API_URL}/user_master`)
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
         });
     };
-
-    // const fetchLocation = () => {
-    //   axios.get("http://localhost:5000/locations")
-
-    //     .then(response => setLocation(response.data))
-
-    //     .catch(error => {
-    //       console.error('Error fetching location data:', error);
-    //     });
-
-    // }
-    // const fetchLocation = () => {
-    //   axios.get("http://localhost:5000/locations")
-    //     .then(response => {
-    //       console.log("Location data:", response.data);
-    //       setLocation(response.data);
-    //     })
-    //     .catch(error => {
-    //       console.error('Error fetching location data:', error);
-    //     });
-    // }
-
-    const fetchLocation = () => {
+const fetchLocation = () => {
       axios
-        .get("http://localhost:5000/locations")
+        .get(`${API_URL}/locations`)
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};
@@ -104,43 +101,24 @@ const User_List = () => {
           console.error("Error fetching location data:", error);
         });
     };
-
-    const fetchPrivileges = () => {
-      axios
-        .get("http://localhost:5000/privilege")
-        .then((response) => {
-          setPrivileges(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching privileges:", error);
-        });
-    };
-
-    fetchPrivileges();
-
+   
     fetchUser();
     fetchLocation();
 
     const intervalID = setInterval(() => {
       fetchUser();
       fetchLocation();
-      fetchPrivileges();
     }, 2000);
 
     return () => clearInterval(intervalID);
   }, []);
 
-  // Filter user data based on search query
-  const filteredUsers = user.filter(
+
+  const filteredUsers = currentUsers.filter(
     (elem) =>
       elem.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       elem.user_email_id.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  //   const getLocationNameById = (locations) => {
-  //     const location = location.find(loc => loc.locations === locations);
-  //     return location ? location.locationname : '';
-  //   }
-
   const getLocationNameById = (locations) => {
     const locationArray = locations.split(",");
     let result = "";
@@ -155,11 +133,12 @@ const User_List = () => {
     }
     return result;
   };
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <>
       <Header />
-      <div className="container-fluid">
+      <div className="container-fluid mb-5">
         <div className="row">
           <div className="col-lg-2 col-md-2"></div>
           <div className="col-lg-10 col-md-10">
@@ -182,9 +161,10 @@ const User_List = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                 <button className='btn search-btn mb-1'>Search</button>
+                <button className='btn search-btn mb-1'>Search</button>
               </div>
-              <table className='user-tables table-bordered mt-1 mb-5'>
+
+              <table className='user-tables table-bordered mt-1 mb-4'>
                 <thead>
                   <tr>
                     <th>All</th>
@@ -199,8 +179,8 @@ const User_List = () => {
                 </thead>
                 <tbody>
                   {filteredUsers.map((elem, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
+                    <tr key={elem.user_id}>
+                      <td>{index + 1 + (currentPage - 1) * usersPerPage}</td>
                       <td>
                         {elem.first_name} {elem.middle_name} {elem.last_name}
                       </td>
@@ -209,23 +189,58 @@ const User_List = () => {
                       <td>{elem.phone_no}</td>
                       <td>{elem.user_role}</td>
                       <td>{getLocationNameById(elem.locations)}</td>
-
                       <td>
-                        <BiEdit onClick={handleOpenModal}  />
-                        / <RiDeleteBin5Line onClick={() => handleDeleteUser(elem.user_id)} />
+                        <BiEdit onClick={handleOpenModal}  style={{color:'blue', fontSize:'20px'}}/>
+                        / 
+                        <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {isModalOpen && <UpdateUserModal onClose={handleCloseModal}/>}
+              {showConfirmation && (
+        <div className="confirmation-dialog">
+          <div className="confirmation-content">
+            <p className="fw-bold">Are you sure you want to delete?</p>
+            <button className="btn btn-success mt-3 ms-5" onClick={()=>handleDeleteUser(userIdToDelete)}>Yes</button>
+            <button className="btn btn-danger ms-3 mt-3" onClick={() => setShowConfirmation(false)}>No</button>
+          </div>
+        </div>
+      )}
+       
+              <div className="row">
+                <ul className="pagination justify-content-center">
+                  {user.length > usersPerPage &&
+                    Array(Math.ceil(user.length / usersPerPage))
+                      .fill()
+                      .map((_, index) => (
+                        <li
+                          key={index}
+                          className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                        >
+                          <button
+                            className="page-link"
+                            
+                            onClick={() => paginate(index + 1)}
+                          >
+                            {index + 1}
+                          </button>
+                        </li>
+                      ))}
+                </ul>
+
+              </div>
+
+              {isModalOpen && <UpdateUserModal onClose={handleCloseModal}  />}
             </div>
           </div>
         </div>
       </div>
+      <ToastContainer/>
       <Footer />
     </>
   );
 };
 
 export default User_List;
+

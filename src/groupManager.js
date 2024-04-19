@@ -4,14 +4,26 @@ import Footer from './Footer'
 import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import UpdateUserModal from './Components/UpdateUserModal';
+import AddGroupModal from './Components/AddGroupModal';
+import { API_URL } from './Api';
 
 const GroupManager = () => {
     const [group,setGroup] = useState();
     const [searchQuery, setSearchQuery] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+   
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+      };
+      const handleCloseModal = () => {
+        setIsModalOpen(false);
+      };
 
     useEffect(() => {
         const fetchGroupData = () => {
-            axios.get("http://localhost:5000/group_master")
+            axios.get(`${API_URL}/group_master`)
             .then(response => setGroup(response.data))
             .catch(error => console.error(error))
         }
@@ -27,6 +39,21 @@ const GroupManager = () => {
     const filteredGroups = group && group.filter(elem =>
         elem.group_name.toLowerCase().includes(searchQuery.toLowerCase()) 
       );
+
+      const handleDelete = async(group_id)=>{
+        try{
+          const response = await axios.delete(`${API_URL}/deletegroup/${group_id}`);
+          setGroup(group.filter((elem) => elem.id !== group_id));
+          console.log("Group Deleted:", response.data);
+          } catch (error) {
+          console.error("There was an error in deleting data!", error);
+        }
+
+        
+      }
+
+      
+      
 
   return (
     <>
@@ -46,8 +73,9 @@ const GroupManager = () => {
             <div className='user-form-card mt-3'>
                 <div className='row'>
                     <div className='col-3'>
-                        <button className='btn add-btn'>Add Group</button>
+                        <button className='btn add-btn' onClick={handleOpenModal}>Add Group</button>
                     </div>
+                    {isModalOpen && <AddGroupModal onClose={handleCloseModal} />}
                     <div className='col-2'></div>
                     <div className='col-5'>
                     <input
@@ -74,7 +102,8 @@ const GroupManager = () => {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{elem.group_name}</td>
-                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> / <RiDeleteBin5Line style={{color:'red',fontSize:'20px'}}/></td>
+                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> 
+                                    / <RiDeleteBin5Line onClick={() => handleDelete(elem.group_id)} style={{color:'red',fontSize:'20px'}}/></td>
                                 </tr>
                             ))}
                         </tbody>

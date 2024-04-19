@@ -7,8 +7,11 @@ const Footer = () => {
         <>
             <div className='d-none d-xl-block d-sm-none'>
                 <div className='container footer'>
-                    <div className='row text-center'>
+                    <div className='row'>
+                        <div className='col-2'></div>
+                        <div className='col-10 text-center'>
                         <p>© 2024 CBSLGROUP All rights reserved</p>
+                        </div>
                     </div>
                 </div>
             </div>

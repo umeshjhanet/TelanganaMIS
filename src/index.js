@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
@@ -17,27 +17,34 @@ import GroupManager from './groupManager';
 import UserRole from './userRole';
 import UploadDatabase from './uploadDatabase';
 import UpdateUserModal from './Components/UpdateUserModal';
+import AddGroupModal from './Components/AddGroupModal';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path='/dashboard' element={<Dashboard/>}/>
-        <Route path='/uploadDatabase' element={<UploadDatabase/>}/>
-        <Route path="/report" element={<Report />} />
-        <Route path="/groupManager" element={<GroupManager />} />
-        <Route path="/userRole" element={<UserRole />} />
-        <Route path="/User_Form" element={<User_Form />} />
-        <Route path="/User_List" element={<User_List />} />
-        <Route path="/file" element={<File />} />
-        <Route path="/MIS_Form" element={<MIS_Form/>}/>
-        <Route path="/mis_updc" element={<MISUPDC/>}/>
-        <Route path="/User_List" element={<UpdateUserModal />} />
-      </Routes>
-    </BrowserRouter>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const App = () => {
+ 
 
+  return (
+    <React.StrictMode>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path='/dashboard' element={<Dashboard/>}/>
+          <Route path='/uploadDatabase' element={<UploadDatabase/>}/>
+          <Route path="/report" element={<Report />} />
+          <Route path="/groupManager" element={<GroupManager />} />
+          <Route path="/groupManager" element={<AddGroupModal />} />
+          <Route path="/userRole" element={<UserRole />} />
+          <Route path="/User_Form" element={<User_Form />} />
+          <Route path="/User_List" element={<User_List />} />
+          <Route path="/file" element={<File />} />
+          <Route path="/MIS_Form" element={<MIS_Form/>}/>
+          <Route path="/mis_updc" element={<MISUPDC/>}/>
+          <Route path="/User_List" element={<UpdateUserModal />} />
+        </Routes>
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById('root'));
 reportWebVitals();
+
