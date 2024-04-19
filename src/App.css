@@ -538,6 +538,17 @@ input[type="submit"] {
   width: 200px;
   margin-left: 40px;
 }
+input[type="submit"] {
+  margin-top:10px;
+  cursor: pointer;
+  font-size: 15px;
+  background: #359d53;
+  border: 1px solid #2a8c64;
+  color: #fff;
+  padding: 8px 10px;
+  width: 200px;
+  margin-left: 40px;
+}
   .data-table {
     width: 300px;
     overflow-x: auto;

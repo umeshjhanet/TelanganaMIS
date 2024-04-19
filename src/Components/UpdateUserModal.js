@@ -1,8 +1,10 @@
 import React from 'react'
 import axios from 'axios'
 import { useState,useEffect } from 'react';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
 
-const UpdateUserModal = ({onClose}) => {
+const UpdateUserModal = ({onClose,userId}) => {
     const[group, setGroup] = useState();
   const[email, setEmail] = useState();
   const[location,setLocation]=useState();
@@ -29,6 +31,10 @@ const UpdateUserModal = ({onClose}) => {
   const [selectedReportingId, setSelectedReportingId] = useState('');
   const [selectedReporting, setSelectedReporting] = useState(null);
   const [showReporting, setShowReporting] = useState(false);
+  const [selectedGroupName, setSelectedGroupName] = useState('');
+  const [selectedLocationName, setSelectedLocationName] = useState('');
+  const [selectedPrivilegeName, setSelectedPrivilegeName] = useState('');
+  const [selectedStorageName, setSelectedStorageName] = useState('');
   
 const [formData,setFormData]=useState({
     user_email_id:'',
@@ -53,24 +59,25 @@ const [formData,setFormData]=useState({
     
 });
 
-const [newData, setNewData] = useState({
-    user_email_id: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    password: "",
-    designation: "",
-    phone_no: "",
-    profile_picture: "",
-    login_disabled_date: "",
-    emp_id: "",
-    locations: "",
-    user_type: "",
-    role_id: "",
-    user_id: "",
-    group_id: "",
-    sl_id: "",
-  });
+// const [newData, setNewData] = useState({
+//   user_email_id:'',
+//   first_name:'', 
+//   middle_name:'', 
+//   last_name:'', 
+//   password:'',
+//   confirmPassword:'',
+//   designation:'',
+//   phone_no:'', 
+//   profile_picture:'',
+//   login_disabled_date:'', 
+//   emp_id:'', 
+//   locations:'', 
+//   user_type:'', 
+//   role_id:'',
+//   user_id:'',
+//   group_id:'', 
+//   sl_id:'',
+//   });
 
 
 
@@ -80,32 +87,29 @@ const [newData, setNewData] = useState({
 
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/user/180`);
-        const userData = response.data; // Assuming the response contains user data
-        setFormData({
-          ...formData,
-          user_email_id: userData.user_email_id,
-          first_name: userData.first_name,
-          middle_name: userData.middle_name,
-          last_name: userData.last_name,
-          designation: userData.designation,
-          phone_no: userData.phone_no,
-          profile_picture: userData.profile_picture,
-          login_disabled_date: userData.login_disabled_date,
-          emp_id: userData.emp_id,
-          locations: userData.locations,
-          user_type: userData.user_type,
-          // Add other fields as needed
+        const response = await axios.get(`http://localhost:5000/user/${userId}`);
+        const userData = response.data;
+        console.log('Fetched user data:', userData); // Log the fetched user data
+      
+       setFormData({
+          ...userData,
         });
-        console.log('Fetched user data:', userData);
+        // setNewData({
+        //   ...userData,
+        // });
+        setSelectedGroupId(userData.groups.map(group => group.id).join(', '));
+        setSelectedGroupName(userData.groups.map(group => group.name).join(', '));
+        setSelectedLocationId(userData.locations);
+        setSelectedLocationName(userData.location_name);
+        setSelectedPrivilegeId(userData.roles.map(role => role.id).join(', '));
+        setSelectedPrivilegeName(userData.roles.map(role => role.name).join(', '));
+        setSelectedStorageId(userData.storageLevels.map(storage => storage.id).join(', '));
+        setSelectedStorageName(userData.storageLevels.map(storage => storage.name).join(', '));
+        
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
     };
-
-
-  
-    
    
     const fetchGroup = () => {
       fetch("http://localhost:5000/group_master")
@@ -155,8 +159,8 @@ const [newData, setNewData] = useState({
     fetchPrivilege();
     fetchStorage();
     fetchReporting();
-    fetchUserDetails();
-  },[])
+  fetchUserDetails();
+  },[userId])
   
 
  
@@ -165,11 +169,30 @@ const [newData, setNewData] = useState({
     console.log("click outside");
     try {
       const response = await axios.put(
-        `http://localhost:5000/createuserupdate/${formData.user_id}`,
-        newData
+        `http://localhost:5000/createuserupdate/${userId}`,
+        {
+          user_email_id: formData.user_email_id,
+        first_name: formData.first_name,
+        middle_name: formData.middle_name,
+        last_name: formData.last_name,
+        password: formData.password,
+        designation: formData.designation,
+        phone_no: formData.phone_no,
+        profile_picture: formData.profile_picture,
+        login_disabled_date: formData.login_disabled_date,
+        emp_id: formData.emp_id,
+        locations: formData.locations,
+        user_type: formData.user_type,
+        role_id: selectedPrivilegeId, // Send selected privilege ID
+        user_id: selectedReportingId, // Send selected reporting ID
+        group_id: selectedGroupId, // Send selected group ID
+        sl_id: selectedStorageId, 
+        }
+       
       );
       onClose(); 
       console.log("User updated:", response.data);
+      toast.success("User Updated successfully");
     } catch (error) {
       console.error("Error updating user:", error);
     }
@@ -235,7 +258,7 @@ const [newData, setNewData] = useState({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value, group_id: selectedGroupId, locations:selectedLocationId,role_id: selectedPrivilegeId, sl_id: selectedStorageId, user_id: selectedReportingId});
-    setNewData({ ...newData, [name]: value, group_id: selectedGroupId, locations:selectedLocationId,role_id: selectedPrivilegeId, sl_id: selectedStorageId, user_id: selectedReportingId});  
+    // setNewData({ ...newData, [name]: value, group_id: selectedGroupId, locations:selectedLocationId,role_id: selectedPrivilegeId, sl_id: selectedStorageId, user_id: selectedReportingId});  
 }
   return (
     <div className="modal">
@@ -246,24 +269,24 @@ const [newData, setNewData] = useState({
                 <div className='col-6'>
                   <div className='user-form-card'>
                     <label>First Name<span style={{ color: 'red' }}>*</span></label><br />
-                    <input type='text' placeholder='Enter First Name' name="first_name" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
+                    <input type='text' placeholder="Enter First Name" name="first_name" value={formData.first_name} style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
                     
                     <label className='mt-1'>Middle Name</label><br />
-                    <input type='text' placeholder='Enter Middle Name' name="middle_name" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
+                    <input type='text' placeholder='Enter Middle Name' name="middle_name" value={formData.middle_name } style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     <label className='mt-1'>Last Name<span style={{ color: 'red' }}>*</span></label><br />
-                    <input type='text' placeholder='Enter Last Name' name="last_name" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
+                    <input type='text' placeholder='Enter Last Name' name="last_name" value={formData.last_name } style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}  /><br />
                     <label className='mt-1'>Email Address<span style={{ color: 'red' }}>*</span></label><br />
-                    <input type='email' placeholder='Enter Email Id' name="user_email_id" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
+                    <input type='email' placeholder='Enter Email Id' name="user_email_id" value={formData.user_email_id } style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} readOnly/><br />
                     <label className='mt-1'>Employee Id</label><br />
-                    <input type='text' placeholder='Enter Employee Id' name="emp_id" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
+                    <input type='text' placeholder='Enter Employee Id' name="emp_id" value={formData.emp_id }style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     <label className='mt-1'>Mobile No.<span style={{ color: 'red' }}>*</span></label><br />
-                    <input type='number' placeholder='Enter Mobile No.' name="phone_no" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
+                    <input type='number' placeholder='Enter Mobile No.' name="phone_no" value={formData.phone_no } style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     <label className='mt-1'>Password<span style={{ color: 'red' }}>*</span></label><br />
-                    <input type='password' placeholder='Enter Password' name="password" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
+                    <input type='password' placeholder='Enter Password' name="password" value={formData.password} style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     <label className='mt-1'>Confirm Password<span style={{ color: 'red' }}></span></label><br />
                     <input type='password' placeholder='Confirm Password' name='confirmPassword' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     <label className='mt-1'>User Type</label>
-                    <select name="user_type" id="usertype" class="form-control select2" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }}  onChange={handleInputChange}>
+                    <select name="user_type" id="usertype" value={formData.user_type} class="form-control select2"  style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }}  onChange={handleInputChange}>
                       <option value="0" selected>Select user type</option>
                       <option value="1">Record Keeper</option>
                       <option value="2">Client User</option>
@@ -278,10 +301,10 @@ const [newData, setNewData] = useState({
                 <div className='col-6'>
                   <div className='user-form-card'>
                     <label>Designation<span style={{ color: 'red' }}>*</span></label><br />
-                    <input type='text' placeholder='Select Designation' name="designation" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
+                    <input type='text' placeholder='Select Designation' name="designation" value={formData.designation} style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                    
                     <label className='mt-1'>Select Group<span style={{ color: 'red' }}>*</span></label><br />
-                       <input type='text' placeholder='Select Group' className='form-control' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedGroup|| ''} onClick={handleGroupDropdown} onChange={handleInputChange}/>
+                       <input type='text' placeholder='Select Group' className='form-control' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedGroupName || ''} onClick={handleGroupDropdown} onChange={handleInputChange}/>
                       {groupDropdown && (
                        <div className='group-dropdown'>
                         {group && group.map((elem,index) => (
@@ -292,7 +315,7 @@ const [newData, setNewData] = useState({
                           </div>
                             )}
                           <label className='mt-1'>Select Location <span style={{ color: 'red' }}>*</span></label><br />
-                          <input type='text' placeholder='Select Location' className='form-control' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedLocation || ''} onClick={handleLocationDropdown} onChange={handleInputChange}/>
+                          <input type='text' placeholder='Select Location' className='form-control' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedLocationName || ''} onClick={handleLocationDropdown} onChange={handleInputChange}/>
                                 {locationDropdown &&(
                                 <div className='group-dropdown'>
                                   {location && location.map((elem,index)=>(
@@ -304,7 +327,7 @@ const [newData, setNewData] = useState({
                                     )}
 
                     <label className='mt-1'>Select User's Privilege<span style={{ color: 'red' }}>*</span></label><br />
-                    <input type='text' placeholder='Select Users Privilege' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedPrivilege || ''} onClick={handlePrivilegeDropdown} onChange={handleInputChange} /><br />
+                    <input type='text' placeholder='Select Users Privilege' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedPrivilegeName || ''} onClick={handlePrivilegeDropdown} onChange={handleInputChange} /><br />
                     {privilegeDropdown && (
                       <div className='group-dropdown'>
                         {privilege && privilege.map((elem,index)=>(
@@ -318,7 +341,7 @@ const [newData, setNewData] = useState({
 
                     )}
                     <label className='mt-1'>Select Storage</label><br />
-                    <input type='text' placeholder='Select Storage' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }}value={selectedStorage || ''} onClick={handleStorageDropdown} onChange={handleInputChange} /><br />
+                    <input type='text' placeholder='Select Storage' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }}value={selectedStorageName || ''} onClick={handleStorageDropdown} onChange={handleInputChange} /><br />
                     {storageDropdown && (
                       <div className='group-dropdown'>
                         {storage && storage.map((elem,index)=>(
@@ -344,7 +367,7 @@ const [newData, setNewData] = useState({
 
                     }
                     <label className='mt-1'>Set date for disabling the user ID</label><br />
-                    <input type='date' placeholder='13-03-24' name="login_disabled_date" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
+                    <input type='date' placeholder='13-03-24' name="login_disabled_date" value={formData.login_disabled_date} style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
                     <label className='mt-1'>Profile Picture<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='file' name="profile_picture" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
                     <input type='submit' className='mt-3' onClick={handleEditSubmitUser}  />

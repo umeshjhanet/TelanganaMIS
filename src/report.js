@@ -6,6 +6,7 @@ import Header from "./Components/Header";
 import Footer from "./Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
+import { Modal } from 'react-bootstrap'; 
 
 const Report = () => {
   const [startDate, setStartDate] = useState('');
@@ -23,6 +24,7 @@ const Report = () => {
   const [csv, setCsv] = useState(null);
   const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   
 
   useEffect(() => {
@@ -53,7 +55,22 @@ const Report = () => {
     );
   };
 
+  // const handleExport = () => {
+  //   if (csv) {
+  //     const link = document.createElement("a");
+  //     link.href = csv;
+  //     link.setAttribute("download", "export.csv");
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }
+  // };
   const handleExport = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmedExport = () => {
+    // Proceed with CSV export
     if (csv) {
       const link = document.createElement("a");
       link.href = csv;
@@ -62,9 +79,19 @@ const Report = () => {
       link.click();
       document.body.removeChild(link);
     }
+    setShowConfirmation(false);
   };
 
+  const handleCancelExport = () => {
+    setShowConfirmation(false);
+  };
+
+  
+
   const handleReportCsv = () => {
+    setShowConfirmation(true);
+  };
+  const handleReportCsvConfirmation=()=>{
     if (reportCsv) {
       const link = document.createElement("a");
       link.href = reportCsv;
@@ -73,7 +100,9 @@ const Report = () => {
       link.click();
       document.body.removeChild(link);
     }
-  };
+    setShowConfirmation(false);
+
+  }
 
   useEffect(() => {
     const locationName = selectedLocations;
@@ -98,27 +127,6 @@ const Report = () => {
       }
     };
     
-
-   
-    // const fetchSummaryReportCsvFile = () => {
-    //   // const apiUrl = locationName ? `http://localhost:3001/summarycsv?locationName=${locationName}` : 'http://localhost:3001/summarycsv';
-    //   const apiUrl = locationName
-    //     ? `http://localhost:3001/summarycsv?${locationName
-    //         .map((name) => `locationName=${name}`)
-    //         .join("&")}`
-    //     : "http://localhost:3001/summarycsv";
-
-    //   axios
-    //     .get(apiUrl, { responseType: "blob" })
-    //     .then((response) => {
-    //       const blob = new Blob([response.data], { type: "text/csv" });
-    //       const url = window.URL.createObjectURL(blob);
-    //       setCsv(url);
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error in exporting data:", error);
-    //     });
-    // };
     const fetchSummaryReportCsvFile = (locationName, startDate, endDate) => {
       const formattedStartDate = startDate ? new Date(startDate) : null;
       const formattedEndDate = endDate ? new Date(endDate) : null;
@@ -147,26 +155,6 @@ const Report = () => {
           });
     };
     
-
-
-    // const fetchSummaryReportTableCsvFile = () => {
-    //   const apiUrl = locationName
-    //     ? `http://localhost:3001/reporttablecsv?${locationName
-    //         .map((name) => `locationName=${name}`)
-    //         .join("&")}`
-    //     : "http://localhost:3001/reporttablecsv";
-       
-    //   axios
-    //     .get(apiUrl, { responseType: "blob" })
-    //     .then((response) => {
-    //       const blob = new Blob([response.data], { type: "text/csv" });
-    //       const url = window.URL.createObjectURL(blob);
-    //       setReportCsv(url);
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error in exporting data:", error);
-    //     });
-    // };
 const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
   const formattedStartDate = startDate ? new Date(startDate) : null;
   const formattedEndDate = endDate ? new Date(endDate) : null;
@@ -268,22 +256,17 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
     fetchSummaryReportTableCsvFile(locationName, startDate, endDate);
     fetchSummaryReportCsvFile(locationName, startDate, endDate);
     summaryData();
-    // reportData();
     fetchReportData();
     fetchLocationData();
     fetchSummaryLocationData();
 
-    // const intervalId = setInterval(() => {
-    //   fetchLocationData();
-    //   summaryData();
-    //   reportData();
-    //   fetchSummaryReportCsvFile();
-    //   fetchSummaryReportTableCsvFile();
-    //   fetchReportData();
-    // }, 5000);
-
-    // return () => clearInterval(intervalId);
+  
+   
+   
+   
   }, [selectedLocations,startDate,endDate]);
+ 
+
 
   return (
     <>
@@ -384,7 +367,7 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                 />
               </div>
               <div className="col-md-2 col-sm-12">
-                <button className="btn search-btn">Search</button>
+                <button className="btn search-btn" >Search</button>
               </div>
             </div>
             <div className="row mt-3 me-1">
@@ -409,7 +392,17 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                     Export CSV
                   </h6>
                 </div>
+                {showConfirmation && (
+        <div className="confirmation-dialog">
+          <div className="confirmation-content">
+            <p className="fw-bold">Are you sure you want to export the CSV file?</p>
+            <button className="btn btn-success mt-3 ms-5" onClick={handleConfirmedExport}>Yes</button>
+            <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
+          </div>
+        </div>
+      )}
               </div>
+              
               <div className="main-summary-card ">
                 <h5 className="mt-1 mb-2">Total Location: 57</h5>
                 <div className="row">
@@ -1058,6 +1051,15 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                       Export CSV
                     </h6>
                   </div>
+                  {showConfirmation && (
+        <div className="confirmation-dialog">
+          <div className="confirmation-content">
+            <p className="fw-bold">Are you sure you want to export the CSV file?</p>
+            <button className="btn btn-success mt-3 ms-5" onClick={handleReportCsvConfirmation}>Yes</button>
+            <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
+          </div>
+        </div>
+      )}
                 </div>
                 <div
                   className="row mt-5 ms-2 me-2"

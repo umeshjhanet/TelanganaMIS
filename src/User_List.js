@@ -65,18 +65,21 @@ const User_List = () => {
     setUserIdToDelete(user_id);
     setShowConfirmation(true);
   };
+
   const handleOpenModal = (user_id) => {
+    setUserIdToEdit(user_id)
     setIsModalOpen(true);
    
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setUserIdToEdit(null);
   };
 
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://localhost:3001/user_master")
+        .get("http://localhost:5000/user_master")
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
@@ -84,7 +87,7 @@ const User_List = () => {
     };
 const fetchLocation = () => {
       axios
-        .get("http://localhost:3001/locations")
+        .get("http://localhost:5000/locations")
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};
@@ -189,7 +192,9 @@ const fetchLocation = () => {
                       <td>{elem.user_role}</td>
                       <td>{getLocationNameById(elem.locations)}</td>
                       <td>
-                        <BiEdit onClick={handleOpenModal}  style={{color:'blue', fontSize:'20px'}}/>
+                        {/* <BiEdit onClick={handleOpenModal(elem.user_id)}  style={{color:'blue', fontSize:'20px'}}/> */}
+                        <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{color:'blue', fontSize:'20px'}} />
+
                         / 
                         <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
                       </td>
@@ -230,7 +235,9 @@ const fetchLocation = () => {
 
               </div>
 
-              {isModalOpen && <UpdateUserModal onClose={handleCloseModal}  />}
+              {/* {isModalOpen && <UpdateUserModal userId={userIdToEdit} onClose={handleCloseModal}  />} */}
+              {isModalOpen && <UpdateUserModal userId={userIdToEdit} onClose={handleCloseModal} />}
+
             </div>
           </div>
         </div>
