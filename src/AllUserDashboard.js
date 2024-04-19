@@ -16,6 +16,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import DistrictHeadDashboard from "./DistrictHeadDashboard";
+import { API_URL } from "./Api";
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
@@ -262,7 +263,7 @@ const Dashboard = () => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://localhost:5000/api/locationwisetabularData?locationName=?`
+                `${API_URL}/api/locationwisetabularData?locationName=?`
               )
             )
           );
@@ -282,7 +283,7 @@ const Dashboard = () => {
     const locationName = selectedLocations;
 
     const fetchGraphFileData = (selectedLocations) => {
-      let apiUrl = "http://localhost:5000/graph1LocationWise";
+      let apiUrl = `${API_URL}/graph1LocationWise`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -324,10 +325,10 @@ const Dashboard = () => {
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
       const apiUrl = locationName
-        ? `http://localhost:5000/csv?${locationName
+        ? `${API_URL}/csv?${locationName
             .map((name) => `locationName=${name}`)
             .join("&")}`
-        : "http://localhost:5000/csv";
+        : `${API_URL}/csv`;
 
       axios
         .get(apiUrl, { responseType: "blob" })
@@ -343,7 +344,7 @@ const Dashboard = () => {
     };
 
     const fetchGraphImageData = (selectedLocations) => {
-      let apiUrl = "http://localhost:5000/graph2";
+      let apiUrl = `${API_URL}/graph2`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -381,7 +382,7 @@ const Dashboard = () => {
         });
     };
     const fetchTodayGraphFileData = () => {
-      let apiUrl = "http://localhost:5000/graph7";
+      let apiUrl = `${API_URL}/graph7`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -421,7 +422,7 @@ const Dashboard = () => {
     };
 
     const fetchTodayGraphImageData = () => {
-      let apiUrl = "http://localhost:5000/graph8";
+      let apiUrl = `${API_URL}/graph8`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -467,7 +468,7 @@ const Dashboard = () => {
         },
       };
       axios
-        .get("http://localhost:5000/graph5", params)
+        .get(`${API_URL}/graph5`, params)
         .then((response) => {
           const apiData = response.data;
           const labels = apiData.map((item) => item["scandate"]);
@@ -506,7 +507,7 @@ const Dashboard = () => {
         },
       };
       axios
-        .get("http://localhost:5000/graph6", params)
+        .get(`${API_URL}/graph6`, params)
         .then((response) => {
           const apiData = response.data;
           const labels = apiData.map((item) => item["scandate"]);
@@ -545,7 +546,7 @@ const Dashboard = () => {
         },
       };
       axios
-        .get("http://localhost:5000/graphmonth", params)
+        .get(`${API_URL}/graphmonth`, params)
         .then((response) => {
           const apiData = response.data;
           const labels = apiData.map((item) => item["scandate"]);
@@ -569,7 +570,7 @@ const Dashboard = () => {
     };
 
     const fetchCivilCaseGraphData = () => {
-      let apiUrl = "http://localhost:5000/civil";
+      let apiUrl = `${API_URL}/civil`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -608,7 +609,7 @@ const Dashboard = () => {
     };
 
     const fetchCriminalCaseGraphData = () => {
-      let apiUrl = "http://localhost:5000/criminal";
+      let apiUrl = `${API_URL}/criminal`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -646,7 +647,7 @@ const Dashboard = () => {
         });
     };
     const fetchAllYesGraphImageData = (selectedLocations) => {
-      let apiUrl = "http://localhost:5000/graph9";
+      let apiUrl = `${API_URL}/graph9`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -687,7 +688,7 @@ const Dashboard = () => {
     };
 
     const fetchAllGraphImageData = (selectedLocations) => {
-      let apiUrl = "http://localhost:5000/graph10";
+      let apiUrl = `${API_URL}/graph10`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -726,7 +727,7 @@ const Dashboard = () => {
 
     const fetchTableData = () => {
       axios
-        .get("http://localhost:5000/tabularData")
+        .get(`${API_URL}/tabularData`)
         .then((response) => {
           setTableData(response.data);
           console.log("Table Data", response.data); // Log inside the then block
@@ -760,26 +761,13 @@ const Dashboard = () => {
             <div className="col-lg-2 col-md-2 "></div>
             <div className="col-lg-10 col-md-10">
               <div className="row">
-                <p
-                  className="mt-1 fw-bold"
-                  style={{ color: "#4BC0C0", fontSize: "20px" }}
-                >
-                  Dashboard
-                </p>
-                {/* <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You  last Active Login: {userLog ? userLog.last_active_login : 'Guest'}</p> */}
                 <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                  style={{ display: "flex", justifyContent: "space-between",marginTop:'10px' }}
                 >
-                  <p style={{ fontSize: "16px" }}>
+                  <p style={{ fontSize: "20px",fontWeight:'500' }}>
                     Telangana Dashboard Welcomes You
                   </p>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      marginTop: "-15px",
-                      textAlign: "right",
-                    }}
-                  >
+                  <p style={{ fontSize: "20px", textAlign: "right", }}>
                     Last Active Login:{" "}
                     {userLog ? userLog.last_active_login : "Guest"}
                   </p>

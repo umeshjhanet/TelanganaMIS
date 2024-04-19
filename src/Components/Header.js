@@ -15,9 +15,6 @@ import { HiMiniUserGroup, HiMiniUserPlus } from "react-icons/hi2";
 import { MdUpload } from "react-icons/md";
 import axios from 'axios';
 
-
-
-
 const Header = () => {
   const [showSideBar, setShowSideBar] = useState(false);
   const [showMobileSideBar, setShowMobileSideBar] = useState();

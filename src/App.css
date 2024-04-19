@@ -125,6 +125,7 @@ body {
 }
 form
 input[type="text"],
+input[type="email"],
 input[type="password"] {
   height: 35px;
   border: none;
@@ -134,16 +135,16 @@ input[type="submit"] {
   margin-top:10px;
   cursor: pointer;
   font-size: 15px;
-  background: #359d53;
-  border: 1px solid #2a8c64;
+  background: rgb(107,183,194);
+  border: 1px solid rgb(107,183,194);
   color: #fff;
   padding: 8px 10px;
-  width: 200px;
-  margin-left: 90px;
+  width: 320px;
+  margin-left: 35px;
 }
 form
 input[type="submit"]:hover {
-  background: #2a8c64;
+  background: rgb(107,183,194);
   color: white;
 }
 
@@ -173,29 +174,22 @@ input[type="submit"]:hover {
 }
 
 .login-image {
-  background-image: url("/public/login_image.png");
+  background-image: url("/public/login-background.png");
   height: 100%;
   width: 100%;
   background-repeat: no-repeat;
   object-fit: fill;
 }
 
+
 .login-card {
   width: 400px;
   margin: auto;
-  padding-left: 12px;
-  padding-right: 12px;
-  padding-bottom: 20px;
+  margin-top: 100px;
+  padding: 12px;
   background-color: white;
-}
-
-.sign-in {
-  background-color: #107393;
-  padding: 10px;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background-color: rgb(107, 183, 194);
+  border-radius: 25px;
 }
 
 .password-field {
@@ -240,7 +234,6 @@ input[type="submit"]:hover {
 }
 .password-inputbox{
   width: 320px;
-  box-shadow: 4px 4px 4px 4px #cfcdcd;
   border: none;
 }
 
@@ -463,7 +456,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 }
 
 .summary-title {
-  background-color: #80BCBD;
+  background-color: #ccd2d4;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   height: 40px;
@@ -530,6 +523,30 @@ tr:nth-child(even) {background-color: #f2f2f2;}
   height: 300px;
   overflow-y: auto;
 }
+form
+input[type="submit"] {
+  margin-top:10px;
+  cursor: pointer;
+  font-size: 15px;
+  background: rgb(43,117,127);
+  border: 1px solid rgb(43,117,127);
+  color: #fff;
+  padding: 8px 10px;
+  width: 320px;
+  margin-left: 35px;
+}
+
+input[type="submit"] {
+  margin-top:10px;
+  cursor: pointer;
+  font-size: 15px;
+  background: rgb(43,117,127);
+  border: 1px solid rgb(43,117,127);
+  color: #fff;
+  padding: 8px 10px;
+  width: 200px;
+  border-radius: 4px;
+}
 
 
 @media only screen and (max-width: 480px) {
@@ -549,7 +566,6 @@ tr:nth-child(even) {background-color: #f2f2f2;}
   }
   .password-inputbox{
     width: 220px;
-    box-shadow: 4px 4px 4px 4px #cfcdcd;
     border: none;
   }
   form
@@ -557,8 +573,8 @@ input[type="submit"] {
   margin-top:10px;
   cursor: pointer;
   font-size: 15px;
-  background: #359d53;
-  border: 1px solid #2a8c64;
+  background: rgb(43,117,127);
+  border: 1px solid rgb(43,117,127);
   color: #fff;
   padding: 8px 10px;
   width: 200px;

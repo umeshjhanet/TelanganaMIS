@@ -125,7 +125,7 @@ const Login = () => {
   return (
     <div className="">
       <div style={{
-        backgroundImage: `url(${process.env.PUBLIC_URL + '/login_image.jpg'})`,
+        backgroundImage: `url(${process.env.PUBLIC_URL + '/login-background.png'})`,
         height: "100vh",
         marginTop: "0px",
         display: 'flex',
@@ -135,14 +135,12 @@ const Login = () => {
         backgroundRepeat: "no-repeat",
       }}>
         <div className='container-fluid'>
-          <div className="form">
+          <div className='row'>
+            <div className='col-lg-5 col-md-6 col-sm-6'></div>
+            <div className='col-lg-7 col-md-6 col-sm-6'>
+            <div className="form">
             <form onSubmit={handleSubmit}>
               <div className='login-card'>
-                <div className="row">
-                  <div className="sign-in text-center">
-                    <h1 style={{ fontSize: '30px' }}>SIGN IN</h1>
-                  </div>
-                </div>
                 <div className="password-field mt-4 ms-2">
                   <span className="flex justify-around items-start">
                     <FaUserLarge className="me-2" size={20} color="gray" />
@@ -165,11 +163,14 @@ const Login = () => {
                   />
                 </div>
                 {renderErrorMessage('password')}
-                <p className="text-end mt-2 me-3" style={{ color: 'red', fontSize: '14px' }}>Forgot Password ?</p>
+                <p className="text-end mt-2 me-3" style={{ color: 'white', fontSize: '14px',fontWeight:'500' }}>Forgot Password ?</p>
                 <input type='submit' className='btn login-btn' placeholder="Log In"></input>
               </div>
             </form>
           </div>
+            </div>
+          </div>
+          
         </div>
       </div>
     </div>

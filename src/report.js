@@ -82,7 +82,7 @@ const Report = () => {
     const summaryData = async () => {
       try {
         setIsLoading(true);
-        let apiUrl = "http://localhost:5000/summary";
+        let apiUrl = `${API_URL}/summary`;
         const queryParams = {};
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
@@ -99,27 +99,6 @@ const Report = () => {
       }
     };
 
-
-
-    // const fetchSummaryReportCsvFile = () => {
-    //   // const apiUrl = locationName ? `${API_URL}/summarycsv?locationName=${locationName}` : '${API_URL}/summarycsv';
-    //   const apiUrl = locationName
-    //     ? `${API_URL}/summarycsv?${locationName
-    //         .map((name) => `locationName=${name}`)
-    //         .join("&")}`
-    //     : "${API_URL}/summarycsv";
-
-    //   axios
-    //     .get(apiUrl, { responseType: "blob" })
-    //     .then((response) => {
-    //       const blob = new Blob([response.data], { type: "text/csv" });
-    //       const url = window.URL.createObjectURL(blob);
-    //       setCsv(url);
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error in exporting data:", error);
-    //     });
-    // };
     const fetchSummaryReportCsvFile = (locationName, startDate, endDate) => {
       const formattedStartDate = startDate ? new Date(startDate) : null;
       const formattedEndDate = endDate ? new Date(endDate) : null;
@@ -148,26 +127,6 @@ const Report = () => {
         });
     };
 
-
-
-    // const fetchSummaryReportTableCsvFile = () => {
-    //   const apiUrl = locationName
-    //     ? `${API_URL}/reporttablecsv?${locationName
-    //         .map((name) => `locationName=${name}`)
-    //         .join("&")}`
-    //     : "${API_URL}/reporttablecsv";
-
-    //   axios
-    //     .get(apiUrl, { responseType: "blob" })
-    //     .then((response) => {
-    //       const blob = new Blob([response.data], { type: "text/csv" });
-    //       const url = window.URL.createObjectURL(blob);
-    //       setReportCsv(url);
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error in exporting data:", error);
-    //     });
-    // };
     const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
       const formattedStartDate = startDate ? new Date(startDate) : null;
       const formattedEndDate = endDate ? new Date(endDate) : null;
@@ -215,6 +174,68 @@ const Report = () => {
       }
     };
 
+    // const fetchLocationData = async () => {
+    //   if (selectedLocations.length > 0) {
+    //     try {
+    //       setIsLoading(true);
+    //       const locationDataResponses = await Promise.all(
+    //         selectedLocations.map((location) =>
+    //           axios.get(
+    //             `${API_URL}/reportLocationWiseTable?locationname=${location}`
+    //           )
+    //         )
+    //       );
+    //       const locationData = locationDataResponses.map(
+    //         (response) => response.data
+    //       );
+    //       setLocationData(locationData);
+    //       console.log("agra", locationData);
+    //       setIsLoading(false);
+    //     } catch (error) {
+    //       console.error("Error fetching location data:", error);
+    //       setError("Error fetching location data. Please try again.");
+    //       setIsLoading(false);
+    //     }
+    //   }
+    // };
+
+    // const fetchSummaryLocationData = async () => {
+    //   if (selectedLocations.length > 0) {
+    //     try {
+    //       setIsLoading(true);
+    //       const locationDataResponses = await Promise.all(
+    //         selectedLocations.map((location) =>
+    //           axios.get(
+    //             `${API_URL}/summarylocationname?locationname=${location}`
+    //           )
+    //         )
+    //       );
+    //       const summaryLocationData = locationDataResponses.map(
+    //         (response) => response.data
+    //       );
+    //       setSummaryLocationData(summaryLocationData);
+    //       console.log("agra", summaryLocationData);
+    //       setIsLoading(false);
+    //     } catch (error) {
+    //       console.error("Error fetching location data:", error);
+    //       setError("Error fetching location data. Please try again.");
+    //       setIsLoading(false);
+    //     }
+    //   }
+    // };
+
+    // fetchLocationData();
+    fetchSummaryReportTableCsvFile(locationName, startDate, endDate);
+    fetchSummaryReportCsvFile(locationName, startDate, endDate);
+    summaryData();
+    fetchReportData();
+    // fetchLocationData();
+    // fetchSummaryLocationData();
+
+  }, [selectedLocations, startDate, endDate]);
+
+  
+  const handleSearch = () => {
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
         try {
@@ -230,7 +251,6 @@ const Report = () => {
             (response) => response.data
           );
           setLocationData(locationData);
-          console.log("agra", locationData);
           setIsLoading(false);
         } catch (error) {
           console.error("Error fetching location data:", error);
@@ -239,7 +259,7 @@ const Report = () => {
         }
       }
     };
-
+  
     const fetchSummaryLocationData = async () => {
       if (selectedLocations.length > 0) {
         try {
@@ -255,7 +275,6 @@ const Report = () => {
             (response) => response.data
           );
           setSummaryLocationData(summaryLocationData);
-          console.log("agra", summaryLocationData);
           setIsLoading(false);
         } catch (error) {
           console.error("Error fetching location data:", error);
@@ -264,27 +283,10 @@ const Report = () => {
         }
       }
     };
-
-    fetchLocationData();
-    fetchSummaryReportTableCsvFile(locationName, startDate, endDate);
-    fetchSummaryReportCsvFile(locationName, startDate, endDate);
-    summaryData();
-    // reportData();
-    fetchReportData();
+  
     fetchLocationData();
     fetchSummaryLocationData();
-
-    // const intervalId = setInterval(() => {
-    //   fetchLocationData();
-    //   summaryData();
-    //   reportData();
-    //   fetchSummaryReportCsvFile();
-    //   fetchSummaryReportTableCsvFile();
-    //   fetchReportData();
-    // }, 5000);
-
-    // return () => clearInterval(intervalId);
-  }, [selectedLocations, startDate, endDate]);
+  };
 
   return (
     <>
@@ -385,7 +387,7 @@ const Report = () => {
                 />
               </div>
               <div className="col-md-2 col-sm-12">
-                <button className="btn search-btn">Search</button>
+                <button className="btn search-btn" onClick={handleSearch}>Search</button>
               </div>
             </div>
             <div className="row mt-3 me-1">
@@ -412,7 +414,7 @@ const Report = () => {
                 </div>
               </div>
               <div className={`main-summary-card ${isLoading ? 'loading' : ''}`}>
-                <h5 className="mt-1 mb-2">Total Location: 61</h5>
+               
                 {isLoading ? (
                   <>
                     <div className="loader-container">
@@ -435,7 +437,7 @@ const Report = () => {
                                     Collection of Records
                                   </h6>
                                 </div>
-                                <p className="text-center">
+                                <p className="text-center" style={{fontSize:'12px', fontWeight:'500', color:'blue'}}>
                                   Total Files: {elem.CollectionFiles || "0"}{" "}
                                   <br />
                                   Total Images: {elem.CollectionImages || "0"}
@@ -451,7 +453,7 @@ const Report = () => {
                                   Collection of Records
                                 </h6>
                               </div>
-                              <p className="text-center">
+                              <p className="text-center" >
                                 Total Files:{" "}
                                 {selectedLocations.reduce((acc, location) => {
                                   const locationData = report.find(
@@ -500,7 +502,7 @@ const Report = () => {
                                     Scanning ADF
                                   </h6>
                                 </div>
-                                <p className="text-center">
+                                <p className="text-center"style={{fontSize:'12px', fontWeight:'500', color:'maroon'}}>
                                   Total Files: {elem.ScannedFiles || "0"} <br />
                                   Total Images: {elem.ScannedImages || "0"}
                                 </p>
@@ -561,7 +563,7 @@ const Report = () => {
                                     Image QC
                                   </h6>
                                 </div>
-                                <p className="text-center">
+                                <p className="text-center" style={{fontSize:'12px', fontWeight:'500', color:'maroon'}}>
                                   Total Files: {elem.QCFiles || "0"} <br />
                                   Total Images: {elem.QCImages || "0"}
                                 </p>
@@ -1063,12 +1065,13 @@ const Report = () => {
                   </div>
                 </div>
                 <div
-                  className="row mt-5 ms-2 me-2"
+                  className="row mt-3 ms-2 me-2"
                   style={{ overflowX: "auto" }}
                 >
+                   <h5 className="mt-1 mb-2">Total Locations: 61</h5>
                   <table class="table table-hover table-bordered table-responsive table-striped data-table">
                     <thead
-                      style={{ color: "white", backgroundColor: "#4BC0C0" }}
+                      style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight:'300' }}
                     >
                       <tr>
                         <th rowspan="2">Location</th>
@@ -1082,10 +1085,9 @@ const Report = () => {
                         <th colSpan="2">Client QA</th>
                         <th colSpan="2">CSV Generation</th>
                         <th colSpan="2">Inventory Out</th>
-                        <th rowspan="2">Document Wise</th>
                       </tr>
                       <tr
-                        style={{ color: "white", backgroundColor: "#4BC0C0" }}
+                        style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight:'300' }}
                       >
                         <th>Files</th>
                         <th>Images</th>
@@ -1152,9 +1154,6 @@ const Report = () => {
                                 <td>0</td>
                                 <td>0</td>
                                 <td>0</td>
-                                <td>
-                                  <button className="btn view-btn">View</button>
-                                </td>
                               </tr>
                             );
                           }
