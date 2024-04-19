@@ -6,6 +6,7 @@ import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import UpdateUserModal from './Components/UpdateUserModal';
 import AddGroupModal from './Components/AddGroupModal';
+import { API_URL } from './Api';
 
 const GroupManager = () => {
     const [group,setGroup] = useState();
@@ -22,7 +23,7 @@ const GroupManager = () => {
 
     useEffect(() => {
         const fetchGroupData = () => {
-            axios.get("http://localhost:3001/group_master")
+            axios.get(`${API_URL}/group_master`)
             .then(response => setGroup(response.data))
             .catch(error => console.error(error))
         }
@@ -41,7 +42,7 @@ const GroupManager = () => {
 
       const handleDelete = async(group_id)=>{
         try{
-          const response = await axios.delete(`http://localhost:3001/deletegroup/${group_id}`);
+          const response = await axios.delete(`${API_URL}/deletegroup/${group_id}`);
           setGroup(group.filter((elem) => elem.id !== group_id));
           console.log("Group Deleted:", response.data);
           } catch (error) {

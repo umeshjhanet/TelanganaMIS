@@ -5,6 +5,7 @@ import { eyeOff } from 'react-icons-kit/feather/eyeOff';
 import { eye } from 'react-icons-kit/feather/eye'
 import { FaUserLarge } from "react-icons/fa6";
 import axios from 'axios';
+import { API_URL } from './Api';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -76,7 +77,7 @@ const Login = () => {
   
     // Send login request to backend
     try {
-      const response = await fetch("http://localhost:3001/login", {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -124,7 +125,7 @@ const Login = () => {
   return (
     <div className="">
       <div style={{
-        backgroundImage: `url(${process.env.PUBLIC_URL + '/login_image.png'})`,
+        backgroundImage: `url(${process.env.PUBLIC_URL + '/login_image.jpg'})`,
         height: "100vh",
         marginTop: "0px",
         display: 'flex',

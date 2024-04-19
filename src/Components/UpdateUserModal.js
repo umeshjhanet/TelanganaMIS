@@ -112,31 +112,31 @@ const [formData,setFormData]=useState({
     };
    
     const fetchGroup = () => {
-      fetch("http://localhost:5000/group_master")
+      fetch(`localhost:5000/group_master`)
       .then(response => response.json())
       .then(data => setGroup(data))
       .catch(error => console.error(error))
     }
     const fetchLocation = () => {
-      fetch("http://localhost:5000/locations")
+      fetch(`localhost:5000/locations`)
       .then(response => response.json())
       .then(data => setLocation(data))
       .catch(error => console.error(error))
     }
     const fetchPrivilege = () => {
-      fetch("http://localhost:5000/privilege")
+      fetch(`localhost:5000/privilege`)
       .then(response => response.json())
       .then(data => setPrivilege(data))
       .catch(error => console.error(error))
     }
     const fetchStorage = () => {
-      fetch("http://localhost:5000/storage")
+      fetch(`localhost:5000/storage`)
       .then(response => response.json())
       .then(data => setStorage(data))
       .catch(error => console.error(error))
     }
     const fetchEmail = () => {
-      fetch("http://localhost:5000/user_email")
+      fetch(`localhost:5000/user_email`)
       .then(response => response.json())
       .then(data => setEmail(data))
       .catch(error => console.error(error))
@@ -144,7 +144,7 @@ const [formData,setFormData]=useState({
     
    
     const fetchReporting = () => {
-      fetch("http://localhost:5000/reporting")
+      fetch(`localhost:5000/reporting`)
       .then(response => response.json())
       .then(data => setReporting(data))
       .catch(error => console.error(error))

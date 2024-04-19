@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from './Components/Header';
 import Footer from './Footer';
+import { API_URL } from './Api';
 
 const File = () => {
 
@@ -9,6 +10,7 @@ const File = () => {
     const [locations, setLocations] = useState();
     const [tableData, setTableData] = useState();
     const [searchInput, setSearchInput] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
     const dropdownRef = useRef(null);
 
     const handleLocation = (location) => {
@@ -25,16 +27,18 @@ const File = () => {
 
     useEffect(() => {
         const fetchData = () => {
-            fetch("http://localhost:3001/locations")
+            fetch(`${API_URL}/locations`)
                 .then(response => response.json())
                 .then(data => setLocations(data))
                 .catch(error => console.error(error));
+            setIsLoading(false);
         };
         const fetchTableData = () => {
-            fetch("http://localhost:3001/api/uploadlog")
+            fetch(`${API_URL}/api/uploadlog`)
                 .then(response => response.json())
                 .then(data => setTableData(data))
                 .catch(error => console.error(error));
+            setIsLoading(false);
         };
 
         fetchData();
@@ -61,7 +65,7 @@ const File = () => {
     return (
         <>
             <Header />
-            <div className='container-fluid mb-5'>
+            <div className={`container-fluid ${isLoading ? 'loading' : ''}`}>
                 <div className='row'>
                     <div className='col-lg-2 col-md-2 '></div>
                     <div className='col-lg-10 col-md-9 col-sm-12'>
@@ -104,35 +108,46 @@ const File = () => {
                             <div className='col-md-2 col-sm-12'>
                                 <button className='btn search-btn'>Search</button>
                             </div>
-                            
-                                <table className='table-bordered table-hover user-tables mt-3'>
-                                    <thead style={{backgroundColor:'#4BC0C0', color:'white'}}>
-                                        <tr>
-                                            <th style={{fontWeight:'500'}}>Sr.No.</th>
-                                            <th style={{fontWeight:'500'}}>Location Name</th>
-                                            <th style={{fontWeight:'500'}}>File Date</th>
-                                            <th style={{fontWeight:'500'}}>Upload Date Time</th>
-                                            <th style={{fontWeight:'500'}}>App Version</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {tableData && tableData.map((elem, index) => {
-                                            if (selectedLocations.length === 0 || selectedLocations.includes(elem.locationname)) {
-                                                return (
-                                                    <tr key={index}>
-                                                        <td>{index + 1}</td>
-                                                        <td>{elem.locationname}</td>
-                                                        <td>{formatDate(elem.filedate)}</td>
-                                                        <td>{formatDateTime(elem.uploaddate)}</td>
-                                                        <td>{elem.appVersion}</td>
-                                                    </tr>
-                                                );
-                                            }
-                                            return null;
-                                        })}
-                                    </tbody>
-                                </table>
-                            
+
+                            <table className='table-bordered table-hover user-tables mt-3'>
+                                <thead style={{ backgroundColor: '#4BC0C0', color: 'white' }}>
+                                    <tr>
+                                        <th style={{ fontWeight: '500' }}>Sr.No.</th>
+                                        <th style={{ fontWeight: '500' }}>Location Name</th>
+                                        <th style={{ fontWeight: '500' }}>File Date</th>
+                                        <th style={{ fontWeight: '500' }}>Upload Date Time</th>
+                                        <th style={{ fontWeight: '500' }}>App Version</th>
+                                    </tr>
+                                </thead>
+                                {isLoading ? (
+                                    <>
+                                        <div className="loader-container">
+                                            <div className="loader"></div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <tbody>
+                                            {tableData && tableData.map((elem, index) => {
+                                                if (selectedLocations.length === 0 || selectedLocations.includes(elem.locationname)) {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td>{index + 1}</td>
+                                                            <td>{elem.locationname}</td>
+                                                            <td>{formatDate(elem.filedate)}</td>
+                                                            <td>{formatDateTime(elem.uploaddate)}</td>
+                                                            <td>{elem.appVersion}</td>
+                                                        </tr>
+                                                    );
+                                                }
+                                                return null;
+                                            })}
+                                        </tbody>
+                                    </>
+                                )}
+
+                            </table>
+
                         </div>
                     </div>
                 </div>

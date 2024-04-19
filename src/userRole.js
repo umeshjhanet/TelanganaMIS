@@ -5,6 +5,7 @@ import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import AddGroupModal from './Components/AddGroupModal';
+import { API_URL } from './Api';
 
 const UserRole = () => {
     const [group,setGroup] = useState();
@@ -20,7 +21,7 @@ const UserRole = () => {
 
     useEffect(() => {
         const fetchGroupData = () => {
-            axios.get("http://localhost:3001/group_master")
+            axios.get(`${API_URL}/group_master`)
             .then(response => setGroup(response.data))
             .catch(error => console.error(error))
         }

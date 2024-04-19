@@ -6,9 +6,7 @@ import { ProcessCardData } from './ProcessCardData';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import readXlsxFile from 'read-excel-file';
-
-
-
+import { API_URL } from './Api';
 
 const MIS_Form = () => {
   const [blrData, setBLRData] = useState();
@@ -42,7 +40,7 @@ const MIS_Form = () => {
   
   useEffect(() => {
     // const fetchData = () => {
-    //   fetch("http://localhost:5000/users")
+    //   fetch("http://localhost:3001/users")
     //   .then(response => response.json())
     //   .then(data => setBLRData(data))
     //   .catch(error => console.error(error))
@@ -51,20 +49,20 @@ const MIS_Form = () => {
 
     // }
     const locationData = () => {
-      fetch("http://localhost:5000/locations")
+      fetch("http://localhost:3001/locations")
         .then(respsone => respsone.json())
         .then(data => setLocation(data))
         .catch(error => console.error(error))
       console.log("Locations", location);
     }
     const designationData = () => {
-      fetch("http://localhost:5000/designations")
+      fetch("http://localhost:3001/designations")
         .then(respsone => respsone.json())
         .then(data => setDesignation(data))
         .catch(error => console.error(error))
     }
     const usermasterData = () => {
-      fetch("http://localhost:5000/usermaster")
+      fetch("http://localhost:3001/usermaster")
         .then(respsone => respsone.json())
         .then(data => setUsermaster(data))
         .catch(error => console.error(error))
@@ -72,7 +70,7 @@ const MIS_Form = () => {
     }
     const fetchLastInsertedData = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/site_MPData");
+        const response = await axios.get("http://localhost:3001/site_MPData");
         const site_MPData = response.data;
 
 
@@ -124,35 +122,6 @@ const MIS_Form = () => {
     setNewData({ ...newData, [name]: value });
   };
 
-
-  // const handleFormSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await axios.post("http://localhost:5000/usermasterinfo", formData);
-  //     console.log("Post created:", response.data);
-  //   }
-  //   catch (error) {
-  //     console.error("Error creating post:", error);
-  //   }
-  // }
-  // const handleEditDesignation = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await axios.put(`http://localhost:5000/usermasterupdate/${formData.Desig_ID}`, newData);
-  //     console.log("User updated:", response.data);
-  //   } catch (error) {
-  //     console.error("Error updating user:", error);
-  //   }
-  // }
-
-  // const handleDeleteDesignation = async (Desig_ID) => {
-  //   try {
-  //     const response = await axios.delete(`http://localhost:5000/usermasterdelete/${Desig_ID}`)
-  //     setDesignation(designation.filter(elem => elem.id !== Desig_ID));
-  //     console.log("User Deleted:", response.data)
-  //   }
-  //   catch (error) { console.error('There was an error in deleting data!', error) }
-  // }
   const handleSelectPH = (id, name) => {
     setSelectedPH(name);
     setSelectedPHId(parseInt(id));
@@ -178,52 +147,6 @@ const MIS_Form = () => {
     setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, SM_Id: selectedSMId, PH_Id: selectedPHId, Location_ID: selectedLocationId });
   }
 
-  // const handleManPowerForm = async (e) => {
-  //   e.preventDefault();
-  
-  //   if (fileUploaded) {
-  //     // If an Excel file is uploaded, process its data
-  //     try {
-  //       const response = await axios.post("http://localhost:5000/site_MP", excelData);
-  //       console.log("Data from Excel file submitted:", response.data);
-  //     } catch (error) {
-  //       console.error("Error submitting data from Excel file:", error);
-  //     }
-  //   } else {
-  //     // If no Excel file is uploaded, submit the form with manually entered data
-  //     try {
-  //       const response = await axios.post("http://localhost:5000/site_MP", manpowerForm);
-  //       console.log("Data from input fields submitted:", response.data);
-  //     } catch (error) {
-  //       console.error("Error submitting data from input fields:", error);
-  //     }
-  //   }
-  // };
-  // const handleManPowerForm = async () => {
-   
-  //   const formData = new FormData();
-  //   formData.append('file', excelData);
-        
-  //   try {
-  //     if (excelData) {
-  //       // If an Excel file is uploaded, call the uploadExcel API
-  //       const response = await axios.post("http://localhost:5000/uploadExcel" ,newData, formData,{
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data',
-  //         },
-  //     });
-  //       console.log("Data from Excel file submitted:", response.data);
-  //     } else {
-  //       // If no Excel file is uploaded, submit the form with manually entered data using the site_MP API
-  //       const response = await axios.post("http://localhost:5000/site_MP", manpowerForm);
-  //       console.log("Data from input fields submitted:", response.data);
-  //     }
-  //     setErrorMessage('');
-  //   } catch (error) {
-  //     setErrorMessage('Error submitting data. Please try again.');
-  //     console.error("Error submitting data:", error);
-  //   }
-  // };
 
   const handleManPowerForm = async () => {
     const formData = new FormData();
@@ -247,7 +170,7 @@ const MIS_Form = () => {
     try {
       if (excelData) {
         // If an Excel file is uploaded, call the uploadExcel API
-        const response = await axios.post("http://localhost:5000/uploadExcel", formData, {
+        const response = await axios.post(`${API_URL}/uploadExcel`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -255,7 +178,7 @@ const MIS_Form = () => {
         console.log("Data from Excel file submitted:", response.data);
       } else {
         // If no Excel file is uploaded, submit the form with manually entered data using the site_MP API
-        const response = await axios.post("http://localhost:5000/site_MP", manpowerForm);
+        const response = await axios.post(`${API_URL}/site_MP`, manpowerForm);
         console.log("Data from input fields submitted:", response.data);
       }
       setErrorMessage('');
