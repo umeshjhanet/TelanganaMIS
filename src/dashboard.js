@@ -308,6 +308,7 @@ const Dashboard = () => {
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations.map(location => `locationname=${encodeURIComponent(location)}`).join('&');
         apiUrl += `?${locationQuery}`;
+        console.log('Hello');
       }
     
       axios.get(apiUrl)
