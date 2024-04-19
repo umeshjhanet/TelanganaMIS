@@ -31,7 +31,7 @@ const Dashboard = () => {
       {isDistrictHeadUser ? <DistrictHeadDashboard /> : <AllUserDashboard />}
       <Footer />
     </>
-  );
-};
+  )
+}
 
 export default Dashboard;

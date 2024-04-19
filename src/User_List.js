@@ -66,18 +66,21 @@ const User_List = () => {
     setUserIdToDelete(user_id);
     setShowConfirmation(true);
   };
+
   const handleOpenModal = (user_id) => {
+    setUserIdToEdit(user_id)
     setIsModalOpen(true);
 
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setUserIdToEdit(null);
   };
 
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get(`${API_URL}/user_master`)
+        .get("http://localhost:5000/user_master")
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
@@ -86,7 +89,7 @@ const User_List = () => {
     };
     const fetchLocation = () => {
       axios
-        .get(`${API_URL}/locations`)
+        .get("http://localhost:5000/locations")
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};
@@ -186,30 +189,28 @@ const User_List = () => {
                     <th>Actions</th>
                   </tr>
                 </thead>
-                
-                    <tbody>
-                      {filteredUsers.map((elem, index) => (
-                        <tr key={elem.user_id}>
-                          <td>{index + 1 + (currentPage - 1) * usersPerPage}</td>
-                          <td>
-                            {elem.first_name} {elem.middle_name} {elem.last_name}
-                          </td>
-                          <td>{elem.designation}</td>
-                          <td>{elem.user_email_id}</td>
-                          <td>{elem.phone_no}</td>
-                          <td>{elem.user_role}</td>
-                          <td>{getLocationNameById(elem.locations)}</td>
-                          <td>
-                            <BiEdit onClick={handleOpenModal} style={{ color: 'blue', fontSize: '20px' }} />
-                            /
-                            <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                 
-               
+                <tbody>
+                  {filteredUsers.map((elem, index) => (
+                    <tr key={elem.user_id}>
+                      <td>{index + 1 + (currentPage - 1) * usersPerPage}</td>
+                      <td>
+                        {elem.first_name} {elem.middle_name} {elem.last_name}
+                      </td>
+                      <td>{elem.designation}</td>
+                      <td>{elem.user_email_id}</td>
+                      <td>{elem.phone_no}</td>
+                      <td>{elem.user_role}</td>
+                      <td>{getLocationNameById(elem.locations)}</td>
+                      <td>
+                        {/* <BiEdit onClick={handleOpenModal(elem.user_id)}  style={{color:'blue', fontSize:'20px'}}/> */}
+                        <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{color:'blue', fontSize:'20px'}} />
 
+                        / 
+                        <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
               </>
                )}
@@ -246,7 +247,9 @@ const User_List = () => {
 
               </div>
 
-              {isModalOpen && <UpdateUserModal onClose={handleCloseModal} />}
+              {/* {isModalOpen && <UpdateUserModal userId={userIdToEdit} onClose={handleCloseModal}  />} */}
+              {isModalOpen && <UpdateUserModal userId={userIdToEdit} onClose={handleCloseModal} />}
+
             </div>
           </div>
         </div>
