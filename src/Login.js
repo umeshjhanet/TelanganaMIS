@@ -13,68 +13,32 @@ const Login = () => {
   const [error, setError] = useState('');
   const [type, setType] = useState('password');
   const [icon, setIcon] = useState(eyeOff);
-  const [userDB, setUserDB] = useState([]);
   const [errorMessages, setErrorMessages] = useState({});
   const navigate = useNavigate();
-  const [logoutTimer, setLogoutTimer] = useState(null);
 
-  useEffect(() => {
-    // console.log("Setting up logout timer...");
-  
-    const resetTimeout = () => {
-      if (logoutTimer) clearTimeout(logoutTimer);
-      const timer = setTimeout(() => {
-        console.log("Logging out due to inactivity...");
-        logout();
-      }, 9000000); // 3 minutes
-      setLogoutTimer(timer);
-    };
-  
-    const events = [
-      "mousemove",
-      "keydown",
-      "mousedown",
-      "touchstart",
-      "scroll",
-      "wheel"
-    ];
-  
-    const resetTimeoutHandler = () => {
-      // console.log("Resetting logout timer...");
-      resetTimeout();
-    };
-  
-    for (const event of events) {
-      window.addEventListener(event, resetTimeoutHandler);
-    }
-  
-    resetTimeout();
-  
-    return () => {
-      // console.log("Cleaning up logout timer...");
-      if (logoutTimer) clearTimeout(logoutTimer);
-      for (const event of events) {
-        window.removeEventListener(event, resetTimeoutHandler);
-      }
-    };
-  }, [logoutTimer]);
-  
-  
-
-  const logout = () => {
-    console.log('Logging out due to inactivity.');
-    navigate('/');
-  };
-
+  // Error messages
   const errors = {
-    username: "Invalid username",
-    password: "Invalid password"
+    username: "Invalid user",
+    password: "Invalid password",
+    blank: "Please fill in all fields"
   };
 
+  // Function to render error messages
+  const renderErrorMessage = (name) =>
+  errorMessages[name] && (
+    <div className="error mt-1" style={{ marginLeft: '35px' }}>{errorMessages[name]}</div>
+  );
+  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { uname, password } = event.target.elements;
-  
+
+    // Check for empty fields
+    if (!uname.value || !password.value) {
+      setErrorMessages({ blank: errors.blank });
+      return;
+    }
+
     // Send login request to backend
     try {
       const response = await fetch(`${API_URL}/login`, {
@@ -90,28 +54,24 @@ const Login = () => {
         console.log("Data received from backend:", data);
         localStorage.setItem('user', JSON.stringify(data));
         navigate('/dashboard');
-      }  
+      } else if (response.status === 401) {
+        setErrorMessages({ username: errors.username }); // Invalid username or email
+      } else if (response.status === 403) {
+        setErrorMessages({ password: errors.password });
+         // Incorrect password
+      } else if (response.status === 404) {
+        setErrorMessages({ password: errors.username });
+      }
       else {
-        if (response.status === 401) {
-          setError(errors.username); // Invalid username
-        } else if (response.status === 403) {
-          setError(errors.password); // Incorrect password
-        } else {
-          setError("An unexpected error occurred. Please try again later.");
-        }
+        setError("An unexpected error occurred. Please try again later.");
       }
     } catch (error) {
       console.error("Error:", error);
       setError("An unexpected error occurred. Please try again later.");
     }
   };
-  
 
-  const renderErrorMessage = (name) =>
-    name === errorMessages.name && (
-      <div className="error mt-1" style={{ marginLeft: '35px' }}>{errorMessages.message}</div>
-    );
-
+  // Toggle password visibility
   const handleToggle = () => {
     if (type === 'password') {
       setIcon(eye);
@@ -138,39 +98,39 @@ const Login = () => {
           <div className='row'>
             <div className='col-lg-5 col-md-6 col-sm-6'></div>
             <div className='col-lg-7 col-md-6 col-sm-6'>
-            <div className="form">
-            <form onSubmit={handleSubmit}>
-              <div className='login-card'>
-                <div className="password-field mt-4 ms-2">
-                  <span className="flex justify-around items-start">
-                    <FaUserLarge className="me-2" size={20} color="gray" />
-                  </span>
-                  <input type='email' name='uname' placeholder='Username' className='password-inputbox' />
-                </div>
-                {renderErrorMessage('uname')}
-                <div className="password-field mt-3 ms-2">
-                  <span className="flex justify-around items-start" onClick={handleToggle}>
-                    <Icon className="absolute me-2" icon={icon} size={20} style={{ color: 'gray' }} />
-                  </span>
-                  <input
-                    type={type}
-                    name="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    className="password-inputbox"
-                  />
-                </div>
-                {renderErrorMessage('password')}
-                <p className="text-end mt-2 me-3" style={{ color: 'white', fontSize: '14px',fontWeight:'500' }}>Forgot Password ?</p>
-                <input type='submit' className='btn login-btn' placeholder="Log In"></input>
+              <div className="form">
+                <form onSubmit={handleSubmit}>
+                  <div className='login-card'>
+                    <div className="password-field mt-4 ms-2">
+                      <span className="flex justify-around items-start">
+                        <FaUserLarge className="me-2" size={20} color="gray" />
+                      </span>
+                      <input type='email' name='uname' placeholder='Username' className='password-inputbox' />
+                    </div>
+                    {renderErrorMessage('username')}
+                    <div className="password-field mt-3 ms-2">
+                      <span className="flex justify-around items-start" onClick={handleToggle}>
+                        <Icon className="absolute me-2" icon={icon} size={20} style={{ color: 'gray' }} />
+                      </span>
+                      <input
+                        type={type}
+                        name="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="current-password"
+                        className="password-inputbox"
+                      />
+                    </div>
+                    {renderErrorMessage('password')}
+                    {renderErrorMessage('blank')}
+                    <p className="text-end mt-2 me-3" style={{ color: 'white', fontSize: '14px',fontWeight:'500' }}>Forgot Password ?</p>
+                    <input type='submit' className='btn login-btn' placeholder="Log In"></input>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
             </div>
           </div>
-          
         </div>
       </div>
     </div>
@@ -178,3 +138,4 @@ const Login = () => {
 }
 
 export default Login;
+

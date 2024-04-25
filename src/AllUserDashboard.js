@@ -17,6 +17,7 @@ import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import { API_URL } from "./Api";
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
@@ -43,7 +44,7 @@ const Dashboard = () => {
   const [locationName, setLocationName] = useState("");
   const [districtUser, setDistrictUser] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
-  
+  const navigate = useNavigate();
 
   const userLog = JSON.parse(localStorage.getItem("user"));
   console.log("User's Info", userLog);
@@ -83,7 +84,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: " #ff4dff",
+        backgroundColor: "#ff4dff",
         data: [],
       },
     ],
@@ -112,7 +113,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#ad33ff ",
+        backgroundColor: "#ad33ff",
         data: [],
       },
     ],
@@ -122,7 +123,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#f87979",
+        backgroundColor: "#ff4dff",
         data: [],
       },
     ],
@@ -178,6 +179,8 @@ const Dashboard = () => {
       },
     ],
   });
+
+  
   const random = () => Math.round(Math.random() * 100);
 
   useEffect(() => {
@@ -198,7 +201,7 @@ const Dashboard = () => {
 
       setSearchInput("");
     }
-    setShowLocation(false); // Close the dropdown when a location is selected
+    // setShowLocation(false); // Close the dropdown when a location is selected
   };
 
   const removeLocation = (locationName) => {
@@ -773,9 +776,13 @@ const Dashboard = () => {
 
   }, [selectedLocations]);
 
-  
   const columnSums = calculateColumnSum();
 
+  if(!userLog){
+    navigate('/');
+  }
+  
+ 
     return (
       <>
         <div className="container-fluid">
@@ -796,63 +803,63 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="row  mt-2  search-report-card">
-                <div className="col-md-4 col-sm-12">
-                  <div
-                    ref={dropdownRef}
-                    className="search-bar mt-1"
-                    style={{
-                      border: "1px solid #000",
-                      padding: "5px",
-                      borderRadius: "5px",
-                      minHeight: "30px",
-                    }}
-                    contentEditable={true}
-                    onClick={() => setShowLocation(!showLocation)}
-                  >
-                    {selectedLocations.map((location, index) => (
-                      <span key={index} className="selected-location">
-                        {location}
-                        <button
-                          onClick={() => removeLocation(location)}
-                          style={{
-                            backgroundColor: "black",
-                            color: "white",
-                            border: "none",
-                            marginLeft: "5px",
-                          }}
-                        >
-                          x
-                        </button>
-                        &nbsp;
-                      </span>
-                    ))}
-                    <span style={{ minWidth: "5px", display: "inline-block" }}>
-                      &#8203;
-                    </span>
-                  </div>
-                  {showLocation && (
-                    <>
-                      <div className="location-card">
-                        {tableData &&
-                          tableData.map((item, index) => (
-                            <div key={index}>
-                              <p
-                                onClick={() =>
-                                  handleLocation(item.LocationName)
-                                }
-                              >
-                                {item.LocationName}
-                              </p>
-                            </div>
-                          ))}
-                      </div>
-                    </>
-                  )}
-                </div>
+              <div className="col-md-4 col-sm-12">
+                <div
+                  ref={dropdownRef}
+                  className="search-bar mt-1"
+                  style={{
+                    border: "1px solid #000",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    minHeight: "30px",
+                  }}
 
-                <div className="col-md-2 col-sm-12">
-                  <button className="btn search-btn">Search</button>
+                  contentEditable={true}
+                  onClick={() => setShowLocation(!showLocation)}
+                >
+                  {selectedLocations.length === 0 && !showLocation && (
+                    <span className="placeholder-text">Search Locations...</span>
+                  )}
+                  {selectedLocations.map((location, index) => (
+                    <span key={index} className="selected-location">
+                      {location}
+                      <button
+                        onClick={() => removeLocation(location)}
+                        style={{
+                          backgroundColor: "black",
+                          color: "white",
+                          border: "none",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        x
+                      </button>
+                      &nbsp;
+                    </span>
+                  ))}
+                  <span style={{ minWidth: "5px", display: "inline-block" }}>
+                    &#8203;
+                  </span>
                 </div>
+                {showLocation && (
+                  <>
+                    <div className="location-card">
+                      {tableData &&
+                        tableData.map((item, index) => (
+                          <div key={index}>
+                          <p
+                              onClick={() => handleLocation(item.LocationName)}
+                            >
+                              {item.LocationName}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+               
 
                 <div className="col-md-6"></div>
               </div>

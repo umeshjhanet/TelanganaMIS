@@ -80,7 +80,7 @@ const User_List = () => {
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://localhost:5000/user_master")
+        .get(`${API_URL}/user_master`)
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
@@ -89,7 +89,7 @@ const User_List = () => {
     };
     const fetchLocation = () => {
       axios
-        .get("http://localhost:5000/locations")
+        .get(`${API_URL}/locations`)
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};

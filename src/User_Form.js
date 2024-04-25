@@ -56,36 +56,33 @@ const [formData,setFormData]=useState({
     sl_id:'',   
 });
 
-
-
-
   useEffect(() => {
     const fetchGroup = () => {
-      fetch("http://localhost:5000/group_master")
+      fetch(`${API_URL}/group_master`)
       .then(response => response.json())
       .then(data => setGroup(data))
       .catch(error => console.error(error))
     }
     const fetchLocation = () => {
-      fetch("http://localhost:5000/locations")
+      fetch(`${API_URL}/locations`)
       .then(response => response.json())
       .then(data => setLocation(data))
       .catch(error => console.error(error))
     }
     const fetchPrivilege = () => {
-      fetch("http://localhost:5000/privilege")
+      fetch(`${API_URL}/privilege`)
       .then(response => response.json())
       .then(data => setPrivilege(data))
       .catch(error => console.error(error))
     }
     const fetchStorage = () => {
-      fetch("http://localhost:5000/storage")
+      fetch(`${API_URL}/storage`)
       .then(response => response.json())
       .then(data => setStorage(data))
       .catch(error => console.error(error))
     }
     // const fetchEmail = () => {
-    //   fetch("http://localhost:5000/user_email")
+    //   fetch("${API_URL}/user_email")
     //   .then(response => response.json())
     //   .then(data => setEmail(data))
     //   .catch(error => console.error(error))
@@ -93,7 +90,7 @@ const [formData,setFormData]=useState({
    
    
     const fetchReporting = () => {
-      fetch("http://localhost:5000/reporting")
+      fetch(`${API_URL}/reporting`)
       .then(response => response.json())
       .then(data => setReporting(data))
       .catch(error => console.error(error))
@@ -174,7 +171,7 @@ const [formData,setFormData]=useState({
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/createuser", formData);
+      const response = await axios.post(`${API_URL}/createuser`, formData);
       console.log("Post created:", response.data);
       toast.success("User created successfully");
     } catch (error) {
