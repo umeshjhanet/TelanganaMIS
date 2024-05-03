@@ -19,11 +19,11 @@ const User_List = () => {
   const [usersPerPage] = useState(10); // Set users per page
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
-  const[userIdToEdit,setUserIdToEdit]=useState(null);
+  const [userIdToEdit, setUserIdToEdit] = useState(null);
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = user.slice(indexOfFirstUser, indexOfLastUser);
-
+  const [isLoading, setIsLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     user_email_id: "",
@@ -57,10 +57,10 @@ const User_List = () => {
     }
   };
 
-// const handleEditUserId=(user_id)=>{
-//   setUserIdToEdit(user_id);
+  // const handleEditUserId=(user_id)=>{
+  //   setUserIdToEdit(user_id);
 
-// }
+  // }
 
   const handleDeleteUserId = (user_id) => {
     setUserIdToDelete(user_id);
@@ -70,7 +70,7 @@ const User_List = () => {
   const handleOpenModal = (user_id) => {
     setUserIdToEdit(user_id)
     setIsModalOpen(true);
-   
+
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -80,15 +80,16 @@ const User_List = () => {
   useEffect(() => {
     const fetchUser = () => {
       axios
-        .get("http://localhost:5000/user_master")
+        .get(`${API_URL}/user_master`)
         .then((response) => setUser(response.data))
         .catch((error) => {
           console.error("Error fetching user data:", error);
         });
+      setIsLoading(false);
     };
-const fetchLocation = () => {
+    const fetchLocation = () => {
       axios
-        .get("http://localhost:5000/locations")
+        .get(`${API_URL}/locations`)
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};
@@ -103,17 +104,18 @@ const fetchLocation = () => {
         .catch((error) => {
           console.error("Error fetching location data:", error);
         });
+      setIsLoading(false);
     };
-   
+
     fetchUser();
     fetchLocation();
 
-    const intervalID = setInterval(() => {
-      fetchUser();
-      fetchLocation();
-    }, 2000);
+    // const intervalID = setInterval(() => {
+    //   fetchUser();
+    //   fetchLocation();
+    // }, 2000);
 
-    return () => clearInterval(intervalID);
+    // return () => clearInterval(intervalID);
   }, []);
 
 
@@ -141,7 +143,7 @@ const fetchLocation = () => {
   return (
     <>
       <Header />
-      <div className="container-fluid mb-5">
+      <div className={`container-fluid mb-5 ${isLoading ? 'loading' : ''}`}>
         <div className="row">
           <div className="col-lg-2 col-md-2"></div>
           <div className="col-lg-10 col-md-10">
@@ -166,7 +168,14 @@ const fetchLocation = () => {
                 />
                 <button className='btn search-btn mb-1'>Search</button>
               </div>
-
+              {isLoading ? (
+                  <>
+                    <div className="loader-container">
+                      <div className="loader"></div>
+                    </div>
+                  </>
+                ) : (
+                  <>
               <table className='user-tables table-bordered mt-1 mb-4'>
                 <thead>
                   <tr>
@@ -203,16 +212,18 @@ const fetchLocation = () => {
                   ))}
                 </tbody>
               </table>
+              </>
+               )}
               {showConfirmation && (
-        <div className="confirmation-dialog">
-          <div className="confirmation-content">
-            <p className="fw-bold">Are you sure you want to delete?</p>
-            <button className="btn btn-success mt-3 ms-5" onClick={()=>handleDeleteUser(userIdToDelete)}>Yes</button>
-            <button className="btn btn-danger ms-3 mt-3" onClick={() => setShowConfirmation(false)}>No</button>
-          </div>
-        </div>
-      )}
-       
+                <div className="confirmation-dialog">
+                  <div className="confirmation-content">
+                    <p className="fw-bold">Are you sure you want to delete?</p>
+                    <button className="btn btn-success mt-3 ms-5" onClick={() => handleDeleteUser(userIdToDelete)}>Yes</button>
+                    <button className="btn btn-danger ms-3 mt-3" onClick={() => setShowConfirmation(false)}>No</button>
+                  </div>
+                </div>
+              )}
+
               <div className="row">
                 <ul className="pagination justify-content-center">
                   {user.length > usersPerPage &&
@@ -225,7 +236,7 @@ const fetchLocation = () => {
                         >
                           <button
                             className="page-link"
-                            
+
                             onClick={() => paginate(index + 1)}
                           >
                             {index + 1}
@@ -243,7 +254,7 @@ const fetchLocation = () => {
           </div>
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
       <Footer />
     </>
   );

@@ -15,9 +15,6 @@ import { HiMiniUserGroup, HiMiniUserPlus } from "react-icons/hi2";
 import { MdUpload } from "react-icons/md";
 import axios from 'axios';
 
-
-
-
 const Header = () => {
   const [showSideBar, setShowSideBar] = useState(false);
   const [showMobileSideBar, setShowMobileSideBar] = useState();
@@ -104,7 +101,7 @@ const adminUser =() => {
                 <div className='col-1'>
                   <div className='shrink-sidebar'>
                     <div className='row shrink-header-image' >
-                      <img src='ezeefile.png' />
+                      <img src='logo.png' />
                     </div>
                     <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                     <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
@@ -121,7 +118,7 @@ const adminUser =() => {
                 <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
                   <div className='sidebar'>
                     <div className='row header-image'>
-                      <img src='ezeefile.png' />
+                      <img src='logo.png' />
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -178,7 +175,7 @@ const adminUser =() => {
             <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
               <div className='mobile-sidebar'>
                 <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                  <img src='ezeefile.png' />
+                  <img src='logo.png' />
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
@@ -240,7 +237,7 @@ const adminUser =() => {
                 <div className='col-1'>
                   <div className='shrink-sidebar'>
                     <div className='row shrink-header-image' >
-                      <img src='ezeefile.png' />
+                      <img src='logo.png' />
                     </div>
                     <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
 
@@ -257,7 +254,7 @@ const adminUser =() => {
                 <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
                   <div className='sidebar'>
                     <div className='row header-image'>
-                      <img src='ezeefile.png' />
+                      <img src='logo.png' />
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -297,7 +294,7 @@ const adminUser =() => {
             <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
               <div className='mobile-sidebar'>
                 <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                  <img src='ezeefile.png' />
+                  <img src='logo.png' />
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
@@ -358,7 +355,7 @@ const clientUser =()=>{
               <div className='col-1'>
                 <div className='shrink-sidebar'>
                   <div className='row shrink-header-image' >
-                    <img src='ezeefile.png' />
+                    <img src='logo.png' />
                   </div>
                   <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
 
@@ -375,7 +372,7 @@ const clientUser =()=>{
               <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
                 <div className='sidebar'>
                   <div className='row header-image'>
-                    <img src='ezeefile.png' />
+                    <img src='logo.png' />
                   </div>
                   <div className='row' onClick={handleActiveTab}>
                     <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -414,7 +411,7 @@ const clientUser =()=>{
           <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
             <div className='mobile-sidebar'>
               <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                <img src='ezeefile.png' />
+                <img src='logo.png' />
               </div>
               <div className='row' onClick={handleActiveTab}>
                 <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
@@ -468,7 +465,7 @@ const districtHeadUser = () => {
               <div className='col-1'>
                 <div className='shrink-sidebar'>
                   <div className='row shrink-header-image' >
-                    <img src='ezeefile.png' />
+                    <img src='logo.png' />
                   </div>
                   <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
 
@@ -485,7 +482,7 @@ const districtHeadUser = () => {
               <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
                 <div className='sidebar'>
                   <div className='row header-image'>
-                    <img src='ezeefile.png' />
+                    <img src='logo.png' />
                   </div>
                   <div className='row' onClick={handleActiveTab}>
                     <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -525,7 +522,7 @@ const districtHeadUser = () => {
           <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
             <div className='mobile-sidebar'>
               <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                <img src='ezeefile.png' />
+                <img src='logo.png' />
               </div>
               <div className='row' onClick={handleActiveTab}>
                 <Link to='/dashboard' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>

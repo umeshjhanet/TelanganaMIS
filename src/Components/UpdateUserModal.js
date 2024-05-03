@@ -3,6 +3,7 @@ import axios from 'axios'
 import { useState,useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
+import { API_URL } from '../Api';
 
 const UpdateUserModal = ({onClose,userId}) => {
     const[group, setGroup] = useState();
@@ -59,7 +60,7 @@ const [formData,setFormData]=useState({
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/user/${userId}`);
+        const response = await axios.get(`${API_URL}/user/${userId}`);
         const userData = response.data;
         console.log('Fetched user data:', userData); // Log the fetched user data
       
@@ -84,31 +85,31 @@ const [formData,setFormData]=useState({
     };
    
     const fetchGroup = () => {
-      fetch(`localhost:5000/group_master`)
+      fetch(`${API_URL}/group_master`)
       .then(response => response.json())
       .then(data => setGroup(data))
       .catch(error => console.error(error))
     }
     const fetchLocation = () => {
-      fetch(`localhost:5000/locations`)
+      fetch(`${API_URL}/locations`)
       .then(response => response.json())
       .then(data => setLocation(data))
       .catch(error => console.error(error))
     }
     const fetchPrivilege = () => {
-      fetch(`localhost:5000/privilege`)
+      fetch(`${API_URL}/privilege`)
       .then(response => response.json())
       .then(data => setPrivilege(data))
       .catch(error => console.error(error))
     }
     const fetchStorage = () => {
-      fetch(`localhost:5000/storage`)
+      fetch(`${API_URL}/storage`)
       .then(response => response.json())
       .then(data => setStorage(data))
       .catch(error => console.error(error))
     }
     const fetchEmail = () => {
-      fetch(`localhost:5000/user_email`)
+      fetch(`${API_URL}/user_email`)
       .then(response => response.json())
       .then(data => setEmail(data))
       .catch(error => console.error(error))
@@ -116,7 +117,7 @@ const [formData,setFormData]=useState({
     
    
     const fetchReporting = () => {
-      fetch(`localhost:5000/reporting`)
+      fetch(`${API_URL}/reporting`)
       .then(response => response.json())
       .then(data => setReporting(data))
       .catch(error => console.error(error))
@@ -141,7 +142,7 @@ const [formData,setFormData]=useState({
     console.log("click outside");
     try {
       const response = await axios.put(
-        `http://localhost:5000/createuserupdate/${userId}`,
+        `${API_URL}/createuserupdate/${userId}`,
         {
           user_email_id: formData.user_email_id,
         first_name: formData.first_name,

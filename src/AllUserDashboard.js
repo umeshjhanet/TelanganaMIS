@@ -16,6 +16,8 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import DistrictHeadDashboard from "./DistrictHeadDashboard";
+import { API_URL } from "./Api";
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
@@ -42,7 +44,7 @@ const Dashboard = () => {
   const [locationName, setLocationName] = useState("");
   const [districtUser, setDistrictUser] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
-  
+  const navigate = useNavigate();
 
   const userLog = JSON.parse(localStorage.getItem("user"));
   console.log("User's Info", userLog);
@@ -82,7 +84,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: " #ff4dff",
+        backgroundColor: "#ff4dff",
         data: [],
       },
     ],
@@ -111,7 +113,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#ad33ff ",
+        backgroundColor: "#ad33ff",
         data: [],
       },
     ],
@@ -121,7 +123,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#f87979",
+        backgroundColor: "#ff4dff",
         data: [],
       },
     ],
@@ -177,6 +179,8 @@ const Dashboard = () => {
       },
     ],
   });
+
+  
   const random = () => Math.round(Math.random() * 100);
 
   useEffect(() => {
@@ -197,7 +201,7 @@ const Dashboard = () => {
 
       setSearchInput("");
     }
-    setShowLocation(false); // Close the dropdown when a location is selected
+    // setShowLocation(false); // Close the dropdown when a location is selected
   };
 
   const removeLocation = (locationName) => {
@@ -284,7 +288,7 @@ const Dashboard = () => {
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
-                `http://localhost:5000/api/locationwisetabularData?locationName=?`
+                `${API_URL}/api/locationwisetabularData?locationName=?`
               )
             )
           );
@@ -304,7 +308,7 @@ const Dashboard = () => {
     const locationName = selectedLocations;
 
     const fetchGraphFileData = (selectedLocations) => {
-      let apiUrl = "http://localhost:5000/graph1LocationWise";
+      let apiUrl = `${API_URL}/graph1LocationWise`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -346,10 +350,10 @@ const Dashboard = () => {
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
       const apiUrl = locationName
-        ? `http://localhost:5000/csv?${locationName
+        ? `${API_URL}/csv?${locationName
             .map((name) => `locationName=${name}`)
             .join("&")}`
-        : "http://localhost:5000/csv";
+        : `${API_URL}/csv`;
 
       axios
         .get(apiUrl, { responseType: "blob" })
@@ -365,7 +369,7 @@ const Dashboard = () => {
     };
 
     const fetchGraphImageData = (selectedLocations) => {
-      let apiUrl = "http://localhost:5000/graph2";
+      let apiUrl = `${API_URL}/graph2`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -403,7 +407,7 @@ const Dashboard = () => {
         });
     };
     const fetchTodayGraphFileData = () => {
-      let apiUrl = "http://localhost:5000/graph7";
+      let apiUrl = `${API_URL}/graph7`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -443,7 +447,7 @@ const Dashboard = () => {
     };
 
     const fetchTodayGraphImageData = () => {
-      let apiUrl = "http://localhost:5000/graph8";
+      let apiUrl = `${API_URL}/graph8`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -489,7 +493,7 @@ const Dashboard = () => {
         },
       };
       axios
-        .get("http://localhost:5000/graph5", params)
+        .get(`${API_URL}/graph5`, params)
         .then((response) => {
           const apiData = response.data;
           const labels = apiData.map((item) => item["scandate"]);
@@ -528,7 +532,7 @@ const Dashboard = () => {
         },
       };
       axios
-        .get("http://localhost:5000/graph6", params)
+        .get(`${API_URL}/graph6`, params)
         .then((response) => {
           const apiData = response.data;
           const labels = apiData.map((item) => item["scandate"]);
@@ -567,7 +571,7 @@ const Dashboard = () => {
         },
       };
       axios
-        .get("http://localhost:5000/graphmonth", params)
+        .get(`${API_URL}/graphmonth`, params)
         .then((response) => {
           const apiData = response.data;
           const labels = apiData.map((item) => item["scandate"]);
@@ -591,7 +595,7 @@ const Dashboard = () => {
     };
 
     const fetchCivilCaseGraphData = () => {
-      let apiUrl = "http://localhost:5000/civil";
+      let apiUrl = `${API_URL}/civil`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -630,7 +634,7 @@ const Dashboard = () => {
     };
 
     const fetchCriminalCaseGraphData = () => {
-      let apiUrl = "http://localhost:5000/criminal";
+      let apiUrl = `${API_URL}/criminal`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -668,7 +672,7 @@ const Dashboard = () => {
         });
     };
     const fetchAllYesGraphImageData = (selectedLocations) => {
-      let apiUrl = "http://localhost:5000/graph9";
+      let apiUrl = `${API_URL}/graph9`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -709,7 +713,7 @@ const Dashboard = () => {
     };
 
     const fetchAllGraphImageData = (selectedLocations) => {
-      let apiUrl = "http://localhost:5000/graph10";
+      let apiUrl = `${API_URL}/graph10`;
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -748,7 +752,7 @@ const Dashboard = () => {
 
     const fetchTableData = () => {
       axios
-        .get("http://localhost:5000/tabularData")
+        .get(`${API_URL}/tabularData`)
         .then((response) => {
           setTableData(response.data);
           console.log("Table Data", response.data); // Log inside the then block
@@ -772,9 +776,13 @@ const Dashboard = () => {
 
   }, [selectedLocations]);
 
-  
   const columnSums = calculateColumnSum();
 
+  if(!userLog){
+    navigate('/');
+  }
+  
+ 
     return (
       <>
         <div className="container-fluid">
@@ -782,89 +790,76 @@ const Dashboard = () => {
             <div className="col-lg-2 col-md-2 "></div>
             <div className="col-lg-10 col-md-10">
               <div className="row">
-                <p
-                  className="mt-1 fw-bold"
-                  style={{ color: "#4BC0C0", fontSize: "20px" }}
-                >
-                  Dashboard
-                </p>
-                {/* <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You  last Active Login: {userLog ? userLog.last_active_login : 'Guest'}</p> */}
                 <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                  style={{ display: "flex", justifyContent: "space-between",marginTop:'10px' }}
                 >
-                  <p style={{ fontSize: "16px" }}>
+                  <p style={{ fontSize: "20px",fontWeight:'500' }}>
                     Telangana Dashboard Welcomes You
                   </p>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      marginTop: "-15px",
-                      textAlign: "right",
-                    }}
-                  >
+                  <p style={{ fontSize: "20px", textAlign: "right", }}>
                     Last Active Login:{" "}
                     {userLog ? userLog.last_active_login : "Guest"}
                   </p>
                 </div>
               </div>
               <div className="row  mt-2  search-report-card">
-                <div className="col-md-4 col-sm-12">
-                  <div
-                    ref={dropdownRef}
-                    className="search-bar mt-1"
-                    style={{
-                      border: "1px solid #000",
-                      padding: "5px",
-                      borderRadius: "5px",
-                      minHeight: "30px",
-                    }}
-                    contentEditable={true}
-                    onClick={() => setShowLocation(!showLocation)}
-                  >
-                    {selectedLocations.map((location, index) => (
-                      <span key={index} className="selected-location">
-                        {location}
-                        <button
-                          onClick={() => removeLocation(location)}
-                          style={{
-                            backgroundColor: "black",
-                            color: "white",
-                            border: "none",
-                            marginLeft: "5px",
-                          }}
-                        >
-                          x
-                        </button>
-                        &nbsp;
-                      </span>
-                    ))}
-                    <span style={{ minWidth: "5px", display: "inline-block" }}>
-                      &#8203;
-                    </span>
-                  </div>
-                  {showLocation && (
-                    <>
-                      <div className="location-card">
-                        {tableData &&
-                          tableData.map((item, index) => (
-                            <div key={index}>
-                              <p
-                                onClick={() =>
-                                  handleLocation(item.LocationName)
-                                }
-                              >
-                                {item.LocationName}
-                              </p>
-                            </div>
-                          ))}
-                      </div>
-                    </>
-                  )}
-                </div>
+              <div className="col-md-4 col-sm-12">
+                <div
+                  ref={dropdownRef}
+                  className="search-bar mt-1"
+                  style={{
+                    border: "1px solid #000",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    minHeight: "30px",
+                  }}
 
-                <div className="col-md-2 col-sm-12">
-                  <button className="btn search-btn">Search</button>
+                  contentEditable={true}
+                  onClick={() => setShowLocation(!showLocation)}
+                >
+                  {selectedLocations.length === 0 && !showLocation && (
+                    <span className="placeholder-text">Search Locations...</span>
+                  )}
+                  {selectedLocations.map((location, index) => (
+                    <span key={index} className="selected-location">
+                      {location}
+                      <button
+                        onClick={() => removeLocation(location)}
+                        style={{
+                          backgroundColor: "black",
+                          color: "white",
+                          border: "none",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        x
+                      </button>
+                      &nbsp;
+                    </span>
+                  ))}
+                  <span style={{ minWidth: "5px", display: "inline-block" }}>
+                    &#8203;
+                  </span>
                 </div>
+                {showLocation && (
+                  <>
+                    <div className="location-card">
+                      {tableData &&
+                        tableData.map((item, index) => (
+                          <div key={index}>
+                          <p
+                              onClick={() => handleLocation(item.LocationName)}
+                            >
+                              {item.LocationName}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+               
 
                 <div className="col-md-6"></div>
               </div>

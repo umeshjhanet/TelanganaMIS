@@ -22,17 +22,15 @@ const Dashboard = () => {
 
   const userLog = JSON.parse(localStorage.getItem("user"));
   console.log("User's Info", userLog);
-
-
-const isDistrictHeadUser =
+  const isDistrictHeadUser =
     userLog && userLog.user_roles.includes("All District Head");
 
   return (
     <>
       <Header />
-      {/* {isDistrictHeadUser && <DistrictHeadDashboard/>} */}
-      {/* {!isDistrictHeadUser && allUser()}  */}
-      {isDistrictHeadUser ? <DistrictHeadDashboard /> : <AllUserDashboard />}
+      {/* {isDistrictHeadUser ?  */}
+      <DistrictHeadDashboard /> 
+       {/* : <AllUserDashboard />} */}
       <Footer />
     </>
   )

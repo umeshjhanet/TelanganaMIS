@@ -18,8 +18,8 @@ import UserRole from './userRole';
 import UploadDatabase from './uploadDatabase';
 import UpdateUserModal from './Components/UpdateUserModal';
 import AddGroupModal from './Components/AddGroupModal';
-import PrivateRoute from './PrivateRoute';
 import { AuthProvider } from './AuthContext';
+import ShortReport from './shortreport';
 
 
 const App = () => {
@@ -40,6 +40,7 @@ const App = () => {
           <Route path="/MIS_Form" element={<MIS_Form/>}/>
           <Route path="/mis_updc" element={<MISUPDC/>}/>
           <Route path="/User_List" element={<UpdateUserModal />} />
+          <Route path="/shortreport" element={<ShortReport />} />
         </Routes>
       </BrowserRouter>
     </React.StrictMode>
