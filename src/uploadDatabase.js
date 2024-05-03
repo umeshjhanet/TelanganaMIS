@@ -1,17 +1,19 @@
-import React, { useState } from 'react'
-import Header from './Components/Header'
-import Footer from './Footer'
+import React, { useState } from 'react';
+import Header from './Components/Header';
+import Footer from './Footer';
 import { API_URL } from './Api';
 
-const UploadDatabase = () => {
 
+const UploadDatabase = () => {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
 
+
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
+
 
     const handleSubmit = async () => {
         if (!file) {
@@ -19,23 +21,27 @@ const UploadDatabase = () => {
             return;
         }
 
+
         setUploading(true);
         setMessage('Uploading file...');
 
-        const currentDate = new Date();
-        const dateString = currentDate.toISOString().replace(/:/g, '-').replace(/\..+/, '');
-        const fileName = `${file.name}_${dateString}.${file.name.split('.').pop()}`;
 
         const formData = new FormData();
-        formData.append('file', file, fileName);
+        formData.append('file', file);
+
 
         try {
-            const response = await fetch(`${API_URL}/upload`, {
+            const response = await fetch(`${API_URL}/uploadSql`, {
                 method: 'POST',
                 body: formData,
             });
 
-            // Handle response from server
+
+            if (!response.ok) {
+                throw new Error('Failed to upload file');
+            }
+
+
             setMessage('File uploaded successfully');
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -45,6 +51,7 @@ const UploadDatabase = () => {
         }
     };
 
+
     return (
         <>
             <Header />
@@ -52,10 +59,7 @@ const UploadDatabase = () => {
                 <div className='row'>
                     <div className='col-lg-2 col-md-2'></div>
                     <div className='col-lg-10 col-md-10'>
-                        <div
-                            className="card mt-3"
-                            style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
-                        >
+                        <div className="card mt-3" style={{ padding: "5px", backgroundColor: "#4BC0C0" }}>
                             <h6 className="" style={{ color: "white" }}>
                                 Store Management / Upload Document
                             </h6>
@@ -70,12 +74,15 @@ const UploadDatabase = () => {
                                     />
                                 </div>
                                 <div className='col-3'>
-                                    <button className='btn add-btn' onClick={handleSubmit} disabled={uploading}>
+                                    <button
+                                        className='btn add-btn'
+                                        onClick={handleSubmit}
+                                        disabled={uploading}
+                                    >
                                         {uploading ? 'Uploading...' : 'Upload'}
                                     </button>
                                     <p>{message}</p>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -83,7 +90,8 @@ const UploadDatabase = () => {
             </div>
             <Footer />
         </>
-    )
-}
+    );
+};
 
-export default UploadDatabase
+
+export default UploadDatabase;

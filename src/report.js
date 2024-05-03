@@ -25,6 +25,7 @@ const Report = () => {
   const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showConfirmationBox,setShowConfirmationBox]=useState(false);
   
 
   useEffect(() => {
@@ -89,7 +90,7 @@ const Report = () => {
   
 
   const handleReportCsv = () => {
-    setShowConfirmation(true);
+    setShowConfirmationBox(true);
   };
   const handleReportCsvConfirmation=()=>{
     if (reportCsv) {
@@ -100,9 +101,26 @@ const Report = () => {
       link.click();
       document.body.removeChild(link);
     }
-    setShowConfirmation(false);
+    setShowConfirmationBox(false);
 
   }
+
+  const handleReportCancelExport=()=>{
+    setShowConfirmationBox(false)
+  }
+
+  // const handleReportCsv=()=>{
+  //     if (reportCsv) {
+  //       const link = document.createElement("a");
+  //       link.href = reportCsv;
+  //       link.setAttribute("download", "export.csv");
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //     }
+  //   //   setShowConfirmation(false);
+  
+  //   }
 
   useEffect(() => {
     const locationName = selectedLocations;
@@ -1046,12 +1064,12 @@ const fetchSummaryReportTableCsvFile = (locationName, startDate, endDate) => {
                       Export CSV
                     </h6>
                   </div>
-                  {showConfirmation && (
+                  {showConfirmationBox && (
         <div className="confirmation-dialog">
           <div className="confirmation-content">
             <p className="fw-bold">Are you sure you want to export the CSV file?</p>
             <button className="btn btn-success mt-3 ms-5" onClick={handleReportCsvConfirmation}>Yes</button>
-            <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
+            <button className="btn btn-danger ms-3 mt-3" onClick={handleReportCancelExport}>No</button>
           </div>
         </div>
       )}

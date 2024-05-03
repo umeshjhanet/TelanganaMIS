@@ -26,27 +26,19 @@ const DistrictHeadDashboard = () => {
   const formattedPreviousDate = format(previousDate, "dd-MM-yyyy");
   const [tableData, setTableData] = useState([]);
   const [csv, setCsv] = useState(null);
-  const [locationWiseCsv, setLocationWiseCsv] = useState();
   const dropdownRef = useRef(null);
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
-  const [locations, setLocations] = useState();
   const [searchInput, setSearchInput] = useState("");
   const [locationData, setLocationData] = useState(null);
-  const [locationGraphData, setLocationGraphData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [locationName, setLocationName] = useState("");
-  const [districtUser, setDistrictUser] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState({});
   
-
   const userLog = JSON.parse(localStorage.getItem("user"));
   console.log("User's Info", userLog);
 
- 
   const [monthImage, setMonthImage] = useState({
     labels: [],
     datasets: [
@@ -93,19 +85,61 @@ const DistrictHeadDashboard = () => {
     };
   }, [dropdownRef]);
 
+  // const handleLocation = (locationName) => {
+  //   if (!selectedLocations.includes(locationName)) {
+  //     setSelectedLocations([...selectedLocations, locationName]);
+  //     setSearchInput("");
+      
+  //   }
+  //   setShowLocation(false); 
+  // };
+  // const handleLocation = (locationName) => {
+  //   if (!selectedLocations.includes(locationName)) {
+  //     setSelectedLocations([...selectedLocations, locationName]);
+  //   } else {
+  //     setSelectedLocations(selectedLocations.filter(loc => loc !== locationName));
+  //   }
+  //   setSearchInput(""); // Clear search input
+  // };
+
   const handleLocation = (locationName) => {
-    if (!selectedLocations.includes(locationName)) {
-      setSelectedLocations([...selectedLocations, locationName]);
-
-      setSearchInput("");
-    }
-    setShowLocation(false); // Close the dropdown when a location is selected
+    setSearchInput(""); // Clear search input
   };
-
   const removeLocation = (locationName) => {
     setSelectedLocations(
       selectedLocations.filter((loc) => loc !== locationName)
     );
+  };
+  const toggleCheckbox = (locationName) => {
+    setSelectedCheckboxes({
+      ...selectedCheckboxes,
+      [locationName]: !selectedCheckboxes[locationName]
+    });
+  };
+  
+  const handleLocationCheckbox = (locationName) => {
+    if (!selectedLocations.includes(locationName)) {
+      setSelectedLocations([...selectedLocations, locationName]);
+    } else {
+      setSelectedLocations(selectedLocations.filter(loc => loc !== locationName));
+    }
+  };
+  
+
+  // Function to render checkboxes for locations
+  const renderCheckboxes = () => {
+    return tableData.map((item, index) => (
+      <div key={index}>
+        <input
+          type="checkbox"
+          checked={selectedCheckboxes[item.LocationName]}
+          onChange={() => toggleCheckbox(item.LocationName)}
+        />
+        <label onClick={() => handleLocation(item.LocationName)}>
+          {item.LocationName}
+        </label>
+      </div>
+    ));
   };
 
   const handleExport = () => {
@@ -113,7 +147,6 @@ const DistrictHeadDashboard = () => {
   };
 
   const handleConfirmedExport = () => {
-    // Proceed with CSV export
     if (csv) {
       const link = document.createElement("a");
       link.href = csv;
@@ -313,6 +346,23 @@ const DistrictHeadDashboard = () => {
     
       
       const columnSums = calculateColumnSum();
+
+      const handleSearch = () => {
+        // Filter table data based on search input
+        const filteredData = tableData.filter((elem) => {
+          const locationMatchesSearch = elem.LocationName.toLowerCase().includes(searchInput.toLowerCase());
+          if (selectedLocations.length === 0) {
+            // If no locations are selected, include all locations
+            return locationMatchesSearch;
+          } else {
+            // If locations are selected, include only selected locations
+            return selectedLocations.includes(elem.LocationName) && locationMatchesSearch;
+          }
+        });
+        setTableData(filteredData);
+      };
+       
+
       const isDistrictHeadUser =
     userLog && userLog.user_roles.includes("All District Head");
     return (
@@ -385,6 +435,7 @@ const DistrictHeadDashboard = () => {
                     {showLocation && (
                       <>
                         <div className="location-card">
+                        {renderCheckboxes()}
                           {tableData &&
                             tableData.map((item, index) => (
                               <div key={index}>
@@ -403,7 +454,7 @@ const DistrictHeadDashboard = () => {
                   </div>
   
                   <div className="col-md-2 col-sm-12">
-                    <button className="btn search-btn">Search</button>
+                    <button className="btn search-btn" onClick={handleSearch}>Search</button>
                   </div>
   
                   <div className="col-md-6"></div>

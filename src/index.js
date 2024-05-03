@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Router,Route,Navigate } from "react-router-dom";
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './Components/Header';
@@ -18,10 +18,11 @@ import UserRole from './userRole';
 import UploadDatabase from './uploadDatabase';
 import UpdateUserModal from './Components/UpdateUserModal';
 import AddGroupModal from './Components/AddGroupModal';
+import PrivateRoute from './PrivateRoute';
+import { AuthProvider } from './AuthContext';
+
 
 const App = () => {
- 
-
   return (
     <React.StrictMode>
       <BrowserRouter>
