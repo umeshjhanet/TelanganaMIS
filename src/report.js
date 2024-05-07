@@ -266,7 +266,7 @@ const Report = () => {
         <div className="row">
           <div className="col-lg-2 col-md-2 "></div>
           <div className="col-lg-10 col-md-9 col-sm-12">
-            <div className="row mt-4 me-1">
+            <div className="row mt-2 me-1">
               <div
                 className="card"
                 style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
@@ -280,7 +280,7 @@ const Report = () => {
               <div className="col-md-4 col-sm-12">
                 <div
                   ref={dropdownRef}
-                  className="search-bar mt-1"
+                  className="search-bar"
                   style={{
                     border: "1px solid #000",
                     padding: "5px",
@@ -1045,7 +1045,7 @@ const Report = () => {
                   className="row mt-3 ms-2 me-2"
                   style={{ overflowX: "auto" }}
                 >
-                  <h5 className="mt-1 mb-2">Total Locations: 61</h5>
+                  
                   <table class="table table-hover table-bordered table-responsive table-striped data-table">
                     <thead
                       style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300' }}

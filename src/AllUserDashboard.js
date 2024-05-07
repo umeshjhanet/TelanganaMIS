@@ -123,7 +123,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#ff4dff",
+        backgroundColor: "#02B2AF",
         data: [],
       },
     ],
@@ -789,24 +789,28 @@ const Dashboard = () => {
           <div className="row">
             <div className="col-lg-2 col-md-2 "></div>
             <div className="col-lg-10 col-md-10">
-              <div className="row">
-                <div
-                  style={{ display: "flex", justifyContent: "space-between",marginTop:'10px' }}
+            <div className="row mt-2">
+              <div
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <h4> Telangana Dashboard Welcomes You</h4>
+                <p
+                  style={{
+                    fontSize: "12px",
+                   color:'maroon',
+                    textAlign: "right",
+                  }}
                 >
-                  <p style={{ fontSize: "20px",fontWeight:'500' }}>
-                    Telangana Dashboard Welcomes You
-                  </p>
-                  <p style={{ fontSize: "20px", textAlign: "right", }}>
-                    Last Active Login:{" "}
-                    {userLog ? userLog.last_active_login : "Guest"}
-                  </p>
-                </div>
+                  Last Active Login:{" "}
+                  {userLog ? userLog.last_active_login : "Guest"}
+                </p>
               </div>
+            </div>
               <div className="row  mt-2  search-report-card">
               <div className="col-md-4 col-sm-12">
                 <div
                   ref={dropdownRef}
-                  className="search-bar mt-1"
+                  className="search-bar"
                   style={{
                     border: "1px solid #000",
                     padding: "5px",
@@ -1120,7 +1124,8 @@ const Dashboard = () => {
               </div>
 
               <div className="row">
-                <CCard>
+              <div className="col-md-6 col-sm-12">
+              <CCard>
                   <h4 className="ms-1">
                     SCANNED REPORT FOR ({formattedYesterdayDate})
                   </h4>
@@ -1132,8 +1137,8 @@ const Dashboard = () => {
                     ></CChartBar>
                   </CCardBody>
                 </CCard>
-              </div>
-              <div className="row mt-2">
+                </div>
+                <div className="col-md-6 col-sm-12">
                 <CCard>
                   <h4 className="ms-1">CUMULATIVE SCANNED TILL DATE</h4>
                   <h5 className="ms-1">All Location: Images</h5>
@@ -1144,7 +1149,9 @@ const Dashboard = () => {
                     ></CChartBar>
                   </CCardBody>
                 </CCard>
+                </div>
               </div>
+              
             </div>
           </div>
         </div>

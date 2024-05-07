@@ -54,7 +54,7 @@ const DistrictHeadDashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#f87979",
+        backgroundColor: "#02B2AF",
         data: [],
       },
     ],
@@ -328,24 +328,15 @@ if(!userLog){
         <div className="row">
           <div className="col-lg-2 col-md-2 "></div>
           <div className="col-lg-10 col-md-10">
-            <div className="row">
-              <p
-                className="mt-1 fw-bold"
-                style={{ color: "#4BC0C0", fontSize: "20px" }}
-              >
-                Dashboard
-              </p>
-              {/* <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You  last Active Login: {userLog ? userLog.last_active_login : 'Guest'}</p> */}
+            <div className="row mt-2">
               <div
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                <p style={{ fontSize: "16px" }}>
-                  Telangana Dashboard Welcomes You
-                </p>
+                <h4> Telangana Dashboard Welcomes You</h4>
                 <p
                   style={{
-                    fontSize: "16px",
-                    marginTop: "-15px",
+                    fontSize: "12px",
+                   color:'maroon',
                     textAlign: "right",
                   }}
                 >
@@ -354,11 +345,11 @@ if(!userLog){
                 </p>
               </div>
             </div>
-            <div className="row  mt-2  search-report-card">
+            <div className="row search-report-card">
             <div className="col-md-4 col-sm-12">
                 <div
                   ref={dropdownRef}
-                  className="search-bar mt-1"
+                  className="search-bar "
                   style={{
                     border: "1px solid #000",
                     padding: "5px",

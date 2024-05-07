@@ -343,7 +343,7 @@ input[type="submit"]:hover {
   border-radius: 4px;
 }
 .search-report-card {
-  height: 100px;
+  height: 80px;
   background-color: white;
   padding: 20px;
   border-top: 4px solid #4BC0C0;
