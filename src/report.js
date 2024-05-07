@@ -26,8 +26,8 @@ const Report = () => {
   const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [showConfirmationBox, setShowConfirmationBox] = useState(false);
-
+  const [showConfirmationBox,setShowConfirmationBox]=useState(false);
+  
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -93,12 +93,26 @@ const Report = () => {
       document.body.removeChild(link);
     }
     setShowConfirmationBox(false);
-
-  }
-
-  const handleReportCancelExport = () => {
     setShowConfirmationBox(false);
+
   }
+
+  const handleReportCancelExport=()=>{
+    setShowConfirmationBox(false)
+  }
+
+  // const handleReportCsv=()=>{
+  //     if (reportCsv) {
+  //       const link = document.createElement("a");
+  //       link.href = reportCsv;
+  //       link.setAttribute("download", "export.csv");
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //     }
+  //   //   setShowConfirmation(false);
+  
+  //   }
 
   useEffect(() => {
     const locationName = selectedLocations;
@@ -1032,14 +1046,14 @@ const Report = () => {
                     </h6>
                   </div>
                   {showConfirmationBox && (
-                    <div className="confirmation-dialog">
-                      <div className="confirmation-content">
-                        <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-                        <button className="btn btn-success mt-3 ms-5" onClick={handleReportCsvConfirmation}>Yes</button>
-                        <button className="btn btn-danger ms-3 mt-3" onClick={handleReportCancelExport}>No</button>
-                      </div>
-                    </div>
-                  )}
+        <div className="confirmation-dialog">
+          <div className="confirmation-content">
+            <p className="fw-bold">Are you sure you want to export the CSV file?</p>
+            <button className="btn btn-success mt-3 ms-5" onClick={handleReportCsvConfirmation}>Yes</button>
+            <button className="btn btn-danger ms-3 mt-3" onClick={handleReportCancelExport}>No</button>
+          </div>
+        </div>
+      )}
                 </div>
                 <div
                   className="row mt-3 ms-2 me-2"

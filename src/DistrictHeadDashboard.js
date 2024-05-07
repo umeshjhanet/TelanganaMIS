@@ -18,6 +18,7 @@ import { MdFileDownload } from "react-icons/md";
 import { API_URL } from "./Api";
 import { Navigate } from "react-router-dom";
 
+
 const DistrictHeadDashboard = () => {
   const [data2, setData2] = useState();
   const currentDate = new Date();
@@ -45,8 +46,10 @@ const DistrictHeadDashboard = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
 
+
   const userLog = JSON.parse(localStorage.getItem("user"));
   console.log("User's Info", userLog);
+
 
 
   const [monthImage, setMonthImage] = useState({
@@ -70,6 +73,7 @@ const DistrictHeadDashboard = () => {
     ],
   });
 
+
   const [scannedData, setScannedData] = useState(null);
   const [locationReportData, setLocationReportData] = useState({
     labels: [],
@@ -83,6 +87,7 @@ const DistrictHeadDashboard = () => {
   });
   const random = () => Math.round(Math.random() * 100);
 
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -95,14 +100,17 @@ const DistrictHeadDashboard = () => {
     };
   }, [dropdownRef]);
 
+
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
       setSelectedLocations([...selectedLocations, locationName]);
+
 
       setSearchInput("");
     }
     setShowLocation(false); // Close the dropdown when a location is selected
   };
+
 
   const removeLocation = (locationName) => {
     setSelectedLocations(
@@ -110,9 +118,11 @@ const DistrictHeadDashboard = () => {
     );
   };
 
+
   const handleExport = () => {
     setShowConfirmation(true);
   };
+
 
   const handleConfirmedExport = () => {
     // Proceed with CSV export
@@ -127,9 +137,11 @@ const DistrictHeadDashboard = () => {
     setShowConfirmation(false);
   };
 
+
   const handleCancelExport = () => {
     setShowConfirmation(false);
   };
+
 
   // const handleExport = () => {
   //   if (csv) {
@@ -142,6 +154,7 @@ const DistrictHeadDashboard = () => {
   //   }
   // };
 
+
   const calculateColumnSum = () => {
     let prevFilesSum = 0;
     let prevImagesSum = 0;
@@ -151,6 +164,7 @@ const DistrictHeadDashboard = () => {
     let todayImagesSum = 0;
     let totalFilesSum = 0;
     let totalImagesSum = 0;
+
 
     tableData.forEach((elem) => {
       if (
@@ -167,6 +181,7 @@ const DistrictHeadDashboard = () => {
         totalImagesSum += parseInt(elem.Total_Images) || 0;
       }
     });
+
 
     return {
       prevFilesSum,
@@ -206,6 +221,7 @@ const DistrictHeadDashboard = () => {
     };
     const locationName = selectedLocations;
 
+
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
       const apiUrl = locationName
@@ -213,6 +229,7 @@ const DistrictHeadDashboard = () => {
           .map((name) => `locationName=${name}`)
           .join("&")}`
         : `${API_URL}/csv`;
+
 
       axios
         .get(apiUrl, { responseType: "blob" })
@@ -226,6 +243,7 @@ const DistrictHeadDashboard = () => {
           console.error("Error in exporting data:", error);
         });
     };
+
 
     const fetchMonthImageGraphData = () => {
       const params = {
@@ -257,6 +275,7 @@ const DistrictHeadDashboard = () => {
         });
     };
 
+
     const fetchTableData = () => {
       axios
         .get(`${API_URL}/tabularData`)
@@ -267,8 +286,10 @@ const DistrictHeadDashboard = () => {
         .catch((error) => console.error(error));
     };
 
+
     const fetchAllGraphImageData = (selectedLocations) => {
       let apiUrl = `${API_URL}/graph10`;
+
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -276,6 +297,7 @@ const DistrictHeadDashboard = () => {
           .join("&");
         apiUrl += `?${locationQuery}`;
       }
+
 
       axios
         .get(apiUrl)
@@ -306,21 +328,26 @@ const DistrictHeadDashboard = () => {
     };
 
 
+
     fetchMonthImageGraphData(locationName);
     fetchAllGraphImageData(locationName);
     fetchTableData();
     fetchExportCsvFile();
 
+
   }, [selectedLocations]);
+
 
 
   const columnSums = calculateColumnSum();
   const isDistrictHeadUser =
     userLog && userLog.user_roles.includes("All District Head");
 
+
 if(!userLog){
   Navigate('/');
 }
+
 
   return (
     <>
@@ -356,6 +383,7 @@ if(!userLog){
                     borderRadius: "5px",
                     minHeight: "30px",
                   }}
+
 
                   contentEditable={true}
                   onClick={() => setShowLocation(!showLocation)}
@@ -402,7 +430,9 @@ if(!userLog){
                 )}
               </div>
 
+
              
+
 
               <div className="col-md-6"></div>
             </div>
@@ -490,6 +520,7 @@ if(!userLog){
                       </tr>
                     </thead>
 
+
                     <tbody style={{ color: "gray" }}>
                       {tableData &&
                         tableData.map((elem, index) => {
@@ -516,10 +547,12 @@ if(!userLog){
                           return null;
                         })}
 
+
                       <tr style={{ color: "black" }}>
                         <td colspan="2">
                           <strong>Total</strong>
                         </td>
+
 
                         <td>
                           <strong>{columnSums.prevFilesSum}</strong>
@@ -553,6 +586,7 @@ if(!userLog){
               </div>
             </div>
 
+
             <div className="row mt-2">
               <CCard>
                 <h4 className="ms-1">CUMULATIVE SCANNED TILL DATE</h4>
@@ -572,5 +606,6 @@ if(!userLog){
     </>
   );
 }
+
 
 export default DistrictHeadDashboard

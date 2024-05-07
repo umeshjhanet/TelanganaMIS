@@ -41,7 +41,7 @@ const Login = () => {
 
     // Send login request to backend
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await fetch(`http://localhost:5000/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -94,6 +94,7 @@ const Login = () => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       }}>
+       
         <div className='container-fluid'>
           <div className='row'>
             <div className='col-lg-5 col-md-6 col-sm-6'></div>

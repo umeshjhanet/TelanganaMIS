@@ -3,14 +3,17 @@ import Header from './Components/Header';
 import Footer from './Footer';
 import { API_URL } from './Api';
 
+
 const UploadDatabase = () => {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
 
+
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
+
 
     const handleSubmit = async () => {
         if (!file) {
@@ -18,11 +21,14 @@ const UploadDatabase = () => {
             return;
         }
 
+
         setUploading(true);
         setMessage('Uploading file...');
 
+
         const formData = new FormData();
         formData.append('file', file);
+
 
         try {
             const response = await fetch(`${API_URL}/uploadSql`, {
@@ -30,9 +36,11 @@ const UploadDatabase = () => {
                 body: formData,
             });
 
+
             if (!response.ok) {
                 throw new Error('Failed to upload file');
             }
+
 
             setMessage('File uploaded successfully');
         } catch (error) {
@@ -42,6 +50,7 @@ const UploadDatabase = () => {
             setUploading(false);
         }
     };
+
 
     return (
         <>
@@ -83,5 +92,6 @@ const UploadDatabase = () => {
         </>
     );
 };
+
 
 export default UploadDatabase;

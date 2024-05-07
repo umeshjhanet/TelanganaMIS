@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Router,Route,Navigate } from "react-router-dom";
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './Components/Header';
@@ -23,8 +23,6 @@ import ShortReport from './shortreport';
 
 
 const App = () => {
- 
-
   return (
     <React.StrictMode>
       <BrowserRouter>
