@@ -60,8 +60,8 @@ const GroupManager = () => {
     <Header/>
     <div className='container-fluid'>
         <div className='row'>
-            <div className='col-lg-2 col-md-2'></div>
-            <div className='col-lg-10 col-md-10'>
+            <div className='col-lg-2 col-md-0'></div>
+            <div className='col-lg-10 col-md-12'>
             <div
               className="card mt-3"
               style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
@@ -72,12 +72,12 @@ const GroupManager = () => {
             </div>
             <div className='user-form-card mt-3'>
                 <div className='row'>
-                    <div className='col-3'>
+                    <div className='col-lg-3 col-md-2'>
                         <button className='btn add-btn' onClick={handleOpenModal}>Add Group</button>
                     </div>
                     {isModalOpen && <AddGroupModal onClose={handleCloseModal} />}
-                    <div className='col-2'></div>
-                    <div className='col-5'>
+                    <div className='col-lg-2 col-md-2'></div>
+                    <div className='col-lg-5 col-md-6'>
                     <input
                   type='text'
                   style={{ width: '300px', height: '40px' }}

@@ -180,7 +180,7 @@ const Dashboard = () => {
     ],
   });
 
-  
+
   const random = () => Math.round(Math.random() * 100);
 
   useEffect(() => {
@@ -351,8 +351,8 @@ const Dashboard = () => {
       // Construct the API URL with multiple location names
       const apiUrl = locationName
         ? `${API_URL}/csv?${locationName
-            .map((name) => `locationName=${name}`)
-            .join("&")}`
+          .map((name) => `locationName=${name}`)
+          .join("&")}`
         : `${API_URL}/csv`;
 
       axios
@@ -778,17 +778,17 @@ const Dashboard = () => {
 
   const columnSums = calculateColumnSum();
 
-  if(!userLog){
+  if (!userLog) {
     navigate('/');
   }
-  
- 
-    return (
-      <>
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-2 col-md-2 "></div>
-            <div className="col-lg-10 col-md-10">
+
+
+  return (
+    <>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-2 col-md-0 "></div>
+          <div className="col-lg-10 col-md-12">
             <div className="row mt-2">
               <div
                 style={{ display: "flex", justifyContent: "space-between" }}
@@ -797,7 +797,7 @@ const Dashboard = () => {
                 <p
                   style={{
                     fontSize: "12px",
-                   color:'maroon',
+                    color: 'maroon',
                     textAlign: "right",
                   }}
                 >
@@ -806,7 +806,7 @@ const Dashboard = () => {
                 </p>
               </div>
             </div>
-              <div className="row  mt-2  search-report-card">
+            <div className="row  mt-2  search-report-card">
               <div className="col-md-4 col-sm-12">
                 <div
                   ref={dropdownRef}
@@ -851,7 +851,7 @@ const Dashboard = () => {
                       {tableData &&
                         tableData.map((item, index) => (
                           <div key={index}>
-                          <p
+                            <p
                               onClick={() => handleLocation(item.LocationName)}
                             >
                               {item.LocationName}
@@ -863,269 +863,270 @@ const Dashboard = () => {
                 )}
               </div>
 
-               
 
-                <div className="col-md-6"></div>
-              </div>
-              <div className="row mt-2">
-                <div className="card">
-                  <h4 className="ms-1">SCANNING REPORT OF LAST 30 DAYS</h4>
-                  <h5 className="ms-1">All Location: Images</h5>
-                  <CCard>
-                    <CCardBody>
-                      <CChartBar data={monthImage} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                  <div>
-                    {scannedData && (
-                      <BarChart
-                        className="scanned-chart"
-                        xAxis={scannedData.xAxis}
-                        series={scannedData.series}
-                        width={scannedData.width}
-                        height={scannedData.height}
-                      />
-                    )}
-                  </div>
+
+              <div className="col-md-6"></div>
+            </div>
+            <div className="row mt-2">
+              <div className="card">
+                <h4 className="ms-1">SCANNING REPORT OF LAST 30 DAYS</h4>
+                <h5 className="ms-1">All Location: Images</h5>
+                <CCard>
+                  <CCardBody>
+                    <CChartBar data={monthImage} labels="months" />
+                  </CCardBody>
+                </CCard>
+                <div>
+                  {scannedData && (
+                    <BarChart
+                      className="scanned-chart"
+                      xAxis={scannedData.xAxis}
+                      series={scannedData.series}
+                      width={scannedData.width}
+                      height={scannedData.height}
+                    />
+                  )}
                 </div>
               </div>
-              <div className="row mt-2">
-                <div className="table-card">
-                  <div
-                    className="row"
-                    style={{
-                      padding: "5px",
-                      backgroundColor: "#4BC0C0",
-                      paddingTop: "15px",
-                    }}
-                  >
-                    <div className="col-10">
-                      <h6 className="text-center" style={{ color: "white" }}>
-                        PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE
-                        RECORDS FOR DISTRICT COURT OF UTTAR PRADESH
-                      </h6>
+            </div>
+            <div className="row mt-2">
+              <div className="table-card">
+                <div
+                  className="row"
+                  style={{
+                    padding: "5px",
+                    backgroundColor: "#4BC0C0",
+                    paddingTop: "15px",
+                  }}
+                >
+                  <div className="col-10">
+                    <h6 className="text-center" style={{ color: "white" }}>
+                      PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE
+                      RECORDS FOR DISTRICT COURT OF UTTAR PRADESH
+                    </h6>
+                  </div>
+                  <div className="col-2">
+                    <h6 style={{ color: "white" }} onClick={handleExport}>
+                      {" "}
+                      <MdFileDownload style={{ fontSize: "20px" }} />
+                      Export CSV
+                    </h6>
+                  </div>
+                  {showConfirmation && (
+                    <div className="confirmation-dialog">
+                      <div className="confirmation-content">
+                        <p className="fw-bold">Are you sure you want to export the CSV file?</p>
+                        <button className="btn btn-success mt-3 ms-5" onClick={handleConfirmedExport}>Yes</button>
+                        <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
+                      </div>
                     </div>
-                    <div className="col-2">
-                      <h6 style={{ color: "white" }} onClick={handleExport}>
-                        {" "}
-                        <MdFileDownload style={{ fontSize: "20px" }} />
-                        Export CSV
-                      </h6>
-                    </div>
-                    {showConfirmation && (
-        <div className="confirmation-dialog">
-          <div className="confirmation-content">
-            <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-            <button className="btn btn-success mt-3 ms-5" onClick={handleConfirmedExport}>Yes</button>
-            <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
-          </div>
-        </div>
-      )}
-                  </div>
-                  <div
-                    className="row mt-5 ms-2 me-2"
-                    style={{ overflowX: "auto" }}
-                  >
-                    <table class="table table-hover table-bordered table-responsive data-table">
-                      <thead style={{ color: "#4BC0C0" }}>
-                        <tr>
-                          <th rowspan="2">Sr. No.</th>
-                          <th rowspan="2">Location</th>
-                          <th colspan="2">Scanned ({formattedPreviousDate})</th>
-                          <th colspan="2">
-                            Scanned ({formattedYesterdayDate})
-                          </th>
-                          <th colspan="2">Scanned ({formattedCurrentDate})</th>
-                          <th colspan="2">Cumulative till date</th>
-                          <th rowspan="2">Remarks</th>
-                        </tr>
-                        <tr>
-                          <th>Files</th>
-                          <th>Images</th>
-                          <th>Files</th>
-                          <th>Images</th>
-                          <th>Files</th>
-                          <th>Images</th>
-                          <th>Files</th>
-                          <th>Images</th>
-                        </tr>
-                      </thead>
+                  )}
+                </div>
+                <div
+                  className="row mt-5 ms-2 me-2"
+                  style={{ overflowX: "auto" }}
+                >
+                  <table class="table table-hover table-bordered table-responsive data-table">
+                    <thead style={{ color: "#4BC0C0" }}>
+                      <tr>
+                        <th rowspan="2">Sr. No.</th>
+                        <th rowspan="2">Location</th>
+                        <th colspan="2">Scanned ({formattedPreviousDate})</th>
+                        <th colspan="2">
+                          Scanned ({formattedYesterdayDate})
+                        </th>
+                        <th colspan="2">Scanned ({formattedCurrentDate})</th>
+                        <th colspan="2">Cumulative till date</th>
+                        <th rowspan="2">Remarks</th>
+                      </tr>
+                      <tr>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                      </tr>
+                    </thead>
 
-                      <tbody style={{ color: "gray" }}>
-                        {tableData &&
-                          tableData.map((elem, index) => {
-                            if (
-                              selectedLocations.length === 0 ||
-                              selectedLocations.includes(elem.LocationName)
-                            ) {
-                              return (
-                                <tr key={index}>
-                                  <td>{index + 1}</td>
-                                  <td>{elem.LocationName}</td>
-                                  <td>{elem.Prev_Files || "0"}</td>
-                                  <td>{elem.Prev_Images || "0"}</td>
-                                  <td>{elem.Yes_Files || "0"}</td>
-                                  <td>{elem.Yes_Images || "0"}</td>
-                                  <td>{elem.Today_Files || "0"}</td>
-                                  <td>{elem.Today_Images || "0"}</td>
-                                  <td>{elem.Total_Files || "0"}</td>
-                                  <td>{elem.Total_Images || "0"}</td>
-                                  <td></td>
-                                </tr>
-                              );
-                            }
-                            return null;
-                          })}
+                    <tbody style={{ color: "gray" }}>
+  {tableData &&
+    tableData.map((elem, index) => {
+      if (
+        selectedLocations.length === 0 ||
+        selectedLocations.includes(elem.LocationName)
+      ) {
+        return (
+          <tr key={index}>
+            <td>{index + 1}</td>
+            <td>{elem.LocationName}</td>
+            <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
+            <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
+            <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
+            <td>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
+            <td>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
+            <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
+            <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
+            <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
+            <td></td>
+          </tr>
+        );
+      }
+      return null;
+    })}
 
-                        <tr style={{ color: "black" }}>
-                          <td colspan="2">
-                            <strong>Total</strong>
-                          </td>
+  <tr style={{ color: "black" }}>
+    <td colspan="2">
+      <strong>Total</strong>
+    </td>
 
-                          <td>
-                            <strong>{columnSums.prevFilesSum}</strong>
-                          </td>
-                          <td>
-                            <strong>{columnSums.prevImagesSum}</strong>
-                          </td>
-                          <td>
-                            <strong>{columnSums.yesFilesSum}</strong>
-                          </td>
-                          <td>
-                            <strong>{columnSums.yesImagesSum}</strong>
-                          </td>
-                          <td>
-                            <strong>{columnSums.todayFilesSum}</strong>
-                          </td>
-                          <td>
-                            <strong>{columnSums.todayImagesSum}</strong>
-                          </td>
-                          <td>
-                            <strong>{columnSums.totalFilesSum}</strong>
-                          </td>
-                          <td>
-                            <strong>{columnSums.totalImagesSum}</strong>
-                          </td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+    <td>
+      <strong>{isNaN(parseInt(columnSums.prevFilesSum)) ? 0 : parseInt(columnSums.prevFilesSum).toLocaleString()}</strong>
+    </td>
+    <td>
+      <strong>{isNaN(parseInt(columnSums.prevImagesSum)) ? 0 : parseInt(columnSums.prevImagesSum).toLocaleString()}</strong>
+    </td>
+    <td>
+      <strong>{isNaN(parseInt(columnSums.yesFilesSum)) ? 0 : parseInt(columnSums.yesFilesSum).toLocaleString()}</strong>
+    </td>
+    <td>
+      <strong>{isNaN(parseInt(columnSums.yesImagesSum)) ? 0 : parseInt(columnSums.yesImagesSum).toLocaleString()}</strong>
+    </td>
+    <td>
+      <strong>{isNaN(parseInt(columnSums.todayFilesSum)) ? 0 : parseInt(columnSums.todayFilesSum).toLocaleString()}</strong>
+    </td>
+    <td>
+      <strong>{isNaN(parseInt(columnSums.todayImagesSum)) ? 0 : parseInt(columnSums.todayImagesSum).toLocaleString()}</strong>
+    </td>
+    <td>
+      <strong>{isNaN(parseInt(columnSums.totalFilesSum)) ? 0 : parseInt(columnSums.totalFilesSum).toLocaleString()}</strong>
+    </td>
+    <td>
+      <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
+    </td>
+    <td></td>
+  </tr>
+</tbody>
+
+                  </table>
                 </div>
               </div>
+            </div>
 
-              <div className="row">
-                <div className="col-md-6 col-sm-12">
-                  <CCard
-                    className="mb-4"
-                    style={{ marginLeft: "0px", marginRight: "0px" }}
-                  >
-                    <h4 className="ms-1">Cumulative Report</h4>
-                    <h5 className="ms-1">All Location: Files</h5>
-                    <CCardBody>
-                      <CChartBar data={barFile} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                </div>
-                <div className="col-md-6 col-sm-12">
-                  <CCard
-                    className="mb-4"
-                    style={{ marginLeft: "0px", marginRight: "0px" }}
-                  >
-                    <h4 className="ms-1">Cumulative Report</h4>
-                    <h5 className="ms-1">All Location: Images</h5>
-                    <CCardBody>
-                      <CChartBar data={barImage} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 col-sm-12">
-                  <CCard
-                    className="mb-4"
-                    style={{ marginLeft: "0px", marginRight: "0px" }}
-                  >
-                    <h4 className="ms-1">Case Type Report</h4>
-                    <h5 className="ms-1">Civil Cases</h5>
-                    <CCardBody>
-                      <CChartBar data={civilCase} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                </div>
-                <div className="col-md-6 col-sm-12">
-                  <CCard
-                    className="mb-4"
-                    style={{ marginLeft: "0px", marginRight: "0px" }}
-                  >
-                    <h4 className="ms-1">Case Type Report</h4>
-                    <h5 className="ms-1">Criminal Cases</h5>
-                    <CCardBody>
-                      <CChartBar data={criminalCase} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 col-sm-12">
-                  <CCard
-                    className="mb-4"
-                    style={{ marginLeft: "0px", marginRight: "0px" }}
-                  >
-                    <h4 className="ms-1">
-                      PRODUCTION REPORT FOR ({formattedYesterdayDate})
-                    </h4>
-                    <h5 className="ms-1">All Location: Files</h5>
-                    <CCardBody>
-                      <CChartBar data={todayFile} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                </div>
-                <div className="col-md-6 col-sm-12">
-                  <CCard
-                    className="mb-4"
-                    style={{ marginLeft: "0px", marginRight: "0px" }}
-                  >
-                    <h4 className="ms-1">
-                      PRODUCTION REPORT FOR ({formattedYesterdayDate})
-                    </h4>
-                    <h5 className="ms-1">All Location: Images</h5>
-                    <CCardBody>
-                      <CChartBar data={todayImage} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 col-sm-12">
-                  <CCard
-                    className="mb-4"
-                    style={{ marginLeft: "0px", marginRight: "0px" }}
-                  >
-                    <h4 className="ms-1">Weekly Report</h4>
-                    <h5 className="ms-1">All Location: Files</h5>
-                    <CCardBody>
-                      <CChartDoughnut data={weekFile} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                </div>
-                <div className="col-md-6 col-sm-12">
-                  <CCard
-                    className="mb-4"
-                    style={{ marginLeft: "0px", marginRight: "0px" }}
-                  >
-                    <h4 className="ms-1">Weekly Report</h4>
-                    <h5 className="ms-1">All Location: Images</h5>
-                    <CCardBody>
-                      <CChartDoughnut data={weekImage} labels="months" />
-                    </CCardBody>
-                  </CCard>
-                </div>
-              </div>
-
-              <div className="row">
+            <div className="row">
               <div className="col-md-6 col-sm-12">
-              <CCard>
+                <CCard
+                  className="mb-4"
+                  style={{ marginLeft: "0px", marginRight: "0px" }}
+                >
+                  <h4 className="ms-1">Cumulative Report</h4>
+                  <h5 className="ms-1">All Location: Files</h5>
+                  <CCardBody>
+                    <CChartBar data={barFile} labels="months" />
+                  </CCardBody>
+                </CCard>
+              </div>
+              <div className="col-md-6 col-sm-12">
+                <CCard
+                  className="mb-4"
+                  style={{ marginLeft: "0px", marginRight: "0px" }}
+                >
+                  <h4 className="ms-1">Cumulative Report</h4>
+                  <h5 className="ms-1">All Location: Images</h5>
+                  <CCardBody>
+                    <CChartBar data={barImage} labels="months" />
+                  </CCardBody>
+                </CCard>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-6 col-sm-12">
+                <CCard
+                  className="mb-4"
+                  style={{ marginLeft: "0px", marginRight: "0px" }}
+                >
+                  <h4 className="ms-1">Case Type Report</h4>
+                  <h5 className="ms-1">Civil Cases</h5>
+                  <CCardBody>
+                    <CChartBar data={civilCase} labels="months" />
+                  </CCardBody>
+                </CCard>
+              </div>
+              <div className="col-md-6 col-sm-12">
+                <CCard
+                  className="mb-4"
+                  style={{ marginLeft: "0px", marginRight: "0px" }}
+                >
+                  <h4 className="ms-1">Case Type Report</h4>
+                  <h5 className="ms-1">Criminal Cases</h5>
+                  <CCardBody>
+                    <CChartBar data={criminalCase} labels="months" />
+                  </CCardBody>
+                </CCard>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-6 col-sm-12">
+                <CCard
+                  className="mb-4"
+                  style={{ marginLeft: "0px", marginRight: "0px" }}
+                >
+                  <h4 className="ms-1">
+                    PRODUCTION REPORT FOR ({formattedYesterdayDate})
+                  </h4>
+                  <h5 className="ms-1">All Location: Files</h5>
+                  <CCardBody>
+                    <CChartBar data={todayFile} labels="months" />
+                  </CCardBody>
+                </CCard>
+              </div>
+              <div className="col-md-6 col-sm-12">
+                <CCard
+                  className="mb-4"
+                  style={{ marginLeft: "0px", marginRight: "0px" }}
+                >
+                  <h4 className="ms-1">
+                    PRODUCTION REPORT FOR ({formattedYesterdayDate})
+                  </h4>
+                  <h5 className="ms-1">All Location: Images</h5>
+                  <CCardBody>
+                    <CChartBar data={todayImage} labels="months" />
+                  </CCardBody>
+                </CCard>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-6 col-sm-12">
+                <CCard
+                  className="mb-4"
+                  style={{ marginLeft: "0px", marginRight: "0px" }}
+                >
+                  <h4 className="ms-1">Weekly Report</h4>
+                  <h5 className="ms-1">All Location: Files</h5>
+                  <CCardBody>
+                    <CChartDoughnut data={weekFile} labels="months" />
+                  </CCardBody>
+                </CCard>
+              </div>
+              <div className="col-md-6 col-sm-12">
+                <CCard
+                  className="mb-4"
+                  style={{ marginLeft: "0px", marginRight: "0px" }}
+                >
+                  <h4 className="ms-1">Weekly Report</h4>
+                  <h5 className="ms-1">All Location: Images</h5>
+                  <CCardBody>
+                    <CChartDoughnut data={weekImage} labels="months" />
+                  </CCardBody>
+                </CCard>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-md-6 col-sm-12">
+                <CCard>
                   <h4 className="ms-1">
                     SCANNED REPORT FOR ({formattedYesterdayDate})
                   </h4>
@@ -1137,8 +1138,8 @@ const Dashboard = () => {
                     ></CChartBar>
                   </CCardBody>
                 </CCard>
-                </div>
-                <div className="col-md-6 col-sm-12">
+              </div>
+              <div className="col-md-6 col-sm-12">
                 <CCard>
                   <h4 className="ms-1">CUMULATIVE SCANNED TILL DATE</h4>
                   <h5 className="ms-1">All Location: Images</h5>
@@ -1149,18 +1150,18 @@ const Dashboard = () => {
                     ></CChartBar>
                   </CCardBody>
                 </CCard>
-                </div>
               </div>
-              
             </div>
+
           </div>
         </div>
-      </>
-    );
-  };
+      </div>
+    </>
+  );
+};
 
 
-  
+
 
 
 export default Dashboard;

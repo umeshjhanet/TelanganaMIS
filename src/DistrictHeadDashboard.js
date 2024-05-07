@@ -344,9 +344,9 @@ const DistrictHeadDashboard = () => {
     userLog && userLog.user_roles.includes("All District Head");
 
 
-if(!userLog){
-  Navigate('/');
-}
+  if (!userLog) {
+    Navigate('/');
+  }
 
 
   return (
@@ -363,7 +363,7 @@ if(!userLog){
                 <p
                   style={{
                     fontSize: "12px",
-                   color:'maroon',
+                    color: 'maroon',
                     textAlign: "right",
                   }}
                 >
@@ -373,7 +373,7 @@ if(!userLog){
               </div>
             </div>
             <div className="row search-report-card">
-            <div className="col-md-4 col-sm-12">
+              <div className="col-md-4 col-sm-12">
                 <div
                   ref={dropdownRef}
                   className="search-bar "
@@ -431,7 +431,7 @@ if(!userLog){
               </div>
 
 
-             
+
 
 
               <div className="col-md-6"></div>
@@ -532,14 +532,14 @@ if(!userLog){
                               <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>{elem.LocationName}</td>
-                                <td>{elem.Prev_Files || "0"}</td>
-                                <td>{elem.Prev_Images || "0"}</td>
-                                <td>{elem.Yes_Files || "0"}</td>
-                                <td>{elem.Yes_Images || "0"}</td>
-                                <td>{elem.Today_Files || "0"}</td>
-                                <td>{elem.Today_Images || "0"}</td>
-                                <td>{elem.Total_Files || "0"}</td>
-                                <td>{elem.Total_Images || "0"}</td>
+                                <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
                                 <td></td>
                               </tr>
                             );
@@ -547,40 +547,39 @@ if(!userLog){
                           return null;
                         })}
 
-
                       <tr style={{ color: "black" }}>
                         <td colspan="2">
                           <strong>Total</strong>
                         </td>
 
-
                         <td>
-                          <strong>{columnSums.prevFilesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.prevFilesSum)) ? 0 : parseInt(columnSums.prevFilesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.prevImagesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.prevImagesSum)) ? 0 : parseInt(columnSums.prevImagesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.yesFilesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.yesFilesSum)) ? 0 : parseInt(columnSums.yesFilesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.yesImagesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.yesImagesSum)) ? 0 : parseInt(columnSums.yesImagesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.todayFilesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.todayFilesSum)) ? 0 : parseInt(columnSums.todayFilesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.todayImagesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.todayImagesSum)) ? 0 : parseInt(columnSums.todayImagesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.totalFilesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.totalFilesSum)) ? 0 : parseInt(columnSums.totalFilesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.totalImagesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
                         </td>
                         <td></td>
                       </tr>
                     </tbody>
+
                   </table>
                 </div>
               </div>
