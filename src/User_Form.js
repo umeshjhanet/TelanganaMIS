@@ -19,7 +19,7 @@ const User_Form = () => {
   const [storageDropdown, setStorageDropdown] = useState();
   const [reportingDropdown, setReportingDropdown] = useState();
   const [selectedLocationId, setSelectedLocationId] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocations, setSelectedLocations] = useState([]);
   const [showLocation, setShowLocation] = useState(false);
   const [selectedPrivilegeId, setSelectedPrivilegeId] = useState('');
   const [selectedPrivilege, setSelectedPrivilege] = useState(null);
@@ -118,7 +118,7 @@ const User_Form = () => {
           setSelectedGroupId('');
           break;
         case 'selectedLocation':
-          setSelectedLocation(null);
+          setSelectedLocations(null);
           setSelectedLocationId('');
           break;
         case 'selectedPrivilege':
@@ -198,13 +198,17 @@ const User_Form = () => {
   }
 
   const handleSelectLocation = (id, name) => {
-    setSelectedLocation(name);
-    setSelectedLocationId(parseInt(id));
-    setShowLocation(!showLocation);
-    setLocationDropdown(false);
+    const index = selectedLocations.findIndex(loc => loc.id === id);
+    if (index === -1) {
+      setSelectedLocations([...selectedLocations, { id, name }]);
+    } else {
+      const updatedLocations = [...selectedLocations];
+      updatedLocations.splice(index, 1);
+      setSelectedLocations(updatedLocations);
+    }
   };
-  
-  
+
+
   const handleSelectGroup = (id, name) => {
     setSelectedGroup(name);
     setSelectedGroupId(parseInt(id));
@@ -241,9 +245,11 @@ const User_Form = () => {
       setPasswordMatch(false);
       return;
     }
-    toast.info("Creating user, please wait...", { autoClose: false });
+    const locationIds = selectedLocations.map(loc => loc.id);
+    const updatedFormData = { ...formData, locations: locationIds };
+    toast.wait("Creating user, please wait...", { autoClose: false });
     try {
-      const response = await axios.post(`${API_URL}/createuser`, formData);
+      const response = await axios.post(`${API_URL}/createuser`, updatedFormData);
       console.log("Post created:", response.data);
       toast.success("User created successfully");
     } catch (error) {
@@ -255,35 +261,10 @@ const User_Form = () => {
       }
     }
   }
-  // const handleFormSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const isValid = validateForm();
-  //   if (!isValid) {
-  //     return;
-  //   }
-  
-  //   if (formData.password !== formData.confirmPassword) {
-  //     setPasswordMatch(false);
-  //     return;
-  //   }
-  
-  //   // If no location is selected, send all location IDs
-  //   const locationsToSend = formData.locations.length === 0 ? location.map(loc => loc.LocationID) : formData.locations;
-  
-  //   try {
-  //     const response = await axios.post(`${API_URL}/createuser`, { ...formData, locations: locationsToSend });
-  //     console.log("Post created:", response.data);
-  //     toast.success("User created successfully");
-  //   } catch (error) {
-  //     if (error.response && error.response.status === 409) {
-  //       alert("error creating post");
-  //     } else {
-  //       console.error("Error creating post:", error);
-  //       alert("Email already exists");
-  //     }
-  //   }
-  // };
-  
+  const handleRemoveLocation = (indexToRemove) => {
+    setSelectedLocations(prevLocations => prevLocations.filter((_, index) => index !== indexToRemove));
+  };
+
 
   const validateForm = () => {
     let valid = true;
@@ -347,8 +328,8 @@ const User_Form = () => {
       const [id, locationName] = value.split('|'); // Assuming value is in the format "id|name"
       handleSelectLocation(id, locationName);
     } else {
-     
-    setFormData({ ...formData, [name]: value, group_id: selectedGroupId, locations: selectedLocationId, role_id: selectedPrivilegeId, sl_id: selectedStorageId, user_id: selectedReportingId });
+
+      setFormData({ ...formData, [name]: value, group_id: selectedGroupId, locations: selectedLocationId, role_id: selectedPrivilegeId, sl_id: selectedStorageId, user_id: selectedReportingId });
     }
   }
 
@@ -358,8 +339,8 @@ const User_Form = () => {
       <ToastContainer />
       <div className='container-fluid'>
         <div className='row'>
-          <div className='col-lg-2 col-md-2'></div>
-          <div className='col-lg-10 col-md-10'>
+          <div className='col-lg-2 col-md-0'></div>
+          <div className='col-lg-10 col-md-12'>
             <div
               className="card mt-3"
               style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
@@ -374,26 +355,26 @@ const User_Form = () => {
                   <div className='user-form-card'>
                     <label>First Name<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='text' placeholder='Enter First Name' name="first_name" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
-                    {firstNameError && <span style={{ color: 'red' }}>First name is required<br/></span>}
+                    {firstNameError && <span style={{ color: 'red' }}>First name is required<br /></span>}
                     <label className='mt-1'>Middle Name</label><br />
                     <input type='text' placeholder='Enter Middle Name' name="middle_name" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     <label className='mt-1'>Last Name<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='text' placeholder='Enter Last Name' name="last_name" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
-                    {lastNameError && <span style={{ color: 'red' }}>Last name is required<br/></span>}
+                    {lastNameError && <span style={{ color: 'red' }}>Last name is required<br /></span>}
                     <label className='mt-1'>Email Address<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='email' placeholder='Enter Email Id' name="user_email_id" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
-                    {emailError && <span style={{ color: 'red' }}>Email ID is required<br/></span>}
+                    {emailError && <span style={{ color: 'red' }}>Email ID is required<br /></span>}
                     <label className='mt-1'>Employee Id</label><br />
                     <input type='text' placeholder='Enter Employee Id' name="emp_id" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     <label className='mt-1'>Mobile No.<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='tel' placeholder='Enter Mobile No.' name="phone_no" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
-                    {phoneNoError && <span style={{ color: 'red' }}>Mobile no. is required<br/></span>}
+                    {phoneNoError && <span style={{ color: 'red' }}>Mobile no. is required<br /></span>}
                     <label className='mt-1'>Password<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='password' placeholder='Enter Password' name="password" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
-                    {passwordError && <span style={{ color: 'red' }}>Password is required<br/></span>}
+                    {passwordError && <span style={{ color: 'red' }}>Password is required<br /></span>}
                     <label className='mt-1'>Confirm Password<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='password' placeholder='Confirm Password' name='confirmPassword' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
-                    {confirmPasswordError && <span style={{ color: 'red' }}>Confirm Password is required<br/></span>}
+                    {confirmPasswordError && <span style={{ color: 'red' }}>Confirm Password is required<br /></span>}
                     <label className='mt-1'>User Type</label>
                     <select name="user_type" id="usertype" class="form-control select2" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}>
                       <option value="0" selected>Select user type</option>
@@ -407,7 +388,7 @@ const User_Form = () => {
                   <div className='user-form-card'>
                     <label>Designation<span style={{ color: 'red' }}>*</span></label><br />
                     <input type='text' placeholder='Select Designation' name="designation" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
-                    {designationError && <span style={{ color: 'red' }}>Designation is required<br/></span>}
+                    {designationError && <span style={{ color: 'red' }}>Designation is required<br /></span>}
                     <label className='mt-1'>Select Group<span style={{ color: 'red' }}>*</span></label><br />
                     <input
                       ref={groupDropdownRef}
@@ -420,8 +401,8 @@ const User_Form = () => {
                       onChange={handleInputChange}
                       onKeyDown={handleKeyDown}
                       name="selectedGroup"
-                    />  
-                    {groupError && <span style={{ color: 'red' }}>Group is required<br/></span>}                 
+                    />
+                    {groupError && <span style={{ color: 'red' }}>Group is required<br /></span>}
                     {groupDropdown && (
                       <div className='group-dropdown' >
                         {group && group.map((elem, index) => (
@@ -432,7 +413,26 @@ const User_Form = () => {
                       </div>
                     )}
                     <label className='mt-1'>Select Location</label><br />
-                    <input ref={locationDropdownRef} type='text' placeholder='Select Location' className='form-control' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedLocation || ''} onClick={handleLocationDropdown} onChange={handleInputChange} onKeyDown={handleKeyDown} />
+                    <div>
+                      {selectedLocations.map((location, index) => (
+                        <span key={index} style={{color:'#107393'}}>
+                          {location.name}
+                          <button className='close-btn' onClick={() => handleRemoveLocation(index)}>&times;</button> {/* Delete button */}
+                        </span>
+                      ))}
+                    </div>
+                    <input
+                      ref={locationDropdownRef}
+                      type="text"
+                      placeholder="Select Location"
+                      className="form-control"
+                      style={{ width: "100%", height: "35px", border: "1px solid lightgray", borderRadius: "2px" }}
+                      
+                      onClick={handleLocationDropdown}
+                      onChange={handleInputChange}
+                      onKeyDown={handleKeyDown}
+                    />
+                    {/* <input ref={locationDropdownRef} type='text' placeholder='Select Location' className='form-control' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedLocation || ''} onClick={handleLocationDropdown} onChange={handleInputChange} onKeyDown={handleKeyDown} /> */}
                     {locationDropdown && (
                       <div className='group-dropdown'>
                         {location && location.map((elem, index) => (
@@ -445,7 +445,7 @@ const User_Form = () => {
 
                     <label className='mt-1'>Select User's Privilege<span style={{ color: 'red' }}>*</span></label><br />
                     <input ref={privilegeDropdownRef} type='text' placeholder='Select Users Privilege' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedPrivilege || ''} onClick={handlePrivilegeDropdown} onChange={handleInputChange} onKeyDown={handleKeyDown} /><br />
-                    {privilegeError && <span style={{ color: 'red' }}>Privilege is required<br/></span>}
+                    {privilegeError && <span style={{ color: 'red' }}>Privilege is required<br /></span>}
                     {privilegeDropdown && (
                       <div className='group-dropdown'>
                         {privilege && privilege.map((elem, index) => (

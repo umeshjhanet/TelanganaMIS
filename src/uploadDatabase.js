@@ -75,8 +75,8 @@ const UploadDatabase = () => {
             <ToastContainer />
             <div className='container-fluid'>
                 <div className='row'>
-                    <div className='col-lg-2 col-md-2'></div>
-                    <div className='col-lg-10 col-md-10'>
+                    <div className='col-lg-2 col-md-0'></div>
+                    <div className='col-lg-10 col-md-12'>
                         <div className="card mt-3" style={{ padding: "5px", backgroundColor: "#4BC0C0" }}>
                             <h6 className="" style={{ color: "white" }}>
                                 Store Management / Upload Document

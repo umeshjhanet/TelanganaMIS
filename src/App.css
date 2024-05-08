@@ -32,6 +32,7 @@ body {
 }
 
 
+
 .App {
   text-align: center;
 }
@@ -39,6 +40,42 @@ body {
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+.modal-group {
+  display: block; /* Hide modal by default */
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+.modal-content-group {
+  background-color: #fefefe;
+  margin: 10% auto; /* Center modal vertically and horizontally */
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 40%;
+  max-width: 800px; /* Maximum width of the modal */
+}
+.modal-content-group
+.close {
+  color: #aaa;
+  position: absolute; /* Position relative to the modal content */
+  top: 0px; /* Adjust top position */
+  right: 10px; /* Adjust right position */
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /* Modal container */
@@ -66,9 +103,12 @@ body {
 }
 
 /* Close button */
+/* Close button */
 .close {
   color: #aaa;
-  float: right;
+  position: absolute; /* Position relative to the modal content */
+  top: 0px; /* Adjust top position */
+  right: 10px; /* Adjust right position */
   font-size: 28px;
   font-weight: bold;
 }
@@ -78,6 +118,14 @@ body {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+.close-btn {
+  color: #107393;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  background-color: white;
+  margin-bottom: 5px;
 }
 
 
@@ -343,7 +391,7 @@ input[type="submit"]:hover {
   border-radius: 4px;
 }
 .search-report-card {
-  height: 100px;
+  height: 80px;
   background-color: white;
   padding: 20px;
   border-top: 4px solid #4BC0C0;

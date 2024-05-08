@@ -27,7 +27,7 @@ const AddGroupModal = ({onClose}) => {
     <div className="modal">
     <div className="modal-content">
       <span className="close" onClick={onClose}>&times;</span>
-      <input type='text' placeholder='Enter Group Name' onChange={handleInputChange} />
+      <input type='text' className='mt-5' placeholder='Enter Group Name' style={{width:'300px'}} onChange={handleInputChange} />
       <button type='submit' className='mt-1 btn search-btn' onClick={handleSubmit} >Submit</button>
       </div>
       </div>

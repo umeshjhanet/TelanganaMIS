@@ -55,12 +55,12 @@ const Login = () => {
         localStorage.setItem('user', JSON.stringify(data));
         navigate('/dashboard');
       } else if (response.status === 401) {
-        setErrorMessages({ username: errors.username }); // Invalid username or email
+        setErrorMessages({ password: errors.password }); // Invalid username or email
       } else if (response.status === 403) {
         setErrorMessages({ password: errors.password });
          // Incorrect password
       } else if (response.status === 404) {
-        setErrorMessages({ password: errors.username });
+        setErrorMessages({ username: errors.username });
       }
       else {
         setError("An unexpected error occurred. Please try again later.");
