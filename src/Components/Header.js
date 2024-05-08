@@ -14,6 +14,7 @@ import { RiUserFill } from "react-icons/ri";
 import { HiMiniUserGroup, HiMiniUserPlus } from "react-icons/hi2";
 import { MdUpload } from "react-icons/md";
 import axios from 'axios';
+import { API_URL } from '../Api';
 
 const Header = () => {
   const [showSideBar, setShowSideBar] = useState(false);
@@ -61,7 +62,7 @@ const Header = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/user_master");
+        const response = await axios.get(`${API_URL}/user_master`);
         setUser(response.data);
   
         // Log the entire response data to inspect its structure

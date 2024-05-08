@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import Header from './Components/Header';
 import Footer from './Footer';
 import { API_URL } from './Api';
-
+import { ToastContainer, toast } from 'react-toastify';
 
 const UploadDatabase = () => {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
 
+    const userLog = JSON.parse(localStorage.getItem("user"));
+  console.log("User's Info", userLog);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -22,8 +24,23 @@ const UploadDatabase = () => {
         }
 
 
+        
+        // setMessage('Uploading file...');
+        if (!userLog || !userLog.locations) {
+            setMessage('User location information not available');
+            return;
+        }
+    
+        // Extract location code from the filename
+        const locationCodeFromFilename = file.name.substring(9, 12); // Assuming location code is characters 9 to 11 (0-based index) after the date
+    
+        // Compare location codes
+        if (userLog.locations !== locationCodeFromFilename) {
+           toast.success('You are not authorized to upload this file');
+            return;
+        }
+    
         setUploading(true);
-        setMessage('Uploading file...');
 
 
         const formData = new FormData();
@@ -42,7 +59,7 @@ const UploadDatabase = () => {
             }
 
 
-            setMessage('File uploaded successfully');
+            toast.success("File Uploaded successfully");
         } catch (error) {
             console.error('Error uploading file:', error);
             setMessage('Error uploading file');
@@ -55,6 +72,7 @@ const UploadDatabase = () => {
     return (
         <>
             <Header />
+            <ToastContainer />
             <div className='container-fluid'>
                 <div className='row'>
                     <div className='col-lg-2 col-md-2'></div>

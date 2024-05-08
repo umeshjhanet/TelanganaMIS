@@ -335,18 +335,7 @@ const User_Form = () => {
     } else {
       setDesignationError(false);
     }
-    if (!formData.group) {
-      setGroupError(true);
-      valid = false;
-    } else {
-      setGroupError(false);
-    }
-    if (!formData.privilege) {
-      setPrivilegeError(true);
-      valid = false;
-    } else {
-      setPrivilegeError(false);
-    }
+   
 
     return valid;
   }

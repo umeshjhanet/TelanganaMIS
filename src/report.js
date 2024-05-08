@@ -27,6 +27,8 @@ const Report = () => {
   const dropdownRef = useRef(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showConfirmationBox,setShowConfirmationBox]=useState(false);
+  const [totalLocations, setTotalLocations] = useState(0);
+
   
 
   useEffect(() => {
@@ -205,6 +207,7 @@ const Report = () => {
         console.log("API Response:", response.data); // Log the API response
         setReport(response.data);
         setIsLoading(false);
+        updateTotalLocations(response.data);
       } catch (error) {
         console.error("Error fetching report data:", error);
         setError("Error fetching report data. Please try again.");
@@ -271,6 +274,11 @@ const Report = () => {
     fetchSummaryLocationData();
 
   }, [selectedLocations, endDate]);
+
+  const updateTotalLocations = (data) => {
+    const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
+    setTotalLocations(uniqueLocations.length);
+  };
 
 
   return (
@@ -1059,7 +1067,7 @@ const Report = () => {
                   className="row mt-3 ms-2 me-2"
                   style={{ overflowX: "auto" }}
                 >
-                  <h5 className="mt-1 mb-2">Total Locations: 61</h5>
+                  <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
                   <table class="table table-hover table-bordered table-responsive table-striped data-table">
                     <thead
                       style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300' }}
