@@ -20,9 +20,7 @@ const User_List = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const [userIdToEdit, setUserIdToEdit] = useState(null);
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = user.slice(indexOfFirstUser, indexOfLastUser);
+
   const [isLoading, setIsLoading] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -131,7 +129,61 @@ const User_List = () => {
     }
     return result;
   };
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const renderUsers = () => {
+    if (searchQuery) {
+      // If there's a search query, render filtered users and hide pagination
+      return (
+        <tbody>
+          {filteredUsers.map((elem, index) => (
+            <tr key={elem.user_id}>
+              <td>{index + 1}</td>
+              <td>
+                {elem.first_name} {elem.middle_name} {elem.last_name}
+              </td>
+              <td>{elem.designation}</td>
+              <td>{elem.user_email_id}</td>
+              <td>{elem.phone_no}</td>
+              <td>{elem.user_role}</td>
+              <td>{getLocationNameById(elem.locations)}</td>
+              <td>
+                <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{ color: 'blue', fontSize: '20px' }} />
+                /
+                <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      );
+    } else {
+      // If there's no search query, render paginated users with pagination
+      return (
+        <tbody>
+          {currentUsers.map((elem, index) => (
+            <tr key={elem.user_id}>
+              <td>{index + 1}</td>
+              <td>
+                {elem.first_name} {elem.middle_name} {elem.last_name}
+              </td>
+              <td>{elem.designation}</td>
+              <td>{elem.user_email_id}</td>
+              <td>{elem.phone_no}</td>
+              <td>{elem.user_roles}</td>
+              <td>{getLocationNameById(elem.locations)}</td>
+              <td>
+                <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{ color: 'blue', fontSize: '20px' }} />
+                /
+                <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      );
+    }
+  };
 
   return (
     <>
@@ -162,68 +214,30 @@ const User_List = () => {
                 <button className='btn search-btn mb-1'>Search</button>
               </div>
               {isLoading ? (
-                  <>
-                    <div className="loader-container">
-                      <div className="loader"></div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <table className='user-tables table-bordered mt-1 mb-4'>
-                      <thead>
-                        <tr>
-                          <th>All</th>
-                          <th>User Name</th>
-                          <th>Designation</th>
-                          <th>User Email</th>
-                          <th>Phone</th>
-                          <th>User Role</th>
-                          <th>Locations Allotted</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredUsers.map((elem, index) => (
-                          <tr key={elem.user_id}>
-                            <td>{index + 1}</td>
-                            <td>
-                              {elem.first_name} {elem.middle_name} {elem.last_name}
-                            </td>
-                            <td>{elem.designation}</td>
-                            <td>{elem.user_email_id}</td>
-                            <td>{elem.phone_no}</td>
-                            <td>{elem.user_role}</td>
-                            <td>{getLocationNameById(elem.locations)}</td>
-                            <td>
-                              <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{color:'blue', fontSize:'20px'}} />
-                              / 
-                              <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{color:'red', fontSize:'20px'}} />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {!searchQuery && (
-                      <div className="row">
-                        <ul className="pagination justify-content-center">
-                          {user.length > usersPerPage && Array(Math.ceil(user.length / usersPerPage)).fill().map((_, index) => (
-                            <li
-                              key={index}
-                              className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-                            >
-                              <button
-                                className="page-link"
-                                onClick={() => paginate(index + 1)}
-                              >
-                                {index + 1}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </>
-                )}
+                <>
+                  <div className="loader-container">
+                    <div className="loader"></div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <table className='user-tables table-bordered mt-1 mb-4'>
+                    <thead>
+                      <tr>
+                        <th>All</th>
+                        <th>User Name</th>
+                        <th>Designation</th>
+                        <th>User Email</th>
+                        <th>Phone</th>
+                        <th>User Role</th>
+                        <th>Locations Allotted</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    {renderUsers()}
+                  </table>
+                </>
+              )}
               {showConfirmation && (
                 <div className="confirmation-dialog">
                   <div className="confirmation-content">
@@ -234,14 +248,38 @@ const User_List = () => {
                 </div>
               )}
               {isModalOpen && <UpdateUserModal userId={userIdToEdit} onClose={handleCloseModal} />}
+              {!searchQuery && (
+          <div className="row">
+            <ul className="pagination justify-content-center">
+              {user.length > usersPerPage &&
+                Array(Math.ceil(user.length / usersPerPage))
+                  .fill()
+                  .map((_, index) => (
+                    <li
+                      key={index}
+                      className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => paginate(index + 1)}
+                      >
+                        {index + 1}
+                      </button>
+                    </li>
+                  ))}
+            </ul>
+          </div>
+        )}
             </div>
           </div>
         </div>
+        
       </div>
       <ToastContainer />
       <Footer />
     </>
   );
+
 };
 
 export default User_List;

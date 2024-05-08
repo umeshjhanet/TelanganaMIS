@@ -49,20 +49,20 @@ const MIS_Form = () => {
 
     // }
     const locationData = () => {
-      fetch("http://localhost:3001/locations")
+      fetch(`${API_URL}/locations`)
         .then(respsone => respsone.json())
         .then(data => setLocation(data))
         .catch(error => console.error(error))
       console.log("Locations", location);
     }
     const designationData = () => {
-      fetch("http://localhost:3001/designations")
+      fetch(`${API_URL}/designations`)
         .then(respsone => respsone.json())
         .then(data => setDesignation(data))
         .catch(error => console.error(error))
     }
     const usermasterData = () => {
-      fetch("http://localhost:3001/usermaster")
+      fetch(`${API_URL}/usermaster`)
         .then(respsone => respsone.json())
         .then(data => setUsermaster(data))
         .catch(error => console.error(error))
@@ -70,7 +70,7 @@ const MIS_Form = () => {
     }
     const fetchLastInsertedData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/site_MPData");
+        const response = await axios.get(`${API_URL}/site_MPData`);
         const site_MPData = response.data;
 
 

@@ -17,6 +17,7 @@ import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import AllUserDashboard from "./AllUserDashboard";
+import LocationWiseDashboard from "./LocationWiseDashboard";
 
 const Dashboard = () => {
 
@@ -27,10 +28,14 @@ const Dashboard = () => {
 
   return (
     <>
-      <Header />
-      {isDistrictHeadUser ? 
-      <DistrictHeadDashboard /> 
-       : <AllUserDashboard />}
+       <Header />
+      {isDistrictHeadUser ? (
+        <DistrictHeadDashboard />
+      ) : userLog.locations === "" ? (
+        <AllUserDashboard />
+      ) : (
+        <LocationWiseDashboard location={userLog.location} />
+      )}
       <Footer />
     </>
   )

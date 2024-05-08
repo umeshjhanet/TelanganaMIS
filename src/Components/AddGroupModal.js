@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../Api';
 
 const AddGroupModal = ({onClose}) => {
   const [groupName,setGroupName]=useState('');
@@ -9,7 +10,7 @@ const AddGroupModal = ({onClose}) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:5000/add-group", { group_name: groupName });
+      const response = await axios.post(`${API_URL}/add-group`, { group_name: groupName });
       console.log("Group name created:", response.data);
       onClose(); 
     } catch (error) {
