@@ -4,38 +4,76 @@ import Footer from './Footer'
 import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import AddGroupModal from './Components/AddGroupModal';
+import AddRoleModal from './Components/AddRoleModal';
+import UpdateRoleModal from './Components/UpdateRoleModal';
 import { API_URL } from './Api';
 
 const UserRole = () => {
-    const [group,setGroup] = useState();
+    const [role,setRole] = useState();
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [roleIdToEdit, setRoleIdToEdit] = useState(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [roleIdToDelete, setRoleIdToDelete] = useState(null);
+    const[isOpen,setIsOpen]=useState(false);
 
-    const handleOpenModal = () => {
+    const handleOpen=()=>{
+      setIsOpen(true);
+    }
+
+    const handleClose=()=>{
+      setIsOpen(false);
+      
+    }
+   
+
+    const handleOpenModal = (role_id) => {
+      setRoleIdToEdit(role_id);
         setIsModalOpen(true);
       };
       const handleCloseModal = () => {
         setIsModalOpen(false);
+        // setRoleIdToEdit(null);
       };
 
+      const handleDeleteRoleId = (role_id) => {
+        setRoleIdToDelete(role_id);
+        setShowConfirmation(true);
+      };
+    
+
+
     useEffect(() => {
-        const fetchGroupData = () => {
-            axios.get(`${API_URL}/group_master`)
-            .then(response => setGroup(response.data))
+        const fetchRoleData = () => {
+            axios.get(`${API_URL}/user_role`)
+            .then(response => setRole(response.data))
             .catch(error => console.error(error))
         }
-        fetchGroupData();
+        fetchRoleData();
         const intervalID = setInterval(() => {
-            fetchGroupData();
+            fetchRoleData();
             
           }, 2000);
       
           return () => clearInterval(intervalID);
     },[]);
 
-    const filteredGroups = group && group.filter(elem =>
-        elem.group_name.toLowerCase().includes(searchQuery.toLowerCase()) 
+    const handleDelete = async(role_id)=>{
+      try{
+        const response = await axios.delete(`${API_URL}/deleterole/${role_id}`);
+        setRole(role.filter((elem) => elem.id !== role_id));
+        console.log("Role Deleted:", response.data);
+        setShowConfirmation(false); 
+        } catch (error) {
+        console.error("There was an error in deleting data!", error);
+      }
+
+      
+    }
+
+
+    const filteredRoles = role && role.filter(elem =>
+        elem.user_role.toLowerCase().includes(searchQuery.toLowerCase()) 
       );
 
   return (
@@ -56,9 +94,9 @@ const UserRole = () => {
             <div className='user-form-card mt-3'>
                 <div className='row'>
                     <div className='col-lg-3 col-md-2'>
-                        <button className='btn add-btn' onClick={handleOpenModal}>Add Role</button>
+                        <button className='btn add-btn' onClick={handleOpen}>Add Role</button>
                     </div>
-                    {isModalOpen && <AddGroupModal onClose={handleCloseModal} />}
+                    {isOpen && <AddRoleModal onClose={handleClose} />}
                     <div className='col-lg-2 col-md-2'></div>
                     <div className='col-lg-5 col-md-6'>
                     <input
@@ -81,16 +119,27 @@ const UserRole = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredGroups && filteredGroups.map((elem,index) => (
+                            {filteredRoles && filteredRoles.map((elem,index) => (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
-                                    <td>{elem.group_name}</td>
-                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> / <RiDeleteBin5Line style={{color:'red',fontSize:'20px'}}/></td>
+                                    <td>{elem.user_role}</td>
+                                    <td><BiEdit onClick={() => handleOpenModal(elem.role_id)}   style={{color:'blue',fontSize:'20px'}}/> 
+                                    / <RiDeleteBin5Line onClick={() => handleDeleteRoleId(elem.role_id)} style={{color:'red',fontSize:'20px'}}/></td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                    {showConfirmation && (
+                <div className="confirmation-dialog">
+                  <div className="confirmation-content">
+                    <p className="fw-bold">Are you sure you want to delete?</p>
+                    <button className="btn btn-success mt-3 ms-5" onClick={() => handleDelete(roleIdToDelete)}>Yes</button>
+                    <button className="btn btn-danger ms-3 mt-3" onClick={() => setShowConfirmation(false)}>No</button>
+                  </div>
                 </div>
+              )}
+                </div>
+                {isModalOpen && <UpdateRoleModal roleId={roleIdToEdit} onClose={handleCloseModal} />}
             </div>
             </div>
         </div>
