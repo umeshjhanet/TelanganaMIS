@@ -16,6 +16,7 @@ const GroupManager = () => {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [groupIdToDelete, setGroupIdToDelete] = useState(null);
     const[isOpen,setIsOpen]=useState(false);
+    const[isLoading,setIsLoading]=useState(true);
 
     const handleOpen=()=>{
       setIsOpen(true);
@@ -43,17 +44,16 @@ const GroupManager = () => {
 
     useEffect(() => {
         const fetchGroupData = () => {
+          setIsLoading(true);
             axios.get(`${API_URL}/group_master`)
-            .then(response => setGroup(response.data))
-            .catch(error => console.error(error))
+            .then(response => {setGroup(response.data)
+              setIsLoading(false);
+            })
+            .catch(error => {console.error(error)
+              setIsLoading(false);
+            })
         }
-        fetchGroupData();
-        const intervalID = setInterval(() => {
-            fetchGroupData();
-            
-          }, 2000);
-      
-          return () => clearInterval(intervalID);
+        fetchGroupData();  
     },[]);
 
     const filteredGroups = group && group.filter(elem =>
@@ -72,14 +72,19 @@ const GroupManager = () => {
 
         
       }
-
+      const Loader = () => (
+        <div className="loader-overlay">
+          <div className="loader"></div>
+        </div>
+      );
       
       
 
   return (
     <>
+    {isLoading && <Loader/>}
     <Header/>
-    <div className='container-fluid'>
+    <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
         <div className='row'>
             <div className='col-lg-2 col-md-0'></div>
             <div className='col-lg-10 col-md-12'>

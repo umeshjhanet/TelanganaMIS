@@ -77,15 +77,19 @@ const User_List = () => {
 
   useEffect(() => {
     const fetchUser = () => {
+      setIsLoading(true);
       axios
         .get(`${API_URL}/user_master`)
-        .then((response) => setUser(response.data))
+        .then((response) => {setUser(response.data)
+          setIsLoading(false);
+        })
         .catch((error) => {
           console.error("Error fetching user data:", error);
+          setIsLoading(false);
         });
-      setIsLoading(false);
     };
     const fetchLocation = () => {
+      setIsLoading(true);
       axios
         .get(`${API_URL}/locations`)
         .then((response) => {
@@ -98,11 +102,12 @@ const User_List = () => {
           console.log("Locations map:", map);
           console.log(response.data);
           setLocationsMap(map);
+          setIsLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching location data:", error);
+          setIsLoading(false);
         });
-      setIsLoading(false);
     };
 
     fetchUser();
@@ -184,11 +189,17 @@ const User_List = () => {
       );
     }
   };
+  const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
 
   return (
     <>
+    {isLoading && <Loader/>}
       <Header />
-      <div className={`container-fluid mb-5 ${isLoading ? 'loading' : ''}`}>
+      <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
         <div className="row">
           <div className="col-lg-2 col-md-0"></div>
           <div className="col-lg-10 col-md-12">
@@ -213,14 +224,7 @@ const User_List = () => {
                 />
                 <button className='btn search-btn mb-1'>Search</button>
               </div>
-              {isLoading ? (
-                <>
-                  <div className="loader-container">
-                    <div className="loader"></div>
-                  </div>
-                </>
-              ) : (
-                <>
+              
                   <table className='user-tables table-bordered mt-1 mb-4'>
                     <thead>
                       <tr>
@@ -236,8 +240,7 @@ const User_List = () => {
                     </thead>
                     {renderUsers()}
                   </table>
-                </>
-              )}
+                
               {showConfirmation && (
                 <div className="confirmation-dialog">
                   <div className="confirmation-content">

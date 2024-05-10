@@ -16,6 +16,7 @@ const UserRole = () => {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [roleIdToDelete, setRoleIdToDelete] = useState(null);
     const[isOpen,setIsOpen]=useState(false);
+    const[isLoading,setIsLoading]=useState(true);
 
     const handleOpen=()=>{
       setIsOpen(true);
@@ -45,17 +46,17 @@ const UserRole = () => {
 
     useEffect(() => {
         const fetchRoleData = () => {
+          setIsLoading(true);
             axios.get(`${API_URL}/user_role`)
-            .then(response => setRole(response.data))
-            .catch(error => console.error(error))
+            .then(response => {setRole(response.data)
+              setIsLoading(false);
+            })
+            .catch(error => {console.error(error)
+              setIsLoading(false);
+            })
         }
         fetchRoleData();
-        const intervalID = setInterval(() => {
-            fetchRoleData();
-            
-          }, 2000);
-      
-          return () => clearInterval(intervalID);
+        
     },[]);
 
     const handleDelete = async(role_id)=>{
@@ -75,9 +76,16 @@ const UserRole = () => {
     const filteredRoles = role && role.filter(elem =>
         elem.user_role.toLowerCase().includes(searchQuery.toLowerCase()) 
       );
+      const Loader = () => (
+        <div className="loader-overlay">
+          <div className="loader"></div>
+        </div>
+      );
+      
 
   return (
     <>
+    {isLoading && <Loader/>}
     <Header/>
     <div className='container-fluid'>
         <div className='row'>
