@@ -65,7 +65,7 @@ const LocationWiseDashboard = () => {
 
       axios
         .get(`${API_URL}/graphmonth`, {
-          params: { locationNames: locationNames }
+          params: { locationname: locationNames }
         })
         .then((response) => {
           const apiData = response.data;
@@ -125,7 +125,7 @@ const LocationWiseDashboard = () => {
     };
 
     const fetchAllGraphImageData = () => {
-      const locationNames = userLog.locations.map(location => `${location.name} District Court`).join(',');
+      const locationNames = userLog.locations.map(location => `${location.name}`);
       const apiUrl = `${API_URL}/graph10`;
 
       axios.get(apiUrl, { params: { locationname: locationNames } })
@@ -161,7 +161,7 @@ const LocationWiseDashboard = () => {
 
 
     const fetchTableData = () => {
-      const locationNames = userLog.locations.map(location => `${location.name} District Court`).join(',');
+      const locationNames = userLog.locations.map(location => `${location.name}`);
 
       axios
         .get(`${API_URL}/customtabularData`, {
@@ -179,7 +179,7 @@ const LocationWiseDashboard = () => {
     fetchAllYesGraphImageData();
     fetchTableData();
     fetchMonthImageGraphData();
-  }, [userLog.locations]);
+  }, []);
 
 
 

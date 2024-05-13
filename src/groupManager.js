@@ -99,7 +99,7 @@ const GroupManager = () => {
             <div className='user-form-card mt-3'>
                 <div className='row'>
                     <div className='col-lg-3 col-md-2'>
-                        <button className='btn add-btn' onClick={handleOpenModal}>Add Group</button>
+                        <button className='btn add-btn' onClick={handleOpen}>Add Group</button>
                     </div>
                     {isOpen && <AddGroupModal onClose={handleClose} />}
                     <div className='col-lg-2 col-md-2'></div>

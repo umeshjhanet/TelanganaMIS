@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
 import { ToastContainer,toast  } from 'react-toastify';
+import { API_URL } from '../Api';
 
 const AddRoleModal = ({onClose}) => {
   const [roleName,setRoleName]=useState('');
@@ -10,7 +11,7 @@ const AddRoleModal = ({onClose}) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:5000/add-role", { user_role: roleName });
+      const response = await axios.post(`${API_URL}/add-role`, { user_role: roleName });
       console.log("Role name created:", response.data);
       toast.success("Group updated successfully");
       onClose(); 
