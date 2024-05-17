@@ -65,7 +65,7 @@ const File = () => {
     return (
         <>
             <Header />
-            <div className={`container-fluid ${isLoading ? 'loading' : ''}`}>
+            <div className={`container-fluid mb-5 ${isLoading ? 'loading' : ''}`}>
                 <div className='row'>
                     <div className='col-lg-2 col-md-0 '></div>
                     <div className='col-lg-10 col-md-12 col-sm-12'>

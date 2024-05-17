@@ -192,7 +192,7 @@ const User_List = () => {
                             <td>{elem.designation}</td>
                             <td>{elem.user_email_id}</td>
                             <td>{elem.phone_no}</td>
-                            <td>{elem.user_role}</td>
+                            <td>{elem.user_roles}</td>
                             <td>{getLocationNameById(elem.locations)}</td>
                             <td>
                               <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{color:'blue', fontSize:'20px'}} />
