@@ -10,42 +10,47 @@ const UploadDatabase = () => {
     const [message, setMessage] = useState('');
 
     const userLog = JSON.parse(localStorage.getItem("user"));
-  console.log("User's Info", userLog);
+    console.log("User's Info", userLog);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
 
-
     const handleSubmit = async () => {
+        setMessage('');
+
         if (!file) {
             setMessage('Please select a file');
             return;
         }
 
-
-        
-        // setMessage('Uploading file...');
-        if (!userLog || !userLog.locations) {
+        if (!userLog || !userLog.locations || userLog.locations.length === 0) {
             setMessage('User location information not available');
             return;
         }
-    
-        // Extract location code from the filename
-        const locationCodeFromFilename = file.name.substring(9, 12); // Assuming location code is characters 9 to 11 (0-based index) after the date
-    
-        // Compare location codes
-        if (userLog.locations !== locationCodeFromFilename) {
-           toast.success('You are not authorized to upload this file');
+
+        const locationCodeFromFilename = file.name.substring(9, 12);
+        console.log("Extracted Location Code:", locationCodeFromFilename);
+
+        let authorized = false;
+
+        userLog.locations.forEach(location => {
+            const locationIdStr = location.id.toString();
+            console.log("Comparing with Location ID:", locationIdStr);
+            if (locationIdStr === locationCodeFromFilename) {
+                authorized = true;
+            }
+        });
+
+        if (!authorized) {
+            toast.error('You are not authorized to upload this file');
             return;
         }
-    
-        setUploading(true);
 
+        setUploading(true);
 
         const formData = new FormData();
         formData.append('file', file);
-
 
         try {
             const response = await fetch(`${API_URL}/uploadSql`, {
@@ -53,11 +58,9 @@ const UploadDatabase = () => {
                 body: formData,
             });
 
-
             if (!response.ok) {
                 throw new Error('Failed to upload file');
             }
-
 
             toast.success("File Uploaded successfully");
         } catch (error) {
@@ -67,7 +70,6 @@ const UploadDatabase = () => {
             setUploading(false);
         }
     };
-
 
     return (
         <>
@@ -110,6 +112,5 @@ const UploadDatabase = () => {
         </>
     );
 };
-
 
 export default UploadDatabase;
