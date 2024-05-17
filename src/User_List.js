@@ -20,9 +20,7 @@ const User_List = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const [userIdToEdit, setUserIdToEdit] = useState(null);
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = user.slice(indexOfFirstUser, indexOfLastUser);
+
   const [isLoading, setIsLoading] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -79,15 +77,19 @@ const User_List = () => {
 
   useEffect(() => {
     const fetchUser = () => {
+      setIsLoading(true);
       axios
         .get(`${API_URL}/user_master`)
-        .then((response) => setUser(response.data))
+        .then((response) => {setUser(response.data)
+          setIsLoading(false);
+        })
         .catch((error) => {
           console.error("Error fetching user data:", error);
+          setIsLoading(false);
         });
-      setIsLoading(false);
     };
     const fetchLocation = () => {
+      setIsLoading(true);
       axios
         .get(`${API_URL}/locations`)
         .then((response) => {
@@ -100,11 +102,12 @@ const User_List = () => {
           console.log("Locations map:", map);
           console.log(response.data);
           setLocationsMap(map);
+          setIsLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching location data:", error);
+          setIsLoading(false);
         });
-      setIsLoading(false);
     };
 
     fetchUser();
@@ -131,12 +134,72 @@ const User_List = () => {
     }
     return result;
   };
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const renderUsers = () => {
+    if (searchQuery) {
+      // If there's a search query, render filtered users and hide pagination
+      return (
+        <tbody>
+          {filteredUsers.map((elem, index) => (
+            <tr key={elem.user_id}>
+              <td>{index + 1}</td>
+              <td>
+                {elem.first_name} {elem.middle_name} {elem.last_name}
+              </td>
+              <td>{elem.designation}</td>
+              <td>{elem.user_email_id}</td>
+              <td>{elem.phone_no}</td>
+              <td>{elem.user_role}</td>
+              <td>{getLocationNameById(elem.locations)}</td>
+              <td>
+                <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{ color: 'blue', fontSize: '20px' }} />
+                /
+                <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      );
+    } else {
+      // If there's no search query, render paginated users with pagination
+      return (
+        <tbody>
+          {currentUsers.map((elem, index) => (
+            <tr key={elem.user_id}>
+              <td>{index + 1}</td>
+              <td>
+                {elem.first_name} {elem.middle_name} {elem.last_name}
+              </td>
+              <td>{elem.designation}</td>
+              <td>{elem.user_email_id}</td>
+              <td>{elem.phone_no}</td>
+              <td>{elem.user_roles}</td>
+              <td>{getLocationNameById(elem.locations)}</td>
+              <td>
+                <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{ color: 'blue', fontSize: '20px' }} />
+                /
+                <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      );
+    }
+  };
+  const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
 
   return (
     <>
+    {isLoading && <Loader/>}
       <Header />
-      <div className={`container-fluid mb-5 ${isLoading ? 'loading' : ''}`}>
+      <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
         <div className="row">
           <div className="col-lg-2 col-md-0"></div>
           <div className="col-lg-10 col-md-12">
@@ -237,11 +300,13 @@ const User_List = () => {
             </div>
           </div>
         </div>
+        
       </div>
       <ToastContainer />
       <Footer />
     </>
   );
+
 };
 
 export default User_List;

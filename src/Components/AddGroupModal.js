@@ -14,7 +14,7 @@ const AddGroupModal = ({onClose}) => {
       console.log("Group name created:", response.data);
       onClose(); 
     } catch (error) {
-      console.error("Error creating group:", error);
+      console.error("Error creating :", error);
     }
   };
 

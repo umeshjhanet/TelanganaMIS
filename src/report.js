@@ -120,8 +120,8 @@ const Report = () => {
     const locationName = selectedLocations;
 
     const summaryData = async () => {
+      
       try {
-        setIsLoading(true);
         let apiUrl = `${API_URL}/summary`;
         const queryParams = {};
         if (startDate && endDate) {
@@ -129,6 +129,7 @@ const Report = () => {
           const formattedEndDate = endDate.toISOString().split('T')[0];
           apiUrl += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
         }
+        setIsLoading(true);
         const response = await axios.get(apiUrl, { params: queryParams });
         setSummary(response.data);
         setIsLoading(false);
@@ -194,8 +195,8 @@ const Report = () => {
         });
     };
     const fetchReportData = async () => {
+      
       try {
-
         let apiUrl = `${API_URL}/reportTable`;
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
@@ -203,6 +204,7 @@ const Report = () => {
           apiUrl += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
         }
         console.log("API URL:", apiUrl); // Log the constructed API URL
+        setIsLoading(true);
         const response = await axios.get(apiUrl);
         console.log("API Response:", response.data); // Log the API response
         setReport(response.data);
@@ -211,14 +213,14 @@ const Report = () => {
       } catch (error) {
         console.error("Error fetching report data:", error);
         setError("Error fetching report data. Please try again.");
-
+setIsLoading(false);
       }
     };
 
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
+        setIsLoading(true);
         try {
-          setIsLoading(true);
           const locationDataResponses = await Promise.all(
             selectedLocations.map((location) =>
               axios.get(
@@ -279,12 +281,17 @@ const Report = () => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
     setTotalLocations(uniqueLocations.length);
   };
-
+  const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
 
   return (
     <>
+    {isLoading && <Loader/>}
       <Header />
-      <div className={`container-fluid ${isLoading ? 'loading' : ''}`}>
+      <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
         <div className="row">
           <div className="col-lg-2 col-md-0 "></div>
           <div className="col-lg-10 col-md-12 col-sm-12">

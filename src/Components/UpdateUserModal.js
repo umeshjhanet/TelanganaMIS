@@ -212,7 +212,7 @@ const [formData,setFormData]=useState({
   const handleSelectStorage = (id, name) => {
     setSelectedStorage(name);
     setSelectedStorageId(parseInt(id));
-    setShowStorage(!showLocation);
+    // setShowStorage(!showLocation);
     setStorageDropdown(false);
   };
   const handleSelectReporting = (id, name) => {
