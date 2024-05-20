@@ -78,7 +78,7 @@ const File = () => {
         <>
         {isLoading && <Loader/>}
             <Header />
-            <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
+            <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
                 <div className='row'>
                     <div className='col-lg-2 col-md-0 '></div>
                     <div className='col-lg-10 col-md-12 col-sm-12'>
