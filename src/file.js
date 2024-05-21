@@ -51,9 +51,7 @@ const File = () => {
         fetchData();
         fetchTableData();
 
-        const intervalId = setInterval(fetchData, fetchTableData, 5000);
-
-        return () => clearInterval(intervalId);
+        
     }, []);
 
     const formatDate = (dateTimeString) => {
