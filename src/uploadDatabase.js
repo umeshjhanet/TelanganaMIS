@@ -10,7 +10,7 @@ const UploadDatabase = () => {
     const [message, setMessage] = useState('');
 
     const userLog = JSON.parse(localStorage.getItem("user"));
-  console.log("User's Info", userLog);
+    console.log("User's Info", userLog);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -70,12 +70,13 @@ const UploadDatabase = () => {
 
 
     const handleSubmit = async () => {
+        setMessage('');
+
         if (!file) {
             setMessage('Please select a file');
             return;
         }
-    
-        // Assuming userLog.locations is an array of locations
+
         if (!userLog || !userLog.locations || userLog.locations.length === 0) {
             setMessage('User location information not available');
             return;
@@ -98,7 +99,7 @@ const UploadDatabase = () => {
             toast.error('You are not authorized to upload this file');
             return;
         }
-    
+
         setUploading(true);
     
         const formData = new FormData();
@@ -167,6 +168,5 @@ const UploadDatabase = () => {
         </>
     );
 };
-
 
 export default UploadDatabase;
