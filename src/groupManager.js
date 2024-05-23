@@ -4,36 +4,56 @@ import Footer from './Footer'
 import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import UpdateUserModal from './Components/UpdateUserModal';
 import AddGroupModal from './Components/AddGroupModal';
 import { API_URL } from './Api';
+import UpdateGroupModal from './Components/UpdateGroupModal';
 
 const GroupManager = () => {
     const [group,setGroup] = useState();
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [groupIdToEdit, setGroupIdToEdit] = useState(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [groupIdToDelete, setGroupIdToDelete] = useState(null);
+    const[isOpen,setIsOpen]=useState(false);
+    const[isLoading,setIsLoading]=useState(true);
+
+    const handleOpen=()=>{
+      setIsOpen(true);
+    }
+
+    const handleClose=()=>{
+      setIsOpen(false);
+      
+    }
    
 
-    const handleOpenModal = () => {
+    const handleOpenModal = (group_id) => {
+      setGroupIdToEdit(group_id)
         setIsModalOpen(true);
       };
       const handleCloseModal = () => {
         setIsModalOpen(false);
       };
 
+      const handleDeleteUserId = (group_id) => {
+        setGroupIdToDelete(group_id);
+        setShowConfirmation(true);
+      };
+    
+
     useEffect(() => {
         const fetchGroupData = () => {
+          setIsLoading(true);
             axios.get(`${API_URL}/group_master`)
-            .then(response => setGroup(response.data))
-            .catch(error => console.error(error))
+            .then(response => {setGroup(response.data)
+              setIsLoading(false);
+            })
+            .catch(error => {console.error(error)
+              setIsLoading(false);
+            })
         }
-        fetchGroupData();
-        const intervalID = setInterval(() => {
-            fetchGroupData();
-            
-          }, 2000);
-      
-          return () => clearInterval(intervalID);
+        fetchGroupData();  
     },[]);
 
     const filteredGroups = group && group.filter(elem =>
@@ -45,23 +65,29 @@ const GroupManager = () => {
           const response = await axios.delete(`${API_URL}/deletegroup/${group_id}`);
           setGroup(group.filter((elem) => elem.id !== group_id));
           console.log("Group Deleted:", response.data);
+          setShowConfirmation(false);
           } catch (error) {
           console.error("There was an error in deleting data!", error);
         }
 
         
       }
-
+      const Loader = () => (
+        <div className="loader-overlay">
+          <div className="loader"></div>
+        </div>
+      );
       
       
 
   return (
     <>
+    {isLoading && <Loader/>}
     <Header/>
-    <div className='container-fluid'>
+    <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
         <div className='row'>
-            <div className='col-lg-2 col-md-2'></div>
-            <div className='col-lg-10 col-md-10'>
+            <div className='col-lg-2 col-md-0'></div>
+            <div className='col-lg-10 col-md-12'>
             <div
               className="card mt-3"
               style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
@@ -72,12 +98,12 @@ const GroupManager = () => {
             </div>
             <div className='user-form-card mt-3'>
                 <div className='row'>
-                    <div className='col-3'>
-                        <button className='btn add-btn' onClick={handleOpenModal}>Add Group</button>
+                    <div className='col-lg-3 col-md-2'>
+                        <button className='btn add-btn' onClick={handleOpen}>Add Group</button>
                     </div>
-                    {isModalOpen && <AddGroupModal onClose={handleCloseModal} />}
-                    <div className='col-2'></div>
-                    <div className='col-5'>
+                    {isOpen && <AddGroupModal onClose={handleClose} />}
+                    <div className='col-lg-2 col-md-2'></div>
+                    <div className='col-lg-5 col-md-6'>
                     <input
                   type='text'
                   style={{ width: '300px', height: '40px' }}
@@ -102,13 +128,24 @@ const GroupManager = () => {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{elem.group_name}</td>
-                                    <td><BiEdit  style={{color:'blue',fontSize:'20px'}}/> 
-                                    / <RiDeleteBin5Line onClick={() => handleDelete(elem.group_id)} style={{color:'red',fontSize:'20px'}}/></td>
+                                    <td><BiEdit onClick={() => handleOpenModal(elem.group_id)} style={{color:'blue',fontSize:'20px'}}/> 
+                                    / <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.group_id)} style={{color:'red',fontSize:'20px'}}/></td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                    {showConfirmation && (
+                <div className="confirmation-dialog">
+                  <div className="confirmation-content">
+                    <p className="fw-bold">Are you sure you want to delete?</p>
+                    <button className="btn btn-success mt-3 ms-5" onClick={() => handleDelete(groupIdToDelete)}>Yes</button>
+                    <button className="btn btn-danger ms-3 mt-3" onClick={() => setShowConfirmation(false)}>No</button>
+                  </div>
                 </div>
+              )}
+                </div>
+                {isModalOpen && <UpdateGroupModal groupId={groupIdToEdit} onClose={handleCloseModal} />}
+
             </div>
             </div>
         </div>

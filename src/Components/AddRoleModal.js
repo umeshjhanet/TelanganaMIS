@@ -1,33 +1,37 @@
 import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
+import { ToastContainer,toast  } from 'react-toastify';
 import { API_URL } from '../Api';
 
-const AddGroupModal = ({onClose}) => {
-  const [groupName,setGroupName]=useState('');
+const AddRoleModal = ({onClose}) => {
+  const [roleName,setRoleName]=useState('');
   
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${API_URL}/add-group`, { group_name: groupName });
-      console.log("Group name created:", response.data);
+      const response = await axios.post(`${API_URL}/add-role`, { user_role: roleName });
+      console.log("Role name created:", response.data);
+      toast.success("Group updated successfully");
       onClose(); 
+     
     } catch (error) {
-      console.error("Error creating :", error);
+      console.error("Error creating role:", error);
     }
   };
 
   const handleInputChange = (e) => {
-    setGroupName(e.target.value);
+    setRoleName(e.target.value);
   };
   
   return (
     <>
+    <ToastContainer/>
     <div className="modal">
     <div className="modal-content">
       <span className="close" onClick={onClose}>&times;</span>
-      <input type='text' className='mt-5' placeholder='Enter Group Name' style={{width:'300px'}} onChange={handleInputChange} />
+      <input type='text' placeholder='Enter Role Name' onChange={handleInputChange} />
       <button type='submit' className='mt-1 btn search-btn' onClick={handleSubmit} >Submit</button>
       </div>
       </div>
@@ -35,4 +39,4 @@ const AddGroupModal = ({onClose}) => {
   )
 }
 
-export default AddGroupModal
+export default AddRoleModal

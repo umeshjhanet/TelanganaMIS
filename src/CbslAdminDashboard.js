@@ -19,7 +19,7 @@ import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import { API_URL } from "./Api";
 import { useNavigate } from 'react-router-dom';
 
-const Dashboard = () => {
+const CbslAdminDashboard = () => {
   const [data2, setData2] = useState();
   const currentDate = new Date();
   const yesterdayDate = sub(currentDate, { days: 1 });
@@ -163,7 +163,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#02B2AF",
+        backgroundColor: "#f87979",
         data: [],
       },
     ],
@@ -1164,4 +1164,4 @@ const Dashboard = () => {
 
 
 
-export default Dashboard;
+export default CbslAdminDashboard;

@@ -29,16 +29,58 @@ const Login = () => {
     <div className="error mt-1" style={{ marginLeft: '35px' }}>{errorMessages[name]}</div>
   );
   // Handle form submission
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+  //   const { uname, password } = event.target.elements;
+
+  //   // Check for empty fields
+  //   if (!uname.value || !password.value) {
+  //     setErrorMessages({ blank: errors.blank });
+  //     return;
+  //   }
+
+  //   // Send login request to backend
+  //   try {
+  //     const response = await fetch(`${API_URL}/login`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({ user_email_id: uname.value, password: password.value })
+  //     });
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       console.log("Data received from backend:", data);
+  //       localStorage.setItem('user', JSON.stringify(data));
+  //       navigate('/dashboard');
+  //     } else if (response.status === 401) {
+  //       setErrorMessages({ password: errors.password }); // Invalid username or email
+  //     } else if (response.status === 403) {
+  //       setErrorMessages({ password: errors.password });
+  //        // Incorrect password
+  //     } else if (response.status === 404) {
+  //       setErrorMessages({ username: errors.username });
+  //     }
+  //     else {
+  //       setError("An unexpected error occurred. Please try again later.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     setError("An unexpected error occurred. Please try again later.");
+  //   }
+  // };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { uname, password } = event.target.elements;
-
+  
     // Check for empty fields
     if (!uname.value || !password.value) {
       setErrorMessages({ blank: errors.blank });
       return;
     }
-
+  
     // Send login request to backend
     try {
       const response = await fetch(`${API_URL}/login`, {
@@ -48,21 +90,25 @@ const Login = () => {
         },
         body: JSON.stringify({ user_email_id: uname.value, password: password.value })
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log("Data received from backend:", data);
         localStorage.setItem('user', JSON.stringify(data));
-        navigate('/dashboard');
+  
+        // Check if user_roles contains "Cbsl User" and navigate accordingly
+        if (data.user_roles && data.user_roles.includes("Cbsl User")) {
+          navigate('/uploadDatabase');
+        } else {
+          navigate('/dashboard');
+        }
       } else if (response.status === 401) {
-        setErrorMessages({ username: errors.username }); // Invalid username or email
+        setErrorMessages({ password: errors.password }); // Invalid username or email
       } else if (response.status === 403) {
-        setErrorMessages({ password: errors.password });
-         // Incorrect password
+        setErrorMessages({ password: errors.password }); // Incorrect password
       } else if (response.status === 404) {
-        setErrorMessages({ password: errors.username });
-      }
-      else {
+        setErrorMessages({ username: errors.username });
+      } else {
         setError("An unexpected error occurred. Please try again later.");
       }
     } catch (error) {
@@ -70,6 +116,7 @@ const Login = () => {
       setError("An unexpected error occurred. Please try again later.");
     }
   };
+  
 
   // Toggle password visibility
   const handleToggle = () => {
@@ -94,6 +141,7 @@ const Login = () => {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       }}>
+       
         <div className='container-fluid'>
           <div className='row'>
             <div className='col-lg-5 col-md-6 col-sm-6'></div>

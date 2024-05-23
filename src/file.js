@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Header from './Components/Header';
 import Footer from './Footer';
 import { API_URL } from './Api';
+import axios from 'axios';
 
 const File = () => {
 
@@ -27,16 +28,22 @@ const File = () => {
 
     useEffect(() => {
         const fetchData = () => {
-            fetch(`${API_URL}/locations`)
-                .then(response => response.json())
-                .then(data => setLocations(data))
-                .catch(error => console.error(error));
-            setIsLoading(false);
+            setIsLoading(true);
+            axios.get(`${API_URL}/locations`)
+                .then(response => {setLocations(response.data)
+                    setIsLoading(false);
+                })
+                .catch(error => {console.error(error)
+                    setIsLoading(false);
+                });
+            
         };
         const fetchTableData = () => {
-            fetch(`${API_URL}/api/uploadlog`)
-                .then(response => response.json())
-                .then(data => setTableData(data))
+            setIsLoading(true);
+            axios.get(`${API_URL}/api/uploadlog`)
+                .then(response => {setTableData(response.data)
+                setIsLoading(false);
+                })
                 .catch(error => console.error(error));
             setIsLoading(false);
         };
@@ -44,9 +51,7 @@ const File = () => {
         fetchData();
         fetchTableData();
 
-        const intervalId = setInterval(fetchData, fetchTableData, 5000);
-
-        return () => clearInterval(intervalId);
+       
     }, []);
 
     const formatDate = (dateTimeString) => {
@@ -61,14 +66,20 @@ const File = () => {
         const formattedTime = `${('0' + dateTime.getUTCHours()).slice(-2)}:${('0' + dateTime.getUTCMinutes()).slice(-2)}:${('0' + dateTime.getUTCSeconds()).slice(-2)}`;
         return `${formattedDate} ${formattedTime}`;
     }
+    const Loader = () => (
+        <div className="loader-overlay">
+          <div className="loader"></div>
+        </div>
+      );
 
     return (
         <>
+        {isLoading && <Loader/>}
             <Header />
-            <div className={`container-fluid ${isLoading ? 'loading' : ''}`}>
+            <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
                 <div className='row'>
-                    <div className='col-lg-2 col-md-2 '></div>
-                    <div className='col-lg-10 col-md-9 col-sm-12'>
+                    <div className='col-lg-2 col-md-0 '></div>
+                    <div className='col-lg-10 col-md-12 col-sm-12'>
                         <div className='row mt-4 me-1'>
                             <div className='card' style={{ padding: '5px', backgroundColor: '#4BC0C0' }}>
                                 <h6 className='' style={{ color: 'white' }}>MIS Report/Last Upload File</h6>
@@ -119,14 +130,7 @@ const File = () => {
                                         <th style={{ fontWeight: '500' }}>App Version</th>
                                     </tr>
                                 </thead>
-                                {isLoading ? (
-                                    <>
-                                        <div className="loader-container">
-                                            <div className="loader"></div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
+                                
                                         <tbody>
                                             {tableData && tableData.map((elem, index) => {
                                                 if (selectedLocations.length === 0 || selectedLocations.includes(elem.locationname)) {
@@ -143,8 +147,8 @@ const File = () => {
                                                 return null;
                                             })}
                                         </tbody>
-                                    </>
-                                )}
+                                   
+                                
 
                             </table>
 

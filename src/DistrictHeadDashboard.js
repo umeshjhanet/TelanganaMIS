@@ -18,6 +18,7 @@ import { MdFileDownload } from "react-icons/md";
 import { API_URL } from "./Api";
 import { Navigate } from "react-router-dom";
 
+
 const DistrictHeadDashboard = () => {
   const [data2, setData2] = useState();
   const currentDate = new Date();
@@ -45,8 +46,10 @@ const DistrictHeadDashboard = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
 
+
   const userLog = JSON.parse(localStorage.getItem("user"));
   console.log("User's Info", userLog);
+
 
 
   const [monthImage, setMonthImage] = useState({
@@ -54,7 +57,7 @@ const DistrictHeadDashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#f87979",
+        backgroundColor: "#02B2AF",
         data: [],
       },
     ],
@@ -70,6 +73,7 @@ const DistrictHeadDashboard = () => {
     ],
   });
 
+
   const [scannedData, setScannedData] = useState(null);
   const [locationReportData, setLocationReportData] = useState({
     labels: [],
@@ -83,6 +87,7 @@ const DistrictHeadDashboard = () => {
   });
   const random = () => Math.round(Math.random() * 100);
 
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -95,14 +100,17 @@ const DistrictHeadDashboard = () => {
     };
   }, [dropdownRef]);
 
+
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
       setSelectedLocations([...selectedLocations, locationName]);
+
 
       setSearchInput("");
     }
     setShowLocation(false); // Close the dropdown when a location is selected
   };
+
 
   const removeLocation = (locationName) => {
     setSelectedLocations(
@@ -110,9 +118,11 @@ const DistrictHeadDashboard = () => {
     );
   };
 
+
   const handleExport = () => {
     setShowConfirmation(true);
   };
+
 
   const handleConfirmedExport = () => {
     // Proceed with CSV export
@@ -127,9 +137,11 @@ const DistrictHeadDashboard = () => {
     setShowConfirmation(false);
   };
 
+
   const handleCancelExport = () => {
     setShowConfirmation(false);
   };
+
 
   // const handleExport = () => {
   //   if (csv) {
@@ -142,6 +154,7 @@ const DistrictHeadDashboard = () => {
   //   }
   // };
 
+
   const calculateColumnSum = () => {
     let prevFilesSum = 0;
     let prevImagesSum = 0;
@@ -151,6 +164,7 @@ const DistrictHeadDashboard = () => {
     let todayImagesSum = 0;
     let totalFilesSum = 0;
     let totalImagesSum = 0;
+
 
     tableData.forEach((elem) => {
       if (
@@ -167,6 +181,7 @@ const DistrictHeadDashboard = () => {
         totalImagesSum += parseInt(elem.Total_Images) || 0;
       }
     });
+
 
     return {
       prevFilesSum,
@@ -206,6 +221,7 @@ const DistrictHeadDashboard = () => {
     };
     const locationName = selectedLocations;
 
+
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
       const apiUrl = locationName
@@ -213,6 +229,7 @@ const DistrictHeadDashboard = () => {
           .map((name) => `locationName=${name}`)
           .join("&")}`
         : `${API_URL}/csv`;
+
 
       axios
         .get(apiUrl, { responseType: "blob" })
@@ -226,6 +243,7 @@ const DistrictHeadDashboard = () => {
           console.error("Error in exporting data:", error);
         });
     };
+
 
     const fetchMonthImageGraphData = () => {
       const params = {
@@ -257,6 +275,7 @@ const DistrictHeadDashboard = () => {
         });
     };
 
+
     const fetchTableData = () => {
       axios
         .get(`${API_URL}/tabularData`)
@@ -267,8 +286,10 @@ const DistrictHeadDashboard = () => {
         .catch((error) => console.error(error));
     };
 
+
     const fetchAllGraphImageData = (selectedLocations) => {
       let apiUrl = `${API_URL}/graph10`;
+
 
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
@@ -276,6 +297,7 @@ const DistrictHeadDashboard = () => {
           .join("&");
         apiUrl += `?${locationQuery}`;
       }
+
 
       axios
         .get(apiUrl)
@@ -306,21 +328,26 @@ const DistrictHeadDashboard = () => {
     };
 
 
+
     fetchMonthImageGraphData(locationName);
     fetchAllGraphImageData(locationName);
     fetchTableData();
     fetchExportCsvFile();
 
+
   }, [selectedLocations]);
+
 
 
   const columnSums = calculateColumnSum();
   const isDistrictHeadUser =
     userLog && userLog.user_roles.includes("All District Head");
 
-if(!userLog){
-  Navigate('/');
-}
+
+  if (!userLog) {
+    Navigate('/');
+  }
+
 
   return (
     <>
@@ -328,24 +355,15 @@ if(!userLog){
         <div className="row">
           <div className="col-lg-2 col-md-2 "></div>
           <div className="col-lg-10 col-md-10">
-            <div className="row">
-              <p
-                className="mt-1 fw-bold"
-                style={{ color: "#4BC0C0", fontSize: "20px" }}
-              >
-                Dashboard
-              </p>
-              {/* <p style={{ fontSize: '16px', marginTop:'-15px' }}>Telangana Dashboard Welcomes You  last Active Login: {userLog ? userLog.last_active_login : 'Guest'}</p> */}
+            <div className="row mt-2">
               <div
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                <p style={{ fontSize: "16px" }}>
-                  Telangana Dashboard Welcomes You
-                </p>
+                <h4> Telangana Dashboard Welcomes You</h4>
                 <p
                   style={{
-                    fontSize: "16px",
-                    marginTop: "-15px",
+                    fontSize: "12px",
+                    color: 'maroon',
                     textAlign: "right",
                   }}
                 >
@@ -354,17 +372,18 @@ if(!userLog){
                 </p>
               </div>
             </div>
-            <div className="row  mt-2  search-report-card">
-            <div className="col-md-4 col-sm-12">
+            <div className="row search-report-card">
+              <div className="col-md-4 col-sm-12">
                 <div
                   ref={dropdownRef}
-                  className="search-bar mt-1"
+                  className="search-bar "
                   style={{
                     border: "1px solid #000",
                     padding: "5px",
                     borderRadius: "5px",
                     minHeight: "30px",
                   }}
+
 
                   contentEditable={true}
                   onClick={() => setShowLocation(!showLocation)}
@@ -411,7 +430,9 @@ if(!userLog){
                 )}
               </div>
 
-             
+
+
+
 
               <div className="col-md-6"></div>
             </div>
@@ -499,6 +520,7 @@ if(!userLog){
                       </tr>
                     </thead>
 
+
                     <tbody style={{ color: "gray" }}>
                       {tableData &&
                         tableData.map((elem, index) => {
@@ -510,14 +532,14 @@ if(!userLog){
                               <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>{elem.LocationName}</td>
-                                <td>{elem.Prev_Files || "0"}</td>
-                                <td>{elem.Prev_Images || "0"}</td>
-                                <td>{elem.Yes_Files || "0"}</td>
-                                <td>{elem.Yes_Images || "0"}</td>
-                                <td>{elem.Today_Files || "0"}</td>
-                                <td>{elem.Today_Images || "0"}</td>
-                                <td>{elem.Total_Files || "0"}</td>
-                                <td>{elem.Total_Images || "0"}</td>
+                                <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
                                 <td></td>
                               </tr>
                             );
@@ -531,36 +553,38 @@ if(!userLog){
                         </td>
 
                         <td>
-                          <strong>{columnSums.prevFilesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.prevFilesSum)) ? 0 : parseInt(columnSums.prevFilesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.prevImagesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.prevImagesSum)) ? 0 : parseInt(columnSums.prevImagesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.yesFilesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.yesFilesSum)) ? 0 : parseInt(columnSums.yesFilesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.yesImagesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.yesImagesSum)) ? 0 : parseInt(columnSums.yesImagesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.todayFilesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.todayFilesSum)) ? 0 : parseInt(columnSums.todayFilesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.todayImagesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.todayImagesSum)) ? 0 : parseInt(columnSums.todayImagesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.totalFilesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.totalFilesSum)) ? 0 : parseInt(columnSums.totalFilesSum).toLocaleString()}</strong>
                         </td>
                         <td>
-                          <strong>{columnSums.totalImagesSum}</strong>
+                          <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
                         </td>
                         <td></td>
                       </tr>
                     </tbody>
+
                   </table>
                 </div>
               </div>
             </div>
+
 
             <div className="row mt-2">
               <CCard>
@@ -581,5 +605,6 @@ if(!userLog){
     </>
   );
 }
+
 
 export default DistrictHeadDashboard

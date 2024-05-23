@@ -55,37 +55,9 @@ const [formData,setFormData]=useState({
     user_id:'',
     group_id:'', 
     sl_id:'',
-    
-    
-    
 });
 
-// const [newData, setNewData] = useState({
-//   user_email_id:'',
-//   first_name:'', 
-//   middle_name:'', 
-//   last_name:'', 
-//   password:'',
-//   confirmPassword:'',
-//   designation:'',
-//   phone_no:'', 
-//   profile_picture:'',
-//   login_disabled_date:'', 
-//   emp_id:'', 
-//   locations:'', 
-//   user_type:'', 
-//   role_id:'',
-//   user_id:'',
-//   group_id:'', 
-//   sl_id:'',
-//   });
-
-
-
-
-
   useEffect(() => {
-
     const fetchUserDetails = async () => {
       try {
         const response = await axios.get(`${API_URL}/user/${userId}`);
@@ -199,8 +171,6 @@ const [formData,setFormData]=useState({
     }
   };
 
-  
-
   const handleGroupDropdown = () => {
     setGroupDropdown(!groupDropdown);
   }
@@ -242,7 +212,7 @@ const [formData,setFormData]=useState({
   const handleSelectStorage = (id, name) => {
     setSelectedStorage(name);
     setSelectedStorageId(parseInt(id));
-    setShowStorage(!showLocation);
+    // setShowStorage(!showLocation);
     setStorageDropdown(false);
   };
   const handleSelectReporting = (id, name) => {
@@ -253,8 +223,6 @@ const [formData,setFormData]=useState({
   };
 
   console.log(formData)
-
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -293,10 +261,6 @@ const [formData,setFormData]=useState({
                       <option value="2">Client User</option>
                       <option value="3">Server User</option>
                     </select>                            
-
-
-
-                   
                     </div>
                 </div>
                 <div className='col-6'>
@@ -334,12 +298,9 @@ const [formData,setFormData]=useState({
                         {privilege && privilege.map((elem,index)=>(
                           <div key={index} className='group-card' onClick={() => handleSelectPrivilege(elem.role_id, `${elem.user_role}`)}>
                             <p>{elem.user_role}</p>
-
                           </div>
                         ))}
-
                       </div>
-
                     )}
                     <label className='mt-1'>Select Storage</label><br />
                     <input type='text' placeholder='Select Storage' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }}value={selectedStorageName || ''} onClick={handleStorageDropdown} onChange={handleInputChange} /><br />
@@ -351,7 +312,6 @@ const [formData,setFormData]=useState({
                           </div>
                         ))}
                         </div>
-
                     )}
                     <label className='mt-1'>Select Reporting To</label><br />
                     <input type='text' placeholder='Select Reporting To' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedReporting || ''} onClick={handleReportingDropdown} onChange={handleInputChange} /><br />
@@ -363,10 +323,7 @@ const [formData,setFormData]=useState({
                           </div>
                         ))}
                       </div>
-
-                    )
-
-                    }
+                    )}
                     <label className='mt-1'>Set date for disabling the user ID</label><br />
                     <input type='date' placeholder='13-03-24' name="login_disabled_date" value={formData.login_disabled_date} style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}/><br />
                     <label className='mt-1'>Profile Picture<span style={{ color: 'red' }}>*</span></label><br />
@@ -382,3 +339,6 @@ const [formData,setFormData]=useState({
 }
 
 export default UpdateUserModal
+
+
+

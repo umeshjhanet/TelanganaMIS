@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Router,Route,Navigate } from "react-router-dom";
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './Components/Header';
@@ -19,13 +19,13 @@ import UploadDatabase from './uploadDatabase';
 import UpdateUserModal from './Components/UpdateUserModal';
 import AddGroupModal from './Components/AddGroupModal';
 import { AuthProvider } from './AuthContext';
-
 import ShortReport from './shortreport';
+import UpdateGroupModal from './Components/UpdateGroupModal';
+import AddRoleModal from './Components/AddRoleModal';
+import UpdateRoleModal from './Components/UpdateRoleModal'
 
 
 const App = () => {
- 
-
   return (
     <React.StrictMode>
       <BrowserRouter>
@@ -36,7 +36,10 @@ const App = () => {
           <Route path="/report" element={<Report />} />
           <Route path="/groupManager" element={<GroupManager />} />
           <Route path="/groupManager" element={<AddGroupModal />} />
+          <Route path="/groupManager" element={<UpdateGroupModal />} />
           <Route path="/userRole" element={<UserRole />} />
+          <Route path="/userRole" element={<AddRoleModal />} />
+          <Route path="/userRole" element={<UpdateRoleModal/>} />
           <Route path="/User_Form" element={<User_Form />} />
           <Route path="/User_List" element={<User_List />} />
           <Route path="/file" element={<File />} />
