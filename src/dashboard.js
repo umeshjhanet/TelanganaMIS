@@ -28,9 +28,9 @@ const Dashboard = () => {
   return (
     <>
       <Header />
-      {/* {isDistrictHeadUser ?  */}
+      {isDistrictHeadUser ?  
       <DistrictHeadDashboard /> 
-       {/* : <AllUserDashboard />} */}
+        : <AllUserDashboard />} 
       <Footer />
     </>
   )

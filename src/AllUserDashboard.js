@@ -123,7 +123,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#ff4dff",
+        backgroundColor: "#02B2AF",
         data: [],
       },
     ],
@@ -163,7 +163,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "No. of Images",
-        backgroundColor: "#f87979",
+        backgroundColor: "#02B2AF",
         data: [],
       },
     ],
