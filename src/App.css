@@ -472,6 +472,13 @@ input[type="submit"]:hover {
 .user-tables{
   border: 1px solid lightgray;
 }
+.table-bordered th,
+.table-bordered td {
+  padding: 0.35rem;
+  vertical-align: top;
+  border: 1px solid #dee2e6;
+}
+
 tr:nth-child(even) {background-color: #f2f2f2;}
 .search-btn {
   width: 100px;

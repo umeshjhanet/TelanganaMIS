@@ -247,7 +247,7 @@ const User_Form = () => {
     }
     const locationIds = selectedLocations.map(loc => loc.id);
     const updatedFormData = { ...formData, locations: locationIds };
-    toast.info("Creating user, please wait...", { autoClose: false });
+    toast.info("Creating user, please wait...");
     try {
       const response = await axios.post(`${API_URL}/createuser`, updatedFormData);
       console.log("Post created:", response.data);

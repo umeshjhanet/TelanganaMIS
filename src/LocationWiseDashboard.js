@@ -61,11 +61,11 @@ const LocationWiseDashboard = () => {
 
   useEffect(() => {
     const fetchMonthImageGraphData = () => {
-      const locationNames = userLog.locations.map(location => `${location.name} District Court`).join(',');
+      const locationNames = userLog.locations.map(location => `${location.name}`);
 
       axios
         .get(`${API_URL}/graphmonth`, {
-          params: { locationname: locationNames }
+          params: { locationName: locationNames }
         })
         .then((response) => {
           const apiData = response.data;
@@ -90,67 +90,31 @@ const LocationWiseDashboard = () => {
     };
 
     const fetchAllYesGraphImageData = () => {
-      const locationNames = userLog.locations.map(location => `${location.name} District Court`).join(',');
-      let apiUrl = `${API_URL}/graph9`;
-
-      axios.get(apiUrl, { params: { locationname: locationNames } })
-        .then((response) => {
-          const apiData = response.data;
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
-
-          const locationData = apiData[0];
-          const labels = Object.keys(locationData);
-          const data = Object.values(locationData);
-
-          console.log("TodayLabels:", labels);
-          console.log("TodayData:", data);
-
-          setAllLocationYesImage({
-            labels: labels,
-            datasets: [
-              {
-                label: "No. of Images",
-                data: data,
-                backgroundColor: "#02B2AF", // Set the background color
-              },
-            ],
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-
-    const fetchAllGraphImageData = () => {
       const locationNames = userLog.locations.map(location => `${location.name}`);
-      const apiUrl = `${API_URL}/graph10`;
-
+      const apiUrl = `${API_URL}/graph9`;
+    
       axios.get(apiUrl, { params: { locationname: locationNames } })
         .then((response) => {
           const apiData = response.data;
-
+    
           if (!apiData || apiData.length === 0) {
             console.error("No data received from the API");
             return;
           }
-
-          // Assuming response contains data only for one location
-          const locationData = apiData[0];
-          const labels = Object.keys(locationData);
-          const data = Object.values(locationData);
-
-          console.log("TodayLabels:", labels);
-          console.log("TodayData:", data);
-
-          setAllLocationImage({
+    
+          // Assuming apiData is an array of objects with "Location Name" and "Images" properties
+          const labels = apiData.map(item => item["Location Name"]);
+          const data = apiData.map(item => parseInt(item["Images"], 10)); // Convert images to integer
+    
+          console.log("Labels:", labels);
+          console.log("Data:", data);
+    
+          setAllLocationYesImage({
             labels: labels,
             datasets: [{
               label: "No. of Images",
               data: data,
-              backgroundColor: "#02B2AF",
+              backgroundColor: "#4BC0C0",
             }],
           });
         })
@@ -158,6 +122,43 @@ const LocationWiseDashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
+    
+
+    const fetchAllGraphImageData = () => {
+      const locationNames = userLog.locations.map(location => `${location.name}`);
+      const apiUrl = `${API_URL}/graph10`;
+    
+      axios.get(apiUrl, { params: { locationname: locationNames } })
+        .then((response) => {
+          const apiData = response.data;
+    
+          if (!apiData || apiData.length === 0) {
+            console.error("No data received from the API");
+            return;
+          }
+    
+          // Assuming apiData is an array of objects with "Location Name" and "Images" properties
+          const labels = apiData.map(item => item["Location Name"]);
+          const data = apiData.map(item => parseInt(item["Images"], 10)); // Convert images to integer
+    
+          console.log("Labels:", labels);
+          console.log("Data:", data);
+    
+          setAllLocationImage({
+            labels: labels,
+            datasets: [{
+              label: "No. of Images",
+              data: data,
+              backgroundColor: "#4BC0C0",
+            }],
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    };
+    
+    
 
 
     const fetchTableData = () => {

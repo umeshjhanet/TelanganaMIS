@@ -30,19 +30,22 @@ const File = () => {
         const fetchData = () => {
             setIsLoading(true);
             axios.get(`${API_URL}/locations`)
-                .then(response => {setLocations(response.data)
+                .then(response => {
+                    setLocations(response.data)
                     setIsLoading(false);
                 })
-                .catch(error => {console.error(error)
+                .catch(error => {
+                    console.error(error)
                     setIsLoading(false);
                 });
-            
+
         };
         const fetchTableData = () => {
             setIsLoading(true);
             axios.get(`${API_URL}/api/uploadlog`)
-                .then(response => {setTableData(response.data)
-                setIsLoading(false);
+                .then(response => {
+                    setTableData(response.data)
+                    setIsLoading(false);
                 })
                 .catch(error => console.error(error));
             setIsLoading(false);
@@ -51,7 +54,7 @@ const File = () => {
         fetchData();
         fetchTableData();
 
-       
+
     }, []);
 
     const formatDate = (dateTimeString) => {
@@ -68,13 +71,13 @@ const File = () => {
     }
     const Loader = () => (
         <div className="loader-overlay">
-          <div className="loader"></div>
+            <div className="loader"></div>
         </div>
-      );
+    );
 
     return (
         <>
-        {isLoading && <Loader/>}
+            {isLoading && <Loader />}
             <Header />
             <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
                 <div className='row'>
@@ -130,25 +133,25 @@ const File = () => {
                                         <th style={{ fontWeight: '500' }}>App Version</th>
                                     </tr>
                                 </thead>
-                                
-                                        <tbody>
-                                            {tableData && tableData.map((elem, index) => {
-                                                if (selectedLocations.length === 0 || selectedLocations.includes(elem.locationname)) {
-                                                    return (
-                                                        <tr key={index}>
-                                                            <td>{index + 1}</td>
-                                                            <td>{elem.locationname}</td>
-                                                            <td>{formatDate(elem.filedate)}</td>
-                                                            <td>{formatDateTime(elem.uploaddate)}</td>
-                                                            <td>{elem.appVersion}</td>
-                                                        </tr>
-                                                    );
-                                                }
-                                                return null;
-                                            })}
-                                        </tbody>
-                                   
-                                
+
+                                <tbody>
+                                    {tableData && tableData.map((elem, index) => {
+                                        if (selectedLocations.length === 0 || selectedLocations.includes(elem.locationname)) {
+                                            return (
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{elem.locationname}</td>
+                                                    <td>{formatDate(elem.filedate)}</td>
+                                                    <td>{formatDateTime(elem.uploaddate)}</td>
+                                                    <td>{elem.appVersion}</td>
+                                                </tr>
+                                            );
+                                        }
+                                        return null;
+                                    })}
+                                </tbody>
+
+
 
                             </table>
 

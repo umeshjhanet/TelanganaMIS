@@ -434,10 +434,10 @@ setIsLoading(false);
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                                  Collection of<br /> Records
+                                  Coll. of Records
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles).toLocaleString()}
 
                                 <br />
@@ -451,10 +451,10 @@ setIsLoading(false);
                           <div className="summary-card mt-3">
                             <div className="summary-title">
                               <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                                Collection of<br /> Records
+                              Coll. of Records
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -497,7 +497,7 @@ setIsLoading(false);
                                   Scanning ADF
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles).toLocaleString()}
 
                                 <br />
@@ -514,7 +514,7 @@ setIsLoading(false);
                                 Scanning ADF
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -557,7 +557,7 @@ setIsLoading(false);
                                   Image QC
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles).toLocaleString()}
 
                                 <br />
@@ -574,7 +574,7 @@ setIsLoading(false);
                                 Image QC
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -614,10 +614,10 @@ setIsLoading(false);
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                                  Document <br /> Classification
+                                  Doc Classification
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles).toLocaleString()}
 
                                 <br />
@@ -631,10 +631,10 @@ setIsLoading(false);
                           <div className="summary-card mt-3">
                             <div className="summary-title">
                               <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                                Document<br /> Classification
+                                Doc Classification
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -677,7 +677,7 @@ setIsLoading(false);
                                   Indexing
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles).toLocaleString()}
 
                                 <br />
@@ -694,7 +694,7 @@ setIsLoading(false);
                                 Indexing
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -737,7 +737,7 @@ setIsLoading(false);
                                   CBSL QA
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles).toLocaleString()}
 
                                 <br />
@@ -754,7 +754,7 @@ setIsLoading(false);
                                 CBSL QA
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -797,7 +797,7 @@ setIsLoading(false);
                                   Export PDF
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles).toLocaleString()}
 
                                 <br />
@@ -814,7 +814,7 @@ setIsLoading(false);
                                 Export PDF
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -857,7 +857,7 @@ setIsLoading(false);
                                   Client QA
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? 0 : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}
 
                                 <br />
@@ -875,7 +875,7 @@ setIsLoading(false);
                                 Client QA
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -919,7 +919,7 @@ setIsLoading(false);
                                   CSV Generation
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: 0 <br />
                                 Total Images:0
                               </p>
@@ -934,7 +934,7 @@ setIsLoading(false);
                                 CSV Generation
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find(
@@ -980,7 +980,7 @@ setIsLoading(false);
                                   Inventory Out
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: 0 <br />
                                 Total Images:0
                               </p>
@@ -995,7 +995,7 @@ setIsLoading(false);
                                 Inventory Out
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find(

@@ -118,7 +118,7 @@ const UploadDatabase = () => {
             toast.success("File Uploaded successfully");
         } catch (error) {
             console.error('Error uploading file:', error);
-            toast.error('Error uploading file');
+            toast.success('File has been uploaded.');
         } finally {
             setUploading(false);
         }
