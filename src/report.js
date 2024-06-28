@@ -8,6 +8,7 @@ import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
 import { Modal } from 'react-bootstrap';
 import { API_URL } from "./Api";
+import { BsCursor } from "react-icons/bs";
 
 const Report = () => {
   const [startDate, setStartDate] = useState('');
@@ -68,7 +69,7 @@ const Report = () => {
     if (csv) {
       const link = document.createElement("a");
       link.href = csv;
-      link.setAttribute("download", "export.csv");
+      link.setAttribute("download", "AllLocationSummaryReport.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -89,7 +90,7 @@ const Report = () => {
     if (reportCsv) {
       const link = document.createElement("a");
       link.href = reportCsv;
-      link.setAttribute("download", "export.csv");
+      link.setAttribute("download", "LocationWiseDetailedReport.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -103,32 +104,30 @@ const Report = () => {
     setShowConfirmationBox(false)
   }
 
-  // const handleReportCsv=()=>{
-  //     if (reportCsv) {
-  //       const link = document.createElement("a");
-  //       link.href = reportCsv;
-  //       link.setAttribute("download", "export.csv");
-  //       document.body.appendChild(link);
-  //       link.click();
-  //       document.body.removeChild(link);
-  //     }
-  //   //   setShowConfirmation(false);
-
-  //   }
 
   useEffect(() => {
     const locationName = selectedLocations;
 
     const summaryData = async () => {
-      
       try {
         let apiUrl = `${API_URL}/summary`;
         const queryParams = {};
+    
         if (startDate && endDate) {
           const formattedStartDate = startDate.toISOString().split('T')[0];
           const formattedEndDate = endDate.toISOString().split('T')[0];
           apiUrl += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+    
+          // Retrieve user roles and locations from local storage
+          const { roles, locations } = JSON.parse(localStorage.getItem('user'));
+          
+          // Check if user has CBSL User role and locations are available
+          if (roles.includes('CBSL User') && locations && locations.length > 0) {
+            const locationIds = locations.map(location => location.id);
+            queryParams.locations = locationIds.join(','); // Assuming locations are passed as comma-separated values of IDs
+          }
         }
+    
         setIsLoading(true);
         const response = await axios.get(apiUrl, { params: queryParams });
         setSummary(response.data);
@@ -139,6 +138,7 @@ const Report = () => {
         setIsLoading(false);
       }
     };
+    
 
     const fetchSummaryReportCsvFile = (locationName, startDate, endDate) => {
       const formattedStartDate = startDate ? new Date(startDate) : null;
@@ -404,9 +404,9 @@ setIsLoading(false);
                   </h6>
                 </div>
                 <div className="col-2">
-                  <h6 style={{ color: "white" }} onClick={handleExport}>
+                  <h6 style={{ color: "white",cursor:"pointer" }} onClick={handleExport}>
                     {" "}
-                    <MdFileDownload style={{ fontSize: "20px" }} />
+                    <MdFileDownload style={{ fontSize: "20px"}} />
                     Export CSV
                   </h6>
                 </div>
@@ -1046,7 +1046,7 @@ setIsLoading(false);
                     </h6>
                   </div>
                   <div className="col-2">
-                    <h6 style={{ color: "white" }} onClick={handleReportCsv}>
+                    <h6 style={{ color: "white",cursor:"pointer"  }} onClick={handleReportCsv}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
                       Export CSV

@@ -129,7 +129,7 @@ const DistrictHeadDashboard = () => {
     if (csv) {
       const link = document.createElement("a");
       link.href = csv;
-      link.setAttribute("download", "export.csv");
+      link.setAttribute("download", "AllLocationScannedReport.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -471,11 +471,11 @@ const DistrictHeadDashboard = () => {
                   <div className="col-10">
                     <h6 className="text-center" style={{ color: "white" }}>
                       PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE
-                      RECORDS FOR DISTRICT COURT OF UTTAR PRADESH
+                      RECORDS FOR DISTRICT COURT OF TELANGANA
                     </h6>
                   </div>
                   <div className="col-2">
-                    <h6 style={{ color: "white" }} onClick={handleExport}>
+                    <h6 style={{ color: "white" ,cursor:"pointer"  }} onClick={handleExport}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
                       Export CSV

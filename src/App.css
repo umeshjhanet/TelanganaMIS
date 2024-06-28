@@ -469,6 +469,13 @@ input[type="submit"]:hover {
 .location-card p:hover {
   background-color: #61dafb;
 }
+.server-report{
+  max-width: 1200px;
+  overflow: auto;
+}
+.server-reports{
+  border: 1px solid lightgray;
+}
 .user-tables{
   border: 1px solid lightgray;
 }

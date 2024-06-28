@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Routes, Router,Route,Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './Components/Header';
@@ -23,33 +23,36 @@ import ShortReport from './shortreport';
 import UpdateGroupModal from './Components/UpdateGroupModal';
 import AddRoleModal from './Components/AddRoleModal';
 import UpdateRoleModal from './Components/UpdateRoleModal'
-
+import DBSiteReports from './dbSiteReports';
+import SiteReports from './siteReports';
+import PrivateRoute from './PrivateRoute';
 
 const App = () => {
   return (
-    <React.StrictMode>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path='/dashboard' element={<Dashboard/>}/>
-          <Route path='/uploadDatabase' element={<UploadDatabase/>}/>
-          <Route path="/report" element={<Report />} />
-          <Route path="/groupManager" element={<GroupManager />} />
-          <Route path="/groupManager" element={<AddGroupModal />} />
-          <Route path="/groupManager" element={<UpdateGroupModal />} />
-          <Route path="/userRole" element={<UserRole />} />
-          <Route path="/userRole" element={<AddRoleModal />} />
-          <Route path="/userRole" element={<UpdateRoleModal/>} />
-          <Route path="/User_Form" element={<User_Form />} />
-          <Route path="/User_List" element={<User_List />} />
-          <Route path="/file" element={<File />} />
-          <Route path="/MIS_Form" element={<MIS_Form/>}/>
-          <Route path="/mis_updc" element={<MISUPDC/>}/>
-          <Route path="/User_List" element={<UpdateUserModal />} />
-          <Route path="/shortreport" element={<ShortReport />} />
-        </Routes>
-      </BrowserRouter>
-    </React.StrictMode>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
+        <Route path="/uploadDatabase" element={<PrivateRoute element={<UploadDatabase />} />} />
+        <Route path="/report" element={<PrivateRoute element={<Report />} />} />
+        <Route path="/dbSiteReports" element={<PrivateRoute element={<DBSiteReports />} />} />
+        <Route path="/siteReports"element={<PrivateRoute element={<SiteReports />} />} />
+        <Route path="/groupManager" element={<PrivateRoute element={<GroupManager />} />} />
+        <Route path="/addGroupModal" element={<PrivateRoute element={<AddGroupModal />} />} />
+        <Route path="/updateGroupModal" element={<PrivateRoute element={<UpdateGroupModal />} />} />
+        <Route path="/userRole" element={<PrivateRoute element={<UserRole />} />} />
+        <Route path="/addRoleModal" element={<PrivateRoute element={<AddRoleModal />} />} />
+        <Route path="/updateRoleModal" element={<PrivateRoute element={<UpdateRoleModal />} />} />
+        <Route path="/User_Form" element={<PrivateRoute element={<User_Form />} />} />
+        <Route path="/User_List" element={<PrivateRoute element={<User_List />} />} />
+        <Route path="/file" element={<PrivateRoute element={<File />} />} />
+        <Route path="/MIS_Form" element={<PrivateRoute element={<MIS_Form />} />} />
+        <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC />} />} />
+        <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
+        <Route path="/shortreport" element={<PrivateRoute element={<ShortReport />} />} />
+      </Routes>
+    </Router>
+    
   );
 };
 

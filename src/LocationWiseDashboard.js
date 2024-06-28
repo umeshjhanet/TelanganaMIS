@@ -65,7 +65,7 @@ const LocationWiseDashboard = () => {
 
       axios
         .get(`${API_URL}/graphmonth`, {
-          params: { locationName: locationNames }
+          params: { locationNames: locationNames }
         })
         .then((response) => {
           const apiData = response.data;
