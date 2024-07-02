@@ -27,10 +27,10 @@ const Report = () => {
   const [reportCsv, setReportCsv] = useState(null);
   const dropdownRef = useRef(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [showConfirmationBox,setShowConfirmationBox]=useState(false);
+  const [showConfirmationBox, setShowConfirmationBox] = useState(false);
   const [totalLocations, setTotalLocations] = useState(0);
 
-  
+
   // const userLog = JSON.parse(localStorage.getItem('user'));
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -118,11 +118,33 @@ const Report = () => {
           queryParams.locationName = userLog.locations[0].name;
         }
     
+        // Check if startDate and endDate are valid Date objects and log them
+        if (startDate) {
+          console.log("Original Start Date:", startDate);
+          if (!(startDate instanceof Date) || isNaN(startDate)) {
+            console.error("Invalid startDate:", startDate);
+            setError("Invalid start date. Please select a valid start date.");
+            return;
+          }
+        }
+        
+        if (endDate) {
+          console.log("Original End Date:", endDate);
+          if (!(endDate instanceof Date) || isNaN(endDate)) {
+            console.error("Invalid endDate:", endDate);
+            setError("Invalid end date. Please select a valid end date.");
+            return;
+          }
+        }
+    
         if (startDate && endDate) {
-          const formattedStartDate = startDate.toISOString().split('T')[0];
-          const formattedEndDate = endDate.toISOString().split('T')[0];
+          const formattedStartDate = startDate; // Format to YYYY-MM-DD
+          const formattedEndDate = endDate; // Format to YYYY-MM-DD
           queryParams.startDate = formattedStartDate;
           queryParams.endDate = formattedEndDate;
+    
+          console.log("Formatted Start Date:", formattedStartDate);
+          console.log("Formatted End Date:", formattedEndDate);
         }
     
         console.log("API URL:", apiUrl); // Log the constructed API URL
@@ -139,34 +161,36 @@ const Report = () => {
         setIsLoading(false);
       }
     };
-
+    
+    
+    
     const fetchSummaryReportCsvFile = (startDate, endDate) => {
       const userLog = JSON.parse(localStorage.getItem('user'));
       const locationNames = userLog.locations.map(location => location.name);
-    
+
       const formattedStartDate = startDate ? new Date(startDate) : null;
       const formattedEndDate = endDate ? new Date(endDate) : null;
-    
-      const formatDate = (date) => date.toISOString().split('T')[0];
-    
+
+      const formatDate = (date) => date;
+
       let apiUrl = `${API_URL}/summarycsv`;
       const params = [];
-    
+
       // Include locationName in the query if user has locations
       if (locationNames.length > 0) {
         params.push(...locationNames.map(name => `locationName=${name}`));
       }
-    
+
       // Include startDate and endDate in the query if provided
       if (formattedStartDate && formattedEndDate) {
         params.push(`startDate=${formatDate(formattedStartDate)}`);
         params.push(`endDate=${formatDate(formattedEndDate)}`);
       }
-    
+
       if (params.length > 0) {
         apiUrl += `?${params.join('&')}`;
       }
-    
+
       // Make API request
       axios.get(apiUrl, { responseType: "blob" })
         .then((response) => {
@@ -178,34 +202,34 @@ const Report = () => {
           console.error("Error in exporting data:", error);
         });
     };
-    
+
     const fetchSummaryReportTableCsvFile = (startDate, endDate) => {
       const userLog = JSON.parse(localStorage.getItem('user'));
       const locationNames = userLog.locations.map(location => location.name);
-      
+
       const formattedStartDate = startDate ? new Date(startDate) : null;
       const formattedEndDate = endDate ? new Date(endDate) : null;
-      
-      const formatDate = (date) => date.toISOString().split('T')[0];
-      
+
+      const formatDate = (date) => date;
+
       let apiUrl = `${API_URL}/reporttablecsv`;
       const params = [];
-    
+
       // Include locationName in the query if user has locations
       if (locationNames.length > 0) {
         params.push(...locationNames.map(name => `locationName=${name}`));
       }
-    
+
       // Include startDate and endDate in the query if provided
       if (formattedStartDate && formattedEndDate) {
         params.push(`startDate=${formatDate(formattedStartDate)}`);
         params.push(`endDate=${formatDate(formattedEndDate)}`);
       }
-      
+
       if (params.length > 0) {
         apiUrl += `?${params.join('&')}`;
       }
-    
+
       // Make API request
       axios.get(apiUrl, { responseType: "blob" })
         .then((response) => {
@@ -217,28 +241,28 @@ const Report = () => {
           console.error("Error in exporting data:", error);
         });
     };
-    
+
     const fetchReportData = async () => {
       try {
         let apiUrl = `${API_URL}/reportTable`;
         const queryParams = {};
-    
+
         const userLog = JSON.parse(localStorage.getItem('user'));
-    
+
         if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
           queryParams.locationName = userLog.locations[0].name;
         }
-    
+
         if (startDate && endDate) {
-          const formattedStartDate = startDate.toISOString().split('T')[0];
-          const formattedEndDate = endDate.toISOString().split('T')[0];
+          const formattedStartDate = startDate;
+          const formattedEndDate = endDate;
           queryParams.startDate = formattedStartDate;
           queryParams.endDate = formattedEndDate;
         }
-    
+
         console.log("API URL:", apiUrl); // Log the constructed API URL
         console.log("Query Params:", queryParams); // Log query parameters
-    
+
         setIsLoading(true);
         const response = await axios.get(apiUrl, { params: queryParams });
         console.log("API Response:", response.data); // Log the API response
@@ -251,30 +275,30 @@ const Report = () => {
         setIsLoading(false);
       }
     };
-    
-    
-//     const fetchReportData = async () => {
-      
-//       try {
-//         let apiUrl = `${API_URL}/reportTable`;
-//         if (startDate && endDate) {
-//           const formattedStartDate = startDate.toISOString().split('T')[0];
-//           const formattedEndDate = endDate.toISOString().split('T')[0];
-//           apiUrl += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
-//         }
-//         console.log("API URL:", apiUrl); // Log the constructed API URL
-//         setIsLoading(true);
-//         const response = await axios.get(apiUrl);
-//         console.log("API Response:", response.data); // Log the API response
-//         setReport(response.data);
-//         setIsLoading(false);
-//         updateTotalLocations(response.data);
-//       } catch (error) {
-//         console.error("Error fetching report data:", error);
-//         setError("Error fetching report data. Please try again.");
-// setIsLoading(false);
-//       }
-//     };
+
+
+    //     const fetchReportData = async () => {
+
+    //       try {
+    //         let apiUrl = `${API_URL}/reportTable`;
+    //         if (startDate && endDate) {
+    //           const formattedStartDate = startDate.toISOString().split('T')[0];
+    //           const formattedEndDate = endDate.toISOString().split('T')[0];
+    //           apiUrl += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+    //         }
+    //         console.log("API URL:", apiUrl); // Log the constructed API URL
+    //         setIsLoading(true);
+    //         const response = await axios.get(apiUrl);
+    //         console.log("API Response:", response.data); // Log the API response
+    //         setReport(response.data);
+    //         setIsLoading(false);
+    //         updateTotalLocations(response.data);
+    //       } catch (error) {
+    //         console.error("Error fetching report data:", error);
+    //         setError("Error fetching report data. Please try again.");
+    // setIsLoading(false);
+    //       }
+    //     };
 
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
@@ -348,7 +372,7 @@ const Report = () => {
 
   return (
     <>
-    {isLoading && <Loader/>}
+      {isLoading && <Loader />}
       <Header />
       <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
         <div className="row">
@@ -463,9 +487,9 @@ const Report = () => {
                   </h6>
                 </div>
                 <div className="col-2">
-                  <h6 style={{ color: "white",cursor:"pointer" }} onClick={handleExport}>
+                  <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
                     {" "}
-                    <MdFileDownload style={{ fontSize: "20px"}} />
+                    <MdFileDownload style={{ fontSize: "20px" }} />
                     Export CSV
                   </h6>
                 </div>
@@ -510,7 +534,7 @@ const Report = () => {
                           <div className="summary-card mt-3">
                             <div className="summary-title">
                               <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                              Coll. of Records
+                                Coll. of Records
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
@@ -1105,7 +1129,7 @@ const Report = () => {
                     </h6>
                   </div>
                   <div className="col-2">
-                    <h6 style={{ color: "white",cursor:"pointer"  }} onClick={handleReportCsv}>
+                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleReportCsv}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
                       Export CSV

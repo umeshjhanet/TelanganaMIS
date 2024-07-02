@@ -137,7 +137,7 @@ const UploadDatabase = () => {
                     <div className='col-lg-10 col-md-12'>
                         <div className="card mt-3" style={{ padding: "5px", backgroundColor: "#4BC0C0" }}>
                             <h6 className="" style={{ color: "white" }}>
-                                Store Management / Upload Document
+                                Upload MIS zip file
                             </h6>
                         </div>
                         <div className='user-form-card mt-3'>
