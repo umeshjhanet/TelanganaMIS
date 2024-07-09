@@ -24,7 +24,7 @@ const Header = () => {
   const [showMasterDropdown, setShowMasterDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState(false);
   const [user, setUser] = useState();
-const navigate = useNavigate();
+  const navigate = useNavigate();
   // Retrieve user info from local storage
   const userLog = JSON.parse(localStorage.getItem('user'));
   // console.log("User's Info", userLog);
@@ -57,30 +57,30 @@ const navigate = useNavigate();
       try {
         const response = await axios.get(`${API_URL}/user_master`);
         setUser(response.data);
-  
+
         // Log the entire response data to inspect its structure
         console.log('Response Data:', response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-  
+
     fetchUser();
   }, []);
 
-const adminUser =() => {
-  return(
-    <>
-    <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
-    <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-      <div className="container-fluid" >
-        <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+  const adminUser = () => {
+    return (
+      <>
+        <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 </ul>
                 <form className="d-flex">
-                   {/* <Link to='/'> */}
-                    <button onClick={handleLogout} href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  {/* <Link to='/'> */}
+                  <button onClick={handleLogout} href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                   {/* </Link> */}
                   <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p>
                 </form>
@@ -114,42 +114,42 @@ const adminUser =() => {
                       <img src='logo.png' />
                     </div>
                     <div className='row' onClick={() => window.open("/Super_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
-                      <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                      <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
                     </div>
                     <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
+                      <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
                     </div>
-                   
+
                     <div className='row mt-1' onClick={handleActiveTab}>
-                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                     </div>
                     {showReportDropdown && (
                       <>
                         <hr />
-                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' , cursor:'pointer'}}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-                        <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' , cursor:'pointer'}}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
+                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                        <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
                         <hr />
                       </>
                     )}
-                     <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/dbSiteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server/DB Site Reports</Link>
+                    <div className='row mt-1' onClick={handleActiveTab}>
+                      <Link to='/dbSiteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server/DB Site Reports</Link>
                     </div>
                     <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/siteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server Site Reports</Link>
+                      <Link to='/siteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server Site Reports</Link>
                     </div>
                     <div className='row mt-1' onClick={handleActiveTab}>
-                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
                     </div>
                     {showMasterDropdown && (
                       <>
                         <hr />
-                        <Link to='/groupManager' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><FaUsers style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Group Manager<br /></Link>
-                        <Link to='/userRole' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor:'pointer' }}><RiUserFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Role<br /></Link>
-                        <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor:'pointer' }}><HiMiniUserPlus style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add User<br /></Link>
-                        <Link to='/User_List' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><HiMiniUserGroup style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User List<br /></Link>
+                        <Link to='/groupManager' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaUsers style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Group Manager<br /></Link>
+                        <Link to='/userRole' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><RiUserFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Role<br /></Link>
+                        <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><HiMiniUserPlus style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add User<br /></Link>
+                        <Link to='/User_List' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><HiMiniUserGroup style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User List<br /></Link>
                         <hr />
                       </>
                     )}
@@ -165,7 +165,7 @@ const adminUser =() => {
             <div className="container-fluid" >
               <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
               <form className="d-flex">
-                  <button onClick={handleLogout}className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                 <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p>
               </form>
             </div>
@@ -177,38 +177,38 @@ const adminUser =() => {
                   <img src='logo.png' />
                 </div>
                 <div className='row' onClick={() => window.open("/Super_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
+                  <Link to='#' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                </div>
                 <div className='row' onClick={handleActiveTab}>
-                      <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
-                    </div>
-                    <div className='row' onClick={handleActiveTab}>
-                      <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
-                    </div>
-                    <div className='row' onClick={handleActiveTab}>
-                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
-                    </div>
-                    {showReportDropdown && (
-                      <>
-                        <hr />
-                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-                        <br/><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
-                        <hr />
-                      </>
-                    )}
-                    <div className='row' onClick={handleActiveTab}>
-                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
-                    </div>
-                    {showMasterDropdown && (
-                      <>
-                        <hr />
-                        <Link to='/groupManager' className='ms-1' style={{ color: 'black', textDecoration: 'none', }}><FaUsers style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Group Manager<br /></Link>
-                        <Link to='/userRole' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><RiUserFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Role<br /></Link>
-                        <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><HiMiniUserPlus style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add User<br /></Link>
-                        <Link to='/User_List' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><HiMiniUserGroup style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User List<br /></Link>
-                        <hr />
-                      </>
-                    )}
+                  <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                </div>
+                {showReportDropdown && (
+                  <>
+                    <hr />
+                    <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                    <br /><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
+                    <hr />
+                  </>
+                )}
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
+                </div>
+                {showMasterDropdown && (
+                  <>
+                    <hr />
+                    <Link to='/groupManager' className='ms-1' style={{ color: 'black', textDecoration: 'none', }}><FaUsers style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Group Manager<br /></Link>
+                    <Link to='/userRole' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><RiUserFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Role<br /></Link>
+                    <Link to='/User_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><HiMiniUserPlus style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add User<br /></Link>
+                    <Link to='/User_List' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><HiMiniUserGroup style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User List<br /></Link>
+                    <hr />
+                  </>
+                )}
               </div>
             </div>
           }
@@ -228,8 +228,8 @@ const adminUser =() => {
 
                 </ul>
                 <form className="d-flex">
-                 
-                    <button onClick={handleLogout} href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+
+                  <button onClick={handleLogout} href='/' className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
 
                   <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.first_name}</p>
                 </form>
@@ -263,7 +263,7 @@ const adminUser =() => {
                       <img src='logo.png' />
                     </div>
                     <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -293,7 +293,7 @@ const adminUser =() => {
               <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
               <form className="d-flex">
                 {/* <Link to='/'> */}
-                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                 {/* </Link> */}
                 <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
               </form>
@@ -306,8 +306,8 @@ const adminUser =() => {
                   <img src='logo.png' />
                 </div>
                 <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
+                  <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dashboard' className='ms-4 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
                 </div>
@@ -324,7 +324,7 @@ const adminUser =() => {
                   </>
                 )}
 
-              {/* {showMasterDropdown && (
+                {/* {showMasterDropdown && (
                 <>
                   <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Group Manager<br /></Link><br />
                   <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />User Role<br /></Link><br />
@@ -332,276 +332,356 @@ const adminUser =() => {
                   <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List<br /></Link><br />
                 </>
               )} */}
-            </div>
-          </div>
-        }
-      </div>
-    </>
-  )
-}
-const clientUser =()=>{
-  return (
-    <>
-      <div className='d-none d-xl-block d-md-block d-sm-none'>
-        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-          <div className="container-fluid" >
-            <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-
-              </ul>
-              <form className="d-flex">
-                {/* <Link to='/'> */}
-                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-                {/* </Link> */}
-
-                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.first_name}</p>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        {showSideBar ? (
-          <>
-            <div className='row'>
-              <div className='col-1'>
-                <div className='shrink-sidebar'>
-                  <div className='row shrink-header-image' >
-                    <img src='logo.png' />
-                  </div>
-                  <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
-                  <Link to='/dashboard'><p className='ms-4'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
-
-                  <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
-
-                </div>
               </div>
-              <div className='col-11'></div>
             </div>
-          </>
-        ) : (
-          <>
-            <div className='row' style={{ marginLeft: '0' }}>
-              <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-                <div className='sidebar'>
-                  <div className='row header-image'>
-                    <img src='logo.png' />
-                  </div>
-                  <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
-                  <div className='row' onClick={handleActiveTab}>
-                    <Link to='/dashboard' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
-                  </div>
+          }
+        </div>
+      </>
+    )
+  }
+  const clientUser = () => {
+    return (
+      <>
+        <div className='d-none d-xl-block d-md-block d-sm-none'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
 
-                  <div className='row' onClick={handleActiveTab}>
+                </ul>
+                <form className="d-flex">
+                  {/* <Link to='/'> */}
+                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  {/* </Link> */}
+
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.first_name}</p>
+                </form>
+              </div>
+            </div>
+          </nav>
+
+          {showSideBar ? (
+            <>
+              <div className='row'>
+                <div className='col-1'>
+                  <div className='shrink-sidebar'>
+                    <div className='row shrink-header-image' >
+                      <img src='logo.png' />
+                    </div>
+                    <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
+                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    </div>
+                    <Link to='/dashboard'><p className='ms-4'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+
+                    <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+
+                  </div>
+                </div>
+                <div className='col-11'></div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className='row' style={{ marginLeft: '0' }}>
+                <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+                  <div className='sidebar'>
+                    <div className='row header-image'>
+                      <img src='logo.png' />
+                    </div>
+                    <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
+                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    </div>
+                    <div className='row' onClick={handleActiveTab}>
+                      <Link to='/dashboard' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                    </div>
+
+                    <div className='row' onClick={handleActiveTab}>
                       <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
-                    <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
-                  </div>
-                  {showReportDropdown && (
-                    <>
-                      <hr />
-                      <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-             
-                      <hr />
-                    </>
-                  )}
-                  {/* {showReportDropdown && (
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                    </div>
+                    {showReportDropdown && (
+                      <>
+                        <hr />
+                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+
+                        <hr />
+                      </>
+                    )}
+                    {/* {showReportDropdown && (
                     <>
                       <hr />
                       <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                       <hr />
                     </>
                   )} */}
+                  </div>
                 </div>
+                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
               </div>
-              <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
-            </div>
-          </>
-        )}
-      </div>
-      <div className='d-block d-xl-none d-md-none d-sm-block'>
-        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-          <div className="container-fluid" >
-            <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
-            <form className="d-flex">
-              {/* <Link to='/'> */}
-                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-              {/* </Link> */}
-              <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
-            </form>
-          </div>
-        </nav>
-        {showMobileSideBar &&
-          <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-            <div className='mobile-sidebar'>
-              <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                <img src='logo.png' />
-              </div>
-              <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
-              <div className='row' onClick={handleActiveTab}>
-                <Link to='/dashboard' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
-              </div>
-              <div className='row' onClick={handleActiveTab}>
-                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
-              </div>
-              <div className='row' onClick={handleActiveTab}>
-                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
-              </div>
-              {showReportDropdown && (
-                <>
-                   <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
-                </>
-              )}
-          </div>
+            </>
+          )}
         </div>
-      }
-    </div>
-  </>
-)
-
-}
-
-const districtHeadUser = () => {
-  return (
-    <>
-      <div className='d-none d-xl-block d-md-block d-sm-none'>
-        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-          <div className="container-fluid" >
-            <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-
-              </ul>
+        <div className='d-block d-xl-none d-md-none d-sm-block'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
               <form className="d-flex">
                 {/* <Link to='/'> */}
-                {/* <button onClick={handleLogout}>Logout</button> */}
-                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                 {/* </Link> */}
-
-                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.first_name}</p>
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
               </form>
             </div>
-          </div>
-        </nav>
-
-        {showSideBar ? (
-          <>
-            <div className='row'>
-              <div className='col-1'>
-                <div className='shrink-sidebar'>
-                  <div className='row shrink-header-image' >
-                    <img src='logo.png' />
-                  </div>
-                  <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
-                  <Link to='/dashboard'><p className='ms-4'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
-
-                  <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
-
+          </nav>
+          {showMobileSideBar &&
+            <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+              <div className='mobile-sidebar'>
+                <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                  <img src='logo.png' />
                 </div>
-              </div>
-              <div className='col-11'></div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className='row' style={{ marginLeft: '0' }}>
-              <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-                <div className='sidebar'>
-                  <div className='row header-image'>
-                    <img src='logo.png' />
-                  </div>
-                  <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
-                  <div className='row' onClick={handleActiveTab}>
-                    <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
-                  </div>
-
-                  <div className='row' onClick={handleActiveTab}>
-                    <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
-                  </div>
-                  {showReportDropdown && (
-                    <>
-                      <hr />
-                      <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-             
-                      <hr />
-                    </>
-                  )}
+                <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
+                  <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                 </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/dashboard' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
+                </div>
+                {showReportDropdown && (
+                  <>
+                    <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                  </>
+                )}
               </div>
-              <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
             </div>
-          </>
-        )}
-      </div>
-      <div className='d-block d-xl-none d-md-none d-sm-block'>
-        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-          <div className="container-fluid" >
-            <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
-            <form className="d-flex">
-              {/* <Link to='/'> */}
-                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-              {/* </Link> */}
-              <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
-            </form>
-          </div>
-        </nav>
-        {showMobileSideBar &&
-          <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-            <div className='mobile-sidebar'>
-              <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                <img src='logo.png' />
-              </div>
-              <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
-              <div className='row' onClick={handleActiveTab}>
-                <Link to='/dashboard' className='ms-4 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
-              </div>
-              <div className='row' onClick={handleActiveTab}>
-                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
-              </div>
-              <div className='row' onClick={handleActiveTab}>
-                <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
-              </div>
-              {showReportDropdown && (
-                <>
-                  <Link to='/report' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Location Wise Report</Link>
-                 
-                </>
-              )}
-          </div>
+          }
         </div>
-      }
-    </div>
-  </>
-)
-}
+      </>
+    )
 
-
-const cbslAdminUser = () => {
-  return(
-    <>
-    <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
-    <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-      <div className="container-fluid" >
-        <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+  }
+  const serverUser = () => {
+    return (
+      <>
+        <div className='d-none d-xl-block d-md-block d-sm-none'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 </ul>
                 <form className="d-flex">
-                   {/* <Link to='/'> */}
-                    <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.first_name}</p>
+                </form>
+              </div>
+            </div>
+          </nav>
+          {showSideBar ? (
+            <>
+              <div className='row'>
+                <div className='col-1'>
+                  <div className='shrink-sidebar'>
+                    <div className='row shrink-header-image' >
+                      <img src='logo.png' />
+                    </div>
+                    <Link to='/dashboard'><p className='ms-4'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <Link to='/dbSiteReports'><p className='ms-4 '><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                  </div>
+                </div>
+                <div className='col-11'></div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className='row' style={{ marginLeft: '0' }}>
+                <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+                  <div className='sidebar'>
+                    <div className='row header-image'>
+                      <img src='logo.png' />
+                    </div>
+                    <div className='row mt-5' onClick={handleActiveTab}>
+                      <Link to='/dashboard' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                    </div>
+                    <div className='row' onClick={handleActiveTab}>
+                      <Link to='/dbSiteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server/DB Site Reports</Link>
+                    </div>
+                  </div>
+                </div>
+                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
+              </div>
+            </>
+          )}
+        </div>
+        <div className='d-block d-xl-none d-md-none d-sm-block'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid">
+              <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
+              <form className="d-flex">
+                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
+              </form>
+            </div>
+          </nav>
+          {showMobileSideBar &&
+            <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+              <div className='mobile-sidebar'>
+                <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                  <img src='logo.png' />
+                </div>
+                <div className='row mt-5' onClick={handleActiveTab}>
+                  <Link to='/dashboard' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/dbSiteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server/DB Site Reports</Link>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </>
+    )
+
+  }
+  const districtHeadUser = () => {
+    return (
+      <>
+        <div className='d-none d-xl-block d-md-block d-sm-none'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+
+                </ul>
+                <form className="d-flex">
+                  {/* <Link to='/'> */}
+                  {/* <button onClick={handleLogout}>Logout</button> */}
+                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  {/* </Link> */}
+
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog && userLog.first_name}</p>
+                </form>
+              </div>
+            </div>
+          </nav>
+
+          {showSideBar ? (
+            <>
+              <div className='row'>
+                <div className='col-1'>
+                  <div className='shrink-sidebar'>
+                    <div className='row shrink-header-image' >
+                      <img src='logo.png' />
+                    </div>
+                    <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
+                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    </div>
+                    <Link to='/dashboard'><p className='ms-4'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+
+                    <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+
+                  </div>
+                </div>
+                <div className='col-11'></div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className='row' style={{ marginLeft: '0' }}>
+                <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+                  <div className='sidebar'>
+                    <div className='row header-image'>
+                      <img src='logo.png' />
+                    </div>
+                    <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
+                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    </div>
+                    <div className='row' onClick={handleActiveTab}>
+                      <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                    </div>
+
+                    <div className='row' onClick={handleActiveTab}>
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                    </div>
+                    {showReportDropdown && (
+                      <>
+                        <hr />
+                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+
+                        <hr />
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
+              </div>
+            </>
+          )}
+        </div>
+        <div className='d-block d-xl-none d-md-none d-sm-block'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
+              <form className="d-flex">
+                {/* <Link to='/'> */}
+                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                {/* </Link> */}
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: Admin</p>
+              </form>
+            </div>
+          </nav>
+          {showMobileSideBar &&
+            <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+              <div className='mobile-sidebar'>
+                <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                  <img src='logo.png' />
+                </div>
+                <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
+                  <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/dashboard' className='ms-4 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px' }} /> Masters <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleMasterDropdown} /></a>
+                </div>
+                {showReportDropdown && (
+                  <>
+                    <Link to='/report' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Location Wise Report</Link>
+
+                  </>
+                )}
+              </div>
+            </div>
+          }
+        </div>
+      </>
+    )
+  }
+  const cbslAdminUser = () => {
+    return (
+      <>
+        <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                </ul>
+                <form className="d-flex">
+                  {/* <Link to='/'> */}
+                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                   {/* </Link> */}
                   <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p>
                 </form>
@@ -618,7 +698,7 @@ const cbslAdminUser = () => {
                       <img src='logo.png' />
                     </div>
                     <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <Link to='/dashboard'><p className='ms-4 '><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                     <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
@@ -636,12 +716,12 @@ const cbslAdminUser = () => {
                       <img src='logo.png' />
                     </div>
                     <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
                     </div>
-                   
+
                     <div className='row' onClick={handleActiveTab}>
                       <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                     </div>
@@ -653,7 +733,7 @@ const cbslAdminUser = () => {
                         <hr />
                       </>
                     )}
-                    
+
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -667,7 +747,7 @@ const cbslAdminUser = () => {
               <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
               <form className="d-flex">
                 {/* <Link to='/'> */}
-                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
                 {/* </Link> */}
                 <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p>
               </form>
@@ -680,48 +760,45 @@ const cbslAdminUser = () => {
                   <img src='logo.png' />
                 </div>
                 <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor:'pointer' }}><PiFilePdfDuotone  style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
-                    </div>
+                  <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                </div>
                 <div className='row' onClick={handleActiveTab}>
-                      <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
-                    </div>
-                    <div className='row' onClick={handleActiveTab}>
-                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
-                    </div>
-                    {showReportDropdown && (
-                      <>
-                        <hr />
-                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-                        <br/><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
-                        <hr />
-                      </>
-                    )}
-                   
+                  <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
+                </div>
+                {showReportDropdown && (
+                  <>
+                    <hr />
+                    <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                    <br /><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
+                    <hr />
+                  </>
+                )}
+
               </div>
             </div>
           }
         </div>
       </>
     )
-}
+  }
 
-const isAdmin = userLog && userLog.user_roles.includes("Admin");
-const isCbslUser = userLog && userLog.user_roles.includes("Cbsl User");
-const isDistrictHeadUser=userLog && userLog.user_roles.includes("All District Head");
-const iscbslAdmin=userLog && userLog.user_roles.includes("CBSL Admin");
+  const isAdmin = userLog && userLog.user_roles.includes("Admin");
+  const isServerUser = userLog && userLog.user_roles.includes("Server Database Monitoring");
+  const isCbslUser = userLog && userLog.user_roles.includes("Cbsl User");
+  const isDistrictHeadUser = userLog && userLog.user_roles.includes("All District Head");
+  const iscbslAdmin = userLog && userLog.user_roles.includes("CBSL Admin");
 
   return (
     <>
-      {/* {userLog && userLog.user_roles === "Admin" ? adminUser() : normalUser()}       */}
-    
-      {/* {isAdmin ? adminUser() : normalUser()} */}
       {isAdmin && adminUser()}
-    {isCbslUser && clientUser()}
-    {isDistrictHeadUser && districtHeadUser()}
-    {iscbslAdmin && cbslAdminUser()}
-    {!isAdmin && !isCbslUser && !isDistrictHeadUser && !iscbslAdmin && normalUser()}
-
-
+      {isServerUser && serverUser()}
+      {isCbslUser && clientUser()}
+      {isDistrictHeadUser && districtHeadUser()}
+      {iscbslAdmin && cbslAdminUser()}
+      {!isAdmin && !isCbslUser && !isDistrictHeadUser && !iscbslAdmin && !isServerUser && normalUser()}
     </>
 
   )
