@@ -9,6 +9,7 @@ import { MdFileDownload } from "react-icons/md";
 import { Modal } from 'react-bootstrap';
 import { API_URL } from "./Api";
 import { BsCursor } from "react-icons/bs";
+import { formatDate } from './utils';
 
 const Report = () => {
   const [startDate, setStartDate] = useState('');
@@ -64,410 +65,320 @@ const Report = () => {
     setShowConfirmation(true);
   };
 
-  const handleConfirmedExport = () => {
-    // Proceed with CSV export
-    if (csv) {
-      const link = document.createElement("a");
-      link.href = csv;
-      link.setAttribute("download", "AllLocationSummaryReport.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  const handleConfirmedExport = async () => {
+    try {
+      const userLog = JSON.parse(localStorage.getItem('user'));
+      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
+        // User has a specific location assigned
+        await fetchSummaryReportCsvFileLocation(startDate, endDate);
+      } else {
+        // User does not have a specific location assigned (handle based on selected location)
+        await fetchSummaryReportCsvFile(locationName, startDate, endDate);
+      }
+
+      if (csv) {
+        const link = document.createElement("a");
+        link.href = csv;
+        link.setAttribute("download", "AllLocationSummaryReport.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      setShowConfirmation(false);
+    } catch (error) {
+      console.error("Error during CSV export:", error);
+      setError("Error during CSV export. Please try again.");
     }
-    setShowConfirmation(false);
   };
 
   const handleCancelExport = () => {
     setShowConfirmation(false);
   };
 
-
-
   const handleReportCsv = () => {
     setShowConfirmationBox(true);
   };
-  const handleReportCsvConfirmation = () => {
-    if (reportCsv) {
-      const link = document.createElement("a");
-      link.href = reportCsv;
-      link.setAttribute("download", "LocationWiseDetailedReport.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-    setShowConfirmationBox(false);
-    setShowConfirmationBox(false);
 
-  }
+  const handleReportCsvConfirmation = async () => {
+    try {
+      const userLog = JSON.parse(localStorage.getItem('user'));
+  
+      // Determine the appropriate function to fetch CSV data
+      let fetchDataFunction;
+      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
+        // User has a specific location assigned
+        fetchDataFunction = fetchSummaryReportTableCsvFileLocation;
+      } else {
+        // User does not have a specific location assigned (handle based on selected location)
+        fetchDataFunction = fetchSummaryReportTableCsvFile;
+      }
+  
+      // Fetch CSV data
+      await fetchDataFunction(startDate, endDate);
+  
+      // Proceed with downloading the CSV if available
+      if (reportCsv) {
+        const link = document.createElement("a");
+        link.href = reportCsv;
+        link.setAttribute("download", "LocationWiseDetailedReport.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+  
+      setShowConfirmationBox(false);
+    } catch (error) {
+      console.error("Error during CSV export:", error);
+      setError("Error during CSV export. Please try again.");
+    }
+  };
+  
+
 
   const handleReportCancelExport = () => {
-    setShowConfirmationBox(false)
-  }
+    setShowConfirmationBox(false);
+  };
 
+  const fetchSummaryReportCsvFileLocation = async (startDate, endDate) => {
+    try {
+      // Get user information from localStorage
+      const userLog = JSON.parse(localStorage.getItem('user'));
+
+      // Check if the user has a specific location assigned
+      let locationName = null;
+      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
+        locationName = userLog.locations[0].name;
+      }
+
+      // Convert start and end dates to the correct format if provided
+      const formatDate = (date) => {
+        // Format to YYYY-MM-DD
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      let apiUrl = `${API_URL}/summarycsv`;
+      const queryParams = [];
+
+      if (locationName) {
+        queryParams.push(`locationName=${locationName}`);
+      }
+      if (startDate) {
+        queryParams.push(`startDate=${formatDate(startDate)}`);
+      }
+      if (endDate) {
+        queryParams.push(`endDate=${formatDate(endDate)}`);
+      }
+
+      // If there are any query parameters, append them to the URL
+      if (queryParams.length > 0) {
+        apiUrl += `?${queryParams.join("&")}`;
+      }
+
+      console.log("CSV API URL:", apiUrl); // Log the constructed API URL
+
+      const response = await axios.get(apiUrl, { responseType: "blob" });
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      setCsv(url);
+
+    } catch (error) {
+      console.error("Error in exporting data:", error);
+      setError("Error in exporting data. Please try again.");
+    }
+  };
+
+  const fetchSummaryReportTableCsvFileLocation = async (startDate, endDate) => {
+    try {
+      // Get user information from localStorage
+      const userLog = JSON.parse(localStorage.getItem('user'));
+  
+      // Check if the user has a specific location assigned
+      let locationName = null;
+      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
+        locationName = userLog.locations[0].name;
+      }
+  
+      // Convert start and end dates to the correct format if provided
+      const formatDate = (date) => {
+        // Format to YYYY-MM-DD
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+  
+      // Construct the API URL with default locationName parameter
+      let apiUrl = `${API_URL}/reporttablecsv`;
+      const queryParams = [];
+  
+      // Always include locationName if available
+      if (locationName) {
+        queryParams.push(`locationName=${locationName}`);
+      }
+  
+      // Include startDate and endDate if provided
+      if (startDate) {
+        queryParams.push(`startDate=${formatDate(startDate)}`);
+      }
+      if (endDate) {
+        queryParams.push(`endDate=${formatDate(endDate)}`);
+      }
+  
+      // Append query parameters to the apiUrl if any
+      if (queryParams.length > 0) {
+        apiUrl += `?${queryParams.join("&")}`;
+      }
+  
+      console.log("Report Table CSV API URL:", apiUrl); // Log the constructed API URL
+  
+      const response = await axios.get(apiUrl, { responseType: "blob" });
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      setReportCsv(url);
+  
+    } catch (error) {
+      console.error("Error in exporting data:", error);
+      setError("Error in exporting data. Please try again.");
+    }
+  };
+  
+
+  const fetchSummaryReportCsvFile = async (locationName, startDate, endDate) => {
+    const formattedStartDate = startDate ? new Date(startDate) : null;
+    const formattedEndDate = endDate ? new Date(endDate) : null;
+    const formatDate = (date) => {
+      // Format to YYYY-MM-DD
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    let apiUrl = `${API_URL}/summarycsv`;
+    if (locationName && formattedStartDate && formattedEndDate) {
+      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+    } else if (locationName) {
+      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
+    } else if (formattedStartDate && formattedEndDate) {
+      apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+    }
+
+    try {
+      const response = await axios.get(apiUrl, { responseType: "blob" });
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      setCsv(url);
+    } catch (error) {
+      console.error("Error in exporting data:", error);
+    }
+  };
+
+  const fetchSummaryReportTableCsvFile = async (locationName, startDate, endDate) => {
+    const formattedStartDate = startDate ? new Date(startDate) : null;
+    const formattedEndDate = endDate ? new Date(endDate) : null;
+    const formatDate = (date) => {
+      // Format to YYYY-MM-DD
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    let apiUrl = `${API_URL}/reporttablecsv`;
+    if (locationName && formattedStartDate && formattedEndDate) {
+      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+    } else if (locationName) {
+      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
+    } else if (formattedStartDate && formattedEndDate) {
+      apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+    }
+
+    try {
+      const response = await axios.get(apiUrl, { responseType: "blob" });
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      setReportCsv(url);
+    } catch (error) {
+      console.error("Error in exporting data:", error);
+    }
+  };
 
   useEffect(() => {
     const locationName = selectedLocations;
+
+    const formatDate = (date) => {
+      // Format to YYYY-MM-DD
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     const summaryData = async () => {
+
       try {
-        let apiUrl = `${API_URL}/summary`;
         const queryParams = {};
-    
+
+        // Optional: Fetch user info from localStorage
         const userLog = JSON.parse(localStorage.getItem('user'));
-    
+        if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
+          queryParams.locationName = userLog.locations[0].name;
+        }
+
+        if (startDate && endDate) {
+          queryParams.startDate = formatDate(startDate);
+          queryParams.endDate = formatDate(endDate);
+        }
+
+        const response = await axios.get(`${API_URL}/summary`, { params: queryParams });
+        setSummary(response.data);
+      } catch (error) {
+        console.error("Error fetching summary data:", error);
+        // Handle error state or display error message to user
+      }
+    };
+    const fetchReportData = async () => {
+      try {
+        let apiUrl = `${API_URL}/reportTable`;
+        const queryParams = {};
+
+        const userLog = JSON.parse(localStorage.getItem('user'));
+
         if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
           queryParams.locationName = userLog.locations[0].name;
         }
-    
-        // Check if startDate and endDate are valid Date objects and log them
-        if (startDate) {
-          console.log("Original Start Date:", startDate);
-          if (!(startDate instanceof Date) || isNaN(startDate)) {
-            console.error("Invalid startDate:", startDate);
-            setError("Invalid start date. Please select a valid start date.");
-            return;
-          }
-        }
-        
-        if (endDate) {
-          console.log("Original End Date:", endDate);
-          if (!(endDate instanceof Date) || isNaN(endDate)) {
-            console.error("Invalid endDate:", endDate);
-            setError("Invalid end date. Please select a valid end date.");
-            return;
-          }
-        }
-    
+
         if (startDate && endDate) {
-          const formattedStartDate = startDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-          const formattedEndDate = endDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-          queryParams.startDate = formattedStartDate;
-          queryParams.endDate = formattedEndDate;
+          queryParams.startDate = formatDate(startDate);
+          queryParams.endDate = formatDate(endDate);
         }
-    
+
         console.log("API URL:", apiUrl); // Log the constructed API URL
         console.log("Query Params:", queryParams); // Log query parameters
-    
+
         setIsLoading(true);
         const response = await axios.get(apiUrl, { params: queryParams });
         console.log("API Response:", response.data); // Log the API response
-        setSummary(response.data);
+        setReport(response.data);
         setIsLoading(false);
+        updateTotalLocations(response.data);
       } catch (error) {
-        console.error("Error fetching summary data:", error);
-        setError("Error fetching summary data. Please try again.");
+        console.error("Error fetching report data:", error);
+        setError("Error fetching report data. Please try again.");
         setIsLoading(false);
       }
     };
-    
-    
-    const fetchSummaryReportCsvFile = () => {
-      const userLog = JSON.parse(localStorage.getItem('user'));
-      const locationNames = userLog.locations.map(location => location.name);
-      
-      const formattedStartDate = startDate ? new Date(startDate).toISOString().split('T')[0] : null;
-      const formattedEndDate = endDate ? new Date(endDate).toISOString().split('T')[0] : null;
-      
-      let apiUrl = `${API_URL}/summarycsv`;
-      const params = [];
-      
-      if (locationNames.length > 0) {
-        params.push(...locationNames.map(name => `locationName=${encodeURIComponent(name)}`));
-      } else {
-        params.push('locationName=null');
-      }
-      
-      if (formattedStartDate && !isNaN(new Date(formattedStartDate).getTime()) && formattedEndDate && !isNaN(new Date(formattedEndDate).getTime())) {
-        params.push(`startDate=${encodeURIComponent(formattedStartDate)}`);
-        params.push(`endDate=${encodeURIComponent(formattedEndDate)}`);
-      }
-      
-      if (params.length > 0) {
-        apiUrl += `?${params.join('&')}`;
-      }
-      
-      axios.get(apiUrl, { responseType: "blob" })
-        .then((response) => {
-          const blob = new Blob([response.data], { type: "text/csv" });
-          const url = window.URL.createObjectURL(blob);
-          setCsv(url);
-        })
-        .catch((error) => {
-          console.error("Error fetching summary CSV report:", error);
-        });
-    };
 
-    const fetchSummaryReportTableCsvFile = () => {
-      const userLog = JSON.parse(localStorage.getItem('user'));
-      const locationNames = userLog.locations.map(location => location.name);
-      
-      // Handle null or invalid dates gracefully
-      const formattedStartDate = startDate ? new Date(startDate).toISOString().split('T')[0] : null;
-      const formattedEndDate = endDate ? new Date(endDate).toISOString().split('T')[0] : null;
-      
-      let apiUrl = `${API_URL}/reporttablecsv`;
-      const params = [];
-      
-      // Include locationName in the query if user has locations
-      if (locationNames.length > 0) {
-        params.push(...locationNames.map(name => `locationName=${encodeURIComponent(name)}`));
-      }
-      
-      // Include startDate and endDate in the query if provided and valid
-      if (formattedStartDate && formattedEndDate) {
-        params.push(`startDate=${encodeURIComponent(formattedStartDate)}`);
-        params.push(`endDate=${encodeURIComponent(formattedEndDate)}`);
-      }
-      
-      if (params.length > 0) {
-        apiUrl += `?${params.join('&')}`;
-      }
-      
-      // Make API request
-      axios.get(apiUrl, { responseType: "blob" })
-        .then((response) => {
-          const blob = new Blob([response.data], { type: "text/csv" });
-          const url = window.URL.createObjectURL(blob);
-          setReportCsv(url); // Set the CSV download URL or for further handling
-        })
-        .catch((error) => {
-          console.error("Error fetching CSV report:", error);
-        });
-    };
-    // const fetchSummaryReportCsvFile = (startDate, endDate) => {
-    //   const userLog = JSON.parse(localStorage.getItem('user'));
-    //   const locationNames = userLog.locations.map(location => location.name);
-
-    //   const formattedStartDate = startDate ? new Date(startDate) : null;
-    //   const formattedEndDate = endDate ? new Date(endDate) : null;
-
-    //   const formatDate = (date) => date;
-
-    //   let apiUrl = `${API_URL}/summarycsv`;
-    //   const params = [];
-
-    //   // Include locationName in the query if user has locations
-    //   if (locationNames.length > 0) {
-    //     params.push(...locationNames.map(name => `locationName=${name}`));
-    //   }
-
-    //   // Include startDate and endDate in the query if provided
-    //   if (formattedStartDate && formattedEndDate) {
-    //     params.push(`startDate=${formatDate(formattedStartDate)}`);
-    //     params.push(`endDate=${formatDate(formattedEndDate)}`);
-    //   }
-
-    //   if (params.length > 0) {
-    //     apiUrl += `?${params.join('&')}`;
-    //   }
-
-    //   // Make API request
-    //   axios.get(apiUrl, { responseType: "blob" })
-    //     .then((response) => {
-    //       const blob = new Blob([response.data], { type: "text/csv" });
-    //       const url = window.URL.createObjectURL(blob);
-    //       setCsv(url); // Assuming setCsv sets the URL for download or further handling
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error in exporting data:", error);
-    //     });
-    // };
-
-    // const fetchSummaryReportTableCsvFile = (startDate, endDate) => {
-    //   const userLog = JSON.parse(localStorage.getItem('user'));
-    //   const locationNames = userLog.locations.map(location => location.name);
-
-    //   const formattedStartDate = startDate ? new Date(startDate) : null;
-    //   const formattedEndDate = endDate ? new Date(endDate) : null;
-
-    //   const formatDate = (date) => date;
-
-    //   let apiUrl = `${API_URL}/reporttablecsv`;
-    //   const params = [];
-
-    //   // Include locationName in the query if user has locations
-    //   if (locationNames.length > 0) {
-    //     params.push(...locationNames.map(name => `locationName=${name}`));
-    //   }
-
-    //   // Include startDate and endDate in the query if provided
-    //   if (formattedStartDate && formattedEndDate) {
-    //     params.push(`startDate=${formatDate(formattedStartDate)}`);
-    //     params.push(`endDate=${formatDate(formattedEndDate)}`);
-    //   }
-
-    //   if (params.length > 0) {
-    //     apiUrl += `?${params.join('&')}`;
-    //   }
-
-    //   // Make API request
-    //   axios.get(apiUrl, { responseType: "blob" })
-    //     .then((response) => {
-    //       const blob = new Blob([response.data], { type: "text/csv" });
-    //       const url = window.URL.createObjectURL(blob);
-    //       setReportCsv(url); // Assuming setReportCsv sets the URL for download or further handling
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error in exporting data:", error);
-    //     });
-    // };
-///date formatted 
-const fetchReportData = async () => {
-  try {
-    let apiUrl = `${API_URL}/reportTable`;
-    const queryParams = {};
-
-    const userLog = JSON.parse(localStorage.getItem('user'));
-
-    if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-      queryParams.locationName = userLog.locations[0].name;
-    }
-
-    if (startDate && endDate) {
-      const formattedStartDate = startDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-      const formattedEndDate = endDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-      queryParams.startDate = formattedStartDate;
-      queryParams.endDate = formattedEndDate;
-    }
-
-    console.log("API URL:", apiUrl); // Log the constructed API URL
-    console.log("Query Params:", queryParams); // Log query parameters
-
-    setIsLoading(true);
-    const response = await axios.get(apiUrl, { params: queryParams });
-    console.log("API Response:", response.data); // Log the API response
-    setReport(response.data);
-    setIsLoading(false);
-    updateTotalLocations(response.data);
-  } catch (error) {
-    console.error("Error fetching report data:", error);
-    setError("Error fetching report data. Please try again.");
-    setIsLoading(false);
-  }
-};
-
-
-
-
-
-
-
-
-//with location name
-    // const fetchReportData = async () => {
-    //   try {
-    //     let apiUrl = `${API_URL}/reportTable`;
-    //     const queryParams = {};
-
-    //     const userLog = JSON.parse(localStorage.getItem('user'));
-
-    //     if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-    //       queryParams.locationName = userLog.locations[0].name;
-    //     }
-
-    //     if (startDate && endDate) {
-    //       const formattedStartDate = startDate;
-    //       const formattedEndDate = endDate;
-    //       queryParams.startDate = formattedStartDate;
-    //       queryParams.endDate = formattedEndDate;
-    //     }
-
-    //     console.log("API URL:", apiUrl); // Log the constructed API URL
-    //     console.log("Query Params:", queryParams); // Log query parameters
-
-    //     setIsLoading(true);
-    //     const response = await axios.get(apiUrl, { params: queryParams });
-    //     console.log("API Response:", response.data); // Log the API response
-    //     setReport(response.data);
-    //     setIsLoading(false);
-    //     updateTotalLocations(response.data);
-    //   } catch (error) {
-    //     console.error("Error fetching report data:", error);
-    //     setError("Error fetching report data. Please try again.");
-    //     setIsLoading(false);
-    //   }
-    // };
-
-//without location name
-    //     const fetchReportData = async () => {
-
-    //       try {
-    //         let apiUrl = `${API_URL}/reportTable`;
-    //         if (startDate && endDate) {
-    //           const formattedStartDate = startDate.toISOString().split('T')[0];
-    //           const formattedEndDate = endDate.toISOString().split('T')[0];
-    //           apiUrl += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
-    //         }
-    //         console.log("API URL:", apiUrl); // Log the constructed API URL
-    //         setIsLoading(true);
-    //         const response = await axios.get(apiUrl);
-    //         console.log("API Response:", response.data); // Log the API response
-    //         setReport(response.data);
-    //         setIsLoading(false);
-    //         updateTotalLocations(response.data);
-    //       } catch (error) {
-    //         console.error("Error fetching report data:", error);
-    //         setError("Error fetching report data. Please try again.");
-    // setIsLoading(false);
-    //       }
-    //     };
-
-    const fetchLocationData = async () => {
-      if (selectedLocations.length > 0) {
-        setIsLoading(true);
-        try {
-          const locationDataResponses = await Promise.all(
-            selectedLocations.map((location) =>
-              axios.get(
-                `${API_URL}/reportLocationWiseTable?locationname=${location}`
-              )
-            )
-          );
-          const locationData = locationDataResponses.map(
-            (response) => response.data
-          );
-          setLocationData(locationData);
-          console.log("agra", locationData);
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching location data:", error);
-          setError("Error fetching location data. Please try again.");
-          setIsLoading(false);
-        }
-      }
-    };
-
-    const fetchSummaryLocationData = async () => {
-      if (selectedLocations.length > 0) {
-        try {
-          setIsLoading(true);
-          const locationDataResponses = await Promise.all(
-            selectedLocations.map((location) =>
-              axios.get(
-                `${API_URL}/summarylocationname?locationname=${location}`
-              )
-            )
-          );
-          const summaryLocationData = locationDataResponses.map(
-            (response) => response.data
-          );
-          setSummaryLocationData(summaryLocationData);
-          console.log("agra", summaryLocationData);
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching location data:", error);
-          setError("Error fetching location data. Please try again.");
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchLocationData();
     fetchSummaryReportTableCsvFile(locationName, startDate, endDate);
     fetchSummaryReportCsvFile(locationName, startDate, endDate);
+    fetchSummaryReportTableCsvFileLocation(locationName, startDate, endDate);
+    fetchSummaryReportCsvFileLocation(locationName, startDate, endDate);
     summaryData();
     fetchReportData();
-    // fetchLocationData();
-    fetchSummaryLocationData();
 
   }, [selectedLocations, endDate]);
 
