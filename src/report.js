@@ -108,14 +108,14 @@ const Report = () => {
       let fetchDataFunction;
       if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
         // User has a specific location assigned
-        fetchDataFunction = fetchSummaryReportTableCsvFileLocation;
+       fetchSummaryReportTableCsvFileLocation();
       } else {
         // User does not have a specific location assigned (handle based on selected location)
-        fetchDataFunction = fetchSummaryReportTableCsvFile;
+        fetchSummaryReportTableCsvFile();
       }
   
       // Fetch CSV data
-      await fetchDataFunction(startDate, endDate);
+     
   
       // Proceed with downloading the CSV if available
       if (reportCsv) {
@@ -316,8 +316,6 @@ const Report = () => {
       return `${year}-${month}-${day}`;
     };
 
-   
-
     const summaryData = async () => {
 
       try {
@@ -372,15 +370,31 @@ const Report = () => {
         setIsLoading(false);
       }
     };
-    const userLog = JSON.parse(localStorage.getItem('user'));
-    if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-      fetchSummaryReportCsvFileLocation(locationName, startDate, endDate);
-      fetchSummaryReportTableCsvFileLocation(locationName, startDate, endDate);
-    } else {
-      fetchSummaryReportCsvFile(locationName, startDate, endDate);
-      fetchSummaryReportTableCsvFile(locationName, startDate, endDate);
-    }
+    const fetchReports = async (locationName, startDate, endDate) => {
+      const userLog = JSON.parse(localStorage.getItem('user'));
+      let locations = [];
     
+      if (userLog && userLog.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
+        locations = [userLog.locations[0].name];
+      }
+    
+      // Ensure locationName is an array or set it to an empty array if not
+      if (!Array.isArray(locationName)) {
+        locationName = [locationName]; // Convert to array if it's not already
+      }
+    
+      // Concatenate user's location if available
+      const finalLocations = [...new Set([...locationName, ...locations])];
+    
+      await Promise.all([
+        fetchSummaryReportTableCsvFileLocation(finalLocations, startDate, endDate),
+        fetchSummaryReportCsvFileLocation(finalLocations, startDate, endDate),
+        fetchSummaryReportTableCsvFile(finalLocations, startDate, endDate),
+        fetchSummaryReportCsvFile(finalLocations, startDate, endDate)
+      ]);
+    };
+    
+    fetchReports(locationName, startDate, endDate);
     summaryData();
     fetchReportData();
 

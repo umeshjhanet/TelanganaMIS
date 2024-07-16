@@ -8,6 +8,8 @@ import {
   CChartPolarArea,
   CChartRadar,
 } from "@coreui/react-chartjs";
+import Chart from 'react-apexcharts';
+import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import Header from "./Components/Header";
 import axios, { all } from "axios";
 import "./App.css";
@@ -347,7 +349,57 @@ const DistrictHeadDashboard = () => {
   if (!userLog) {
     Navigate('/');
   }
-
+  const formatChartData = (data) => ({
+    options: {
+      chart: {
+        toolbar: {
+          show: false,
+        },
+        stacked: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        width: -15,
+        colors: ["transparent"],
+      },
+      legend: {
+        show: true,
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "30%",
+          borderRadius: 2,
+        },
+      },
+      colors: ["#4BC0C0", "#f87979", "#02B2AF"],
+      xaxis: {
+        categories: data.labels,
+      },
+      responsive: [
+        {
+          breakpoint: 1024,
+          options: {
+            plotOptions: {
+              bar: {
+                columnWidth: "30%",
+                borderRadius: 7,
+              },
+            },
+          },
+        },
+      ],
+    },
+    series: [
+      {
+        name: data.datasets[0].label,
+        data: data.datasets[0].data,
+      },
+    ],
+  });
 
   return (
     <>
@@ -438,24 +490,18 @@ const DistrictHeadDashboard = () => {
             </div>
             <div className="row mt-2">
               <div className="card">
-                <h4 className="ms-1">SCANNING REPORT OF LAST 30 DAYS</h4>
-                <h5 className="ms-1">All Location: Images</h5>
-                <CCard>
-                  <CCardBody>
-                    <CChartBar data={monthImage} labels="months" />
-                  </CCardBody>
-                </CCard>
-                <div>
-                  {scannedData && (
-                    <BarChart
-                      className="scanned-chart"
-                      xAxis={scannedData.xAxis}
-                      series={scannedData.series}
-                      width={scannedData.width}
-                      height={scannedData.height}
+              <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">SCANNED REPORT OF LAST 30 DAYS </CardTitle>
+                    <Chart
+                      options={formatChartData(monthImage).options}
+                      series={formatChartData(monthImage).series}
+                      type="bar"
+                      height="379"
                     />
-                  )}
-                </div>
+                  </CardBody>
+                </Card>
+                
               </div>
             </div>
             <div className="row mt-2">
@@ -587,16 +633,18 @@ const DistrictHeadDashboard = () => {
 
 
             <div className="row mt-2">
-              <CCard>
-                <h4 className="ms-1">CUMULATIVE SCANNED TILL DATE</h4>
-                <h5 className="ms-1">All Location: Images</h5>
-                <CCardBody>
-                  <CChartBar
-                    data={allLocationImage}
-                    labels="months"
-                  ></CChartBar>
-                </CCardBody>
-              </CCard>
+            <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                    <Chart
+                      options={formatChartData(allLocationImage).options}
+                      series={formatChartData(allLocationImage).series}
+                      type="bar"
+                      height="379"
+                    />
+                  </CardBody>
+                </Card>
             </div>
           </div>
         </div>
