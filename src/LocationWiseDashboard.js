@@ -17,7 +17,7 @@ import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import { API_URL } from "./Api";
 import { useNavigate } from 'react-router-dom';
-import queryString from 'query-string';
+
 
 const LocationWiseDashboard = () => {
   const currentDate = new Date();
