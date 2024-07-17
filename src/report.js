@@ -583,7 +583,7 @@ const Report = () => {
                   className="btn ms-1 me-1"
                   style={{
                     height: "40px",
-                    backgroundColor: "#944e63",
+                    backgroundColor: "#4BC0C0",
                     marginBottom: "5px",
                     borderRadius: "0px",
                     color: 'white',
