@@ -453,7 +453,7 @@ input[type="submit"]:hover {
 .location-card {
   background-color: white;
   border: 1px solid gray;
-  width: 380px;
+  width: 243px;
   height: 200px;
   overflow-y: auto;
   position: relative;
