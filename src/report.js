@@ -17,6 +17,9 @@ const Report = () => {
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [locationName, setLocationName] = useState("");
+  const [showFileType, setShowFileType] = useState(false);
+  const [selectedFileTypes, setSelectedFileTypes] = useState([]);
+  const [fileType, setfileType] = useState("");
   const [locationData, setLocationData] = useState(null);
   const [summaryLocationData, setSummaryLocationData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,13 +33,16 @@ const Report = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showConfirmationBox, setShowConfirmationBox] = useState(false);
   const [totalLocations, setTotalLocations] = useState(0);
-
+  const filedropdownRef = useRef(null);
 
   // const userLog = JSON.parse(localStorage.getItem('user'));
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowLocation(false);
+      }
+      if (filedropdownRef.current && !filedropdownRef.current.contains(event.target)) {
+        setShowFileType(false);
       }
     };
 
@@ -45,7 +51,7 @@ const Report = () => {
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, []);
 
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
@@ -58,6 +64,20 @@ const Report = () => {
   const removeLocation = (locationName) => {
     setSelectedLocations(
       selectedLocations.filter((loc) => loc !== locationName)
+    );
+  };
+
+  const handleFileType = (fileType) => {
+    if (!selectedFileTypes.includes(fileType)) {
+      setSelectedFileTypes([...selectedFileTypes, fileType]);
+      setSearchInput("");
+    }
+    setShowFileType(false); // Close the dropdown when a FileType is selected
+  };
+
+  const removeFileType = (fileType) => {
+    setSelectedFileTypes(
+      selectedFileTypes.filter((loc) => loc !== fileType)
     );
   };
 
@@ -108,16 +128,12 @@ const Report = () => {
       let fetchDataFunction;
       if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
         // User has a specific location assigned
-        fetchDataFunction = fetchSummaryReportTableCsvFileLocation;
+       fetchSummaryReportTableCsvFileLocation();
       } else {
         // User does not have a specific location assigned (handle based on selected location)
-        fetchDataFunction = fetchSummaryReportTableCsvFile;
+        fetchSummaryReportTableCsvFile();
       }
-  
-      // Fetch CSV data
-      await fetchDataFunction(startDate, endDate);
-  
-      // Proceed with downloading the CSV if available
+
       if (reportCsv) {
         const link = document.createElement("a");
         link.href = reportCsv;
@@ -307,6 +323,7 @@ const Report = () => {
 
   useEffect(() => {
     const locationName = selectedLocations;
+    const fileType = selectedFileTypes;
 
     const formatDate = (date) => {
       // Format to YYYY-MM-DD
@@ -316,10 +333,7 @@ const Report = () => {
       return `${year}-${month}-${day}`;
     };
 
-   
-
     const summaryData = async () => {
-
       try {
         const queryParams = {};
 
@@ -332,6 +346,9 @@ const Report = () => {
         if (startDate && endDate) {
           queryParams.startDate = formatDate(startDate);
           queryParams.endDate = formatDate(endDate);
+        }
+        if (fileType) {
+          queryParams.fileType = selectedFileTypes;  
         }
 
         const response = await axios.get(`${API_URL}/summary`, { params: queryParams });
@@ -356,6 +373,9 @@ const Report = () => {
           queryParams.startDate = formatDate(startDate);
           queryParams.endDate = formatDate(endDate);
         }
+        if (fileType) {
+          queryParams.fileType = selectedFileTypes;  
+        }
 
         console.log("API URL:", apiUrl); // Log the constructed API URL
         console.log("Query Params:", queryParams); // Log query parameters
@@ -372,19 +392,46 @@ const Report = () => {
         setIsLoading(false);
       }
     };
-    const userLog = JSON.parse(localStorage.getItem('user'));
-    if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-      fetchSummaryReportCsvFileLocation(locationName, startDate, endDate);
-      fetchSummaryReportTableCsvFileLocation(locationName, startDate, endDate);
-    } else {
-      fetchSummaryReportCsvFile(locationName, startDate, endDate);
-      fetchSummaryReportTableCsvFile(locationName, startDate, endDate);
+    const fetchReports = async (locationName, startDate, endDate) => {
+      const userLog = JSON.parse(localStorage.getItem('user'));
+      let locations = [];
+    
+      if (userLog && userLog.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
+        locations = [userLog.locations[0].name];
+      }
+    
+      // Ensure locationName is an array or set it to an empty array if not
+      if (!Array.isArray(locationName)) {
+        locationName = [locationName]; // Convert to array if it's not already
+      }
+    
+      // Concatenate user's location if available
+      const finalLocations = [...new Set([...locationName, ...locations])];
+    
+      await Promise.all([
+        fetchSummaryReportTableCsvFileLocation(finalLocations, startDate, endDate),
+        fetchSummaryReportCsvFileLocation(finalLocations, startDate, endDate),
+        fetchSummaryReportTableCsvFile(finalLocations, startDate, endDate),
+        fetchSummaryReportCsvFile(finalLocations, startDate, endDate)
+      ]);
+    };
+
+    const fetchFileTypes = () => {
+      setIsLoading(true);
+            axios.get(`${API_URL}/summaryfiletype`)
+                .then(response => {setfileType(response.data)
+                setIsLoading(false);
+                })
+                .catch(error => console.error(error));
+            setIsLoading(false);
     }
     
+    fetchReports(locationName, startDate, endDate);
     summaryData();
     fetchReportData();
+    fetchFileTypes();
 
-  }, [selectedLocations, endDate]);
+  }, [selectedLocations,selectedFileTypes, endDate]);
 
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
@@ -415,7 +462,7 @@ const Report = () => {
               </div>
             </div>
             <div className="row mt-2 me-1 search-report-card" >
-              <div className="col-lg-4 col-md-2 col-sm-12">
+              <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
                   ref={dropdownRef}
                   className="search-bar"
@@ -470,7 +517,61 @@ const Report = () => {
                   </>
                 )}
               </div>
-              <div className="col-md-2"></div>
+              <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
+                <div
+                  ref={filedropdownRef}
+                  className="search-bar"
+                  style={{
+                    border: "1px solid #000",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    minHeight: "30px",
+                  }}
+
+                  contentEditable={true}
+                  onClick={() => setShowFileType(!showFileType)}
+                >
+                  {selectedFileTypes.length === 0 && !showFileType && (
+                    <span className="placeholder-text">Search File Type...</span>
+                  )}
+                  {selectedFileTypes.map((FileType, index) => (
+                    <span key={index} className="selected-location">
+                      {FileType}
+                      <button
+                        onClick={() => removeFileType(FileType)}
+                        style={{
+                          backgroundColor: "black",
+                          color: "white",
+                          border: "none",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        x
+                      </button>
+                      &nbsp;
+                    </span>
+                  ))}
+                  <span style={{ minWidth: "5px", display: "inline-block" }}>
+                    &#8203;
+                  </span>
+                </div>
+                {showFileType && (
+        <div className="location-card">
+          {Array.isArray(fileType) && fileType.length > 0 ? (
+            fileType.map((item, index) => (
+              <div key={index}>
+                <p onClick={() => handleFileType(item.filetype)}>
+                  {item.filetype}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>No file types available</p>
+          )}
+        </div>
+      )}
+              </div>
+             
               <div className="col-lg-6 col-md-8 col-sm-12" >
                 <DatePicker
                   className="date-field"
@@ -482,9 +583,10 @@ const Report = () => {
                   className="btn ms-1 me-1"
                   style={{
                     height: "40px",
-                    backgroundColor: "#4BC0C0",
+                    backgroundColor: "#944e63",
                     marginBottom: "5px",
                     borderRadius: "0px",
+                    color: 'white',
                   }}
                 >
                   To

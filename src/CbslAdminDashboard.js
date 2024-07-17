@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import axios, { all } from "axios";
+import "./App.css";
 import { CCard, CCardBody, CCol, CCardHeader, CRow } from "@coreui/react";
 import {
   CChartBar,
@@ -8,16 +10,12 @@ import {
   CChartPolarArea,
   CChartRadar,
 } from "@coreui/react-chartjs";
-import Header from "./Components/Header";
-import axios, { all } from "axios";
-import "./App.css";
-import Footer from "./Footer";
-import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
-import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import { API_URL } from "./Api";
 import { useNavigate } from 'react-router-dom';
+import Chart from "react-apexcharts";
+import { Card, CardBody, CardTitle, CardSubtitle } from "reactstrap";
 
 const CbslAdminDashboard = () => {
   const [data2, setData2] = useState();
@@ -89,35 +87,9 @@ const CbslAdminDashboard = () => {
       },
     ],
   });
-  const [weekFile, setWeekFile] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "No. of Files",
-        backgroundColor: [
-          "#ad33ff",
-          "#ff5733",
-          "#FC819E",
-          "#3357ff",
-          "#ff33ad",
-          "#D37676",
-          "#33adff",
-        ],
-        data: [],
-      },
-    ],
-  });
-
-  const [weekImage, setWeekImage] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "No. of Images",
-        backgroundColor: "#ad33ff",
-        data: [],
-      },
-    ],
-  });
+  const [weekImage, setWeekImage] = useState([]);
+  const [weekFile, setWeekFile] = useState([]);
+  
   const [monthImage, setMonthImage] = useState({
     labels: [],
     datasets: [
@@ -486,82 +458,39 @@ const CbslAdminDashboard = () => {
         });
     };
 
-    const fetchWeekFileGraphData = () => {
-      const params = {
-        params: {
-          locationNames: selectedLocations, // Assuming selectedLocations is an array of location names
-        },
-      };
-      axios
-        .get(`${API_URL}/graph5`, params)
-        .then((response) => {
-          const apiData = response.data;
-          const labels = apiData.map((item) => item["scandate"]);
-          const data = apiData.map((item) => item["scannedfiles"]);
-          console.log("weekly labels", labels);
-          console.log("weekly data", data);
-          setWeekFile({
-            labels: labels,
-            datasets: [
-              {
-                label: "Scanned Files",
-                data: data,
-                backgroundColor: [
-                  "#ad33ff",
-                  "#ff5733",
-                  "#FC819E",
-                  "#3357ff",
-                  "#ff33ad",
-                  "#D37676",
-                  "#33adff",
-                ],
-              },
-            ],
-          });
-          console.log("weekly data fetch", weekFile);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+    const fetchWeekImageGraphData = async () => {
+      try {
+        const params = {
+          params: {
+            locationNames: selectedLocations,
+          },
+        };
+        const response = await axios.get(`${API_URL}/graph6`, params);
+        const apiData = response.data;
+
+        if (Array.isArray(apiData)) {
+          setWeekImage(apiData);
+        } else {
+          console.error("Unexpected data format for weekImage:", apiData);
+        }
+      } catch (error) {
+        console.error("Error fetching weekImage data:", error);
+      }
     };
 
-    const fetchWeekImageGraphData = () => {
-      const params = {
-        params: {
-          locationNames: selectedLocations, // Assuming selectedLocations is an array of location names
-        },
-      };
-      axios
-        .get(`${API_URL}/graph6`, params)
-        .then((response) => {
-          const apiData = response.data;
-          const labels = apiData.map((item) => item["scandate"]);
-          const data = apiData.map((item) => item["scannedimages"]);
-          console.log("weekly labels", labels);
-          console.log("weekly data", data);
-          setWeekImage({
-            labels: labels,
-            datasets: [
-              {
-                label: "Scanned Images",
-                data: data,
-                backgroundColor: [
-                  "#ad33ff",
-                  "#ff5733",
-                  "#FC819E",
-                  "#3357ff",
-                  "#ff33ad",
-                  "#D37676",
-                  "#33adff",
-                ],
-              },
-            ],
-          });
-          console.log("weekly data fetch", weekImage);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+    const fetchWeekFileGraphData = async () => {
+      try {
+        const params = { params: { locationNames: selectedLocations } };
+        const response = await axios.get(`${API_URL}/graph5`, params);
+        const apiData = response.data;
+        if (Array.isArray(apiData)) {
+          setWeekFile(apiData);
+        } else {
+          console.error("Unexpected data format for weekFile:", apiData);
+        }
+      } catch (error) {
+        console.error("Error fetching weekFile data:", error);
+      }
     };
 
     const fetchMonthImageGraphData = () => {
@@ -781,7 +710,93 @@ const CbslAdminDashboard = () => {
   if (!userLog) {
     navigate('/');
   }
+  const formatChartData = (data) => ({
+    options: {
+      chart: {
+        toolbar: {
+          show: false,
+        },
+        stacked: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        width: -15,
+        colors: ["transparent"],
+      },
+      legend: {
+        show: true,
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "30%",
+          borderRadius: 2,
+        },
+      },
+      colors: ["#4BC0C0", "#f87979", "#02B2AF"],
+      xaxis: {
+        categories: data.labels,
+      },
+      responsive: [
+        {
+          breakpoint: 1024,
+          options: {
+            plotOptions: {
+              bar: {
+                columnWidth: "30%",
+                borderRadius: 7,
+              },
+            },
+          },
+        },
+      ],
+    },
+    series: [
+      {
+        name: data.datasets[0].label,
+        data: data.datasets[0].data,
+      },
+    ],
+  });
+  const formatDonutData = (data) => {
+    const labels = data.map(item => item.scandate);
+    const series = data.map(item => parseInt(item.scannedfiles || item.scannedimages, 10));
 
+    console.log('Labels:', labels);
+    console.log('Series:', series);
+
+    return {
+      options: {
+        chart: {
+          type: 'donut',
+          toolbar: {
+            show: false,
+          },
+        },
+        labels: labels,
+        responsive: [
+          {
+            breakpoint: 1024,
+            options: {
+              chart: {
+                width: '100%',
+              },
+              legend: {
+                position: 'bottom',
+              },
+            },
+          },
+        ],
+      },
+      series: series,
+    };
+  };
+
+  const donutImageData = formatDonutData(weekImage);
+  const donutFileData = formatDonutData(weekFile);
 
   return (
     <>
@@ -869,24 +884,19 @@ const CbslAdminDashboard = () => {
             </div>
             <div className="row mt-2">
               <div className="card">
-                <h4 className="ms-1">SCANNING REPORT OF LAST 30 DAYS</h4>
-                <h5 className="ms-1">All Location: Images</h5>
-                <CCard>
-                  <CCardBody>
-                    <CChartBar data={monthImage} labels="months" />
-                  </CCardBody>
-                </CCard>
-                <div>
-                  {scannedData && (
-                    <BarChart
-                      className="scanned-chart"
-                      xAxis={scannedData.xAxis}
-                      series={scannedData.series}
-                      width={scannedData.width}
-                      height={scannedData.height}
+               
+                <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">SCANNED REPORT OF LAST 30 DAYS </CardTitle>
+                    <Chart
+                      options={formatChartData(monthImage).options}
+                      series={formatChartData(monthImage).series}
+                      type="bar"
+                      height="379"
                     />
-                  )}
-                </div>
+                  </CardBody>
+                </Card>
+
               </div>
             </div>
             <div className="row mt-2">
@@ -906,7 +916,7 @@ const CbslAdminDashboard = () => {
                     </h6>
                   </div>
                   <div className="col-2">
-                    <h6 style={{ color: "white",cursor:"pointer"  }} onClick={handleExport}>
+                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
                       Export CSV
@@ -952,63 +962,63 @@ const CbslAdminDashboard = () => {
                     </thead>
 
                     <tbody style={{ color: "gray" }}>
-  {tableData &&
-    tableData.map((elem, index) => {
-      if (
-        selectedLocations.length === 0 ||
-        selectedLocations.includes(elem.LocationName)
-      ) {
-        return (
-          <tr key={index}>
-            <td>{index + 1}</td>
-            <td>{elem.LocationName}</td>
-            <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
-            <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
-            <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
-            <td>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
-            <td>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
-            <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
-            <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
-            <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-            <td></td>
-          </tr>
-        );
-      }
-      return null;
-    })}
+                      {tableData &&
+                        tableData.map((elem, index) => {
+                          if (
+                            selectedLocations.length === 0 ||
+                            selectedLocations.includes(elem.LocationName)
+                          ) {
+                            return (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{elem.LocationName}</td>
+                                <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
+                                <td></td>
+                              </tr>
+                            );
+                          }
+                          return null;
+                        })}
 
-  <tr style={{ color: "black" }}>
-    <td colspan="2">
-      <strong>Total</strong>
-    </td>
+                      <tr style={{ color: "black" }}>
+                        <td colspan="2">
+                          <strong>Total</strong>
+                        </td>
 
-    <td>
-      <strong>{isNaN(parseInt(columnSums.prevFilesSum)) ? 0 : parseInt(columnSums.prevFilesSum).toLocaleString()}</strong>
-    </td>
-    <td>
-      <strong>{isNaN(parseInt(columnSums.prevImagesSum)) ? 0 : parseInt(columnSums.prevImagesSum).toLocaleString()}</strong>
-    </td>
-    <td>
-      <strong>{isNaN(parseInt(columnSums.yesFilesSum)) ? 0 : parseInt(columnSums.yesFilesSum).toLocaleString()}</strong>
-    </td>
-    <td>
-      <strong>{isNaN(parseInt(columnSums.yesImagesSum)) ? 0 : parseInt(columnSums.yesImagesSum).toLocaleString()}</strong>
-    </td>
-    <td>
-      <strong>{isNaN(parseInt(columnSums.todayFilesSum)) ? 0 : parseInt(columnSums.todayFilesSum).toLocaleString()}</strong>
-    </td>
-    <td>
-      <strong>{isNaN(parseInt(columnSums.todayImagesSum)) ? 0 : parseInt(columnSums.todayImagesSum).toLocaleString()}</strong>
-    </td>
-    <td>
-      <strong>{isNaN(parseInt(columnSums.totalFilesSum)) ? 0 : parseInt(columnSums.totalFilesSum).toLocaleString()}</strong>
-    </td>
-    <td>
-      <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
-    </td>
-    <td></td>
-  </tr>
-</tbody>
+                        <td>
+                          <strong>{isNaN(parseInt(columnSums.prevFilesSum)) ? 0 : parseInt(columnSums.prevFilesSum).toLocaleString()}</strong>
+                        </td>
+                        <td>
+                          <strong>{isNaN(parseInt(columnSums.prevImagesSum)) ? 0 : parseInt(columnSums.prevImagesSum).toLocaleString()}</strong>
+                        </td>
+                        <td>
+                          <strong>{isNaN(parseInt(columnSums.yesFilesSum)) ? 0 : parseInt(columnSums.yesFilesSum).toLocaleString()}</strong>
+                        </td>
+                        <td>
+                          <strong>{isNaN(parseInt(columnSums.yesImagesSum)) ? 0 : parseInt(columnSums.yesImagesSum).toLocaleString()}</strong>
+                        </td>
+                        <td>
+                          <strong>{isNaN(parseInt(columnSums.todayFilesSum)) ? 0 : parseInt(columnSums.todayFilesSum).toLocaleString()}</strong>
+                        </td>
+                        <td>
+                          <strong>{isNaN(parseInt(columnSums.todayImagesSum)) ? 0 : parseInt(columnSums.todayImagesSum).toLocaleString()}</strong>
+                        </td>
+                        <td>
+                          <strong>{isNaN(parseInt(columnSums.totalFilesSum)) ? 0 : parseInt(columnSums.totalFilesSum).toLocaleString()}</strong>
+                        </td>
+                        <td>
+                          <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tbody>
 
                   </table>
                 </div>
@@ -1017,139 +1027,149 @@ const CbslAdminDashboard = () => {
 
             <div className="row">
               <div className="col-md-6 col-sm-12">
-                <CCard
-                  className="mb-4"
-                  style={{ marginLeft: "0px", marginRight: "0px" }}
-                >
-                  <h4 className="ms-1">Cumulative Report</h4>
-                  <h5 className="ms-1">All Location: Files</h5>
-                  <CCardBody>
-                    <CChartBar data={barFile} labels="months" />
-                  </CCardBody>
-                </CCard>
+              <Card>
+                <CardBody>
+                  <CardTitle tag="h5">Cumulative Scanned Files </CardTitle>
+                  <Chart
+                    options={formatChartData(barFile).options}
+                    series={formatChartData(barFile).series}
+                    type="bar"
+                    height="350"
+                  />
+                </CardBody>
+              </Card>
               </div>
               <div className="col-md-6 col-sm-12">
-                <CCard
-                  className="mb-4"
-                  style={{ marginLeft: "0px", marginRight: "0px" }}
-                >
-                  <h4 className="ms-1">Cumulative Report</h4>
-                  <h5 className="ms-1">All Location: Images</h5>
-                  <CCardBody>
-                    <CChartBar data={barImage} labels="months" />
-                  </CCardBody>
-                </CCard>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-md-6 col-sm-12">
-                <CCard
-                  className="mb-4"
-                  style={{ marginLeft: "0px", marginRight: "0px" }}
-                >
-                  <h4 className="ms-1">Case Type Report</h4>
-                  <h5 className="ms-1">Civil Cases</h5>
-                  <CCardBody>
-                    <CChartBar data={civilCase} labels="months" />
-                  </CCardBody>
-                </CCard>
-              </div>
-              <div className="col-md-6 col-sm-12">
-                <CCard
-                  className="mb-4"
-                  style={{ marginLeft: "0px", marginRight: "0px" }}
-                >
-                  <h4 className="ms-1">Case Type Report</h4>
-                  <h5 className="ms-1">Criminal Cases</h5>
-                  <CCardBody>
-                    <CChartBar data={criminalCase} labels="months" />
-                  </CCardBody>
-                </CCard>
+              <Card>
+                <CardBody>
+                  <CardTitle tag="h5">Cumulative Scanned Images </CardTitle>
+                  <Chart
+                    options={formatChartData(barImage).options}
+                    series={formatChartData(barImage).series}
+                    type="bar"
+                    height="379"
+                  />
+                </CardBody>
+              </Card>
               </div>
             </div>
             <div className="row">
               <div className="col-md-6 col-sm-12">
-                <CCard
-                  className="mb-4"
-                  style={{ marginLeft: "0px", marginRight: "0px" }}
-                >
-                  <h4 className="ms-1">
-                    PRODUCTION REPORT FOR ({formattedYesterdayDate})
-                  </h4>
-                  <h5 className="ms-1">All Location: Files</h5>
-                  <CCardBody>
-                    <CChartBar data={todayFile} labels="months" />
-                  </CCardBody>
-                </CCard>
+              <Card>
+                <CardBody>
+                  <CardTitle tag="h5">Civil Cases (Files & Images) </CardTitle>
+                  <Chart
+                    options={formatChartData(civilCase).options}
+                    series={formatChartData(civilCase).series}
+                    type="bar"
+                    height="379"
+                  />
+                </CardBody>
+              </Card>
               </div>
               <div className="col-md-6 col-sm-12">
-                <CCard
-                  className="mb-4"
-                  style={{ marginLeft: "0px", marginRight: "0px" }}
-                >
-                  <h4 className="ms-1">
-                    PRODUCTION REPORT FOR ({formattedYesterdayDate})
-                  </h4>
-                  <h5 className="ms-1">All Location: Images</h5>
-                  <CCardBody>
-                    <CChartBar data={todayImage} labels="months" />
-                  </CCardBody>
-                </CCard>
+              <Card>
+                <CardBody>
+                  <CardTitle tag="h5">Criminal Cases (Files & Images) </CardTitle>
+                  <Chart
+                    options={formatChartData(criminalCase).options}
+                    series={formatChartData(criminalCase).series}
+                    type="bar"
+                    height="379"
+                  />
+                </CardBody>
+              </Card>
               </div>
             </div>
             <div className="row">
               <div className="col-md-6 col-sm-12">
-                <CCard
-                  className="mb-4"
-                  style={{ marginLeft: "0px", marginRight: "0px" }}
-                >
-                  <h4 className="ms-1">Weekly Report</h4>
-                  <h5 className="ms-1">All Location: Files</h5>
-                  <CCardBody>
-                    <CChartDoughnut data={weekFile} labels="months" />
-                  </CCardBody>
-                </CCard>
+              <Card>
+                <CardBody>
+                  <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
+                  <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                  <Chart
+                    options={formatChartData(todayFile).options}
+                    series={formatChartData(todayFile).series}
+                    type="bar"
+                    height="379"
+                  />
+                </CardBody>
+              </Card>
               </div>
               <div className="col-md-6 col-sm-12">
-                <CCard
-                  className="mb-4"
-                  style={{ marginLeft: "0px", marginRight: "0px" }}
-                >
-                  <h4 className="ms-1">Weekly Report</h4>
-                  <h5 className="ms-1">All Location: Images</h5>
-                  <CCardBody>
-                    <CChartDoughnut data={weekImage} labels="months" />
-                  </CCardBody>
-                </CCard>
+              <Card>
+                <CardBody>
+                  <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
+                  <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                  <Chart
+                    options={formatChartData(todayImage).options}
+                    series={formatChartData(todayImage).series}
+                    type="bar"
+                    height="379"
+                  />
+                </CardBody>
+              </Card>
+              </div>
+            </div>
+            <div className="row mt-4">
+              <div className="col-md-6 col-sm-12">
+                <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
+                    <Chart
+                      options={donutFileData.options}
+                      series={donutFileData.series}
+                      type="donut"
+                      height="379"
+                    />
+                  </CardBody>
+                </Card>
+              </div>
+              <div className="col-md-6 col-sm-12">
+                <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                    <Chart
+                      options={donutImageData.options}
+                      series={donutImageData.series}
+                      type="donut"
+                      height="379"
+                    />
+                  </CardBody>
+                </Card>
               </div>
             </div>
 
-            <div className="row">
+            <div className="row mt-4">
               <div className="col-md-6 col-sm-12">
-                <CCard>
-                  <h4 className="ms-1">
-                    SCANNED REPORT FOR ({formattedYesterdayDate})
-                  </h4>
-                  <h5 className="ms-1">All Location: Images</h5>
-                  <CCardBody>
-                    <CChartBar
-                      data={allLocationYesImage}
-                      labels="months"
-                    ></CChartBar>
-                  </CCardBody>
-                </CCard>
+              <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                    <Chart
+                      options={formatChartData(allLocationYesImage).options}
+                      series={formatChartData(allLocationYesImage).series}
+                      type="bar"
+                      height="379"
+                    />
+                  </CardBody>
+                </Card>
               </div>
               <div className="col-md-6 col-sm-12">
-                <CCard>
-                  <h4 className="ms-1">CUMULATIVE SCANNED TILL DATE</h4>
-                  <h5 className="ms-1">All Location: Images</h5>
-                  <CCardBody>
-                    <CChartBar
-                      data={allLocationImage}
-                      labels="months"
-                    ></CChartBar>
-                  </CCardBody>
-                </CCard>
+              <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                    <Chart
+                      options={formatChartData(allLocationImage).options}
+                      series={formatChartData(allLocationImage).series}
+                      type="bar"
+                      height="379"
+                    />
+                  </CardBody>
+                </Card>
               </div>
             </div>
 
