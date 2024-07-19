@@ -714,7 +714,7 @@ const Dashboard = () => {
   if (!userLog) {
     navigate('/');
   }
-  const formatChartData = (data) => ({
+  const formatChartData = (data, colors) => ({
     options: {
       chart: {
         toolbar: {
@@ -740,7 +740,7 @@ const Dashboard = () => {
           borderRadius: 2,
         },
       },
-      colors: ["#4BC0C0", "#f87979", "#02B2AF"],
+      colors: colors,
       xaxis: {
         categories: data.labels,
       },
@@ -765,6 +765,7 @@ const Dashboard = () => {
       },
     ],
   });
+  
   const formatDonutData = (data) => {
     const labels = data.map(item => item.scandate);
     const series = data.map(item => parseInt(item.scannedfiles || item.scannedimages, 10));
@@ -892,24 +893,14 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">SCANNED REPORT OF LAST 30 DAYS </CardTitle>
                     <Chart
-                      options={formatChartData(monthImage).options}
-                      series={formatChartData(monthImage).series}
+                      options={formatChartData(monthImage, ["#4BC0C0"]).options}
+                      series={formatChartData(monthImage, ["#4BC0C0"]).series}
                       type="bar"
                       height="379"
                     />
                   </CardBody>
                 </Card>
-                <div>
-                  {scannedData && (
-                    <BarChart
-                      className="scanned-chart"
-                      xAxis={scannedData.xAxis}
-                      series={scannedData.series}
-                      width={scannedData.width}
-                      height={scannedData.height}
-                    />
-                  )}
-                </div>
+               
               </div>
             </div>
             <div className="row mt-2">
@@ -1044,10 +1035,10 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Cumulative Scanned Files </CardTitle>
                     <Chart
-                      options={formatChartData(barFile).options}
-                      series={formatChartData(barFile).series}
-                      type="bar"
-                      height="350"
+                     options={formatChartData(barFile, ["#508C9B"]).options}
+                     series={formatChartData(barFile, ["#508C9B"]).series}
+                     type="bar"
+                     height='350'
                     />
                   </CardBody>
                 </Card>
@@ -1058,10 +1049,10 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Cumulative Scanned Images </CardTitle>
                     <Chart
-                      options={formatChartData(barImage).options}
-                      series={formatChartData(barImage).series}
+                      options={formatChartData(barImage, ["#508C9B"]).options}
+                      series={formatChartData(barImage, ["#508C9B"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1073,10 +1064,10 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Civil Cases (Files & Images) </CardTitle>
                     <Chart
-                      options={formatChartData(civilCase).options}
-                      series={formatChartData(civilCase).series}
+                      options={formatChartData(civilCase,['#50B498']).options}
+                      series={formatChartData(civilCase,['#50B498']).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1087,10 +1078,10 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Criminal Cases (Files & Images) </CardTitle>
                     <Chart
-                      options={formatChartData(criminalCase).options}
-                      series={formatChartData(criminalCase).series}
+                      options={formatChartData(criminalCase,['#50B498']).options}
+                      series={formatChartData(criminalCase,['#50B498']).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1104,10 +1095,10 @@ const Dashboard = () => {
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(todayFile).options}
-                      series={formatChartData(todayFile).series}
+                      options={formatChartData(todayFile,["#36C2CE"]).options}
+                      series={formatChartData(todayFile,["#36C2CE"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1119,10 +1110,10 @@ const Dashboard = () => {
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(todayImage).options}
-                      series={formatChartData(todayImage).series}
+                      options={formatChartData(todayImage,["#36C2CE"]).options}
+                      series={formatChartData(todayImage,["#36C2CE"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1139,7 +1130,8 @@ const Dashboard = () => {
                       options={donutFileData.options}
                       series={donutFileData.series}
                       type="donut"
-                      height="379"
+                      height="350"
+                      
                     />
                   </CardBody>
                 </Card>
@@ -1153,7 +1145,7 @@ const Dashboard = () => {
                       options={donutImageData.options}
                       series={donutImageData.series}
                       type="donut"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1167,10 +1159,10 @@ const Dashboard = () => {
                     <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationYesImage).options}
-                      series={formatChartData(allLocationYesImage).series}
+                      options={formatChartData(allLocationYesImage,["#088395"]).options}
+                      series={formatChartData(allLocationYesImage,["#088395"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1181,10 +1173,10 @@ const Dashboard = () => {
                     <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationImage).options}
-                      series={formatChartData(allLocationImage).series}
+                      options={formatChartData(allLocationImage,["#088395"]).options}
+                      series={formatChartData(allLocationImage,["#088395"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
