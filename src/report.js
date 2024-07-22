@@ -583,7 +583,7 @@ const Report = () => {
                   className="btn ms-1 me-1"
                   style={{
                     height: "40px",
-                    backgroundColor: "#4bc0c0",
+                    backgroundColor: "#4BC0C0",
                     marginBottom: "5px",
                     borderRadius: "0px",
                     color: 'white',
@@ -1283,7 +1283,7 @@ const Report = () => {
                       style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300' }}
                     >
                       <tr>
-                        <th rowspan="2">Location</th>
+                        <th rowspan="2"style={{whiteSpace:'nowrap'}}>Location</th>
                         <th colspan="2">Collection of Records</th>
                         <th colspan="2">Scanning ADF</th>
                         <th colspan="2">Image QC</th>
@@ -1332,7 +1332,7 @@ const Report = () => {
                           ) {
                             return (
                               <tr key={index} style={{ backgroundColor: "white" }}>
-                                <td>{elem.LocationName}</td>
+                                <td style={{whiteSpace:'nowrap'}}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>

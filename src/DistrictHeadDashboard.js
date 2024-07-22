@@ -349,7 +349,7 @@ const DistrictHeadDashboard = () => {
   if (!userLog) {
     Navigate('/');
   }
-  const formatChartData = (data) => ({
+  const formatChartData = (data, colors) => ({
     options: {
       chart: {
         toolbar: {
@@ -375,7 +375,7 @@ const DistrictHeadDashboard = () => {
           borderRadius: 2,
         },
       },
-      colors: ["#4BC0C0", "#f87979", "#02B2AF"],
+      colors: colors,
       xaxis: {
         categories: data.labels,
       },
@@ -494,8 +494,8 @@ const DistrictHeadDashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">SCANNED REPORT OF LAST 30 DAYS </CardTitle>
                     <Chart
-                      options={formatChartData(monthImage).options}
-                      series={formatChartData(monthImage).series}
+                      options={formatChartData(monthImage, ["#4BC0C0"]).options}
+                      series={formatChartData(monthImage, ["#4BC0C0"]).series}
                       type="bar"
                       height="379"
                     />
@@ -638,10 +638,10 @@ const DistrictHeadDashboard = () => {
                     <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationImage).options}
-                      series={formatChartData(allLocationImage).series}
+                      options={formatChartData(allLocationImage,["#088395"]).options}
+                      series={formatChartData(allLocationImage,["#088395"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
