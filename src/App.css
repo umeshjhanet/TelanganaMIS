@@ -461,9 +461,14 @@ input[type="submit"]:hover {
   z-index: 999;
 }
 .data-table tbody.scrollable{
-  height:200px !important;
+  height:80px !important;
   overflow-y:auto !important;
   width: 100%;
+  
+  }
+  .data-table tbody tr:hover{
+    color:#4BC0C0;
+    font-weight: 500;
   }
 
 .location-card p:hover {
@@ -507,6 +512,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 
 .data-table {
   width: 100%;
+  border: 1px solid black;
 }
 
 .view-btn {

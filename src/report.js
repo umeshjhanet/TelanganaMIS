@@ -648,7 +648,7 @@ const Report = () => {
                                   Coll. of Records
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles).toLocaleString()}
 
                                 <br />
@@ -665,7 +665,7 @@ const Report = () => {
                                 Coll. of Records
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -708,7 +708,7 @@ const Report = () => {
                                   Scanning ADF
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles).toLocaleString()}
 
                                 <br />
@@ -725,7 +725,7 @@ const Report = () => {
                                 Scanning ADF
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -768,7 +768,7 @@ const Report = () => {
                                   Image QC
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles).toLocaleString()}
 
                                 <br />
@@ -785,7 +785,7 @@ const Report = () => {
                                 Image QC
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -828,7 +828,7 @@ const Report = () => {
                                   Doc Classification
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles).toLocaleString()}
 
                                 <br />
@@ -845,7 +845,7 @@ const Report = () => {
                                 Doc Classification
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -888,7 +888,7 @@ const Report = () => {
                                   Indexing
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles).toLocaleString()}
 
                                 <br />
@@ -905,7 +905,7 @@ const Report = () => {
                                 Indexing
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -948,7 +948,7 @@ const Report = () => {
                                   CBSL QA
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles).toLocaleString()}
 
                                 <br />
@@ -965,7 +965,7 @@ const Report = () => {
                                 CBSL QA
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -1008,7 +1008,7 @@ const Report = () => {
                                   Export PDF
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles).toLocaleString()}
 
                                 <br />
@@ -1025,7 +1025,7 @@ const Report = () => {
                                 Export PDF
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -1068,7 +1068,7 @@ const Report = () => {
                                   Client QA
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? 0 : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}
 
                                 <br />
@@ -1086,7 +1086,7 @@ const Report = () => {
                                 Client QA
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
@@ -1130,7 +1130,7 @@ const Report = () => {
                                   CSV Generation
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: 0 <br />
                                 Total Images:0
                               </p>
@@ -1145,7 +1145,7 @@ const Report = () => {
                                 CSV Generation
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find(
@@ -1191,7 +1191,7 @@ const Report = () => {
                                   Inventory Out
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: 0 <br />
                                 Total Images:0
                               </p>
@@ -1206,7 +1206,7 @@ const Report = () => {
                                 Inventory Out
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find(
@@ -1280,20 +1280,20 @@ const Report = () => {
                   <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
                   <table class="table table-hover table-bordered table-responsive table-striped data-table">
                     <thead
-                      style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300' }}
+                      style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300',textAlign:'center' }}
                     >
                       <tr>
-                        <th rowspan="2"style={{whiteSpace:'nowrap'}}>Location</th>
-                        <th colspan="2">Collection of Records</th>
-                        <th colspan="2">Scanning ADF</th>
-                        <th colspan="2">Image QC</th>
-                        <th colspan="2">Document Classification</th>
-                        <th colSpan="2">Indexing</th>
-                        <th colSpan="2">CBSL QA</th>
-                        <th colSpan="2">Export PDF</th>
-                        <th colSpan="2">Client QA</th>
-                        <th colSpan="2">CSV Generation</th>
-                        <th colSpan="2">Inventory Out</th>
+                        <th rowspan="2" style={{whiteSpace:'nowrap',verticalAlign:'middle'}}>Location</th>
+                        <th colspan="2" style={{verticalAlign:'middle'}}>Collection of Records</th>
+                        <th colspan="2" style={{verticalAlign:'middle'}}>Scanning ADF</th>
+                        <th colspan="2" style={{verticalAlign:'middle'}}>Image QC</th>
+                        <th colspan="2" style={{verticalAlign:'middle'}}>Document Classification</th>
+                        <th colSpan="2" style={{verticalAlign:'middle'}}>Indexing</th>
+                        <th colSpan="2" style={{verticalAlign:'middle'}}>CBSL QA</th>
+                        <th colSpan="2" style={{verticalAlign:'middle'}}>Export PDF</th>
+                        <th colSpan="2" style={{verticalAlign:'middle'}}>Client QA</th>
+                        <th colSpan="2" style={{verticalAlign:'middle'}}>CSV Generation</th>
+                        <th colSpan="2" style={{verticalAlign:'middle'}}>Inventory Out</th>
                       </tr>
                       <tr
                         style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300' }}
@@ -1322,7 +1322,7 @@ const Report = () => {
                     </thead>
                     <tbody
                       className="scrollable"
-                      style={{ color: "black", height: "200px" }}
+                      style={{ color: "black", height: "80px" }}
                     >
                       {report &&
                         report.map((elem, index) => {
