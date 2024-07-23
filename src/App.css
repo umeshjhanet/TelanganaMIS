@@ -467,7 +467,7 @@ input[type="submit"]:hover {
   }
 .data-table tbody tr:hover{
   color: #4BC0C0;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .location-card p:hover {
