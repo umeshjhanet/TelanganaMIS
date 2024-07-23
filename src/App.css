@@ -470,6 +470,10 @@ input[type="submit"]:hover {
     color:#4BC0C0;
     font-weight: 500;
   }
+.data-table tbody tr:hover{
+  color: #4BC0C0;
+  font-weight: 400;
+}
 
 .location-card p:hover {
   background-color: #61dafb;
@@ -488,7 +492,7 @@ input[type="submit"]:hover {
 .table-bordered td {
   padding: 0.35rem;
   vertical-align: top;
-  border: 1px solid #dee2e6;
+  border: 1px solid #757f94;
 }
 
 tr:nth-child(even) {background-color: #f2f2f2;}

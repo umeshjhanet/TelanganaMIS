@@ -1278,25 +1278,25 @@ const Report = () => {
                   style={{ overflowX: "auto" }}
                 >
                   <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
-                  <table class="table table-hover table-bordered table-responsive table-striped data-table">
+                  <table class="table table-hover table-bordered table-responsive  data-table">
                     <thead
-                      style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300',textAlign:'center' }}
+                      style={{ color: "black",  fontWeight: '300',textAlign:'center' }}
                     >
                       <tr>
-                        <th rowspan="2" style={{whiteSpace:'nowrap',verticalAlign:'middle'}}>Location</th>
-                        <th colspan="2" style={{verticalAlign:'middle'}}>Collection of Records</th>
-                        <th colspan="2" style={{verticalAlign:'middle'}}>Scanning ADF</th>
-                        <th colspan="2" style={{verticalAlign:'middle'}}>Image QC</th>
-                        <th colspan="2" style={{verticalAlign:'middle'}}>Document Classification</th>
-                        <th colSpan="2" style={{verticalAlign:'middle'}}>Indexing</th>
-                        <th colSpan="2" style={{verticalAlign:'middle'}}>CBSL QA</th>
-                        <th colSpan="2" style={{verticalAlign:'middle'}}>Export PDF</th>
-                        <th colSpan="2" style={{verticalAlign:'middle'}}>Client QA</th>
-                        <th colSpan="2" style={{verticalAlign:'middle'}}>CSV Generation</th>
-                        <th colSpan="2" style={{verticalAlign:'middle'}}>Inventory Out</th>
+                        <th rowspan="2"style={{whiteSpace:'nowrap',verticalAlign:'middle'}}>Location</th>
+                        <th colspan="2"style={{verticalAlign:'middle'}}>Collection of Records</th>
+                        <th colspan="2"style={{verticalAlign:'middle'}}>Scanning ADF</th>
+                        <th colspan="2"style={{verticalAlign:'middle'}}>Image QC</th>
+                        <th colspan="2"style={{verticalAlign:'middle'}}>Document Classification</th>
+                        <th colSpan="2"style={{verticalAlign:'middle'}}>Indexing</th>
+                        <th colSpan="2"style={{verticalAlign:'middle'}}>CBSL QA</th>
+                        <th colSpan="2"style={{verticalAlign:'middle'}}>Export PDF</th>
+                        <th colSpan="2"style={{verticalAlign:'middle'}}>Client QA</th>
+                        <th colSpan="2"style={{verticalAlign:'middle'}}>CSV Generation</th>
+                        <th colSpan="2"style={{verticalAlign:'middle'}}>Inventory Out</th>
                       </tr>
                       <tr
-                        style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300' }}
+                        style={{ color: "black",  fontWeight: '300' }}
                       >
                         <th>Files</th>
                         <th>Images</th>

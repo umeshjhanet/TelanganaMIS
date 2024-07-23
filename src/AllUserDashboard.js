@@ -1028,7 +1028,6 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-
             <div className="row">
               <div className="col-md-6 col-sm-12">
                 <Card>
@@ -1151,7 +1150,6 @@ const Dashboard = () => {
                 </Card>
               </div>
             </div>
-
             <div className="row mt-4">
               <div className="col-md-6 col-sm-12">
                 <Card>
@@ -1182,7 +1180,6 @@ const Dashboard = () => {
                 </Card>
               </div>
             </div>
-
           </div>
         </div>
       </div>
