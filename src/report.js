@@ -1278,7 +1278,7 @@ const Report = () => {
                   style={{ overflowX: "auto" }}
                 >
                   <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
-                  <table class="table table-hover table-bordered border-primary table-responsive  data-table">
+                  <table class="table table-hover table-bordered table-responsive  data-table">
                     <thead
                       style={{ color: "black",  fontWeight: '300',textAlign:'center' }}
                     >
