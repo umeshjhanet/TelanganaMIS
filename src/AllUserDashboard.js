@@ -1123,7 +1123,7 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardTitle tag="h5">Weekly Report</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
                     <Chart
                       options={donutFileData.options}
@@ -1138,7 +1138,7 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardTitle tag="h5">Weekly Report</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
                       options={donutImageData.options}
