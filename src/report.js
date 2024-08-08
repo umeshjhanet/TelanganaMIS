@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { SummaryData } from "./Components/SummaryData";
 import Header from "./Components/Header";
 import Footer from "./Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
-import { Modal } from 'react-bootstrap';
 import { API_URL } from "./Api";
-import { BsCursor } from "react-icons/bs";
-import { formatDate } from './utils';
+
 
 const Report = () => {
   const [startDate, setStartDate] = useState('');
@@ -1285,8 +1282,8 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: 0 <br />
-                                Total Images:0
+                                Total Files: {elem.Inv_Out_Files} <br />
+                                Total Images:{elem.Inv_Out_Images}
                               </p>
                             </div>
                           </div>
@@ -1303,7 +1300,7 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find(
-                                  (elem) => elem.LocationName === location
+                                  (elem) => elem.LocationName === locationData.Inv_Out_Files
                                 );
                                 return (
                                   acc +
@@ -1316,7 +1313,7 @@ const Report = () => {
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find(
-                                  (elem) => elem.LocationName === location
+                                  (elem) => elem.LocationName === locationData.Inv_Out_Images
                                 );
                                 return (
                                   acc +

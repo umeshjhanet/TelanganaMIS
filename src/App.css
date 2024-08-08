@@ -8,6 +8,12 @@ body {
 .container-fluid.loading {
   opacity: 0.5; /* Adjust the opacity value as needed */
 }
+/* Target ApexCharts data labels */
+.apexcharts-datalabels {
+  transform: rotate(-90deg); /* Rotate text 90 degrees */
+  transform-origin: center; /* Ensure text is centered */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
 
 
 /* Loader styles */

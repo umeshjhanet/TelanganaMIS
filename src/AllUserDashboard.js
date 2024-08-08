@@ -1,20 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { CCard, CCardBody, CCol, CCardHeader, CRow } from "@coreui/react";
-import {
-  CChartBar,
-  CChartDoughnut,
-  CChartLine,
-  CChartPie,
-  CChartPolarArea,
-  CChartRadar,
-} from "@coreui/react-chartjs";
 import Chart from 'react-apexcharts';
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import Header from "./Components/Header";
 import axios, { all } from "axios";
 import "./App.css";
-import Footer from "./Footer";
-import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import DistrictHeadDashboard from "./DistrictHeadDashboard";
@@ -91,9 +80,9 @@ const Dashboard = () => {
       },
     ],
   });
+  const [allWeekImage, setAllWeekImage] = useState({ labels: [], datasets: [] });
   const [weekImage, setWeekImage] = useState([]);
   const [weekFile, setWeekFile] = useState([]);
-
   const [monthImage, setMonthImage] = useState({
     labels: [],
     datasets: [
@@ -185,17 +174,6 @@ const Dashboard = () => {
       selectedLocations.filter((loc) => loc !== locationName)
     );
   };
-
-  // const handleExport = () => {
-  //   if (csv) {
-  //     const link = document.createElement("a");
-  //     link.href = csv;
-  //     link.setAttribute("download", "export.csv");
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   }
-  // };
 
   const handleExport = () => {
     setShowConfirmation(true);
@@ -314,6 +292,60 @@ const Dashboard = () => {
           });
 
           setBarFile({
+            labels: labels,
+            datasets: datasets,
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    };
+    const fetchAllWeekImageData = (selectedLocations) => {
+
+      let apiUrl = `${API_URL}/weekimages`;
+
+      if (selectedLocations && selectedLocations.length > 0) {
+        const locationName = selectedLocations
+          .map((location) => `locationName=${encodeURIComponent(location)}`)
+          .join("&");
+        apiUrl += `?${locationName}`;
+      }
+
+      axios
+        .get(apiUrl)
+        .then((response) => {
+          const apiData = response.data;
+          if (!apiData || apiData.length === 0) {
+            console.error("No data received from the API");
+            return;
+          }
+
+          // Extract dates and image data
+          const labels = apiData.map((entry) => entry.date);
+          const scannedImages = apiData.map((entry) => entry.ScannedImages);
+          const qcImages = apiData.map((entry) => entry.QCImages);
+          const flaggingImages = apiData.map((entry) => entry.FlaggingImages);
+          const indexingImages = apiData.map((entry) => entry.IndexingImages);
+          const cbslQAImages = apiData.map((entry) => entry.CBSL_QAImages);
+          const exportPdfImages = apiData.map((entry) => entry.Export_PdfImages);
+          const clientQAAcceptedImages = apiData.map((entry) => entry.Client_QA_AcceptedImages);
+          const clientQARejectedImages = apiData.map((entry) => entry.Client_QA_RejectedImages);
+          const digiSignImages = apiData.map((entry) => entry.Digi_SignImages);
+
+          // Construct datasets
+          const datasets = [
+            { label: "Scanned Images", data: scannedImages },
+            { label: "QC Images", data: qcImages },
+            { label: "Flagging Images", data: flaggingImages },
+            { label: "Indexing Images", data: indexingImages },
+            { label: "CBSL QA Images", data: cbslQAImages },
+            { label: "Export PDF Images", data: exportPdfImages },
+            { label: "Client QA Accepted Images", data: clientQAAcceptedImages },
+            { label: "Client QA Rejected Images", data: clientQARejectedImages },
+            { label: "Digi Sign Images", data: digiSignImages }
+          ];
+
+          setAllWeekImage({
             labels: labels,
             datasets: datasets,
           });
@@ -706,6 +738,7 @@ const Dashboard = () => {
     fetchAllGraphImageData(locationName);
     fetchTableData();
     fetchExportCsvFile();
+    fetchAllWeekImageData(locationName);
 
   }, [selectedLocations]);
 
@@ -765,7 +798,58 @@ const Dashboard = () => {
       },
     ],
   });
-  
+  const formatWeekChartData = (data, colors) => ({
+    options: {
+      chart: {
+        toolbar: {
+          show: false,
+        },
+        stacked: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        width: -1,
+        colors: ["transparent"],
+      },
+      legend: {
+        show: true,
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "30%",
+          borderRadius: 2,
+        },
+      },
+      colors: colors,
+      xaxis: {
+        categories: data.labels,
+      },
+      responsive: [
+        {
+          breakpoint: 1024,
+          options: {
+            plotOptions: {
+              bar: {
+                columnWidth: "30%",
+                borderRadius: 7,
+              },
+            },
+          },
+        },
+      ],
+    },
+    series: data.datasets.map((dataset, index) => ({
+      name: dataset.label,
+      data: dataset.data,
+      color: colors[index]
+    }))
+  });
+
+
   const formatDonutData = (data) => {
     const labels = data.map(item => item.scandate);
     const series = data.map(item => parseInt(item.scannedfiles || item.scannedimages, 10));
@@ -802,6 +886,7 @@ const Dashboard = () => {
 
   const donutImageData = formatDonutData(weekImage);
   const donutFileData = formatDonutData(weekFile);
+  console.log("New Week Graph Data", allWeekImage);
 
   return (
     <>
@@ -900,7 +985,7 @@ const Dashboard = () => {
                     />
                   </CardBody>
                 </Card>
-               
+
               </div>
             </div>
             <div className="row mt-2">
@@ -1034,10 +1119,10 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Cumulative Scanned Files </CardTitle>
                     <Chart
-                     options={formatChartData(barFile, ["#508C9B"]).options}
-                     series={formatChartData(barFile, ["#508C9B"]).series}
-                     type="bar"
-                     height='350'
+                      options={formatChartData(barFile, ["#508C9B"]).options}
+                      series={formatChartData(barFile, ["#508C9B"]).series}
+                      type="bar"
+                      height='350'
                     />
                   </CardBody>
                 </Card>
@@ -1063,8 +1148,8 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Civil Cases (Files & Images) </CardTitle>
                     <Chart
-                      options={formatChartData(civilCase,['#50B498']).options}
-                      series={formatChartData(civilCase,['#50B498']).series}
+                      options={formatChartData(civilCase, ['#50B498']).options}
+                      series={formatChartData(civilCase, ['#50B498']).series}
                       type="bar"
                       height="350"
                     />
@@ -1077,8 +1162,8 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Criminal Cases (Files & Images) </CardTitle>
                     <Chart
-                      options={formatChartData(criminalCase,['#50B498']).options}
-                      series={formatChartData(criminalCase,['#50B498']).series}
+                      options={formatChartData(criminalCase, ['#50B498']).options}
+                      series={formatChartData(criminalCase, ['#50B498']).series}
                       type="bar"
                       height="350"
                     />
@@ -1094,8 +1179,8 @@ const Dashboard = () => {
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(todayFile,["#36C2CE"]).options}
-                      series={formatChartData(todayFile,["#36C2CE"]).series}
+                      options={formatChartData(todayFile, ["#36C2CE"]).options}
+                      series={formatChartData(todayFile, ["#36C2CE"]).series}
                       type="bar"
                       height="350"
                     />
@@ -1109,8 +1194,8 @@ const Dashboard = () => {
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(todayImage,["#36C2CE"]).options}
-                      series={formatChartData(todayImage,["#36C2CE"]).series}
+                      options={formatChartData(todayImage, ["#36C2CE"]).options}
+                      series={formatChartData(todayImage, ["#36C2CE"]).series}
                       type="bar"
                       height="350"
                     />
@@ -1123,14 +1208,14 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Weekly Report</CardTitle>
+                    <CardTitle tag="h5">Weekly Report (Scanned)</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
                     <Chart
                       options={donutFileData.options}
                       series={donutFileData.series}
                       type="donut"
                       height="350"
-                      
+
                     />
                   </CardBody>
                 </Card>
@@ -1138,7 +1223,7 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Weekly Report</CardTitle>
+                    <CardTitle tag="h5">Weekly Report (Scanned)</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
                       options={donutImageData.options}
@@ -1157,8 +1242,8 @@ const Dashboard = () => {
                     <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationYesImage,["#088395"]).options}
-                      series={formatChartData(allLocationYesImage,["#088395"]).series}
+                      options={formatChartData(allLocationYesImage, ["#088395"]).options}
+                      series={formatChartData(allLocationYesImage, ["#088395"]).series}
                       type="bar"
                       height="350"
                     />
@@ -1171,14 +1256,29 @@ const Dashboard = () => {
                     <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationImage,["#088395"]).options}
-                      series={formatChartData(allLocationImage,["#088395"]).series}
+                      options={formatChartData(allLocationImage, ["#088395"]).options}
+                      series={formatChartData(allLocationImage, ["#088395"]).series}
                       type="bar"
                       height="350"
                     />
                   </CardBody>
                 </Card>
               </div>
+            </div>
+
+            <div className="row mt-4">
+              <Card>
+                <CardBody>
+                  <CardTitle tag="h5">Weekly Report</CardTitle>
+                  <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                  <Chart
+                    options={formatWeekChartData(allWeekImage, ["#088395", "#F0A500", "#FF3D00", "#4CAF50", "#FF9800", "#9C27B0", "#2196F3", "#E91E63", "#607D8B"]).options}
+                    series={formatWeekChartData(allWeekImage, ["#088395", "#F0A500", "#FF3D00", "#4CAF50", "#FF9800", "#9C27B0", "#2196F3", "#E91E63", "#607D8B"]).series}
+                    type="bar"
+                    height="350"
+                  />
+                </CardBody>
+              </Card>
             </div>
           </div>
         </div>
