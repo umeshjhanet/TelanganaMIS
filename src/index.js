@@ -26,6 +26,7 @@ import UpdateRoleModal from './Components/UpdateRoleModal'
 import DBSiteReports from './dbSiteReports';
 import SiteReports from './siteReports';
 import PrivateRoute from './PrivateRoute';
+import DailyReport from './dailyReport';
 
 const App = () => {
   return (
@@ -49,7 +50,7 @@ const App = () => {
         <Route path="/MIS_Form" element={<PrivateRoute element={<MIS_Form />} />} />
         <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC />} />} />
         <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
-        <Route path="/shortreport" element={<PrivateRoute element={<ShortReport />} />} />
+        <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport />} />} />
       </Routes>
     </Router>
     

@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { SummaryData } from "./Components/SummaryData";
 import Header from "./Components/Header";
 import Footer from "./Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
-import { Modal } from 'react-bootstrap';
 import { API_URL } from "./Api";
-import { BsCursor } from "react-icons/bs";
-import { formatDate } from './utils';
+
 
 const Report = () => {
   const [startDate, setStartDate] = useState('');
@@ -27,8 +24,10 @@ const Report = () => {
   const [searchInput, setSearchInput] = useState("");
   const [summary, setSummary] = useState();
   const [report, setReport] = useState();
+  const [dateReport, setDateReport] = useState();
   const [csv, setCsv] = useState(null);
   const [reportCsv, setReportCsv] = useState(null);
+  const [dateReportCsv, setDateReportCsv] = useState(null);
   const dropdownRef = useRef(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showConfirmationBox, setShowConfirmationBox] = useState(false);
@@ -119,16 +118,19 @@ const Report = () => {
   const handleReportCsv = () => {
     setShowConfirmationBox(true);
   };
+  const handleDateReportCsv = () => {
+    setShowConfirmationBox(true);
+  };
 
   const handleReportCsvConfirmation = async () => {
     try {
       const userLog = JSON.parse(localStorage.getItem('user'));
-  
+
       // Determine the appropriate function to fetch CSV data
       let fetchDataFunction;
       if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
         // User has a specific location assigned
-       fetchSummaryReportTableCsvFileLocation();
+        fetchSummaryReportTableCsvFileLocation();
       } else {
         // User does not have a specific location assigned (handle based on selected location)
         fetchSummaryReportTableCsvFile();
@@ -142,20 +144,41 @@ const Report = () => {
         link.click();
         document.body.removeChild(link);
       }
-  
+
       setShowConfirmationBox(false);
     } catch (error) {
       console.error("Error during CSV export:", error);
       setError("Error during CSV export. Please try again.");
     }
   };
-  
+  const handleDateReportCsvConfirmation = async () => {
+    try {
+        fetchDateSummaryReportTableCsvFile();
+      if (dateReportCsv) {
+        const link = document.createElement("a");
+        link.href = dateReportCsv;
+        link.setAttribute("download", "LocationWiseDetailedReport.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      setShowConfirmationBox(false);
+    } catch (error) {
+      console.error("Error during CSV export:", error);
+      setError("Error during CSV export. Please try again.");
+    }
+  };
+
   const handleReportCancelExport = () => {
     setShowConfirmationBox(false);
   };
+  const handleDateReportCancelExport = () => {
+    setShowConfirmationBox(false);
+  };
 
- 
-  
+
+
   const fetchSummaryReportCsvFile = async (locationName, startDate, endDate) => {
     const formattedStartDate = startDate ? new Date(startDate) : null;
     const formattedEndDate = endDate ? new Date(endDate) : null;
@@ -215,6 +238,35 @@ const Report = () => {
       console.error("Error in exporting data:", error);
     }
   };
+  const fetchDateSummaryReportTableCsvFile = async (locationName, startDate, endDate) => {
+    const formattedStartDate = startDate ? new Date(startDate) : null;
+    const formattedEndDate = endDate ? new Date(endDate) : null;
+    const formatDate = (date) => {
+      // Format to YYYY-MM-DD
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    let apiUrl = `${API_URL}/datewisereportcsv`;
+    if (locationName && formattedStartDate && formattedEndDate) {
+      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+    } else if (locationName) {
+      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
+    } else if (formattedStartDate && formattedEndDate) {
+      apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
+    }
+
+    try {
+      const response = await axios.get(apiUrl, { responseType: "blob" });
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      setDateReportCsv(url);
+    } catch (error) {
+      console.error("Error in exporting data:", error);
+    }
+  };
   const fetchSummaryReportCsvFileLocation = async (startDate, endDate) => {
     try {
       // Get user information from localStorage
@@ -270,13 +322,13 @@ const Report = () => {
     try {
       // Get user information from localStorage
       const userLog = JSON.parse(localStorage.getItem('user'));
-  
+
       // Check if the user has a specific location assigned
       let locationName = null;
       if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
         locationName = userLog.locations[0].name;
       }
-  
+
       // Convert start and end dates to the correct format if provided
       const formatDate = (date) => {
         // Format to YYYY-MM-DD
@@ -285,16 +337,16 @@ const Report = () => {
         const day = date.getDate().toString().padStart(2, '0');
         return `${year}-${month}-${day}`;
       };
-  
+
       // Construct the API URL with default locationName parameter
       let apiUrl = `${API_URL}/reporttablecsv`;
       const queryParams = [];
-  
+
       // Always include locationName if available
       if (locationName) {
         queryParams.push(`locationName=${locationName}`);
       }
-  
+
       // Include startDate and endDate if provided
       if (startDate) {
         queryParams.push(`startDate=${formatDate(startDate)}`);
@@ -302,19 +354,19 @@ const Report = () => {
       if (endDate) {
         queryParams.push(`endDate=${formatDate(endDate)}`);
       }
-  
+
       // Append query parameters to the apiUrl if any
       if (queryParams.length > 0) {
         apiUrl += `?${queryParams.join("&")}`;
       }
-  
+
       console.log("Report Table CSV API URL:", apiUrl); // Log the constructed API URL
-  
+
       const response = await axios.get(apiUrl, { responseType: "blob" });
       const blob = new Blob([response.data], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
       setReportCsv(url);
-  
+
     } catch (error) {
       console.error("Error in exporting data:", error);
       setError("Error in exporting data. Please try again.");
@@ -348,7 +400,7 @@ const Report = () => {
           queryParams.endDate = formatDate(endDate);
         }
         if (fileType) {
-          queryParams.fileType = selectedFileTypes;  
+          queryParams.fileType = selectedFileTypes;
         }
 
         const response = await axios.get(`${API_URL}/summary`, { params: queryParams });
@@ -374,7 +426,7 @@ const Report = () => {
           queryParams.endDate = formatDate(endDate);
         }
         if (fileType) {
-          queryParams.fileType = selectedFileTypes;  
+          queryParams.fileType = selectedFileTypes;
         }
 
         console.log("API URL:", apiUrl); // Log the constructed API URL
@@ -392,22 +444,57 @@ const Report = () => {
         setIsLoading(false);
       }
     };
+    const fetchDateReportData = async () => {
+      try {
+        let apiUrl = `${API_URL}/datewisereport`;
+        const queryParams = {};
+
+        const userLog = JSON.parse(localStorage.getItem('user'));
+
+        if (locationName) {
+          queryParams.locationName = selectedLocations;
+        }
+
+        if (startDate && endDate) {
+          queryParams.startDate = formatDate(startDate);
+          queryParams.endDate = formatDate(endDate);
+        }
+        if (fileType) {
+          queryParams.fileType = selectedFileTypes;
+        }
+
+        console.log("API URL:", apiUrl); // Log the constructed API URL
+        console.log("Query Params:", queryParams); // Log query parameters
+
+        setIsLoading(true);
+        const response = await axios.get(apiUrl, { params: queryParams });
+        console.log("API Response:", response.data); // Log the API response
+        setDateReport(response.data);
+        setIsLoading(false);
+        updateTotalLocations(response.data);
+      } catch (error) {
+        console.error("Error fetching report data:", error);
+        setError("Error fetching report data. Please try again.");
+        setIsLoading(false);
+      }
+    };
+
     const fetchReports = async (locationName, startDate, endDate) => {
       const userLog = JSON.parse(localStorage.getItem('user'));
       let locations = [];
-    
+
       if (userLog && userLog.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
         locations = [userLog.locations[0].name];
       }
-    
+
       // Ensure locationName is an array or set it to an empty array if not
       if (!Array.isArray(locationName)) {
         locationName = [locationName]; // Convert to array if it's not already
       }
-    
+
       // Concatenate user's location if available
       const finalLocations = [...new Set([...locationName, ...locations])];
-    
+
       await Promise.all([
         fetchSummaryReportTableCsvFileLocation(finalLocations, startDate, endDate),
         fetchSummaryReportCsvFileLocation(finalLocations, startDate, endDate),
@@ -418,20 +505,23 @@ const Report = () => {
 
     const fetchFileTypes = () => {
       setIsLoading(true);
-            axios.get(`${API_URL}/summaryfiletype`)
-                .then(response => {setfileType(response.data)
-                setIsLoading(false);
-                })
-                .catch(error => console.error(error));
-            setIsLoading(false);
+      axios.get(`${API_URL}/summaryfiletype`)
+        .then(response => {
+          setfileType(response.data)
+          setIsLoading(false);
+        })
+        .catch(error => console.error(error));
+      setIsLoading(false);
     }
-    
+
     fetchReports(locationName, startDate, endDate);
     summaryData();
     fetchReportData();
+    fetchDateReportData();
     fetchFileTypes();
+    fetchDateSummaryReportTableCsvFile(locationName,startDate,endDate);
 
-  }, [selectedLocations,selectedFileTypes, endDate]);
+  }, [selectedLocations, selectedFileTypes, endDate]);
 
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
@@ -556,22 +646,22 @@ const Report = () => {
                   </span>
                 </div>
                 {showFileType && (
-        <div className="location-card">
-          {Array.isArray(fileType) && fileType.length > 0 ? (
-            fileType.map((item, index) => (
-              <div key={index}>
-                <p onClick={() => handleFileType(item.filetype)}>
-                  {item.filetype}
-                </p>
+                  <div className="location-card">
+                    {Array.isArray(fileType) && fileType.length > 0 ? (
+                      fileType.map((item, index) => (
+                        <div key={index}>
+                          <p onClick={() => handleFileType(item.filetype)}>
+                            {item.filetype}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No file types available</p>
+                    )}
+                  </div>
+                )}
               </div>
-            ))
-          ) : (
-            <p>No file types available</p>
-          )}
-        </div>
-      )}
-              </div>
-             
+
               <div className="col-lg-6 col-md-8 col-sm-12" >
                 <DatePicker
                   className="date-field"
@@ -1192,8 +1282,8 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: 0 <br />
-                                Total Images:0
+                                Total Files: {elem.Inv_Out_Files} <br />
+                                Total Images:{elem.Inv_Out_Images}
                               </p>
                             </div>
                           </div>
@@ -1210,7 +1300,7 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find(
-                                  (elem) => elem.LocationName === location
+                                  (elem) => elem.LocationName === locationData.Inv_Out_Files
                                 );
                                 return (
                                   acc +
@@ -1223,7 +1313,7 @@ const Report = () => {
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find(
-                                  (elem) => elem.LocationName === location
+                                  (elem) => elem.LocationName === locationData.Inv_Out_Images
                                 );
                                 return (
                                   acc +
@@ -1280,23 +1370,23 @@ const Report = () => {
                   <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
                   <table class="table table-hover table-bordered table-responsive  data-table">
                     <thead
-                      style={{ color: "black",  fontWeight: '300',textAlign:'center' }}
+                      style={{ color: "black", fontWeight: '300', textAlign: 'center' }}
                     >
                       <tr>
-                        <th rowspan="2"style={{whiteSpace:'nowrap',verticalAlign:'middle'}}>Location</th>
-                        <th colspan="2"style={{verticalAlign:'middle'}}>Collection of Records</th>
-                        <th colspan="2"style={{verticalAlign:'middle'}}>Scanning ADF</th>
-                        <th colspan="2"style={{verticalAlign:'middle'}}>Image QC</th>
-                        <th colspan="2"style={{verticalAlign:'middle'}}>Document Classification</th>
-                        <th colSpan="2"style={{verticalAlign:'middle'}}>Indexing</th>
-                        <th colSpan="2"style={{verticalAlign:'middle'}}>CBSL QA</th>
-                        <th colSpan="2"style={{verticalAlign:'middle'}}>Export PDF</th>
-                        <th colSpan="2"style={{verticalAlign:'middle'}}>Client QA</th>
-                        <th colSpan="2"style={{verticalAlign:'middle'}}>CSV Generation</th>
-                        <th colSpan="2"style={{verticalAlign:'middle'}}>Inventory Out</th>
+                        <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
+                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
+                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
+                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Export PDF</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>CSV Generation</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                       </tr>
                       <tr
-                        style={{ color: "black",  fontWeight: '300' }}
+                        style={{ color: "black", fontWeight: '300' }}
                       >
                         <th>Files</th>
                         <th>Images</th>
@@ -1332,7 +1422,7 @@ const Report = () => {
                           ) {
                             return (
                               <tr key={index} style={{ backgroundColor: "white" }}>
-                                <td style={{whiteSpace:'nowrap'}}>{elem.LocationName}</td>
+                                <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
@@ -1364,6 +1454,142 @@ const Report = () => {
                 </div>
               </div>
             </div>
+            {selectedLocations && startDate && endDate ? (
+              <>
+                <div className="row mt-3 me-1">
+                  <div className="table-card">
+                    <div
+                      className="row"
+                      style={{
+                        padding: "5px",
+                        backgroundColor: "#4BC0C0",
+                        paddingTop: "15px",
+                      }}
+                    >
+                      <div className="col-10">
+                        <h6 className="" style={{ color: "white" }}>
+                          DATE WISE DETAILED REPORT
+                        </h6>
+                      </div>
+                      <div className="col-2">
+                        <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleDateReportCsv}>
+                          {" "}
+                          <MdFileDownload style={{ fontSize: "20px" }} />
+                          Export CSV
+                        </h6>
+                      </div>
+                      {showConfirmationBox && (
+                        <div className="confirmation-dialog">
+                          <div className="confirmation-content">
+                            <p className="fw-bold">Are you sure you want to export the CSV file?</p>
+                            <button className="btn btn-success mt-3 ms-5" onClick={handleDateReportCsvConfirmation}>Yes</button>
+                            <button className="btn btn-danger ms-3 mt-3" onClick={handleDateReportCancelExport}>No</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="row mt-3 ms-2 me-2"
+                      style={{ overflowX: "auto" }}
+                    >
+                      <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
+                      <table class="table table-hover table-bordered table-responsive  data-table">
+                        <thead
+                          style={{ color: "black", fontWeight: '300', textAlign: 'center' }}
+                        >
+                          <tr>
+                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Date</th>
+                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
+                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
+                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
+                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Export PDF</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>CSV Generation</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
+                          </tr>
+                          <tr
+                            style={{ color: "black", fontWeight: '300' }}
+                          >
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                          </tr>
+                        </thead>
+                        <tbody
+                          className="scrollable"
+                          style={{ color: "black", height: "80px" }}
+                        >
+                          {dateReport && dateReport.length > 0 ? (
+                            dateReport.map((elem, index) => {
+                              if (
+                                selectedLocations.length === 0 ||
+                                selectedLocations.includes(elem.locationName)
+                              ) {
+                                return (
+                                  <tr key={index} style={{ backgroundColor: "white" }}>
+                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.locationName}</td>
+                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.Date || "N/A"}</td>
+                                    <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.IndexingFiles)) ? "0" : parseInt(elem.IndexingFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.IndexingImages)) ? "0" : parseInt(elem.IndexingImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.CBSL_QAFiles)) ? "0" : parseInt(elem.CBSL_QAFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Client_QCFiles)) ? "0" : parseInt(elem.Client_QCFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Client_QCImages)) ? "0" : parseInt(elem.Client_QCImages).toLocaleString()}</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                  </tr>
+                                );
+                              }
+                              return null;
+                            })
+                          ) : (
+                            <tr>
+                              <td colSpan="20" style={{ textAlign: 'center' }}>No data available</td>
+                            </tr>
+                          )}
+                        </tbody>
+
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </>
+
+            ) : <></>}
+
           </div>
         </div>
       </div>
