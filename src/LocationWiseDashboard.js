@@ -705,15 +705,15 @@ const LocationWiseDashboard = () => {
             <table class="table table-hover table-bordered table-responsive data-table">
               <thead style={{ color: "#4BC0C0" }}>
                 <tr>
-                  <th rowspan="2">Sr. No.</th>
-                  <th rowspan="2">Location</th>
+                  <th rowspan="2" style={{verticalAlign:'middle'}}>Sr. No.</th>
+                  <th rowspan="2" style={{verticalAlign:'middle'}}>Location</th>
                   <th colspan="2">Scanned ({formattedPreviousDate})</th>
                   <th colspan="2">
                     Scanned ({formattedYesterdayDate})
                   </th>
                   <th colspan="2">Scanned ({formattedCurrentDate})</th>
                   <th colspan="2">Cumulative till date</th>
-                  <th rowspan="2">Remarks</th>
+                  
                 </tr>
                 <tr>
                   <th>Files</th>
@@ -746,7 +746,7 @@ const LocationWiseDashboard = () => {
                         <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-                        <td></td>
+                        
                       </tr>
                     );
                     //   }
@@ -782,7 +782,7 @@ const LocationWiseDashboard = () => {
                   <td>
                     <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
                   </td>
-                  <td></td>
+                  
                 </tr>
               </tbody>
 

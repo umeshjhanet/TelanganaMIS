@@ -1,0 +1,79 @@
+2024-08-02T01:12:14.730476Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.0.37-0ubuntu0.20.04.3).
+2024-08-02T01:12:16.733661Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 3971  user: 'umesh'.
+2024-08-02T01:12:16.733918Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 3972  user: 'umesh'.
+2024-08-02T01:12:16.734072Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 3973  user: 'umesh'.
+2024-08-02T01:12:19.107619Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.37-0ubuntu0.20.04.3)  (Ubuntu).
+2024-08-02T01:12:31.455231Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.39-0ubuntu0.20.04.1) starting as process 149048
+2024-08-02T01:12:31.484468Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2024-08-02T01:12:34.856230Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2024-08-02T01:12:36.520440Z 4 [System] [MY-013381] [Server] Server upgrade from '80037' to '80039' started.
+2024-08-02T01:15:03.973685Z 4 [System] [MY-013381] [Server] Server upgrade from '80037' to '80039' completed.
+2024-08-02T01:15:06.252209Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2024-08-02T01:15:06.252286Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2024-08-02T01:15:06.362986Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/tmp' in the path is accessible to all OS users. Consider choosing a different directory.
+2024-08-02T01:15:06.393547Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock
+2024-08-02T01:15:06.393611Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.39-0ubuntu0.20.04.1'  socket: '/tmp/tmp.jR3X3u1KZT/mysqld.sock'  port: 0  (Ubuntu).
+2024-08-02T01:15:06.432139Z 10 [Warning] [MY-013360] [Server] Plugin mysql_native_password reported: ''mysql_native_password' is deprecated and will be removed in a future release. Please use caching_sha2_password instead'
+2024-08-02T01:15:06.435919Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.0.39-0ubuntu0.20.04.1).
+2024-08-02T01:15:42.410791Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.39-0ubuntu0.20.04.1)  (Ubuntu).
+2024-08-02T01:15:45.320341Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.39-0ubuntu0.20.04.1) starting as process 152025
+2024-08-02T01:15:45.331685Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2024-08-02T01:15:48.262816Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2024-08-02T01:15:49.846314Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2024-08-02T01:15:49.846385Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2024-08-02T01:15:49.878553Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+2024-08-02T01:15:49.878644Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.39-0ubuntu0.20.04.1'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  (Ubuntu).
+2024-08-02T01:15:50.009399Z 10 [Warning] [MY-010058] [Server] Hostname 'cbsldms-ProLiant-DL80-Gen9' does not resolve to '192.168.3.48'.
+2024-08-02T01:15:50.009526Z 8 [Warning] [MY-010058] [Server] Hostname 'cbsldms-ProLiant-DL80-Gen9' does not resolve to '192.168.3.48'.
+2024-08-02T01:15:50.009736Z 9 [Warning] [MY-010058] [Server] Hostname 'cbsldms-ProLiant-DL80-Gen9' does not resolve to '192.168.3.48'.
+2024-08-02T03:08:23.432450Z 13 [Warning] [MY-010055] [Server] IP address '192.168.10.59' could not be resolved: Name or service not known
+2024-08-02T03:08:23.432538Z 11 [Warning] [MY-010055] [Server] IP address '192.168.10.59' could not be resolved: Name or service not known
+2024-08-02T03:08:23.432664Z 12 [Warning] [MY-010055] [Server] IP address '192.168.10.59' could not be resolved: Name or service not known
+2024-08-02T03:46:56.749383Z 21 [Warning] [MY-010055] [Server] IP address '192.168.10.41' could not be resolved: Name or service not known
+2024-08-02T03:46:56.749496Z 20 [Warning] [MY-010055] [Server] IP address '192.168.10.41' could not be resolved: Name or service not known
+2024-08-02T03:46:56.749603Z 22 [Warning] [MY-010055] [Server] IP address '192.168.10.41' could not be resolved: Name or service not known
+2024-08-02T04:09:39.882831Z 32 [Warning] [MY-010055] [Server] IP address '192.168.10.159' could not be resolved: Name or service not known
+2024-08-02T04:38:20.315538Z 41 [Warning] [MY-010056] [Server] Host name 'abts-kk-static-136.102.166.122.airtelbroadband.in' could not be resolved: Name or service not known
+2024-08-02T05:42:47.338697Z 76 [Warning] [MY-010058] [Server] Hostname 'broadband.actcorp.in' does not resolve to '183.83.51.156'.
+2024-08-02T05:42:47.338709Z 77 [Warning] [MY-010058] [Server] Hostname 'broadband.actcorp.in' does not resolve to '183.83.51.156'.
+2024-08-02T07:06:22.582581Z 99 [Warning] [MY-010055] [Server] IP address '112.196.87.50' could not be resolved: Name or service not known
+2024-08-02T07:31:06.945151Z 102 [Warning] [MY-010055] [Server] IP address '103.138.1.130' could not be resolved: Temporary failure in name resolution
+2024-08-02T07:31:06.945240Z 101 [Warning] [MY-010055] [Server] IP address '103.138.1.130' could not be resolved: Temporary failure in name resolution
+2024-08-02T08:52:27.144686Z 103 [Warning] [MY-010055] [Server] IP address '192.168.10.48' could not be resolved: Name or service not known
+2024-08-02T09:20:37.526159Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.0.39-0ubuntu0.20.04.1).
+2024-08-02T09:20:39.528991Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 40  user: 'umesh'.
+2024-08-02T09:20:39.529160Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 104  user: 'umesh'.
+2024-08-02T09:20:39.529282Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 96  user: 'umesh'.
+2024-08-02T09:20:39.529414Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 16  user: 'umesh'.
+2024-08-02T09:20:39.529565Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 8  user: 'umesh'.
+2024-08-02T09:20:39.529835Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 105  user: 'umesh'.
+2024-08-02T09:20:39.530026Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 33  user: 'umesh'.
+2024-08-02T09:20:39.530159Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 17  user: 'umesh'.
+2024-08-02T09:20:39.530289Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 97  user: 'umesh'.
+2024-08-02T09:20:39.530415Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 9  user: 'umesh'.
+2024-08-02T09:20:39.530552Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 26  user: 'umesh'.
+2024-08-02T09:20:39.530699Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 98  user: 'umesh'.
+2024-08-02T09:20:39.530954Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 106  user: 'umesh'.
+2024-08-02T09:20:39.531089Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 18  user: 'umesh'.
+2024-08-02T09:20:39.531443Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 10  user: 'umesh'.
+2024-08-02T09:20:39.531605Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 27  user: 'umesh'.
+2024-08-02T09:20:39.532130Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 19  user: 'umesh'.
+2024-08-02T09:20:39.532246Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 28  user: 'umesh'.
+2024-08-02T09:20:39.532389Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 29  user: 'umesh'.
+2024-08-02T09:20:39.532634Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 30  user: 'umesh'.
+2024-08-02T09:20:39.532724Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 14  user: 'umesh'.
+2024-08-02T09:20:39.532792Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 103  user: 'umesh'.
+2024-08-02T09:20:39.532891Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 31  user: 'umesh'.
+2024-08-02T09:20:39.533003Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 15  user: 'umesh'.
+2024-08-02T09:20:41.279493Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.39-0ubuntu0.20.04.1)  (Ubuntu).
+2024-08-02T09:20:41.877885Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.39-0ubuntu0.20.04.1) starting as process 156002
+2024-08-02T09:20:41.889250Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2024-08-02T09:20:45.319955Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2024-08-02T09:20:47.322619Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2024-08-02T09:20:47.322700Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2024-08-02T09:20:47.356963Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+2024-08-02T09:20:47.357010Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.39-0ubuntu0.20.04.1'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  (Ubuntu).
+2024-08-02T09:20:47.853514Z 8 [Warning] [MY-010058] [Server] Hostname 'cbsldms-ProLiant-DL80-Gen9' does not resolve to '192.168.3.48'.
+2024-08-02T09:20:47.853606Z 10 [Warning] [MY-010058] [Server] Hostname 'cbsldms-ProLiant-DL80-Gen9' does not resolve to '192.168.3.48'.
+2024-08-02T09:20:47.853737Z 9 [Warning] [MY-010058] [Server] Hostname 'cbsldms-ProLiant-DL80-Gen9' does not resolve to '192.168.3.48'.
+2024-08-02T09:22:19.110367Z 11 [Warning] [MY-010055] [Server] IP address '192.168.10.41' could not be resolved: Name or service not known
