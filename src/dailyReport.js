@@ -820,87 +820,6 @@ const DailyReport = () => {
                                     </>
                                 )}
                             </div>
-                            <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
-                                <div
-                                    ref={filedropdownRef}
-                                    className="search-bar"
-                                    style={{
-                                        border: "1px solid #000",
-                                        padding: "5px",
-                                        borderRadius: "5px",
-                                        minHeight: "30px",
-                                    }}
-
-                                    contentEditable={true}
-                                    onClick={() => setShowFileType(!showFileType)}
-                                >
-                                    {selectedFileTypes.length === 0 && !showFileType && (
-                                        <span className="placeholder-text">Search File Type...</span>
-                                    )}
-                                    {selectedFileTypes.map((FileType, index) => (
-                                        <span key={index} className="selected-location">
-                                            {FileType}
-                                            <button
-                                                onClick={() => removeFileType(FileType)}
-                                                style={{
-                                                    backgroundColor: "black",
-                                                    color: "white",
-                                                    border: "none",
-                                                    marginLeft: "5px",
-                                                }}
-                                            >
-                                                x
-                                            </button>
-                                            &nbsp;
-                                        </span>
-                                    ))}
-                                    <span style={{ minWidth: "5px", display: "inline-block" }}>
-                                        &#8203;
-                                    </span>
-                                </div>
-                                {showFileType && (
-                                    <div className="location-card">
-                                        {Array.isArray(fileType) && fileType.length > 0 ? (
-                                            fileType.map((item, index) => (
-                                                <div key={index}>
-                                                    <p onClick={() => handleFileType(item.filetype)}>
-                                                        {item.filetype}
-                                                    </p>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>No file types available</p>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="col-lg-6 col-md-8 col-sm-12" >
-                                <DatePicker
-                                    className="date-field"
-                                    selected={startDate}
-                                    onChange={(date) => setStartDate(date)}
-                                    placeholderText="Start Date"
-                                />
-                                <button
-                                    className="btn ms-1 me-1"
-                                    style={{
-                                        height: "40px",
-                                        backgroundColor: "#4BC0C0",
-                                        marginBottom: "5px",
-                                        borderRadius: "0px",
-                                        color: 'white',
-                                    }}
-                                >
-                                    To
-                                </button>
-                                <DatePicker
-                                    className="date-field"
-                                    selected={endDate}
-                                    onChange={(date) => setEndDate(date)}
-                                    placeholderText="End Date"
-                                />
-                            </div>
                         </div>
                         <div className="row mt-2">
                             <div className="table-card">
@@ -1040,7 +959,7 @@ const DailyReport = () => {
                                 </CardBody>
                             </Card>
                         </div>
-                        <div className="row mt-4">
+                        <div className="row mt-2">
                             <Card>
                                 <CardBody>
                                     <CardTitle tag="h5">Weekly Report(Images)</CardTitle>
@@ -1070,7 +989,35 @@ const DailyReport = () => {
 
                             </div>
                         </div>
-
+                        <div className="row mt-2 me-1 search-report-card" >
+                            
+                            <div className="col-lg-6 col-md-8 col-sm-12" >
+                                <DatePicker
+                                    className="date-field"
+                                    selected={startDate}
+                                    onChange={(date) => setStartDate(date)}
+                                    placeholderText="Start Date"
+                                />
+                                <button
+                                    className="btn ms-1 me-1"
+                                    style={{
+                                        height: "40px",
+                                        backgroundColor: "#4BC0C0",
+                                        marginBottom: "5px",
+                                        borderRadius: "0px",
+                                        color: 'white',
+                                    }}
+                                >
+                                    To
+                                </button>
+                                <DatePicker
+                                    className="date-field"
+                                    selected={endDate}
+                                    onChange={(date) => setEndDate(date)}
+                                    placeholderText="End Date"
+                                />
+                            </div>
+                        </div>
 
                         <div className="row mt-3 me-1">
                             <div className="table-card">
