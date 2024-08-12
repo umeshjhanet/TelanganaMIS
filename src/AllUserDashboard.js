@@ -1117,7 +1117,7 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Files </CardTitle>
+                    <CardTitle tag="h5">Cumulative Files </CardTitle>
                     <Chart
                       options={formatChartData(barFile, ["#508C9B"]).options}
                       series={formatChartData(barFile, ["#508C9B"]).series}
@@ -1131,7 +1131,7 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Images </CardTitle>
+                    <CardTitle tag="h5">Cumulative Images </CardTitle>
                     <Chart
                       options={formatChartData(barImage, ["#508C9B"]).options}
                       series={formatChartData(barImage, ["#508C9B"]).series}
@@ -1177,7 +1177,7 @@ const Dashboard = () => {
                 <Card>
                   <CardBody>
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
                     <Chart
                       options={formatChartData(todayFile, ["#36C2CE"]).options}
                       series={formatChartData(todayFile, ["#36C2CE"]).series}
@@ -1266,7 +1266,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="row mt-4">
+            {/* <div className="row mt-4">
               <Card>
                 <CardBody>
                   <CardTitle tag="h5">Weekly Report</CardTitle>
@@ -1279,7 +1279,7 @@ const Dashboard = () => {
                   />
                 </CardBody>
               </Card>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

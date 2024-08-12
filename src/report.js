@@ -153,7 +153,7 @@ const Report = () => {
   };
   const handleDateReportCsvConfirmation = async () => {
     try {
-        fetchDateSummaryReportTableCsvFile();
+      fetchDateSummaryReportTableCsvFile();
       if (dateReportCsv) {
         const link = document.createElement("a");
         link.href = dateReportCsv;
@@ -519,7 +519,7 @@ const Report = () => {
     fetchReportData();
     fetchDateReportData();
     fetchFileTypes();
-    fetchDateSummaryReportTableCsvFile(locationName,startDate,endDate);
+    fetchDateSummaryReportTableCsvFile(locationName, startDate, endDate);
 
   }, [selectedLocations, selectedFileTypes, endDate]);
 
@@ -728,10 +728,7 @@ const Report = () => {
                     <>
                       {selectedLocations.length === 0 ? (
                         summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
@@ -740,7 +737,6 @@ const Report = () => {
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles).toLocaleString()}
-
                                 <br />
                                 Total Images: {isNaN(parseInt(elem.CollectionImages)) ? 0 : parseInt(elem.CollectionImages).toLocaleString()}
                               </p>
@@ -759,31 +755,21 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CollectionFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.CollectionFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CollectionImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.CollectionImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
-
                           </div>
                         </div>
                       )}
                     </>
                   )}
+
                   {summary && (
                     <>
                       {selectedLocations.length === 0 ? (
@@ -819,23 +805,13 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.ScannedFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.ScannedFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.ScannedImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.ScannedImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -879,23 +855,13 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.QCFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.QCFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.QCImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.QCImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -939,23 +905,13 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.FlaggingFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.FlaggingFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.FlaggingImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.FlsggingImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -999,23 +955,13 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.IndexingFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.IndexingFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.IndexingImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.IndexingImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -1059,23 +1005,13 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CBSL_QAFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.CBSL_QAFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CBSL_QAImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.CBSL_QAImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -1119,23 +1055,13 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Export_PdfFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.Export_PdfFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Export_PdfImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.Export_PdfImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -1180,23 +1106,13 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Client_QA_AcceptedFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.Client_QA_AcceptedFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Client_QA_AcceptedImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.Client_QA_AcceptedImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -1206,67 +1122,7 @@ const Report = () => {
                       )}
                     </>
                   )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  CSV Generation
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: 0 <br />
-                                Total Images:0
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                CSV Generation
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+                 
                   {summary && (
                     <>
                       {selectedLocations.length === 0 ? (
@@ -1299,29 +1155,15 @@ const Report = () => {
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === locationData.Inv_Out_Files
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
+                                const locationData = report.find((elem) => elem.LocationName === location);
+                                return acc + (locationData ? parseInt(locationData.Inv_Out_Files) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === locationData.Inv_Out_Images
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}
+                                const locationData = report.find((elem) => elem.LocationName === location);
+                                return acc + (locationData ? parseInt(locationData.Inv_Out_Images) || 0 : 0);
+                              }, 0).toLocaleString()}
                             </p>
                           </div>
                         </div>

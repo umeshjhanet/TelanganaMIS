@@ -949,7 +949,7 @@ const DailyReport = () => {
                         <div className="row mt-2">
                             <Card>
                                 <CardBody>
-                                    <CardTitle tag="h5">Cumulative Scanned Images </CardTitle>
+                                    <CardTitle tag="h5">Cumulative Images </CardTitle>
                                     <Chart
                                         options={formatChartData(barImage, ["#508C9B"]).options}
                                         series={formatChartData(barImage, ["#508C9B"]).series}
