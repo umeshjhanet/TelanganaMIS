@@ -562,6 +562,28 @@ const DailyReport = () => {
                 setIsLoading(false);
             }
         };
+
+        const fetchExportCsvFile = () => {
+            // Construct the API URL with multiple location names
+            const apiUrl = locationName
+              ? `${API_URL}/csv?${locationName
+                .map((name) => `locationName=${name}`)
+                .join("&")}`
+              : `${API_URL}/csv`;
+      
+            axios
+              .get(apiUrl, { responseType: "blob" })
+              .then((response) => {
+                const blob = new Blob([response.data], { type: "text/csv" });
+                const url = window.URL.createObjectURL(blob);
+                setCsv(url);
+                console.log("CSV");
+              })
+              .catch((error) => {
+                console.error("Error in exporting data:", error);
+              });
+          };
+        fetchExportCsvFile();
         fetchManPowerData();
         fetchTableData();
         fetchReports(locationName, startDate, endDate);

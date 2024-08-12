@@ -131,7 +131,7 @@ const Header = () => {
                         <hr />
                         <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
                         <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
-                        <br/><Link to='/dailyReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                        <br/><Link to='/dailyReport' className='ms-5' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
                         <hr />
                       </>
                     )}
