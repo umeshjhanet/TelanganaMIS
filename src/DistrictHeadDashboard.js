@@ -19,6 +19,9 @@ import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import { API_URL } from "./Api";
 import { Navigate } from "react-router-dom";
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 
 const DistrictHeadDashboard = () => {
@@ -46,9 +49,8 @@ const DistrictHeadDashboard = () => {
   const [locationName, setLocationName] = useState("");
   const [districtUser, setDistrictUser] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
-
-
-
+  const [showFormatDropdown, setShowFormatDropdown] = useState(false);
+  const [exportTableFormat, setExportTableFormat] = useState('csv')
   const userLog = JSON.parse(localStorage.getItem("user"));
   console.log("User's Info", userLog);
 
@@ -122,40 +124,16 @@ const DistrictHeadDashboard = () => {
 
 
   const handleExport = () => {
-    setShowConfirmation(true);
+    setShowFormatDropdown(!showFormatDropdown);
   };
-
-
-  const handleConfirmedExport = () => {
-    // Proceed with CSV export
-    if (csv) {
-      const link = document.createElement("a");
-      link.href = csv;
-      link.setAttribute("download", "AllLocationScannedReport.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-    setShowConfirmation(false);
-  };
-
-
   const handleCancelExport = () => {
     setShowConfirmation(false);
   };
 
-
-  // const handleExport = () => {
-  //   if (csv) {
-  //     const link = document.createElement("a");
-  //     link.href = csv;
-  //     link.setAttribute("download", "export.csv");
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   }
-  // };
-
+  const handleTableDropdownChange = (format) => {
+    setExportTableFormat(format);
+    setShowConfirmation(true);
+  };
 
   const calculateColumnSum = () => {
     let prevFilesSum = 0;
@@ -279,8 +257,16 @@ const DistrictHeadDashboard = () => {
 
 
     const fetchTableData = () => {
+      let apiUrl = `${API_URL}/tabularData`;
+
+      if (selectedLocations && selectedLocations.length > 0) {
+        const locationQuery = selectedLocations
+          .map((location) => `locationName=${encodeURIComponent(location)}`)
+          .join("&");
+        apiUrl += `?${locationQuery}`;
+      }
       axios
-        .get(`${API_URL}/tabularData`)
+        .get(apiUrl)
         .then((response) => {
           setTableData(response.data);
           console.log("Table Data", response.data); // Log inside the then block
@@ -400,6 +386,108 @@ const DistrictHeadDashboard = () => {
       },
     ],
   });
+
+  const fileSummaryHeaders = [
+    'LocationName',
+    'Prev_Files',
+    'Prev_Images',
+    'Yes_Files',
+    'Yes_Images',
+    'Today_Files',
+    'Today_Images',
+    'Total_Files',
+    'Total_Images'
+  ];
+
+  function convertJSONToCSVSummary(tableData, columnHeaders) {
+    if (tableData.length === 0) return '';
+
+    const headers = columnHeaders.join(',') + '\n';
+    const rows = tableData
+      .map(row => columnHeaders.map(field => row[field] || '').join(','))
+      .join('\n');
+
+    return headers + rows;
+  }
+  function downloadCSVSummary(summaryData, headers) {
+    const csvData = convertJSONToCSVSummary(summaryData, headers);
+    if (csvData === '') {
+      alert('No data to export');
+    } else {
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'Summary.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+  function downloadExcelSummary(summaryData, headers) {
+    const worksheet = XLSX.utils.json_to_sheet(summaryData, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    XLSX.writeFile(workbook, 'Summary.xlsx');
+  }
+  function downloadPDFSummary(summaryData, headers) {
+    const doc = new jsPDF({
+      orientation: 'l', // Landscape orientation to fit wide tables
+      unit: 'mm',
+      format: 'a2', // A4 paper size
+    });
+
+    doc.autoTable({
+      head: [headers], // Table headers
+      body: summaryData.map(row => headers.map(header => row[header] || '')), // Table rows
+      startY: 20, // Start position of the table
+      margin: { top: 10 }, // Margin from the top of the page
+      theme: 'grid', // Optional: use a grid theme for better visibility
+      styles: {
+        cellPadding: 2, // Cell padding
+        fontSize: 10, // Font size
+        valign: 'middle', // Vertical alignment
+        overflow: 'linebreak', // Ensure text wraps correctly
+        halign: 'left', // Horizontal alignment
+      },
+      headStyles: {
+        fillColor: [22, 160, 133], // Header background color (teal)
+        textColor: [255, 255, 255], // Header text color (white)
+        halign: 'center', // Center-align header text
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255], // Body cell background color (white)
+        textColor: [0, 0, 0], // Body cell text color (black)
+      },
+      columnStyles: {
+        // Adjust column widths if necessary
+        0: { cellWidth: 30 },
+        1: { cellWidth: 50 },
+        2: { cellWidth: 50 },
+        // Add more column widths if needed
+      },
+      pageBreak: 'auto', // Automatically handle page breaks
+    });
+
+    // Save the generated PDF
+    doc.save('Summary.pdf');
+  }
+  function downloadAllFormatsSummary(summaryData, headers) {
+    if (exportTableFormat === 'csv') {
+      downloadCSVSummary(summaryData, headers);
+      setShowConfirmation(false);
+    }
+    else if (exportTableFormat === 'excel') {
+      downloadExcelSummary(summaryData, headers);
+      setShowConfirmation(false);
+    }
+    else if (exportTableFormat === 'pdf') {
+      downloadPDFSummary(summaryData, headers);
+      setShowConfirmation(false);
+    }
+    else {
+      return '';
+    }
+  }
 
   return (
     <>
@@ -527,11 +615,22 @@ const DistrictHeadDashboard = () => {
                       Export CSV
                     </h6>
                   </div>
+                  {showFormatDropdown && (
+                    <div style={{ height: '0px', overflow: 'visible', display: 'flex', justifyContent: 'right' }}>
+                      <div className="export-dropdown-card">
+                        <p onClick={() => handleTableDropdownChange('csv')}>CSV</p>
+                        <p onClick={() => handleTableDropdownChange('excel')}>Excel</p>
+                        <p onClick={() => handleTableDropdownChange('pdf')}>PDF</p>
+                      </div>
+                    </div>
+                  )}
                   {showConfirmation && (
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
                         <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-                        <button className="btn btn-success mt-3 ms-5" onClick={handleConfirmedExport}>Yes</button>
+                        <button className="btn btn-success mt-3 ms-5" onClick={() => {
+                          downloadAllFormatsSummary(tableData, fileSummaryHeaders);
+                        }}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
                       </div>
                     </div>
