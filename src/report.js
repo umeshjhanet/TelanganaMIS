@@ -9,6 +9,7 @@ import { API_URL } from "./Api";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 const Report = () => {
   const [startDate, setStartDate] = useState('');
@@ -83,52 +84,6 @@ const Report = () => {
   const handleExport = () => {
     setShowDropdown(!showDropdown);
   };
-  const handleConfirmedExport = async () => {
-    setShowConfirmation(false);
-    const formatDate = (date) => {
-
-      const jsdate = new Date(date);
-      const year = jsdate.getFullYear();
-      const month = (jsdate.getMonth() + 1).toString().padStart(2, '0');
-      const day = jsdate.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    let formattedStartDate = '';
-    let formattedEndDate = '';
-    if (startDate && endDate) {
-      formattedStartDate = formatDate(startDate);
-      formattedEndDate = formatDate(endDate);
-    }
-
-    const params = {
-      locationName: selectedLocations, // Add your location names
-      startDate: formattedStartDate, // Replace with actual start date
-      endDate: formattedEndDate, // Replace with actual end date
-      format: exportFormat
-    };
-
-    try {
-      const response = await axios.get(`${API_URL}/summarycsv`, {
-        params,
-        responseType: 'blob' // Important for file downloads
-      });
-
-      // Create a link element and use it to download the file
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      let filename = '';
-      if (exportFormat === 'excel') filename = `summary.xlsx`;
-      else filename = `summary.${exportFormat}`;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error('Error exporting file:', error);
-    }
-  };
 
   const handleCancelExport = () => {
     setShowConfirmation(false);
@@ -136,66 +91,19 @@ const Report = () => {
 
   const handleDropdownChange = (format) => {
     setExportFormat(format);
+    setShowDropdown(false);
     setShowConfirmation(true);
   };
 
   const handleTableDropdownChange = (format) => {
     setExportTableFormat(format);
+    setShowTableDropdown(false);
     setShowConfirmationBox(true);
   };
 
   const handleReportCsv = () => {
     setShowTableDropdown(!showTableDropdown);
   };
-
-  const handleReportCsvConfirmation = async () => {
-    console.log("Confirmation button clicked");
-    try {
-      const userLog = JSON.parse(localStorage.getItem("user"));
-      console.log("User data retrieved from localStorage:", userLog);
-
-      // Declare the CSV fetching function
-      let fetchDataFunction;
-
-      // Check if the user has a specific location assigned and is a "Cbsl User"
-      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-        // If user has a specific location, call the location-specific function
-        fetchDataFunction = fetchSummaryReportTableCsvFileLocation;
-        console.log("Using fetchSummaryReportTableCsvFileLocation");
-      } else {
-        // Otherwise, call the general function
-        fetchDataFunction = fetchSummaryReportTableCsvFile;
-        console.log("Using fetchSummaryReportTableCsvFile");
-      }
-
-      // Pass the export format as a parameter to the function
-      const reportCsv = await fetchDataFunction({ format: exportTableFormat });
-      console.log("Report CSV data fetched:", reportCsv);
-
-      if (reportCsv) {
-        // Create a link element to download the file with the correct format extension
-        const link = document.createElement("a");
-        link.href = reportCsv;
-        let filename = '';
-        if (exportTableFormat === 'excel') filename = `LocationWiseDetailedReport.xlsx`;
-        else filename = `LocationWiseDetailedReport.${exportTableFormat}`;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        console.log("File download triggered");
-      } else {
-        console.error("No CSV data available for download.");
-      }
-
-      // Hide the confirmation box after the download
-      setShowConfirmationBox(false);
-    } catch (error) {
-      console.error("Error during CSV export:", error);
-      setError("Error during CSV export. Please try again.");
-    }
-  };
-
 
   const handleReportCancelExport = () => {
     setShowConfirmationBox(false);
@@ -205,241 +113,10 @@ const Report = () => {
     setShowConfirmationBox(true);
   };
 
-
-  const handleDateReportCsvConfirmation = async () => {
-    try {
-      fetchDateSummaryReportTableCsvFile();
-      if (dateReportCsv) {
-        const link = document.createElement("a");
-        link.href = dateReportCsv;
-        link.setAttribute("download", "LocationWiseDetailedReport.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      setShowConfirmationBox(false);
-    } catch (error) {
-      console.error("Error during CSV export:", error);
-      setError("Error during CSV export. Please try again.");
-    }
-  };
-
-
   const handleDateReportCancelExport = () => {
     setShowConfirmationBox(false);
   };
 
-
-
-  const fetchSummaryReportCsvFile = async (locationName, startDate, endDate) => {
-    const formattedStartDate = startDate ? new Date(startDate) : null;
-    const formattedEndDate = endDate ? new Date(endDate) : null;
-    const formatDate = (date) => {
-      // Format to YYYY-MM-DD
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    let apiUrl = `${API_URL}/summarycsv`;
-    if (locationName && formattedStartDate && formattedEndDate) {
-      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    } else if (locationName) {
-      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
-    } else if (formattedStartDate && formattedEndDate) {
-      apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    }
-
-    try {
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      setCsv(url);
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-    }
-  };
-
-  const fetchSummaryReportTableCsvFile = async ({ locationName, startDate, endDate, format }) => {
-    // Format dates to YYYY-MM-DD
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    // Prepare API URL
-    let apiUrl = `${API_URL}/reporttablecsv`;
-
-    const params = [];
-    if (locationName && locationName.length > 0) {
-      params.push(locationName.map(name => `locationName=${name}`).join("&"));
-    }
-    if (startDate) {
-      params.push(`startDate=${formatDate(new Date(startDate))}`);
-    }
-    if (endDate) {
-      params.push(`endDate=${formatDate(new Date(endDate))}`);
-    }
-    if (format) {
-      params.push(`format=${format}`);
-    }
-
-    if (params.length > 0) {
-      apiUrl += `?${params.join("&")}`;
-    }
-
-    try {
-      console.log("Fetching CSV report from URL:", apiUrl); // Debugging log
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-
-      // Create a Blob and generate a URL for download
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-
-      return url; // Return the generated URL
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-      throw error; // Re-throw the error so it can be handled by the caller
-    }
-  };
-  const fetchDateSummaryReportTableCsvFile = async (locationName, startDate, endDate) => {
-    const formattedStartDate = startDate ? new Date(startDate) : null;
-    const formattedEndDate = endDate ? new Date(endDate) : null;
-    const formatDate = (date) => {
-      // Format to YYYY-MM-DD
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    let apiUrl = `${API_URL}/datewisereportcsv`;
-    if (locationName && formattedStartDate && formattedEndDate) {
-      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    } else if (locationName) {
-      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
-    } else if (formattedStartDate && formattedEndDate) {
-      apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    }
-
-    try {
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      setDateReportCsv(url);
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-    }
-  };
-  const fetchSummaryReportCsvFileLocation = async (startDate, endDate) => {
-    try {
-      // Get user information from localStorage
-      const userLog = JSON.parse(localStorage.getItem('user'));
-
-      // Check if the user has a specific location assigned
-      let locationName = null;
-      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-        locationName = userLog.locations[0].name;
-      }
-
-      // Convert start and end dates to the correct format if provided
-      const formatDate = (date) => {
-        // Format to YYYY-MM-DD
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-
-      let apiUrl = `${API_URL}/summarycsv`;
-      const queryParams = [];
-
-      if (locationName) {
-        queryParams.push(`locationName=${locationName}`);
-      }
-      if (startDate) {
-        queryParams.push(`startDate=${formatDate(startDate)}`);
-      }
-      if (endDate) {
-        queryParams.push(`endDate=${formatDate(endDate)}`);
-      }
-
-      // If there are any query parameters, append them to the URL
-      if (queryParams.length > 0) {
-        apiUrl += `?${queryParams.join("&")}`;
-      }
-
-      console.log("CSV API URL:", apiUrl); // Log the constructed API URL
-
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      setCsv(url);
-
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-      setError("Error in exporting data. Please try again.");
-    }
-  };
-
-  const fetchSummaryReportTableCsvFileLocation = async (startDate, endDate) => {
-    try {
-      // Get user information from localStorage
-      const userLog = JSON.parse(localStorage.getItem('user'));
-
-      // Check if the user has a specific location assigned
-      let locationName = null;
-      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-        locationName = userLog.locations[0].name;
-      }
-
-      // Convert start and end dates to the correct format if provided
-      const formatDate = (date) => {
-        // Format to YYYY-MM-DD
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-
-      // Construct the API URL with default locationName parameter
-      let apiUrl = `${API_URL}/reporttablecsv`;
-      const queryParams = [];
-
-      // Always include locationName if available
-      if (locationName) {
-        queryParams.push(`locationName=${locationName}`);
-      }
-
-      // Include startDate and endDate if provided
-      if (startDate) {
-        queryParams.push(`startDate=${formatDate(startDate)}`);
-      }
-      if (endDate) {
-        queryParams.push(`endDate=${formatDate(endDate)}`);
-      }
-
-      // Append query parameters to the apiUrl if any
-      if (queryParams.length > 0) {
-        apiUrl += `?${queryParams.join("&")}`;
-      }
-
-      console.log("Report Table CSV API URL:", apiUrl); // Log the constructed API URL
-
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      setReportCsv(url);
-
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-      setError("Error in exporting data. Please try again.");
-    }
-  };
 
   useEffect(() => {
     const locationName = selectedLocations;
@@ -555,30 +232,6 @@ const Report = () => {
       }
     };
 
-    const fetchReports = async (locationName, startDate, endDate) => {
-      const userLog = JSON.parse(localStorage.getItem('user'));
-      let locations = [];
-
-      if (userLog && userLog.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-        locations = [userLog.locations[0].name];
-      }
-
-      // Ensure locationName is an array or set it to an empty array if not
-      if (!Array.isArray(locationName)) {
-        locationName = [locationName]; // Convert to array if it's not already
-      }
-
-      // Concatenate user's location if available
-      const finalLocations = [...new Set([...locationName, ...locations])];
-
-      await Promise.all([
-        fetchSummaryReportTableCsvFileLocation(finalLocations, startDate, endDate),
-        fetchSummaryReportCsvFileLocation(finalLocations, startDate, endDate),
-        fetchSummaryReportTableCsvFile(finalLocations, startDate, endDate),
-        fetchSummaryReportCsvFile(finalLocations, startDate, endDate)
-      ]);
-    };
-
     const fetchFileTypes = () => {
       setIsLoading(true);
       axios.get(`${API_URL}/summaryfiletype`)
@@ -589,13 +242,10 @@ const Report = () => {
         .catch(error => console.error(error));
       setIsLoading(false);
     }
-
-    fetchReports(locationName, startDate, endDate);
     summaryData();
     fetchReportData();
     fetchDateReportData();
     fetchFileTypes();
-    fetchDateSummaryReportTableCsvFile(locationName, startDate, endDate);
 
   }, [selectedLocations, selectedFileTypes, endDate]);
 
@@ -716,108 +366,107 @@ const Report = () => {
       return '';
     }
   }
-  const fileTableHeaders = [
-    'LocationName',
-    'CollectionFiles',
-    'CollectionImages',
-    'ScannedFiles',
-    'ScannedImages',
-    'QCFiles',
-    'QCImages',
-    'FlaggingFiles',
-    'FlaggingImages',
-    'CBSL_QAFiles',
-    'CBSL_QAImages',
-    'Export_PdfFiles',
-    'Export_PdfImages',
-    'Client_QAFiles',
-    'Client_QAImages',
-    'Digi_SignFiles',
-    'Digi_SignImages'
-  ];
-  function convertJSONToCSVTable(report, columnHeaders) {
-    if (report.length === 0) return '';
-
-    const headers = columnHeaders.join(',') + '\n';
-    const rows = report
-      .map(row => columnHeaders.map(field => row[field] || '').join(','))
-      .join('\n');
-
-    return headers + rows;
-  }
-  function downloadCSV(jsonData, headers) {
-    const csvData = convertJSONToCSVTable(jsonData, headers);
-    if (csvData === '') {
-      alert('No data to export');
-    } else {
-      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute('download', 'Locationwisedetailedreport.csv');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-  function downloadExcel(jsonData, headers) {
-    const worksheet = XLSX.utils.json_to_sheet(jsonData, { header: headers });
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    XLSX.writeFile(workbook, 'Locationwisedetailedreport.xlsx');
-  }
-  function downloadPDF(jsonData, headers) {
-    const doc = new jsPDF({
-      orientation: 'l', // Landscape orientation to fit wide tables
-      unit: 'mm',
-      format: 'a2', // A4 paper size
+  function downloadCSVFromTable() {
+    const table = document.querySelector(".data-table"); // Select the table by class
+    let csvContent = "";
+    
+    // Define the full header row
+    const headerRow1 = [
+      "Location",
+      "Collection of Records","", "Scanning ADF","", "Image QC","", 
+      "Document Classification","", "CBSL QA","", "Export PDF","", 
+      "Client QA","", "Inventory Out",""
+    ];
+    
+    // Define the second row of headers
+    const headerRow2 = [
+      "",  // Empty placeholders for Location and Date
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images",
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images"
+    ];
+    
+    // Join both header rows to create the full CSV header
+    csvContent += headerRow1.join(",") + "\n";
+    csvContent += headerRow2.join(",") + "\n";
+  
+    // Extract the table body rows
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
+      const rowContent = [];
+      
+      cells.forEach((cell, index) => {
+        // Remove any commas from cell content to avoid CSV issues
+        rowContent.push(cell.innerText.replace(/,/g, ""));
+      });
+      
+      // Ensure the row has the correct number of columns
+      while (rowContent.length < headerRow1.length) {
+        rowContent.push(""); // Add empty data if there are fewer columns
+      }
+  
+      csvContent += rowContent.join(",") + "\n";
     });
-
-    doc.autoTable({
-      head: [headers], // Table headers
-      body: jsonData.map(row => headers.map(header => row[header] || '')), // Table rows
-      startY: 20, // Start position of the table
-      margin: { top: 10 }, // Margin from the top of the page
-      theme: 'grid', // Optional: use a grid theme for better visibility
-      styles: {
-        cellPadding: 2, // Cell padding
-        fontSize: 10, // Font size
-        valign: 'middle', // Vertical alignment
-        overflow: 'linebreak', // Ensure text wraps correctly
-        halign: 'left', // Horizontal alignment
-      },
-      headStyles: {
-        fillColor: [22, 160, 133], // Header background color (teal)
-        textColor: [255, 255, 255], // Header text color (white)
-        halign: 'center', // Center-align header text
-      },
-      bodyStyles: {
-        fillColor: [255, 255, 255], // Body cell background color (white)
-        textColor: [0, 0, 0], // Body cell text color (black)
-      },
-      columnStyles: {
-        // Adjust column widths if necessary
-        0: { cellWidth: 30 },
-        1: { cellWidth: 50 },
-        2: { cellWidth: 50 },
-        // Add more column widths if needed
-      },
-      pageBreak: 'auto', // Automatically handle page breaks
-    });
-
-    // Save the generated PDF
-    doc.save('Locationwisedetailedreport.pdf');
+    
+    // Create a blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "Locationwisedetailedreport.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
-  function downloadAllFormats(jsonData, headers) {
+  
+  function exportTableToPDFTable() {
+    const input = document.querySelector(".data-table"); // Target the table
+    
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: 'a4',
+      });
+  
+      // Add heading
+      pdf.setFontSize(18);
+      pdf.setTextColor(0, 0, 0); // Set text color to black
+      pdf.text("LOCATION WISE DETAILED REPORT", 40, 30); // Add heading at position (40, 30)
+  
+      // Adjusting image width and height to fit in the PDF
+      const imgWidth = 825; // Fit landscape A4 width
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Add the table image below the heading
+      pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, imgHeight); // Adjust y-coordinate to fit below heading
+  
+      pdf.save("Locationwisedetailedreport.pdf");
+    });
+  }
+  function exportTableToExcelTable() {
+    const table = document.querySelector(".data-table");
+    const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    XLSX.writeFile(wb, "Locationwisedetailedreport.xlsx");
+  }
+
+  function downloadAllFormats() {
     if (exportTableFormat === 'csv') {
-      downloadCSV(jsonData, headers);
+      downloadCSVFromTable();
       setShowConfirmationBox(false);
     }
     else if (exportTableFormat === 'excel') {
-      downloadExcel(jsonData, headers);
+      exportTableToExcelTable()
       setShowConfirmationBox(false);
     }
     else if (exportTableFormat === 'pdf') {
-      downloadPDF(jsonData, headers);
+      exportTableToPDFTable();
       setShowConfirmationBox(false);
     }
     else {
@@ -1557,9 +1206,7 @@ const Report = () => {
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
                         <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-                        <button className="btn btn-success mt-3 ms-5" onClick={() => {
-                          downloadAllFormats(report, fileTableHeaders);
-                        }}>Yes</button>
+                        <button className="btn btn-success mt-3 ms-5" onClick={downloadAllFormats}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleReportCancelExport}>No</button>
                       </div>
                     </div>

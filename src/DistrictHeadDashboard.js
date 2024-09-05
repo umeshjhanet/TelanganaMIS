@@ -22,7 +22,7 @@ import { Navigate } from "react-router-dom";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-
+import html2canvas from 'html2canvas';
 
 const DistrictHeadDashboard = () => {
   const [data2, setData2] = useState();
@@ -132,6 +132,7 @@ const DistrictHeadDashboard = () => {
 
   const handleTableDropdownChange = (format) => {
     setExportTableFormat(format);
+    setShowFormatDropdown(false);
     setShowConfirmation(true);
   };
 
@@ -387,101 +388,111 @@ const DistrictHeadDashboard = () => {
     ],
   });
 
-  const fileSummaryHeaders = [
-    'LocationName',
-    'Prev_Files',
-    'Prev_Images',
-    'Yes_Files',
-    'Yes_Images',
-    'Today_Files',
-    'Today_Images',
-    'Total_Files',
-    'Total_Images'
-  ];
-
-  function convertJSONToCSVSummary(tableData, columnHeaders) {
-    if (tableData.length === 0) return '';
-
-    const headers = columnHeaders.join(',') + '\n';
-    const rows = tableData
-      .map(row => columnHeaders.map(field => row[field] || '').join(','))
-      .join('\n');
-
-    return headers + rows;
-  }
-  function downloadCSVSummary(summaryData, headers) {
-    const csvData = convertJSONToCSVSummary(summaryData, headers);
-    if (csvData === '') {
-      alert('No data to export');
-    } else {
-      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute('download', 'Summary.csv');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-  function downloadExcelSummary(summaryData, headers) {
-    const worksheet = XLSX.utils.json_to_sheet(summaryData, { header: headers });
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    XLSX.writeFile(workbook, 'Summary.xlsx');
-  }
-  function downloadPDFSummary(summaryData, headers) {
-    const doc = new jsPDF({
-      orientation: 'l', // Landscape orientation to fit wide tables
-      unit: 'mm',
-      format: 'a2', // A4 paper size
+  function downloadCSVFromTable() {
+    const table = document.querySelector(".data-table"); // Select the table by class
+    let csvContent = "";
+  
+    // Define the full header row
+    const headerRow1 = [
+      "Sr. No.", 
+      "Location", 
+      `Scanned (${formattedPreviousDate})`, "", 
+      `Scanned (${formattedYesterdayDate})`, "", 
+      `Scanned (${formattedCurrentDate})`, "", 
+      "Cumulative till date", "", 
+      "Remarks"
+    ];
+  
+    // Define the second row of headers
+    const headerRow2 = [
+      "", "", 
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images", 
+      ""
+    ];
+  
+    // Join both header rows to create the full CSV header
+    csvContent += headerRow1.join(",") + "\n";
+    csvContent += headerRow2.join(",") + "\n";
+  
+    // Extract the table body rows
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach((row, index) => {
+      const cells = row.querySelectorAll("td");
+      const rowContent = [];
+      
+      cells.forEach((cell) => {
+        // Remove any commas from cell content to avoid CSV issues
+        rowContent.push(cell.innerText.replace(/,/g, ""));
+      });
+      
+      // Ensure the row has the correct number of columns
+      while (rowContent.length < headerRow1.length) {
+        rowContent.push(""); // Add empty data if there are fewer columns
+      }
+  
+      // For the last row (Total row), handle the colspan=2 logic
+      if (index === rows.length - 1) {
+        // Insert an empty cell after "Total" to account for the colspan=2
+        rowContent.splice(1, 0, "");
+      }
+  
+      csvContent += rowContent.join(",") + "\n";
     });
-
-    doc.autoTable({
-      head: [headers], // Table headers
-      body: summaryData.map(row => headers.map(header => row[header] || '')), // Table rows
-      startY: 20, // Start position of the table
-      margin: { top: 10 }, // Margin from the top of the page
-      theme: 'grid', // Optional: use a grid theme for better visibility
-      styles: {
-        cellPadding: 2, // Cell padding
-        fontSize: 10, // Font size
-        valign: 'middle', // Vertical alignment
-        overflow: 'linebreak', // Ensure text wraps correctly
-        halign: 'left', // Horizontal alignment
-      },
-      headStyles: {
-        fillColor: [22, 160, 133], // Header background color (teal)
-        textColor: [255, 255, 255], // Header text color (white)
-        halign: 'center', // Center-align header text
-      },
-      bodyStyles: {
-        fillColor: [255, 255, 255], // Body cell background color (white)
-        textColor: [0, 0, 0], // Body cell text color (black)
-      },
-      columnStyles: {
-        // Adjust column widths if necessary
-        0: { cellWidth: 30 },
-        1: { cellWidth: 50 },
-        2: { cellWidth: 50 },
-        // Add more column widths if needed
-      },
-      pageBreak: 'auto', // Automatically handle page breaks
-    });
-
-    // Save the generated PDF
-    doc.save('Summary.pdf');
+    
+    // Create a blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "Scannedreport.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
-  function downloadAllFormatsSummary(summaryData, headers) {
+  function exportTableToPDFTable() {
+    const input = document.querySelector(".data-table"); // Target the table
+    
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: 'a4',
+      });
+  
+      // Add heading
+      pdf.setFontSize(18);
+      pdf.setTextColor(0, 0, 0); // Set text color to black
+      pdf.text("PROJECT UPDATE OF SCANNING FOR DISTRICT COURT OF KARNATAKA", 40, 30); // Add heading at position (40, 30)
+  
+      // Adjusting image width and height to fit in the PDF
+      const imgWidth = 825; // Fit landscape A4 width
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Add the table image below the heading
+      pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, imgHeight); // Adjust y-coordinate to fit below heading
+  
+      pdf.save("Scannedreport.pdf");
+    });
+  }
+  function exportTableToExcelTable() {
+    const table = document.querySelector(".data-table");
+    const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    XLSX.writeFile(wb, "Scannedreport.xlsx");
+  }
+  function downloadAllFormatsSummary() {
     if (exportTableFormat === 'csv') {
-      downloadCSVSummary(summaryData, headers);
+      downloadCSVFromTable();
       setShowConfirmation(false);
     }
     else if (exportTableFormat === 'excel') {
-      downloadExcelSummary(summaryData, headers);
+      exportTableToExcelTable()
       setShowConfirmation(false);
     }
     else if (exportTableFormat === 'pdf') {
-      downloadPDFSummary(summaryData, headers);
+      exportTableToPDFTable();
       setShowConfirmation(false);
     }
     else {
@@ -628,9 +639,7 @@ const DistrictHeadDashboard = () => {
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
                         <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-                        <button className="btn btn-success mt-3 ms-5" onClick={() => {
-                          downloadAllFormatsSummary(tableData, fileSummaryHeaders);
-                        }}>Yes</button>
+                        <button className="btn btn-success mt-3 ms-5"  onClick={downloadAllFormatsSummary}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
                       </div>
                     </div>
