@@ -268,6 +268,8 @@ const Report = () => {
     'QCImages',
     'FlaggingFiles',
     'FlaggingImages',
+    'IndexingFiles',
+    'IndexingImages',
     'CBSL_QAFiles',
     'CBSL_QAImages',
     'Export_PdfFiles',
@@ -374,7 +376,7 @@ const Report = () => {
     const headerRow1 = [
       "Location",
       "Collection of Records","", "Scanning ADF","", "Image QC","", 
-      "Document Classification","", "CBSL QA","", "Export PDF","", 
+      "Document Classification","","Indexing","", "CBSL QA","", "Export PDF","", 
       "Client QA","", "Inventory Out",""
     ];
     
@@ -383,6 +385,7 @@ const Report = () => {
       "",  // Empty placeholders for Location and Date
       "Files", "Images", 
       "Files", "Images", 
+      "Files", "Images",
       "Files", "Images", 
       "Files", "Images",
       "Files", "Images", 
@@ -422,6 +425,7 @@ const Report = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setShowConfirmationBox(false);
   }
   
   function exportTableToPDFTable() {
@@ -1082,12 +1086,10 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? 0 : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}
-
+                                Total Files: {isNaN(parseInt(elem.Client_QAFiles)) ? 0 : parseInt(elem.Client_QAFiles).toLocaleString()}
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.Client_QA_AcceptedImages)) ? 0 : parseInt(elem.Client_QA_AcceptedImages).toLocaleString()}
+                                Total Images: {isNaN(parseInt(elem.Client_QAImages)) ? 0 : parseInt(elem.Client_QAImages).toLocaleString()}
                               </p>
-
                             </div>
                           </div>
                         ))
@@ -1286,8 +1288,8 @@ const Report = () => {
                                 <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? "0" : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Client_QA_AcceptedImages)) ? "0" : parseInt(elem.Client_QA_AcceptedImages).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Client_QAFiles)) ? "0" : parseInt(elem.Client_QAFiles).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Client_QAImages)) ? "0" : parseInt(elem.Client_QAImages).toLocaleString()}</td>
                                 <td>0</td>
                                 <td>0</td>
                                 <td>0</td>
@@ -1328,7 +1330,7 @@ const Report = () => {
                         </h6>
                       </div>
 
-                      {showConfirmationBox && (
+                      {showConfirmationBoxDate && (
                         <div className="confirmation-dialog">
                           <div className="confirmation-content">
                             <p className="fw-bold">Are you sure you want to export the CSV file?</p>
@@ -1345,7 +1347,7 @@ const Report = () => {
                       style={{ overflowX: "auto" }}
                     >
                       <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
-                      <table class="table table-hover table-bordered table-responsive  data-table">
+                      <table class="table table-hover table-bordered table-responsive date-table">
                         <thead
                           style={{ color: "black", fontWeight: '300', textAlign: 'center' }}
                         >
