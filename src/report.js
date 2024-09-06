@@ -110,11 +110,11 @@ const Report = () => {
   };
 
   const handleDateReportCsv = () => {
-    setShowConfirmationBox(true);
+    setShowConfirmationBoxDate(true);
   };
 
   const handleDateReportCancelExport = () => {
-    setShowConfirmationBox(false);
+    setShowConfirmationBoxDate(false);
   };
 
 
@@ -377,7 +377,7 @@ const Report = () => {
       "Location",
       "Collection of Records","", "Scanning ADF","", "Image QC","", 
       "Document Classification","","Indexing","", "CBSL QA","", "Export PDF","", 
-      "Client QA","", "Inventory Out",""
+      "Client QA","", "CSV Generation","", "Inventory Out",""
     ];
     
     // Define the second row of headers
@@ -391,6 +391,7 @@ const Report = () => {
       "Files", "Images", 
       "Files", "Images", 
       "Files", "Images", 
+      "Files", "Images",
       "Files", "Images"
     ];
     
@@ -488,6 +489,8 @@ const Report = () => {
     'QCImages',
     'FlaggingFiles',
     'FlaggingImages',
+    'IndexingFiles',
+    'IndexingImages',
     'CBSL_QAFiles',
     'CBSL_QAImages',
     'Export_PdfFiles',
@@ -544,6 +547,7 @@ const Report = () => {
             <div className="row mt-2 me-1 search-report-card" >
               <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
+              
                   ref={dropdownRef}
                   className="search-bar"
                   style={{
