@@ -10,6 +10,7 @@ import { format, sub } from "date-fns";
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import Chart from 'react-apexcharts';
 
+
 const DailyReport = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
