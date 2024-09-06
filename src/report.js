@@ -110,7 +110,7 @@ const Report = () => {
   };
 
   const handleDateReportCsv = () => {
-    setShowConfirmationBox(true);
+    setShowConfirmationBoxDate(true);
   };
 
   const handleDateReportCancelExport = () => {
@@ -427,7 +427,6 @@ const Report = () => {
     document.body.removeChild(link);
     setShowConfirmationBox(false);
   }
-  
   function exportTableToPDFTable() {
     const input = document.querySelector(".data-table"); // Target the table
     
@@ -478,7 +477,7 @@ const Report = () => {
     }
   }
   const fileDateTableHeaders = [
-    'LocationName',
+    'locationName',
     'Date',
     'CollectionFiles',
     'CollectionImages',
