@@ -1219,7 +1219,7 @@ const Report = () => {
                   <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
                   <table class="table table-hover table-bordered table-responsive  data-table">
                     <thead
-                      style={{ color: "black", fontWeight: '300', textAlign: 'center' }}
+                      style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
                     >
                       <tr>
                         <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
@@ -1261,7 +1261,7 @@ const Report = () => {
                     </thead>
                     <tbody
                       className="scrollable"
-                      style={{ color: "black", height: "80px" }}
+                      style={{ color: "#4bc0c0", height: "80px" }}
                     >
                       {report &&
                         report.map((elem, index) => {

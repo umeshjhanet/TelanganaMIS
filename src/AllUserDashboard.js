@@ -970,7 +970,7 @@ const Dashboard = () => {
       // Add heading
       pdf.setFontSize(18);
       pdf.setTextColor(0, 0, 0); // Set text color to black
-      pdf.text("PROJECT UPDATE OF SCANNING FOR DISTRICT COURT OF KARNATAKA", 40, 30); // Add heading at position (40, 30)
+      pdf.text("PROJECT UPDATE OF SCANNING FOR DISTRICT COURT OF TELANGANA", 40, 30); // Add heading at position (40, 30)
   
       // Adjusting image width and height to fit in the PDF
       const imgWidth = 825; // Fit landscape A4 width
