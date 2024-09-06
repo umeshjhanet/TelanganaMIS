@@ -428,7 +428,6 @@ const Report = () => {
     document.body.removeChild(link);
     setShowConfirmationBox(false);
   }
-  
   function exportTableToPDFTable() {
     const input = document.querySelector(".data-table"); // Target the table
     
@@ -479,7 +478,7 @@ const Report = () => {
     }
   }
   const fileDateTableHeaders = [
-    'LocationName',
+    'locationName',
     'Date',
     'CollectionFiles',
     'CollectionImages',
