@@ -1,25 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
-import { CCard, CCardBody, CCol, CCardHeader, CRow } from "@coreui/react";
-import {
-  CChartBar,
-  CChartDoughnut,
-  CChartLine,
-  CChartPie,
-  CChartPolarArea,
-  CChartRadar,
-} from "@coreui/react-chartjs";
 import Chart from 'react-apexcharts';
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import Header from "./Components/Header";
 import axios, { all } from "axios";
 import "./App.css";
-import Footer from "./Footer";
-import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import { API_URL } from "./Api";
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
@@ -46,6 +39,8 @@ const Dashboard = () => {
   const [locationName, setLocationName] = useState("");
   const [districtUser, setDistrictUser] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showFormatDropdown, setShowFormatDropdown] = useState(false);
+  const [exportTableFormat,setExportTableFormat] = useState('csv')
   const navigate = useNavigate();
 
   const userLog = JSON.parse(localStorage.getItem("user"));
@@ -91,9 +86,9 @@ const Dashboard = () => {
       },
     ],
   });
+  const [allWeekImage, setAllWeekImage] = useState({ labels: [], datasets: [] });
   const [weekImage, setWeekImage] = useState([]);
   const [weekFile, setWeekFile] = useState([]);
-
   const [monthImage, setMonthImage] = useState({
     labels: [],
     datasets: [
@@ -186,36 +181,17 @@ const Dashboard = () => {
     );
   };
 
-  // const handleExport = () => {
-  //   if (csv) {
-  //     const link = document.createElement("a");
-  //     link.href = csv;
-  //     link.setAttribute("download", "export.csv");
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   }
-  // };
-
   const handleExport = () => {
-    setShowConfirmation(true);
+    setShowFormatDropdown(!showFormatDropdown);
   };
-
-  const handleConfirmedExport = () => {
-    // Proceed with CSV export
-    if (csv) {
-      const link = document.createElement("a");
-      link.href = csv;
-      link.setAttribute("download", "AllLocationScannedReport.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-    setShowConfirmation(false);
-  };
-
   const handleCancelExport = () => {
     setShowConfirmation(false);
+  };
+
+  const handleTableDropdownChange = (format) => {
+    setExportTableFormat(format);
+    setShowFormatDropdown(false);
+    setShowConfirmation(true);
   };
 
   const calculateColumnSum = () => {
@@ -314,6 +290,60 @@ const Dashboard = () => {
           });
 
           setBarFile({
+            labels: labels,
+            datasets: datasets,
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    };
+    const fetchAllWeekImageData = (selectedLocations) => {
+
+      let apiUrl = `${API_URL}/weekimages`;
+
+      if (selectedLocations && selectedLocations.length > 0) {
+        const locationName = selectedLocations
+          .map((location) => `locationName=${encodeURIComponent(location)}`)
+          .join("&");
+        apiUrl += `?${locationName}`;
+      }
+
+      axios
+        .get(apiUrl)
+        .then((response) => {
+          const apiData = response.data;
+          if (!apiData || apiData.length === 0) {
+            console.error("No data received from the API");
+            return;
+          }
+
+          // Extract dates and image data
+          const labels = apiData.map((entry) => entry.date);
+          const scannedImages = apiData.map((entry) => entry.ScannedImages);
+          const qcImages = apiData.map((entry) => entry.QCImages);
+          const flaggingImages = apiData.map((entry) => entry.FlaggingImages);
+          const indexingImages = apiData.map((entry) => entry.IndexingImages);
+          const cbslQAImages = apiData.map((entry) => entry.CBSL_QAImages);
+          const exportPdfImages = apiData.map((entry) => entry.Export_PdfImages);
+          const clientQAAcceptedImages = apiData.map((entry) => entry.Client_QA_AcceptedImages);
+          const clientQARejectedImages = apiData.map((entry) => entry.Client_QA_RejectedImages);
+          const digiSignImages = apiData.map((entry) => entry.Digi_SignImages);
+
+          // Construct datasets
+          const datasets = [
+            { label: "Scanned Images", data: scannedImages },
+            { label: "QC Images", data: qcImages },
+            { label: "Flagging Images", data: flaggingImages },
+            { label: "Indexing Images", data: indexingImages },
+            { label: "CBSL QA Images", data: cbslQAImages },
+            { label: "Export PDF Images", data: exportPdfImages },
+            { label: "Client QA Accepted Images", data: clientQAAcceptedImages },
+            { label: "Client QA Rejected Images", data: clientQARejectedImages },
+            { label: "Digi Sign Images", data: digiSignImages }
+          ];
+
+          setAllWeekImage({
             labels: labels,
             datasets: datasets,
           });
@@ -684,8 +714,16 @@ const Dashboard = () => {
     };
 
     const fetchTableData = () => {
+      let apiUrl = `${API_URL}/tabularData`;
+
+      if (selectedLocations && selectedLocations.length > 0) {
+        const locationQuery = selectedLocations
+          .map((location) => `locationName=${encodeURIComponent(location)}`)
+          .join("&");
+        apiUrl += `?${locationQuery}`;
+      }
       axios
-        .get(`${API_URL}/tabularData`)
+        .get(apiUrl)
         .then((response) => {
           setTableData(response.data);
           console.log("Table Data", response.data); // Log inside the then block
@@ -706,6 +744,7 @@ const Dashboard = () => {
     fetchAllGraphImageData(locationName);
     fetchTableData();
     fetchExportCsvFile();
+    fetchAllWeekImageData(locationName);
 
   }, [selectedLocations]);
 
@@ -714,7 +753,7 @@ const Dashboard = () => {
   if (!userLog) {
     navigate('/');
   }
-  const formatChartData = (data) => ({
+  const formatChartData = (data, colors) => ({
     options: {
       chart: {
         toolbar: {
@@ -740,7 +779,7 @@ const Dashboard = () => {
           borderRadius: 2,
         },
       },
-      colors: ["#4BC0C0", "#f87979", "#02B2AF"],
+      colors: colors,
       xaxis: {
         categories: data.labels,
       },
@@ -765,6 +804,58 @@ const Dashboard = () => {
       },
     ],
   });
+  const formatWeekChartData = (data, colors) => ({
+    options: {
+      chart: {
+        toolbar: {
+          show: false,
+        },
+        stacked: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        width: -1,
+        colors: ["transparent"],
+      },
+      legend: {
+        show: true,
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "30%",
+          borderRadius: 2,
+        },
+      },
+      colors: colors,
+      xaxis: {
+        categories: data.labels,
+      },
+      responsive: [
+        {
+          breakpoint: 1024,
+          options: {
+            plotOptions: {
+              bar: {
+                columnWidth: "30%",
+                borderRadius: 7,
+              },
+            },
+          },
+        },
+      ],
+    },
+    series: data.datasets.map((dataset, index) => ({
+      name: dataset.label,
+      data: dataset.data,
+      color: colors[index]
+    }))
+  });
+
+
   const formatDonutData = (data) => {
     const labels = data.map(item => item.scandate);
     const series = data.map(item => parseInt(item.scannedfiles || item.scannedimages, 10));
@@ -801,6 +892,118 @@ const Dashboard = () => {
 
   const donutImageData = formatDonutData(weekImage);
   const donutFileData = formatDonutData(weekFile);
+ 
+  function downloadCSVFromTable() {
+    const table = document.querySelector(".data-table"); // Select the table by class
+    let csvContent = "";
+  
+    // Define the full header row
+    const headerRow1 = [
+      "Sr. No.", 
+      "Location", 
+      `Scanned (${formattedPreviousDate})`, "", 
+      `Scanned (${formattedYesterdayDate})`, "", 
+      `Scanned (${formattedCurrentDate})`, "", 
+      "Cumulative till date", "", 
+      "Remarks"
+    ];
+  
+    // Define the second row of headers
+    const headerRow2 = [
+      "", "", 
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images", 
+      ""
+    ];
+  
+    // Join both header rows to create the full CSV header
+    csvContent += headerRow1.join(",") + "\n";
+    csvContent += headerRow2.join(",") + "\n";
+  
+    // Extract the table body rows
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach((row, index) => {
+      const cells = row.querySelectorAll("td");
+      const rowContent = [];
+      
+      cells.forEach((cell) => {
+        // Remove any commas from cell content to avoid CSV issues
+        rowContent.push(cell.innerText.replace(/,/g, ""));
+      });
+      
+      // Ensure the row has the correct number of columns
+      while (rowContent.length < headerRow1.length) {
+        rowContent.push(""); // Add empty data if there are fewer columns
+      }
+  
+      // For the last row (Total row), handle the colspan=2 logic
+      if (index === rows.length - 1) {
+        // Insert an empty cell after "Total" to account for the colspan=2
+        rowContent.splice(1, 0, "");
+      }
+  
+      csvContent += rowContent.join(",") + "\n";
+    });
+    
+    // Create a blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "Scannedreport.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  function exportTableToPDFTable() {
+    const input = document.querySelector(".data-table"); // Target the table
+    
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: 'a4',
+      });
+  
+      // Add heading
+      pdf.setFontSize(18);
+      pdf.setTextColor(0, 0, 0); // Set text color to black
+      pdf.text("PROJECT UPDATE OF SCANNING FOR DISTRICT COURT OF TELANGANA", 40, 30); // Add heading at position (40, 30)
+  
+      // Adjusting image width and height to fit in the PDF
+      const imgWidth = 825; // Fit landscape A4 width
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Add the table image below the heading
+      pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, imgHeight); // Adjust y-coordinate to fit below heading
+  
+      pdf.save("Scannedreport.pdf");
+    });
+  }
+  function exportTableToExcelTable() {
+    const table = document.querySelector(".data-table");
+    const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    XLSX.writeFile(wb, "Scannedreport.xlsx");
+  }
+  function downloadAllFormatsSummary() {
+    if (exportTableFormat === 'csv') {
+      downloadCSVFromTable();
+      setShowConfirmation(false);
+    }
+    else if (exportTableFormat === 'excel') {
+      exportTableToExcelTable()
+      setShowConfirmation(false);
+    }
+    else if (exportTableFormat === 'pdf') {
+      exportTableToPDFTable();
+      setShowConfirmation(false);
+    }
+    else {
+      return '';
+    }
+  }
 
   return (
     <>
@@ -892,24 +1095,14 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">SCANNED REPORT OF LAST 30 DAYS </CardTitle>
                     <Chart
-                      options={formatChartData(monthImage).options}
-                      series={formatChartData(monthImage).series}
+                      options={formatChartData(monthImage, ["#4BC0C0"]).options}
+                      series={formatChartData(monthImage, ["#4BC0C0"]).series}
                       type="bar"
                       height="379"
                     />
                   </CardBody>
                 </Card>
-                <div>
-                  {scannedData && (
-                    <BarChart
-                      className="scanned-chart"
-                      xAxis={scannedData.xAxis}
-                      series={scannedData.series}
-                      width={scannedData.width}
-                      height={scannedData.height}
-                    />
-                  )}
-                </div>
+
               </div>
             </div>
             <div className="row mt-2">
@@ -929,17 +1122,27 @@ const Dashboard = () => {
                     </h6>
                   </div>
                   <div className="col-2">
-                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
+                  <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
                       Export CSV
                     </h6>
+                   
                   </div>
+                  {showFormatDropdown && (
+                       <div style={{height:'0px',overflow:'visible',display:'flex',justifyContent:'right'}}>
+                      <div className="export-dropdown-card">
+                        <p onClick={() => handleTableDropdownChange('csv')}>CSV</p>
+                        <p onClick={() => handleTableDropdownChange('excel')}>Excel</p>
+                        <p onClick={() => handleTableDropdownChange('pdf')}>PDF</p>
+                      </div>
+                      </div>
+                    )}
                   {showConfirmation && (
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
                         <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-                        <button className="btn btn-success mt-3 ms-5" onClick={handleConfirmedExport}>Yes</button>
+                        <button className="btn btn-success mt-3 ms-5"  onClick={downloadAllFormatsSummary}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
                       </div>
                     </div>
@@ -952,15 +1155,15 @@ const Dashboard = () => {
                   <table class="table table-hover table-bordered table-responsive data-table">
                     <thead style={{ color: "#4BC0C0" }}>
                       <tr>
-                        <th rowspan="2">Sr. No.</th>
-                        <th rowspan="2">Location</th>
+                        <th rowspan="2" style={{verticalAlign:'middle'}}>Sr. No.</th>
+                        <th rowspan="2" style={{verticalAlign:'middle'}}>Location</th>
                         <th colspan="2">Scanned ({formattedPreviousDate})</th>
                         <th colspan="2">
                           Scanned ({formattedYesterdayDate})
                         </th>
                         <th colspan="2">Scanned ({formattedCurrentDate})</th>
                         <th colspan="2">Cumulative till date</th>
-                        <th rowspan="2">Remarks</th>
+                        
                       </tr>
                       <tr>
                         <th>Files</th>
@@ -993,7 +1196,7 @@ const Dashboard = () => {
                                 <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-                                <td></td>
+                                
                               </tr>
                             );
                           }
@@ -1029,7 +1232,7 @@ const Dashboard = () => {
                         <td>
                           <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
                         </td>
-                        <td></td>
+                        
                       </tr>
                     </tbody>
 
@@ -1037,17 +1240,16 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-
             <div className="row">
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Files </CardTitle>
+                    <CardTitle tag="h5">Cumulative Files </CardTitle>
                     <Chart
-                      options={formatChartData(barFile).options}
-                      series={formatChartData(barFile).series}
+                      options={formatChartData(barFile, ["#508C9B"]).options}
+                      series={formatChartData(barFile, ["#508C9B"]).series}
                       type="bar"
-                      height="350"
+                      height='350'
                     />
                   </CardBody>
                 </Card>
@@ -1056,12 +1258,12 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Images </CardTitle>
+                    <CardTitle tag="h5">Cumulative Images </CardTitle>
                     <Chart
-                      options={formatChartData(barImage).options}
-                      series={formatChartData(barImage).series}
+                      options={formatChartData(barImage, ["#508C9B"]).options}
+                      series={formatChartData(barImage, ["#508C9B"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1073,10 +1275,10 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Civil Cases (Files & Images) </CardTitle>
                     <Chart
-                      options={formatChartData(civilCase).options}
-                      series={formatChartData(civilCase).series}
+                      options={formatChartData(civilCase, ['#50B498']).options}
+                      series={formatChartData(civilCase, ['#50B498']).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1087,10 +1289,10 @@ const Dashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Criminal Cases (Files & Images) </CardTitle>
                     <Chart
-                      options={formatChartData(criminalCase).options}
-                      series={formatChartData(criminalCase).series}
+                      options={formatChartData(criminalCase, ['#50B498']).options}
+                      series={formatChartData(criminalCase, ['#50B498']).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1102,12 +1304,12 @@ const Dashboard = () => {
                 <Card>
                   <CardBody>
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
                     <Chart
-                      options={formatChartData(todayFile).options}
-                      series={formatChartData(todayFile).series}
+                      options={formatChartData(todayFile, ["#36C2CE"]).options}
+                      series={formatChartData(todayFile, ["#36C2CE"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1119,10 +1321,10 @@ const Dashboard = () => {
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(todayImage).options}
-                      series={formatChartData(todayImage).series}
+                      options={formatChartData(todayImage, ["#36C2CE"]).options}
+                      series={formatChartData(todayImage, ["#36C2CE"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1133,13 +1335,14 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardTitle tag="h5">Weekly Report (Scanned)</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
                     <Chart
                       options={donutFileData.options}
                       series={donutFileData.series}
                       type="donut"
-                      height="379"
+                      height="350"
+
                     />
                   </CardBody>
                 </Card>
@@ -1147,19 +1350,18 @@ const Dashboard = () => {
               <div className="col-md-6 col-sm-12">
                 <Card>
                   <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardTitle tag="h5">Weekly Report (Scanned)</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
                       options={donutImageData.options}
                       series={donutImageData.series}
                       type="donut"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
               </div>
             </div>
-
             <div className="row mt-4">
               <div className="col-md-6 col-sm-12">
                 <Card>
@@ -1167,10 +1369,10 @@ const Dashboard = () => {
                     <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationYesImage).options}
-                      series={formatChartData(allLocationYesImage).series}
+                      options={formatChartData(allLocationYesImage, ["#088395"]).options}
+                      series={formatChartData(allLocationYesImage, ["#088395"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
@@ -1181,16 +1383,30 @@ const Dashboard = () => {
                     <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationImage).options}
-                      series={formatChartData(allLocationImage).series}
+                      options={formatChartData(allLocationImage, ["#088395"]).options}
+                      series={formatChartData(allLocationImage, ["#088395"]).series}
                       type="bar"
-                      height="379"
+                      height="350"
                     />
                   </CardBody>
                 </Card>
               </div>
             </div>
 
+            {/* <div className="row mt-4">
+              <Card>
+                <CardBody>
+                  <CardTitle tag="h5">Weekly Report</CardTitle>
+                  <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                  <Chart
+                    options={formatWeekChartData(allWeekImage, ["#088395", "#F0A500", "#FF3D00", "#4CAF50", "#FF9800", "#9C27B0", "#2196F3", "#E91E63", "#607D8B"]).options}
+                    series={formatWeekChartData(allWeekImage, ["#088395", "#F0A500", "#FF3D00", "#4CAF50", "#FF9800", "#9C27B0", "#2196F3", "#E91E63", "#607D8B"]).series}
+                    type="bar"
+                    height="350"
+                  />
+                </CardBody>
+              </Card>
+            </div> */}
           </div>
         </div>
       </div>

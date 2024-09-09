@@ -586,7 +586,7 @@ const LocationWiseDashboard = () => {
 
   const columnSums = calculateColumnSum();
 
-  const formatChartData = (data) => ({
+  const formatChartData = (data, colors) => ({
     options: {
       chart: {
         toolbar: {
@@ -612,7 +612,7 @@ const LocationWiseDashboard = () => {
           borderRadius: 2,
         },
       },
-      colors: ["#4BC0C0", "#f87979", "#02B2AF"],
+      colors: colors,
       xaxis: {
         categories: data.labels,
       },
@@ -653,47 +653,47 @@ const LocationWiseDashboard = () => {
           </div>
           <div className="row">
             <div className="col-md-6 col-sm-12">
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
-                  <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                  <Chart
-                    options={formatChartData(allLocationYesImage).options}
-                    series={formatChartData(allLocationYesImage).series}
-                    type="bar"
-                    height="379"
-                  />
-                </CardBody>
-              </Card>
+            <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                    <Chart
+                      options={formatChartData(allLocationYesImage,["#088395"]).options}
+                      series={formatChartData(allLocationYesImage,["#088395"]).series}
+                      type="bar"
+                      height="350"
+                    />
+                  </CardBody>
+                </Card>
             </div>
             <div className="col-md-6 col-sm-12">
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">SCANNED REPORT FOR ({formattedCurrentDate})</CardTitle>
-                  <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                  <Chart
-                    options={formatChartData(allLocationImage).options}
-                    series={formatChartData(allLocationImage).series}
-                    type="bar"
-                    height="379"
-                  />
-                </CardBody>
-              </Card>
+            <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
+                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                    <Chart
+                      options={formatChartData(allLocationImage,["#088395"]).options}
+                      series={formatChartData(allLocationImage,["#088395"]).series}
+                      type="bar"
+                      height="350"
+                    />
+                  </CardBody>
+                </Card>
             </div>
           </div>
           <div className="row mt-4">
             <div className="col-md-12 col-sm-12">
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">SCANNED REPORT FOR LAST 30 DAYS</CardTitle>
-                  <Chart
-                    options={formatChartData(monthImage).options}
-                    series={formatChartData(monthImage).series}
-                    type="bar"
-                    height="379"
-                  />
-                </CardBody>
-              </Card>
+            <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">SCANNED REPORT OF LAST 30 DAYS </CardTitle>
+                    <Chart
+                      options={formatChartData(monthImage, ["#4BC0C0"]).options}
+                      series={formatChartData(monthImage, ["#4BC0C0"]).series}
+                      type="bar"
+                      height="379"
+                    />
+                  </CardBody>
+                </Card>
             </div>
           </div>
 
@@ -705,15 +705,15 @@ const LocationWiseDashboard = () => {
             <table class="table table-hover table-bordered table-responsive data-table">
               <thead style={{ color: "#4BC0C0" }}>
                 <tr>
-                  <th rowspan="2">Sr. No.</th>
-                  <th rowspan="2">Location</th>
+                  <th rowspan="2" style={{verticalAlign:'middle'}}>Sr. No.</th>
+                  <th rowspan="2" style={{verticalAlign:'middle'}}>Location</th>
                   <th colspan="2">Scanned ({formattedPreviousDate})</th>
                   <th colspan="2">
                     Scanned ({formattedYesterdayDate})
                   </th>
                   <th colspan="2">Scanned ({formattedCurrentDate})</th>
                   <th colspan="2">Cumulative till date</th>
-                  <th rowspan="2">Remarks</th>
+                  
                 </tr>
                 <tr>
                   <th>Files</th>
@@ -746,7 +746,7 @@ const LocationWiseDashboard = () => {
                         <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-                        <td></td>
+                        
                       </tr>
                     );
                     //   }
@@ -782,7 +782,7 @@ const LocationWiseDashboard = () => {
                   <td>
                     <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
                   </td>
-                  <td></td>
+                  
                 </tr>
               </tbody>
 

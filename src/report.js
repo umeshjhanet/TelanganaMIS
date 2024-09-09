@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { SummaryData } from "./Components/SummaryData";
 import Header from "./Components/Header";
 import Footer from "./Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
-import { Modal } from 'react-bootstrap';
 import { API_URL } from "./Api";
-import { BsCursor } from "react-icons/bs";
-import { formatDate } from './utils';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 const Report = () => {
   const [startDate, setStartDate] = useState('');
@@ -20,22 +20,26 @@ const Report = () => {
   const [showFileType, setShowFileType] = useState(false);
   const [selectedFileTypes, setSelectedFileTypes] = useState([]);
   const [fileType, setfileType] = useState("");
-  const [locationData, setLocationData] = useState(null);
-  const [summaryLocationData, setSummaryLocationData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchInput, setSearchInput] = useState("");
   const [summary, setSummary] = useState();
   const [report, setReport] = useState();
+  const [dateReport, setDateReport] = useState();
   const [csv, setCsv] = useState(null);
   const [reportCsv, setReportCsv] = useState(null);
+  const [dateReportCsv, setDateReportCsv] = useState(null);
   const dropdownRef = useRef(null);
+  const filedropdownRef = useRef(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showConfirmationBox, setShowConfirmationBox] = useState(false);
+  const [showConfirmationBoxDate, setShowConfirmationBoxDate] = useState(false);
   const [totalLocations, setTotalLocations] = useState(0);
-  const filedropdownRef = useRef(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [exportFormat, setExportFormat] = useState('csv');
+  const [showTableDropdown, setShowTableDropdown] = useState(false);
+  const [exportTableFormat, setExportTableFormat] = useState('csv');
 
-  // const userLog = JSON.parse(localStorage.getItem('user'));
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -60,13 +64,11 @@ const Report = () => {
     }
     setShowLocation(false); // Close the dropdown when a location is selected
   };
-
   const removeLocation = (locationName) => {
     setSelectedLocations(
       selectedLocations.filter((loc) => loc !== locationName)
     );
   };
-
   const handleFileType = (fileType) => {
     if (!selectedFileTypes.includes(fileType)) {
       setSelectedFileTypes([...selectedFileTypes, fileType]);
@@ -74,252 +76,47 @@ const Report = () => {
     }
     setShowFileType(false); // Close the dropdown when a FileType is selected
   };
-
   const removeFileType = (fileType) => {
     setSelectedFileTypes(
       selectedFileTypes.filter((loc) => loc !== fileType)
     );
   };
-
   const handleExport = () => {
-    setShowConfirmation(true);
-  };
-
-  const handleConfirmedExport = async () => {
-    try {
-      const userLog = JSON.parse(localStorage.getItem('user'));
-      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-        // User has a specific location assigned
-        await fetchSummaryReportCsvFileLocation(startDate, endDate);
-      } else {
-        // User does not have a specific location assigned (handle based on selected location)
-        await fetchSummaryReportCsvFile(locationName, startDate, endDate);
-      }
-
-      if (csv) {
-        const link = document.createElement("a");
-        link.href = csv;
-        link.setAttribute("download", "AllLocationSummaryReport.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      setShowConfirmation(false);
-    } catch (error) {
-      console.error("Error during CSV export:", error);
-      setError("Error during CSV export. Please try again.");
-    }
+    setShowDropdown(!showDropdown);
   };
 
   const handleCancelExport = () => {
     setShowConfirmation(false);
   };
 
-  const handleReportCsv = () => {
+  const handleDropdownChange = (format) => {
+    setExportFormat(format);
+    setShowDropdown(false);
+    setShowConfirmation(true);
+  };
+
+  const handleTableDropdownChange = (format) => {
+    setExportTableFormat(format);
+    setShowTableDropdown(false);
     setShowConfirmationBox(true);
   };
 
-  const handleReportCsvConfirmation = async () => {
-    try {
-      const userLog = JSON.parse(localStorage.getItem('user'));
-  
-      // Determine the appropriate function to fetch CSV data
-      let fetchDataFunction;
-      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-        // User has a specific location assigned
-       fetchSummaryReportTableCsvFileLocation();
-      } else {
-        // User does not have a specific location assigned (handle based on selected location)
-        fetchSummaryReportTableCsvFile();
-      }
-
-      if (reportCsv) {
-        const link = document.createElement("a");
-        link.href = reportCsv;
-        link.setAttribute("download", "LocationWiseDetailedReport.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-  
-      setShowConfirmationBox(false);
-    } catch (error) {
-      console.error("Error during CSV export:", error);
-      setError("Error during CSV export. Please try again.");
-    }
+  const handleReportCsv = () => {
+    setShowTableDropdown(!showTableDropdown);
   };
-  
+
   const handleReportCancelExport = () => {
     setShowConfirmationBox(false);
   };
 
- 
-  
-  const fetchSummaryReportCsvFile = async (locationName, startDate, endDate) => {
-    const formattedStartDate = startDate ? new Date(startDate) : null;
-    const formattedEndDate = endDate ? new Date(endDate) : null;
-    const formatDate = (date) => {
-      // Format to YYYY-MM-DD
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    let apiUrl = `${API_URL}/summarycsv`;
-    if (locationName && formattedStartDate && formattedEndDate) {
-      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    } else if (locationName) {
-      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
-    } else if (formattedStartDate && formattedEndDate) {
-      apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    }
-
-    try {
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      setCsv(url);
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-    }
+  const handleDateReportCsv = () => {
+    setShowConfirmationBoxDate(true);
   };
 
-  const fetchSummaryReportTableCsvFile = async (locationName, startDate, endDate) => {
-    const formattedStartDate = startDate ? new Date(startDate) : null;
-    const formattedEndDate = endDate ? new Date(endDate) : null;
-    const formatDate = (date) => {
-      // Format to YYYY-MM-DD
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    let apiUrl = `${API_URL}/reporttablecsv`;
-    if (locationName && formattedStartDate && formattedEndDate) {
-      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    } else if (locationName) {
-      apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
-    } else if (formattedStartDate && formattedEndDate) {
-      apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    }
-
-    try {
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      setReportCsv(url);
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-    }
-  };
-  const fetchSummaryReportCsvFileLocation = async (startDate, endDate) => {
-    try {
-      // Get user information from localStorage
-      const userLog = JSON.parse(localStorage.getItem('user'));
-
-      // Check if the user has a specific location assigned
-      let locationName = null;
-      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-        locationName = userLog.locations[0].name;
-      }
-
-      // Convert start and end dates to the correct format if provided
-      const formatDate = (date) => {
-        // Format to YYYY-MM-DD
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-
-      let apiUrl = `${API_URL}/summarycsv`;
-      const queryParams = [];
-
-      if (locationName) {
-        queryParams.push(`locationName=${locationName}`);
-      }
-      if (startDate) {
-        queryParams.push(`startDate=${formatDate(startDate)}`);
-      }
-      if (endDate) {
-        queryParams.push(`endDate=${formatDate(endDate)}`);
-      }
-
-      // If there are any query parameters, append them to the URL
-      if (queryParams.length > 0) {
-        apiUrl += `?${queryParams.join("&")}`;
-      }
-
-      console.log("CSV API URL:", apiUrl); // Log the constructed API URL
-
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      setCsv(url);
-
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-      setError("Error in exporting data. Please try again.");
-    }
+  const handleDateReportCancelExport = () => {
+    setShowConfirmationBoxDate(false);
   };
 
-  const fetchSummaryReportTableCsvFileLocation = async (startDate, endDate) => {
-    try {
-      // Get user information from localStorage
-      const userLog = JSON.parse(localStorage.getItem('user'));
-  
-      // Check if the user has a specific location assigned
-      let locationName = null;
-      if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
-        locationName = userLog.locations[0].name;
-      }
-  
-      // Convert start and end dates to the correct format if provided
-      const formatDate = (date) => {
-        // Format to YYYY-MM-DD
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-  
-      // Construct the API URL with default locationName parameter
-      let apiUrl = `${API_URL}/reporttablecsv`;
-      const queryParams = [];
-  
-      // Always include locationName if available
-      if (locationName) {
-        queryParams.push(`locationName=${locationName}`);
-      }
-  
-      // Include startDate and endDate if provided
-      if (startDate) {
-        queryParams.push(`startDate=${formatDate(startDate)}`);
-      }
-      if (endDate) {
-        queryParams.push(`endDate=${formatDate(endDate)}`);
-      }
-  
-      // Append query parameters to the apiUrl if any
-      if (queryParams.length > 0) {
-        apiUrl += `?${queryParams.join("&")}`;
-      }
-  
-      console.log("Report Table CSV API URL:", apiUrl); // Log the constructed API URL
-  
-      const response = await axios.get(apiUrl, { responseType: "blob" });
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      setReportCsv(url);
-  
-    } catch (error) {
-      console.error("Error in exporting data:", error);
-      setError("Error in exporting data. Please try again.");
-    }
-  };
 
   useEffect(() => {
     const locationName = selectedLocations;
@@ -340,7 +137,11 @@ const Report = () => {
         // Optional: Fetch user info from localStorage
         const userLog = JSON.parse(localStorage.getItem('user'));
         if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
+          // Set locationName from userLog if it exists and conditions are met
           queryParams.locationName = userLog.locations[0].name;
+        }
+        else if (selectedLocations) {
+          queryParams.locationName = selectedLocations;
         }
 
         if (startDate && endDate) {
@@ -348,7 +149,7 @@ const Report = () => {
           queryParams.endDate = formatDate(endDate);
         }
         if (fileType) {
-          queryParams.fileType = selectedFileTypes;  
+          queryParams.fileType = selectedFileTypes;
         }
 
         const response = await axios.get(`${API_URL}/summary`, { params: queryParams });
@@ -365,8 +166,12 @@ const Report = () => {
 
         const userLog = JSON.parse(localStorage.getItem('user'));
 
-        if (userLog.locations && userLog.locations.length === 1 && userLog.locations[0].id && userLog.user_roles.includes("Cbsl User")) {
+        if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
+          // Set locationName from userLog if it exists and conditions are met
           queryParams.locationName = userLog.locations[0].name;
+        }
+        else if (selectedLocations) {
+          queryParams.locationName = selectedLocations;
         }
 
         if (startDate && endDate) {
@@ -374,7 +179,7 @@ const Report = () => {
           queryParams.endDate = formatDate(endDate);
         }
         if (fileType) {
-          queryParams.fileType = selectedFileTypes;  
+          queryParams.fileType = selectedFileTypes;
         }
 
         console.log("API URL:", apiUrl); // Log the constructed API URL
@@ -392,46 +197,57 @@ const Report = () => {
         setIsLoading(false);
       }
     };
-    const fetchReports = async (locationName, startDate, endDate) => {
-      const userLog = JSON.parse(localStorage.getItem('user'));
-      let locations = [];
-    
-      if (userLog && userLog.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-        locations = [userLog.locations[0].name];
+    const fetchDateReportData = async () => {
+      try {
+        let apiUrl = `${API_URL}/datewisereport`;
+        const queryParams = {};
+
+        const userLog = JSON.parse(localStorage.getItem('user'));
+
+        if (locationName) {
+          queryParams.locationName = selectedLocations;
+        }
+
+        if (startDate && endDate) {
+          queryParams.startDate = formatDate(startDate);
+          queryParams.endDate = formatDate(endDate);
+        }
+        if (fileType) {
+          queryParams.fileType = selectedFileTypes;
+        }
+
+        console.log("API URL:", apiUrl); // Log the constructed API URL
+        console.log("Query Params:", queryParams); // Log query parameters
+
+        setIsLoading(true);
+        const response = await axios.get(apiUrl, { params: queryParams });
+        console.log("API Response:", response.data); // Log the API response
+        setDateReport(response.data);
+        setIsLoading(false);
+        updateTotalLocations(response.data);
+      } catch (error) {
+        console.error("Error fetching report data:", error);
+        setError("Error fetching report data. Please try again.");
+        setIsLoading(false);
       }
-    
-      // Ensure locationName is an array or set it to an empty array if not
-      if (!Array.isArray(locationName)) {
-        locationName = [locationName]; // Convert to array if it's not already
-      }
-    
-      // Concatenate user's location if available
-      const finalLocations = [...new Set([...locationName, ...locations])];
-    
-      await Promise.all([
-        fetchSummaryReportTableCsvFileLocation(finalLocations, startDate, endDate),
-        fetchSummaryReportCsvFileLocation(finalLocations, startDate, endDate),
-        fetchSummaryReportTableCsvFile(finalLocations, startDate, endDate),
-        fetchSummaryReportCsvFile(finalLocations, startDate, endDate)
-      ]);
     };
 
     const fetchFileTypes = () => {
       setIsLoading(true);
-            axios.get(`${API_URL}/summaryfiletype`)
-                .then(response => {setfileType(response.data)
-                setIsLoading(false);
-                })
-                .catch(error => console.error(error));
-            setIsLoading(false);
+      axios.get(`${API_URL}/summaryfiletype`)
+        .then(response => {
+          setfileType(response.data)
+          setIsLoading(false);
+        })
+        .catch(error => console.error(error));
+      setIsLoading(false);
     }
-    
-    fetchReports(locationName, startDate, endDate);
     summaryData();
     fetchReportData();
+    fetchDateReportData();
     fetchFileTypes();
 
-  }, [selectedLocations,selectedFileTypes, endDate]);
+  }, [selectedLocations, selectedFileTypes, endDate]);
 
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
@@ -442,6 +258,272 @@ const Report = () => {
       <div className="loader"></div>
     </div>
   );
+  const fileSummaryHeaders = [
+    'TotalLocation',
+    'CollectionFiles',
+    'CollectionImages',
+    'ScannedFiles',
+    'ScannedImages',
+    'QCFiles',
+    'QCImages',
+    'FlaggingFiles',
+    'FlaggingImages',
+    'IndexingFiles',
+    'IndexingImages',
+    'CBSL_QAFiles',
+    'CBSL_QAImages',
+    'Export_PdfFiles',
+    'Export_PdfImages',
+    'Client_QAFiles',
+    'Client_QAImages',
+    'Digi_SignFiles',
+    'Digi_SignImages'
+  ];
+  function convertJSONToCSVSummary(summary, columnHeaders) {
+    if (summary.length === 0) return '';
+
+    const headers = columnHeaders.join(',') + '\n';
+    const rows = summary
+      .map(row => columnHeaders.map(field => row[field] || '').join(','))
+      .join('\n');
+
+    return headers + rows;
+  }
+  function downloadCSVSummary(summaryData, headers) {
+    const csvData = convertJSONToCSVSummary(summaryData, headers);
+    if (csvData === '') {
+      alert('No data to export');
+    } else {
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'Summary.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+  function downloadExcelSummary(summaryData, headers) {
+    const worksheet = XLSX.utils.json_to_sheet(summaryData, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    XLSX.writeFile(workbook, 'Summary.xlsx');
+  }
+  function downloadPDFSummary(summaryData, headers) {
+    const doc = new jsPDF({
+      orientation: 'l', // Landscape orientation to fit wide tables
+      unit: 'mm',
+      format: 'a2', // A4 paper size
+    });
+
+    doc.autoTable({
+      head: [headers], // Table headers
+      body: summaryData.map(row => headers.map(header => row[header] || '')), // Table rows
+      startY: 20, // Start position of the table
+      margin: { top: 10 }, // Margin from the top of the page
+      theme: 'grid', // Optional: use a grid theme for better visibility
+      styles: {
+        cellPadding: 2, // Cell padding
+        fontSize: 10, // Font size
+        valign: 'middle', // Vertical alignment
+        overflow: 'linebreak', // Ensure text wraps correctly
+        halign: 'left', // Horizontal alignment
+      },
+      headStyles: {
+        fillColor: [22, 160, 133], // Header background color (teal)
+        textColor: [255, 255, 255], // Header text color (white)
+        halign: 'center', // Center-align header text
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255], // Body cell background color (white)
+        textColor: [0, 0, 0], // Body cell text color (black)
+      },
+      columnStyles: {
+        // Adjust column widths if necessary
+        0: { cellWidth: 30 },
+        1: { cellWidth: 50 },
+        2: { cellWidth: 50 },
+        // Add more column widths if needed
+      },
+      pageBreak: 'auto', // Automatically handle page breaks
+    });
+
+    // Save the generated PDF
+    doc.save('Summary.pdf');
+  }
+  function downloadAllFormatsSummary(summaryData, headers) {
+    if (exportFormat === 'csv') {
+      downloadCSVSummary(summaryData, headers);
+      setShowConfirmation(false);
+    }
+    else if (exportFormat === 'excel') {
+      downloadExcelSummary(summaryData, headers);
+      setShowConfirmation(false);
+    }
+    else if (exportFormat === 'pdf') {
+      downloadPDFSummary(summaryData, headers);
+      setShowConfirmation(false);
+    }
+    else {
+      return '';
+    }
+  }
+  function downloadCSVFromTable() {
+    const table = document.querySelector(".data-table"); // Select the table by class
+    let csvContent = "";
+    
+    // Define the full header row
+    const headerRow1 = [
+      "Location",
+      "Collection of Records","", "Scanning ADF","", "Image QC","", 
+      "Document Classification","","Indexing","", "CBSL QA","", "Export PDF","", 
+      "Client QA","", "CSV Generation","", "Inventory Out",""
+    ];
+    
+    // Define the second row of headers
+    const headerRow2 = [
+      "",  // Empty placeholders for Location and Date
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images",
+      "Files", "Images", 
+      "Files", "Images",
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images", 
+      "Files", "Images",
+      "Files", "Images"
+    ];
+    
+    // Join both header rows to create the full CSV header
+    csvContent += headerRow1.join(",") + "\n";
+    csvContent += headerRow2.join(",") + "\n";
+  
+    // Extract the table body rows
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
+      const rowContent = [];
+      
+      cells.forEach((cell, index) => {
+        // Remove any commas from cell content to avoid CSV issues
+        rowContent.push(cell.innerText.replace(/,/g, ""));
+      });
+      
+      // Ensure the row has the correct number of columns
+      while (rowContent.length < headerRow1.length) {
+        rowContent.push(""); // Add empty data if there are fewer columns
+      }
+  
+      csvContent += rowContent.join(",") + "\n";
+    });
+    
+    // Create a blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "Locationwisedetailedreport.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setShowConfirmationBox(false);
+  }
+  function exportTableToPDFTable() {
+    const input = document.querySelector(".data-table"); // Target the table
+    
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: 'a4',
+      });
+  
+      // Add heading
+      pdf.setFontSize(18);
+      pdf.setTextColor(0, 0, 0); // Set text color to black
+      pdf.text("LOCATION WISE DETAILED REPORT", 40, 30); // Add heading at position (40, 30)
+  
+      // Adjusting image width and height to fit in the PDF
+      const imgWidth = 825; // Fit landscape A4 width
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Add the table image below the heading
+      pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, imgHeight); // Adjust y-coordinate to fit below heading
+  
+      pdf.save("Locationwisedetailedreport.pdf");
+    });
+  }
+  function exportTableToExcelTable() {
+    const table = document.querySelector(".data-table");
+    const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    XLSX.writeFile(wb, "Locationwisedetailedreport.xlsx");
+  }
+
+  function downloadAllFormats() {
+    if (exportTableFormat === 'csv') {
+      downloadCSVFromTable();
+      setShowConfirmationBox(false);
+    }
+    else if (exportTableFormat === 'excel') {
+      exportTableToExcelTable()
+      setShowConfirmationBox(false);
+    }
+    else if (exportTableFormat === 'pdf') {
+      exportTableToPDFTable();
+      setShowConfirmationBox(false);
+    }
+    else {
+      return '';
+    }
+  }
+  const fileDateTableHeaders = [
+    'locationName',
+    'Date',
+    'CollectionFiles',
+    'CollectionImages',
+    'ScannedFiles',
+    'ScannedImages',
+    'QCFiles',
+    'QCImages',
+    'FlaggingFiles',
+    'FlaggingImages',
+    'IndexingFiles',
+    'IndexingImages',
+    'CBSL_QAFiles',
+    'CBSL_QAImages',
+    'Export_PdfFiles',
+    'Export_PdfImages',
+    'Client_QCFiles',
+    'Client_QCImages',
+    'Digi_SignFiles',
+    'Digi_SignImages'
+  ];
+  function convertJSONToCSVDate(dateReport, columnHeaders) {
+    if (dateReport.length === 0) return '';
+
+    const headers = columnHeaders.join(',') + '\n';
+    const rows = dateReport
+      .map(row => columnHeaders.map(field => row[field] || '').join(','))
+      .join('\n');
+
+    return headers + rows;
+  }
+  function downloadCSVDate(dateJsonData, headers) {
+    const csvData = convertJSONToCSVDate(dateJsonData, headers);
+    if (csvData === '') {
+      alert('No data to export');
+    } else {
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'Datewisedetailedreport.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    setShowConfirmationBoxDate(false);
+  }
 
   return (
     <>
@@ -464,6 +546,7 @@ const Report = () => {
             <div className="row mt-2 me-1 search-report-card" >
               <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
+              
                   ref={dropdownRef}
                   className="search-bar"
                   style={{
@@ -556,22 +639,22 @@ const Report = () => {
                   </span>
                 </div>
                 {showFileType && (
-        <div className="location-card">
-          {Array.isArray(fileType) && fileType.length > 0 ? (
-            fileType.map((item, index) => (
-              <div key={index}>
-                <p onClick={() => handleFileType(item.filetype)}>
-                  {item.filetype}
-                </p>
+                  <div className="location-card">
+                    {Array.isArray(fileType) && fileType.length > 0 ? (
+                      fileType.map((item, index) => (
+                        <div key={index}>
+                          <p onClick={() => handleFileType(item.filetype)}>
+                            {item.filetype}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No file types available</p>
+                    )}
+                  </div>
+                )}
               </div>
-            ))
-          ) : (
-            <p>No file types available</p>
-          )}
-        </div>
-      )}
-              </div>
-             
+
               <div className="col-lg-6 col-md-8 col-sm-12" >
                 <DatePicker
                   className="date-field"
@@ -615,17 +698,28 @@ const Report = () => {
                   </h6>
                 </div>
                 <div className="col-2">
-                  <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
-                    {" "}
+                  <h6 style={{ color: "white", cursor: "pointer" }} onClick={() => setShowDropdown(!showDropdown)}>
                     <MdFileDownload style={{ fontSize: "20px" }} />
                     Export CSV
                   </h6>
+
                 </div>
+                {showDropdown && (
+                  <div style={{ height: '0px', overflow: 'visible', display: 'flex', justifyContent: 'right' }}>
+                    <div className="export-dropdown-card">
+                      <p onClick={() => handleDropdownChange('csv')}>CSV</p>
+                      <p onClick={() => handleDropdownChange('excel')}>Excel</p>
+                      <p onClick={() => handleDropdownChange('pdf')}>PDF</p>
+                    </div>
+                  </div>
+                )}
                 {showConfirmation && (
                   <div className="confirmation-dialog">
                     <div className="confirmation-content">
-                      <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-                      <button className="btn btn-success mt-3 ms-5" onClick={handleConfirmedExport}>Yes</button>
+                      <p className="fw-bold">Are you sure you want to export the {exportFormat.toUpperCase()} file?</p>
+                      <button className="btn btn-success mt-3 ms-5" onClick={() => {
+                        downloadAllFormatsSummary(summary, fileSummaryHeaders);
+                      }}>Yes</button>
                       <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
                     </div>
                   </div>
@@ -638,19 +732,15 @@ const Report = () => {
                     <>
                       {selectedLocations.length === 0 ? (
                         summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                          <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
                                   Coll. of Records
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles).toLocaleString()}
-
                                 <br />
                                 Total Images: {isNaN(parseInt(elem.CollectionImages)) ? 0 : parseInt(elem.CollectionImages).toLocaleString()}
                               </p>
@@ -665,35 +755,25 @@ const Report = () => {
                                 Coll. of Records
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CollectionFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.CollectionFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CollectionImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.CollectionImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
-
                           </div>
                         </div>
                       )}
                     </>
                   )}
+
                   {summary && (
                     <>
                       {selectedLocations.length === 0 ? (
@@ -708,7 +788,7 @@ const Report = () => {
                                   Scanning ADF
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles).toLocaleString()}
 
                                 <br />
@@ -725,27 +805,17 @@ const Report = () => {
                                 Scanning ADF
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.ScannedFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.ScannedFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.ScannedImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.ScannedImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -768,7 +838,7 @@ const Report = () => {
                                   Image QC
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles).toLocaleString()}
 
                                 <br />
@@ -785,27 +855,17 @@ const Report = () => {
                                 Image QC
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.QCFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.QCFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.QCImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.QCImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -828,7 +888,7 @@ const Report = () => {
                                   Doc Classification
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles).toLocaleString()}
 
                                 <br />
@@ -845,27 +905,17 @@ const Report = () => {
                                 Doc Classification
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.FlaggingFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.FlaggingFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.FlaggingImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.FlsggingImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -888,7 +938,7 @@ const Report = () => {
                                   Indexing
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles).toLocaleString()}
 
                                 <br />
@@ -905,27 +955,17 @@ const Report = () => {
                                 Indexing
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.IndexingFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.IndexingFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.IndexingImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.IndexingImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -948,7 +988,7 @@ const Report = () => {
                                   CBSL QA
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles).toLocaleString()}
 
                                 <br />
@@ -965,27 +1005,17 @@ const Report = () => {
                                 CBSL QA
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CBSL_QAFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.CBSL_QAFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.CBSL_QAImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.CBSL_QAImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -1008,7 +1038,7 @@ const Report = () => {
                                   Export PDF
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                                 Total Files: {isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles).toLocaleString()}
 
                                 <br />
@@ -1025,27 +1055,17 @@ const Report = () => {
                                 Export PDF
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Export_PdfFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.Export_PdfFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Export_PdfImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.Export_PdfImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -1068,13 +1088,11 @@ const Report = () => {
                                   Client QA
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? 0 : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}
-
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
+                                Total Files: {isNaN(parseInt(elem.Client_QAFiles)) ? 0 : parseInt(elem.Client_QAFiles).toLocaleString()}
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.Client_QA_AcceptedImages)) ? 0 : parseInt(elem.Client_QA_AcceptedImages).toLocaleString()}
+                                Total Images: {isNaN(parseInt(elem.Client_QAImages)) ? 0 : parseInt(elem.Client_QAImages).toLocaleString()}
                               </p>
-
                             </div>
                           </div>
                         ))
@@ -1086,27 +1104,17 @@ const Report = () => {
                                 Client QA
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Client_QA_AcceptedFiles) || 0
-                                    : 0)
-                                );
-                              }, 0).toLocaleString()}{" "}
+                                return acc + (locationData ? parseInt(locationData.Client_QA_AcceptedFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(locationData.Client_QA_AcceptedImages) || 0
-                                    : 0)
-                                );
+                                return acc + (locationData ? parseInt(locationData.Client_QA_AcceptedImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
@@ -1116,67 +1124,7 @@ const Report = () => {
                       )}
                     </>
                   )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  CSV Generation
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: 0 <br />
-                                Total Images:0
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                CSV Generation
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
-                              <br />
-                              Total Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+
                   {summary && (
                     <>
                       {selectedLocations.length === 0 ? (
@@ -1191,9 +1139,9 @@ const Report = () => {
                                   Inventory Out
                                 </h6>
                               </div>
-                              <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: 0 <br />
-                                Total Images:0
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
+                                Total Files: {elem.Inv_Out_Files} <br />
+                                Total Images:{elem.Inv_Out_Images}
                               </p>
                             </div>
                           </div>
@@ -1206,32 +1154,18 @@ const Report = () => {
                                 Inventory Out
                               </h6>
                             </div>
-                            <p className="text-center" style={{ fontSize: '16px', fontWeight: '500', color: 'maroon' }}>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}{" "}
+                                const locationData = report.find((elem) => elem.LocationName === location);
+                                return acc + (locationData ? parseInt(locationData.Inv_Out_Files) || 0 : 0);
+                              }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find(
-                                  (elem) => elem.LocationName === location
-                                );
-                                return (
-                                  acc +
-                                  (locationData
-                                    ? parseInt(0) || 0
-                                    : 0)
-                                );
-                              }, 0)}
+                                const locationData = report.find((elem) => elem.LocationName === location);
+                                return acc + (locationData ? parseInt(locationData.Inv_Out_Images) || 0 : 0);
+                              }, 0).toLocaleString()}
                             </p>
                           </div>
                         </div>
@@ -1262,12 +1196,22 @@ const Report = () => {
                       <MdFileDownload style={{ fontSize: "20px" }} />
                       Export CSV
                     </h6>
+
                   </div>
+                  {showTableDropdown && (
+                    <div style={{ height: '0px', overflow: 'visible', display: 'flex', justifyContent: 'right' }}>
+                      <div className="export-dropdown-card">
+                        <p onClick={() => handleTableDropdownChange('csv')}>CSV</p>
+                        <p onClick={() => handleTableDropdownChange('excel')}>Excel</p>
+                        <p onClick={() => handleTableDropdownChange('pdf')}>PDF</p>
+                      </div>
+                    </div>
+                  )}
                   {showConfirmationBox && (
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
                         <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-                        <button className="btn btn-success mt-3 ms-5" onClick={handleReportCsvConfirmation}>Yes</button>
+                        <button className="btn btn-success mt-3 ms-5" onClick={downloadAllFormats}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleReportCancelExport}>No</button>
                       </div>
                     </div>
@@ -1278,25 +1222,25 @@ const Report = () => {
                   style={{ overflowX: "auto" }}
                 >
                   <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
-                  <table class="table table-hover table-bordered table-responsive table-striped data-table">
+                  <table class="table table-hover table-bordered table-responsive  data-table">
                     <thead
-                      style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300' }}
+                      style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
                     >
                       <tr>
-                        <th rowspan="2">Location</th>
-                        <th colspan="2">Collection of Records</th>
-                        <th colspan="2">Scanning ADF</th>
-                        <th colspan="2">Image QC</th>
-                        <th colspan="2">Document Classification</th>
-                        <th colSpan="2">Indexing</th>
-                        <th colSpan="2">CBSL QA</th>
-                        <th colSpan="2">Export PDF</th>
-                        <th colSpan="2">Client QA</th>
-                        <th colSpan="2">CSV Generation</th>
-                        <th colSpan="2">Inventory Out</th>
+                        <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
+                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
+                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
+                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Export PDF</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>CSV Generation</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                       </tr>
                       <tr
-                        style={{ color: "black", backgroundColor: "#ccd2d4", fontWeight: '300' }}
+                        style={{ color: "black", fontWeight: '300' }}
                       >
                         <th>Files</th>
                         <th>Images</th>
@@ -1322,7 +1266,7 @@ const Report = () => {
                     </thead>
                     <tbody
                       className="scrollable"
-                      style={{ color: "black", height: "200px" }}
+                      style={{ color: "#4bc0c0", height: "80px" }}
                     >
                       {report &&
                         report.map((elem, index) => {
@@ -1332,7 +1276,7 @@ const Report = () => {
                           ) {
                             return (
                               <tr key={index} style={{ backgroundColor: "white" }}>
-                                <td>{elem.LocationName}</td>
+                                <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
@@ -1347,8 +1291,8 @@ const Report = () => {
                                 <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? "0" : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Client_QA_AcceptedImages)) ? "0" : parseInt(elem.Client_QA_AcceptedImages).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Client_QAFiles)) ? "0" : parseInt(elem.Client_QAFiles).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Client_QAImages)) ? "0" : parseInt(elem.Client_QAImages).toLocaleString()}</td>
                                 <td>0</td>
                                 <td>0</td>
                                 <td>0</td>
@@ -1364,6 +1308,145 @@ const Report = () => {
                 </div>
               </div>
             </div>
+            {selectedLocations && startDate && endDate ? (
+              <>
+                <div className="row mt-3 me-1">
+                  <div className="table-card">
+                    <div
+                      className="row"
+                      style={{
+                        padding: "5px",
+                        backgroundColor: "#4BC0C0",
+                        paddingTop: "15px",
+                      }}
+                    >
+                      <div className="col-10">
+                        <h6 className="" style={{ color: "white" }}>
+                          DATE WISE DETAILED REPORT
+                        </h6>
+                      </div>
+                      <div className="col-2">
+                        <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleDateReportCsv}>
+                          {" "}
+                          <MdFileDownload style={{ fontSize: "20px" }} />
+                          Export CSV
+                        </h6>
+                      </div>
+
+                      {showConfirmationBoxDate && (
+                        <div className="confirmation-dialog">
+                          <div className="confirmation-content">
+                            <p className="fw-bold">Are you sure you want to export the CSV file?</p>
+                            <button className="btn btn-success mt-3 ms-5" onClick={() => {
+                              downloadCSVDate(dateReport, fileDateTableHeaders);
+                            }}>Yes</button>
+                            <button className="btn btn-danger ms-3 mt-3" onClick={handleDateReportCancelExport}>No</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="row mt-3 ms-2 me-2"
+                      style={{ overflowX: "auto" }}
+                    >
+                      <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
+                      <table class="table table-hover table-bordered table-responsive date-table">
+                        <thead
+                          style={{ color: "black", fontWeight: '300', textAlign: 'center' }}
+                        >
+                          <tr>
+                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Date</th>
+                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
+                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
+                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
+                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Export PDF</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>CSV Generation</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
+                          </tr>
+                          <tr
+                            style={{ color: "black", fontWeight: '300' }}
+                          >
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                            <th>Files</th>
+                            <th>Images</th>
+                          </tr>
+                        </thead>
+                        <tbody
+                          className="scrollable"
+                          style={{ color: "black", height: "80px" }}
+                        >
+                          {dateReport && dateReport.length > 0 ? (
+                            dateReport.map((elem, index) => {
+                              if (
+                                selectedLocations.length === 0 ||
+                                selectedLocations.includes(elem.locationName)
+                              ) {
+                                return (
+                                  <tr key={index} style={{ backgroundColor: "white" }}>
+                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.locationName}</td>
+                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.Date || "N/A"}</td>
+                                    <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.IndexingFiles)) ? "0" : parseInt(elem.IndexingFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.IndexingImages)) ? "0" : parseInt(elem.IndexingImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.CBSL_QAFiles)) ? "0" : parseInt(elem.CBSL_QAFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Client_QCFiles)) ? "0" : parseInt(elem.Client_QCFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Client_QCImages)) ? "0" : parseInt(elem.Client_QCImages).toLocaleString()}</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                  </tr>
+                                );
+                              }
+                              return null;
+                            })
+                          ) : (
+                            <tr>
+                              <td colSpan="20" style={{ textAlign: 'center' }}>No data available</td>
+                            </tr>
+                          )}
+                        </tbody>
+
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </>
+
+            ) : <></>}
+
           </div>
         </div>
       </div>

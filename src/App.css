@@ -8,8 +8,24 @@ body {
 .container-fluid.loading {
   opacity: 0.5; /* Adjust the opacity value as needed */
 }
+/* Target ApexCharts data labels */
+/* .apexcharts-datalabels {
+  transform: rotate(-90deg); 
+  transform-origin: center; 
+  white-space: nowrap; 
+} */
 
-
+.export-dropdown-card{
+  background-color: #4BC0C0;
+    position: relative;
+    top: 0;
+    right: 0;
+    color: white;
+    height: 110px;
+    z-index: 999;
+    width: 169px;
+    padding-left: 25px;
+}
 /* Loader styles */
 .loader-overlay {
   position: fixed;
@@ -461,10 +477,19 @@ input[type="submit"]:hover {
   z-index: 999;
 }
 .data-table tbody.scrollable{
-  height:200px !important;
+  height:80px !important;
   overflow-y:auto !important;
   width: 100%;
+  
   }
+  .data-table tbody tr:hover{
+    color:#4BC0C0;
+    font-weight: 500;
+  }
+.data-table tbody tr:hover{
+  color: #4BC0C0;
+  font-weight: 400;
+}
 
 .location-card p:hover {
   background-color: #61dafb;
@@ -483,7 +508,7 @@ input[type="submit"]:hover {
 .table-bordered td {
   padding: 0.35rem;
   vertical-align: top;
-  border: 1px solid #dee2e6;
+  border: 1px solid #757f94;
 }
 
 tr:nth-child(even) {background-color: #f2f2f2;}
@@ -507,6 +532,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 
 .data-table {
   width: 100%;
+  border: 1px solid black;
 }
 
 .view-btn {
