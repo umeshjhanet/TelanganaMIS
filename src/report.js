@@ -368,56 +368,123 @@ const Report = () => {
       return '';
     }
   }
+  // function downloadCSVFromTable() {
+  //   const table = document.querySelector(".data-table"); // Select the table by class
+  //   let csvContent = "";
+    
+  //   // Define the full header row
+  //   const headerRow1 = [
+  //     "Sr No",
+  //     "Location",
+  //     "Collection of Records","", "Scanning ADF","", "Image QC","", 
+  //     "Document Classification","","Indexing","", "CBSL QA","", "Export PDF","", 
+  //     "Client QA","", "CSV Generation","", "Inventory Out",""
+  //   ];
+    
+  //   // Define the second row of headers
+  //   const headerRow2 = [
+  //     "",
+  //     "",  // Empty placeholders for Location and Date
+  //     "Files", "Images", 
+  //     "Files", "Images", 
+  //     "Files", "Images",
+  //     "Files", "Images", 
+  //     "Files", "Images",
+  //     "Files", "Images", 
+  //     "Files", "Images", 
+  //     "Files", "Images", 
+  //     "Files", "Images",
+  //     "Files", "Images"
+  //   ];
+    
+  //   // Join both header rows to create the full CSV header
+  //   csvContent += headerRow1.join(",") + "\n";
+  //   csvContent += headerRow2.join(",") + "\n";
+  
+  //   // Extract the table body rows
+  //   const rows = table.querySelectorAll("tbody tr");
+  //   rows.forEach(row => {
+  //     const cells = row.querySelectorAll("td");
+  //     const rowContent = [];
+      
+  //     cells.forEach((cell, index) => {
+  //       // Remove any commas from cell content to avoid CSV issues
+  //       rowContent.push(cell.innerText.replace(/,/g, ""));
+  //     });
+      
+  //     // Ensure the row has the correct number of columns
+  //     while (rowContent.length < headerRow1.length) {
+  //       rowContent.push(""); // Add empty data if there are fewer columns
+  //     }
+  
+  //     csvContent += rowContent.join(",") + "\n";
+  //   });
+    
+  //   // Create a blob and trigger download
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  //   const link = document.createElement("a");
+  //   link.href = URL.createObjectURL(blob);
+  //   link.setAttribute("download", "Locationwisedetailedreport.csv");
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  //   setShowConfirmationBox(false);
+  // }
+
   function downloadCSVFromTable() {
     const table = document.querySelector(".data-table"); // Select the table by class
     let csvContent = "";
-    
+
     // Define the full header row
     const headerRow1 = [
-      "Location",
-      "Collection of Records","", "Scanning ADF","", "Image QC","", 
-      "Document Classification","","Indexing","", "CBSL QA","", "Export PDF","", 
-      "Client QA","", "CSV Generation","", "Inventory Out",""
+        "Sr No",
+        "Location",
+        "Collection of Records", "", "Scanning ADF", "", "Image QC", "",
+        "Document Classification", "", "Indexing", "", "CBSL QA", "", "Export PDF", "",
+        "Client QA", "", "CSV Generation", "", "Inventory Out", ""
     ];
-    
+
     // Define the second row of headers
     const headerRow2 = [
-      "",  // Empty placeholders for Location and Date
-      "Files", "Images", 
-      "Files", "Images", 
-      "Files", "Images",
-      "Files", "Images", 
-      "Files", "Images",
-      "Files", "Images", 
-      "Files", "Images", 
-      "Files", "Images", 
-      "Files", "Images",
-      "Files", "Images"
+        "", "",  // Empty placeholders for Location and Date
+        "Files", "Images",
+        "Files", "Images",
+        "Files", "Images",
+        "Files", "Images",
+        "Files", "Images",
+        "Files", "Images",
+        "Files", "Images",
+        "Files", "Images",
+        "Files", "Images",
+        "Files", "Images"
     ];
-    
+
     // Join both header rows to create the full CSV header
     csvContent += headerRow1.join(",") + "\n";
     csvContent += headerRow2.join(",") + "\n";
-  
+
     // Extract the table body rows
     const rows = table.querySelectorAll("tbody tr");
-    rows.forEach(row => {
-      const cells = row.querySelectorAll("td");
-      const rowContent = [];
-      
-      cells.forEach((cell, index) => {
-        // Remove any commas from cell content to avoid CSV issues
-        rowContent.push(cell.innerText.replace(/,/g, ""));
-      });
-      
-      // Ensure the row has the correct number of columns
-      while (rowContent.length < headerRow1.length) {
-        rowContent.push(""); // Add empty data if there are fewer columns
-      }
-  
-      csvContent += rowContent.join(",") + "\n";
+    rows.forEach((row, rowIndex) => {
+        const cells = row.querySelectorAll("td");
+        const rowContent = [];
+
+        // Add Sr No (starts from 1)
+        rowContent.push(rowIndex + 1);
+
+        cells.forEach((cell) => {
+            // Remove any commas from cell content to avoid CSV issues
+            rowContent.push(cell.innerText.replace(/,/g, ""));
+        });
+
+        // Ensure the row has the correct number of columns
+        while (rowContent.length < headerRow1.length) {
+            rowContent.push(""); // Add empty data if there are fewer columns
+        }
+
+        csvContent += rowContent.join(",") + "\n";
     });
-    
+
     // Create a blob and trigger download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -427,7 +494,9 @@ const Report = () => {
     link.click();
     document.body.removeChild(link);
     setShowConfirmationBox(false);
-  }
+}
+
+
   function exportTableToPDFTable() {
     const input = document.querySelector(".data-table"); // Target the table
     
