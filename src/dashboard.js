@@ -19,6 +19,7 @@ import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import AllUserDashboard from "./AllUserDashboard";
 import LocationWiseDashboard from "./LocationWiseDashboard";
 import CbslAdminDashboard from "./CbslAdminDashboard";
+import Locationwisereport from "./locationwisereport";
 
 const Dashboard = () => {
   const userLog = JSON.parse(localStorage.getItem("user"));
@@ -26,22 +27,25 @@ const Dashboard = () => {
   const isDistrictHeadUser =
     userLog && userLog.user_roles.includes("All District Head");
 
-    const iscbslAdmin =
+  const iscbslAdmin =
     userLog && userLog.user_roles.includes("CBSL Admin");
+  const isExternalClient = userLog && userLog.user_roles.includes("Client");
 
-  const isEmptyLocations = userLog.locations.length === 1 && 
-                           userLog.locations[0].id === null && 
-                           userLog.locations[0].name === null;
+  const isEmptyLocations = userLog.locations.length === 1 &&
+    userLog.locations[0].id === null &&
+    userLog.locations[0].name === null;
 
   return (
     <>
-       <Header />
+      <Header />
       {isDistrictHeadUser ? (
         <DistrictHeadDashboard />
-      ) : isEmptyLocations ? (
+      ) : isExternalClient ? (
+        <Locationwisereport />
+      ): isEmptyLocations ? (
         <AllUserDashboard />
-      ) : iscbslAdmin ?(
-        <CbslAdminDashboard/>
+      ) : iscbslAdmin ? (
+        <CbslAdminDashboard />
       ) : (
         <LocationWiseDashboard location={userLog.locations} />
       )

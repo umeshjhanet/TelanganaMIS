@@ -244,7 +244,10 @@ const Report = () => {
     }
     summaryData();
     fetchReportData();
-    fetchDateReportData();
+    if(startDate && endDate){
+      fetchDateReportData();
+    }
+    
     fetchFileTypes();
 
   }, [selectedLocations, selectedFileTypes, endDate]);
@@ -252,6 +255,7 @@ const Report = () => {
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
     setTotalLocations(uniqueLocations.length);
+    console.log("Total locations number",totalLocations);
   };
   const Loader = () => (
     <div className="loader-overlay">
