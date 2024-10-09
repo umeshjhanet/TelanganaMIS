@@ -40,9 +40,11 @@ const Dashboard = () => {
       <Header />
       {isDistrictHeadUser ? (
         <DistrictHeadDashboard />
-      ) : isExternalClient ? (
-        <Locationwisereport />
-      ): isEmptyLocations ? (
+      ) : 
+      // isExternalClient ? (
+      //   <Locationwisereport />
+      // ):
+       isEmptyLocations ? (
         <AllUserDashboard />
       ) : iscbslAdmin ? (
         <CbslAdminDashboard />

@@ -800,7 +800,9 @@ const Header = () => {
       <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
           <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
             <div className="container-fluid" >
-              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+            <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                  <img src='logo.png' />
+                </div>
               <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 </ul>
@@ -810,60 +812,18 @@ const Header = () => {
               </div>
             </div>
           </nav>
-
-          {showSideBar ? (
-            <>
-              <div className='row'>
-                <div className='col-1'>
-                  <div className='shrink-sidebar'>
-                    <div className='row shrink-header-image' >
-                      <img src='logo.png' />
-                    </div>
-                    <Link to='/dashboard'><p className='ms-4 mt-4 '><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
-                  </div>
-                </div>
-                <div className='col-11'></div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className='row' style={{ marginLeft: '0' }}>
-                <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-                  <div className='sidebar'>
-                    <div className='row header-image'>
-                      <img src='logo.png' />
-                    </div>
-                    <div className='row mt-4' onClick={handleActiveTab}>
-                      <Link to='/dashboard' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
-                    </div>
-                  </div>
-                </div>
-                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
-              </div>
-            </>
-          )}
         </div>
         <div className='d-block d-xl-none d-lg-none d-md-block d-sm-block'>
           <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
             <div className="container-fluid" >
-              <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
+            <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                  <img src='logo.png' />
+                </div>
               <form className="d-flex">
                 <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
               </form>
             </div>
           </nav>
-          {showMobileSideBar &&
-            <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
-              <div className='mobile-sidebar'>
-                <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                  <img src='logo.png' />
-                </div>
-                <div className='row mt-4' onClick={handleActiveTab}>
-                  <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
-                </div>
-              </div>
-            </div>
-          }
         </div>
       </>
     )

@@ -52,7 +52,7 @@ const App = () => {
         <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC />} />} />
         <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
         <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport />} />} />
-        <Route path="/dashboard" element={<PrivateRoute element={<Locationwisereport />} />} />
+        <Route path="/locationwisereport" element={<PrivateRoute element={<Locationwisereport />} />} />
       </Routes>
     </Router>
     
