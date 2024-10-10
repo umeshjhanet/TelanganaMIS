@@ -60,7 +60,7 @@ const DistrictHeadDashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#02B2AF",
         data: [],
       },
@@ -70,7 +70,7 @@ const DistrictHeadDashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#f87979",
         data: [],
       },
@@ -304,7 +304,7 @@ const DistrictHeadDashboard = () => {
             labels: labels,
             datasets: [
               {
-                label: "No. of Images",
+                label: "Images",
                 data: data,
                 backgroundColor: "#02B2AF",
               },

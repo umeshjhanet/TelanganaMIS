@@ -90,8 +90,10 @@ const Login = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user && user.user_roles && user.user_roles.includes("Cbsl User")) {
       navigate('/uploadDatabase');
+    } else if (user && user.user_roles && user.user_roles.includes("Client")) {
+      navigate('/locationwisereport');
     } else {
-      navigate('/dashboard');
+      navigate('/dashboard')
     }
   };
 

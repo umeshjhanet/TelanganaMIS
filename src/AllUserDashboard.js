@@ -50,7 +50,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Files",
+        label: "Files",
         backgroundColor: " #ad33ff",
         data: [],
       },
@@ -60,7 +60,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#ad33ff",
         data: [],
       },
@@ -70,7 +70,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Files",
+        label: "Files",
         backgroundColor: "#ff4dff",
         data: [],
       },
@@ -80,7 +80,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#ff4dff",
         data: [],
       },
@@ -93,7 +93,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#02B2AF",
         data: [],
       },
@@ -103,7 +103,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Civil cases",
+        label: "Civil cases",
         backgroundColor: "#f87979",
         data: [],
       },
@@ -113,7 +113,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Criminal cases",
+        label: "Criminal cases",
         backgroundColor: "#f87979",
         data: [],
       },
@@ -123,7 +123,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#66b3ff",
         data: [],
       },
@@ -133,7 +133,7 @@ const Dashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#f87979",
         data: [],
       },
@@ -283,7 +283,7 @@ const Dashboard = () => {
           );
           const datasets = apiData.map((locationData) => {
             return {
-              label: "No. of Files", // Use location name as label for each dataset
+              label: "Files", // Use location name as label for each dataset
               data: labels.map((label) => locationData[label]),
               backgroundColor: "#ad33ff", // Change the background color here
             };
@@ -398,7 +398,7 @@ const Dashboard = () => {
           );
           const datasets = apiData.map((locationData) => {
             return {
-              label: "No. of Images",
+              label: "Images",
               data: labels.map((label) => locationData[label]),
               backgroundColor: "#ad33ff", // Change the background color here
             };
@@ -436,7 +436,7 @@ const Dashboard = () => {
           );
           const datasets = apiData.map((locationData) => {
             return {
-              label: "No. of Files",
+              label: "Files",
               data: labels.map((label) => locationData[label]),
               backgroundColor: "#ad33ff", // Change the background color here
             };
@@ -476,7 +476,7 @@ const Dashboard = () => {
           );
           const datasets = apiData.map((locationData) => {
             return {
-              label: "No. of Images",
+              label: "Images",
               data: labels.map((label) => locationData[label]),
               backgroundColor: "#ad33ff", // Change the background color here
             };
@@ -663,7 +663,7 @@ const Dashboard = () => {
             labels: labels,
             datasets: [
               {
-                label: "No. of Images",
+                label: "Images",
                 data: data,
                 backgroundColor: "#02B2AF", // Set the background color
               },
@@ -701,7 +701,7 @@ const Dashboard = () => {
             labels: labels,
             datasets: [
               {
-                label: "No. of Images",
+                label: "Images",
                 data: data,
                 backgroundColor: "#02B2AF",
               },
@@ -1186,14 +1186,15 @@ const Dashboard = () => {
                               <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>{elem.LocationName}</td>
-                                <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
+                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
+                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
+                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
+                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
+                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
+                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
+                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
+                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
+                                
                               </tr>
                             );
                           }
