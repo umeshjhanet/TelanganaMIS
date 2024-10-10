@@ -310,7 +310,7 @@ const Locationwisereport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Input", "Scanned", "Approved", "Rectified", "Export PDF"];
+                    const labels = ["Received", "Scanned", "Approved", "Rectified", "Export PDF"];
 
                     // Define specific colors for locations
                     const colors = [
@@ -327,7 +327,7 @@ const Locationwisereport = () => {
                         return {
                             name: location.locationname,
                             data: [
-                                parseFloat(location.Input) || 0,
+                                parseFloat(location.Received) || 0,
                                 parseFloat(location.Scanned) || 0,
                                 parseFloat(location.Approved) || 0,
                                 parseFloat(location.Rectified) || 0,
@@ -370,7 +370,7 @@ const Locationwisereport = () => {
                     console.log("API Data:", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Input", "Scanned", "Approved", "Rectified", "Export PDF"];
+                    const labels = ["Received", "Scanned", "Approved", "Rectified", "Export PDF"];
 
                     // Define specific colors for locations
                     const colors = [
@@ -387,7 +387,7 @@ const Locationwisereport = () => {
                         return {
                             name: location.locationname,  // The name of the location
                             data: [
-                                parseFloat(location.Input) || 0,
+                                parseFloat(location.Received) || 0,
                                 parseFloat(location.Scanned) || 0,
                                 parseFloat(location.Approved) || 0,
                                 parseFloat(location.Rectified) || 0,
@@ -429,7 +429,7 @@ const Locationwisereport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Input", "Scanned", "Approved", "Rectified", "Export PDF"];
+                    const labels = ["Received", "Scanned", "Approved", "Rectified", "Export PDF"];
 
                     // Define specific colors for locations
                     const colors = [
@@ -446,7 +446,7 @@ const Locationwisereport = () => {
                         return {
                             name: location.locationname,
                             data: [
-                                parseFloat(location.Input) || 0,
+                                parseFloat(location.Received) || 0,
                                 parseFloat(location.Scanned) || 0,
                                 parseFloat(location.Approved) || 0,
                                 parseFloat(location.Rectified) || 0,
@@ -487,7 +487,7 @@ const Locationwisereport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Input", "Scanned", "Approved", "Rectified", "Export PDF"];
+                    const labels = ["Received", "Scanned", "Approved", "Rectified", "Export PDF"];
 
                     // Define specific colors for locations
                     const colors = [
@@ -504,7 +504,7 @@ const Locationwisereport = () => {
                         return {
                             name: location.locationname,
                             data: [
-                                parseFloat(location.Input) || 0,
+                                parseFloat(location.Received) || 0,
                                 parseFloat(location.Scanned) || 0,
                                 parseFloat(location.Approved) || 0,
                                 parseFloat(location.Rectified) || 0,
@@ -570,17 +570,18 @@ const Locationwisereport = () => {
         
                 const data = response.data;
         
-                // Define the complete months array
-                const allMonths = [
-                    '01-2024', '02-2024', '03-2024', '04-2024', 
-                    '05-2024', '06-2024', '07-2024', '08-2024', 
-                    '09-2024', '10-2024', '11-2024', '12-2024'
-                ];
+                // Calculate the last 12 months dynamically
+                const today = new Date();
+                const last12Months = [];
+                for (let i = 11; i >= 0; i--) {
+                    const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                    last12Months.push(`${("0" + (month.getMonth() + 1)).slice(-2)}-${month.getFullYear()}`);
+                }
         
                 // Create a mapping from formattedMonth to dataset
                 const dataMap = data.reduce((acc, item) => {
                     acc[item.formattedMonth] = {
-                        Input: Number(item.Input) || 0,
+                        Received: Number(item.Received) || 0,
                         Scanned: Number(item.Scanned) || 0,
                         Approved: Number(item.Approved) || 0,
                         Rectified: Number(item.Rectified) || 0,
@@ -589,12 +590,12 @@ const Locationwisereport = () => {
                     return acc;
                 }, {});
         
-                // Prepare the data for the chart based on allMonths
-                const inputData = allMonths.map(month => dataMap[month]?.Input || 0);
-                const scannedData = allMonths.map(month => dataMap[month]?.Scanned || 0);
-                const approvedData = allMonths.map(month => dataMap[month]?.Approved || 0);
-                const rectifiedData = allMonths.map(month => dataMap[month]?.Rectified || 0);
-                const exportPdfData = allMonths.map(month => dataMap[month]?.ExportPdf || 0);
+                // Prepare the data for the chart based on last12Months
+                const inputData = last12Months.map(month => dataMap[month]?.Received || 0);
+                const scannedData = last12Months.map(month => dataMap[month]?.Scanned || 0);
+                const approvedData = last12Months.map(month => dataMap[month]?.Approved || 0);
+                const rectifiedData = last12Months.map(month => dataMap[month]?.Rectified || 0);
+                const exportPdfData = last12Months.map(month => dataMap[month]?.ExportPdf || 0);
         
                 // Log the data that will be passed to the chart
                 console.log("Input Data:", inputData);
@@ -608,12 +609,12 @@ const Locationwisereport = () => {
                     options: {
                         ...chartData.options,
                         xaxis: {
-                            categories: allMonths // Set categories to all months
+                            categories: last12Months // Set categories to last 12 months
                         }
                     },
                     series: [
                         {
-                            name: 'Input',
+                            name: 'Received',
                             data: inputData
                         },
                         {
@@ -638,7 +639,6 @@ const Locationwisereport = () => {
                 console.error('Error fetching data:', err);
             }
         };
-    
         const fetchReportData = (locationName) => {
             // Create an object to hold query parameters
             const params = {};
@@ -821,16 +821,17 @@ const Locationwisereport = () => {
                             {statusDetails && statusDetails.map((elem, index) => (
                                 <>
                                     <div className="col-md-3 col-sm-12" key={index}>
-                                        <p>Project Start Date: <b>{new Date(elem.Start_Date).toISOString().split('T')[0]}</b></p>
+                                    <p>Project Start Date: <b>{`${new Date(elem.Start_Date).getDate().toString().padStart(2, '0')}-${(new Date(elem.Start_Date).getMonth() + 1).toString().padStart(2, '0')}-${new Date(elem.Start_Date).getFullYear()}`}</b></p>
+
                                     </div>
                                     <div className="col-md-3 col-sm-12">
                                         <p>No. of Locations: <b>{elem.Total_locations}</b></p>
                                     </div>
                                     <div className="col-md-3 col-sm-12">
-                                        <p>No. of Files: <b>{elem.Total_Files}</b></p>
+                                        <p>No. of Files: <b>{parseInt(elem.Total_Files).toLocaleString()}</b></p>
                                     </div>
                                     <div className="col-md-3 col-sm-12">
-                                        <p>No. of Images: <b>{elem.Total_Images}</b></p>
+                                        <p>No. of Images: <b>{parseInt(elem.Total_Images).toLocaleString()}</b></p>
                                     </div>
                                 </>
                             ))}
@@ -871,7 +872,7 @@ const Locationwisereport = () => {
                                     <thead style={{ color: '#4BC0C0' }}>
                                         <tr>
                                             <th>Location</th>
-                                            <th>Input</th>
+                                            <th>Received</th>
                                             <th>Scanned</th>
                                             <th>Approved</th>
                                             <th>Rectified</th>
@@ -884,7 +885,7 @@ const Locationwisereport = () => {
                                             <tr key={index}>
                                                 <td>{dataset.name}</td>
                                                 {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex}>{value}</td>
+                                                    <td key={dataIndex} style={{textAlign:'end'}}>{parseInt(value).toLocaleString()}</td>
                                                 ))}
                                             </tr>
                                         ))}
@@ -899,7 +900,7 @@ const Locationwisereport = () => {
                                 <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
                                     <span>Cumulative Images</span>
                                     <div className="d-flex justify-content-between align-items-center">
-                                    <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
+                                    <div className="me-2" onClick={toggleChartImageType} style={{ cursor: "pointer" }}>
                                     {chartImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
                                 </div>
                                     <VscTable  size={20} onClick={handleImageTable} style={{ cursor: 'pointer' }} />
@@ -926,7 +927,7 @@ const Locationwisereport = () => {
                                     <thead style={{ color: '#4BC0C0' }}>
                                         <tr>
                                             <th>Location</th>
-                                            <th>Input</th>
+                                            <th>Received</th>
                                             <th>Scanned</th>
                                             <th>Approved</th>
                                             <th>Rectified</th>
@@ -939,7 +940,7 @@ const Locationwisereport = () => {
                                             <tr key={index}>
                                                 <td>{dataset.name}</td>
                                                 {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex}>{value}</td>
+                                                    <td key={dataIndex} style={{textAlign:'end'}}>{parseInt(value).toLocaleString()}</td>
                                                 ))}
                                             </tr>
                                         ))}
@@ -950,7 +951,7 @@ const Locationwisereport = () => {
                     )}
                     <div className="col-md-4 col-sm-12">
                         <Card>
-                            <CardBody style={{ height: '455px' }}>
+                            <CardBody style={{ height: '430px' }}>
                                 <div className="row">
                                     <h5>Remarks:</h5>
                                 </div>
@@ -968,7 +969,7 @@ const Locationwisereport = () => {
                                 <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
                                     <span>Files on: {formattedYesterdayDate}</span>
                                     <div className="d-flex justify-content-between align-items-center">
-                                    <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
+                                    <div className="me-2" onClick={toggleChartTodayFileType} style={{ cursor: "pointer" }}>
                                     {chartTodayFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
                                 </div>
                                     <VscTable  size={20} onClick={handleTodayFileTable} style={{ cursor: 'pointer' }} />
@@ -995,7 +996,7 @@ const Locationwisereport = () => {
                                     <thead style={{ color: '#4BC0C0' }}>
                                         <tr>
                                             <th>Location</th>
-                                            <th>Input</th>
+                                            <th>Received</th>
                                             <th>Scanned</th>
                                             <th>Approved</th>
                                             <th>Rectified</th>
@@ -1008,7 +1009,7 @@ const Locationwisereport = () => {
                                             <tr key={index}>
                                                 <td>{dataset.name}</td>
                                                 {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex}>{value}</td>
+                                                    <td key={dataIndex} style={{textAlign:'end'}}>{parseInt(value).toLocaleString()}</td>
                                                 ))}
                                             </tr>
                                         ))}
@@ -1023,7 +1024,7 @@ const Locationwisereport = () => {
                                 <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
                                     <span>Images on: {formattedYesterdayDate}</span>
                                     <div className="d-flex justify-content-between align-items-center">
-                                    <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
+                                    <div className="me-2" onClick={toggleChartTodayImageType} style={{ cursor: "pointer" }}>
                                     {chartTodayImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
                                 </div>
                                     <VscTable  size={20} onClick={handleTodayImageTable} style={{ cursor: 'pointer' }} />
@@ -1041,7 +1042,7 @@ const Locationwisereport = () => {
                     </div>
                     <div className="col-md-4 col-sm-12">
                         <Card>
-                            <CardBody style={{ height: '455px' }}>
+                            <CardBody style={{ height: '430px' }}>
                                 <div className="row">
                                     <h5>Remarks:</h5>
                                 </div>
@@ -1062,7 +1063,7 @@ const Locationwisereport = () => {
                                     <thead style={{ color: '#4BC0C0' }}>
                                         <tr>
                                             <th>Location</th>
-                                            <th>Input</th>
+                                            <th>Received</th>
                                             <th>Scanned</th>
                                             <th>Approved</th>
                                             <th>Rectified</th>
@@ -1075,7 +1076,7 @@ const Locationwisereport = () => {
                                             <tr key={index}>
                                                 <td>{dataset.name}</td>
                                                 {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex}>{value}</td>
+                                                    <td key={dataIndex} style={{textAlign:'end'}}>{parseInt(value).toLocaleString()}</td>
                                                 ))}
                                             </tr>
                                         ))}
@@ -1159,18 +1160,18 @@ const Locationwisereport = () => {
                                             report.map((elem, index) => (
                                                 <tr key={index} style={{ backgroundColor: "white" }}>
                                                     <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
-                                                    <td>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.InputImages)) ? "0" : parseInt(elem.InputImages).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
-                                                    <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.InputImages)) ? "0" : parseInt(elem.InputImages).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
                                                     <td></td>
                                                 </tr>
                                             ))
