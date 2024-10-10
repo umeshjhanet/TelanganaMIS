@@ -904,8 +904,7 @@ const Dashboard = () => {
       `Scanned (${formattedPreviousDate})`, "", 
       `Scanned (${formattedYesterdayDate})`, "", 
       `Scanned (${formattedCurrentDate})`, "", 
-      "Cumulative till date", "", 
-      "Remarks"
+      "Cumulative till date", ""
     ];
   
     // Define the second row of headers
@@ -1163,7 +1162,6 @@ const Dashboard = () => {
                         </th>
                         <th colspan="2">Scanned ({formattedCurrentDate})</th>
                         <th colspan="2">Cumulative till date</th>
-                        
                       </tr>
                       <tr>
                         <th>Files</th>
@@ -1196,7 +1194,6 @@ const Dashboard = () => {
                                 <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-                                
                               </tr>
                             );
                           }
