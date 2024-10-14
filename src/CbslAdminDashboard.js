@@ -804,8 +804,7 @@ const CbslAdminDashboard = () => {
       `Scanned (${formattedPreviousDate})`, "", 
       `Scanned (${formattedYesterdayDate})`, "", 
       `Scanned (${formattedCurrentDate})`, "", 
-      "Cumulative till date", "", 
-      "Remarks"
+      "Cumulative till date", ""
     ];
   
     // Define the second row of headers

@@ -904,8 +904,7 @@ const Dashboard = () => {
       `Scanned (${formattedPreviousDate})`, "", 
       `Scanned (${formattedYesterdayDate})`, "", 
       `Scanned (${formattedCurrentDate})`, "", 
-      "Cumulative till date", "", 
-      "Remarks"
+      "Cumulative till date", ""
     ];
   
     // Define the second row of headers
@@ -1163,7 +1162,6 @@ const Dashboard = () => {
                         </th>
                         <th colspan="2">Scanned ({formattedCurrentDate})</th>
                         <th colspan="2">Cumulative till date</th>
-                        
                       </tr>
                       <tr>
                         <th>Files</th>

@@ -130,10 +130,7 @@ const Locationwisereport = () => {
             xaxis: {
                 categories: []
             },
-            title: {
-                text: 'Cumulative Status Images for 2024',
-                align: 'center'
-            },
+            
             plotOptions: {
                 bar: {
                     horizontal: false,
@@ -862,38 +859,63 @@ const Locationwisereport = () => {
                         </Card>
                     </div>
                     {showFileTable && (
-                        <div className="table-popup">
-                            <div className="table-content">
-                                <div className="popup-header d-flex justify-content-between align-items-center">
-                                    <h5>Location-wise Data</h5>
-                                    <button onClick={closeFileTable} className="btn" style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}>X</button>
-                                </div>
-                                <table className="table table-bordered mt-1">
-                                    <thead style={{ color: '#4BC0C0' }}>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>Received</th>
-                                            <th>Scanned</th>
-                                            <th>Approved</th>
-                                            <th>Rectified</th>
-                                            <th>Export</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Mapping through barFile datasets to generate rows */}
-                                        {barFile.datasets.map((dataset, index) => (
-                                            <tr key={index}>
-                                                <td>{dataset.name}</td>
-                                                {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex} style={{textAlign:'end'}}>{parseInt(value).toLocaleString()}</td>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
+  <div className="table-popup">
+    <div className="table-content">
+      <div className="popup-header d-flex justify-content-between align-items-center">
+        <h5>Location-wise Data</h5>
+        <button
+          onClick={closeFileTable}
+          className="btn"
+          style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+        >
+          X
+        </button>
+      </div>
+      <table className="table table-bordered">
+        <thead style={{ color: '#4BC0C0' }}>
+          <tr>
+            <th>Location</th>
+            <th>Received</th>
+            <th>Scanned</th>
+            <th>Approved</th>
+            <th>Rectified</th>
+            <th>Export</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Mapping through barFile datasets to generate rows */}
+          {barFile.datasets.map((dataset, index) => (
+            <tr key={index}>
+              <td>{dataset.name}</td>
+              {dataset.data.map((value, dataIndex) => (
+                <td key={dataIndex} style={{ textAlign: 'end' }}>
+                  {parseInt(value).toLocaleString()}
+                </td>
+              ))}
+            </tr>
+          ))}
+
+          {/* Calculating and displaying the total row */}
+          <tr>
+            <td style={{textAlign:'end'}}><strong>Total: </strong></td>
+            {barFile.datasets[0].data.map((_, colIndex) => {
+              const total = barFile.datasets.reduce(
+                (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                0
+              );
+              return (
+                <td key={colIndex} style={{ textAlign: 'end' }}>
+                  <strong>{total.toLocaleString()}</strong>
+                </td>
+              );
+            })}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
                     <div className="col-md-4 col-sm-12">
                         <Card>
                             <CardBody>
@@ -917,38 +939,63 @@ const Locationwisereport = () => {
                         </Card>
                     </div>
                     {showImageTable && (
-                        <div className="table-popup">
-                            <div className="table-content">
-                                <div className="popup-header d-flex justify-content-between align-items-center">
-                                    <h5>Location-wise Data</h5>
-                                    <button onClick={closeImageTable} className="btn" style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}>X</button>
-                                </div>
-                                <table className="table table-bordered">
-                                    <thead style={{ color: '#4BC0C0' }}>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>Received</th>
-                                            <th>Scanned</th>
-                                            <th>Approved</th>
-                                            <th>Rectified</th>
-                                            <th>Export</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Mapping through barFile datasets to generate rows */}
-                                        {barImage.datasets.map((dataset, index) => (
-                                            <tr key={index}>
-                                                <td>{dataset.name}</td>
-                                                {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex} style={{textAlign:'end'}}>{parseInt(value).toLocaleString()}</td>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
+  <div className="table-popup">
+    <div className="table-content">
+      <div className="popup-header d-flex justify-content-between align-items-center">
+        <h5>Location-wise Data</h5>
+        <button
+          onClick={closeImageTable}
+          className="btn"
+          style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+        >
+          X
+        </button>
+      </div>
+      <table className="table table-bordered">
+        <thead style={{ color: '#4BC0C0' }}>
+          <tr>
+            <th>Location</th>
+            <th>Received</th>
+            <th>Scanned</th>
+            <th>Approved</th>
+            <th>Rectified</th>
+            <th>Export</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Mapping through barFile datasets to generate rows */}
+          {barImage.datasets.map((dataset, index) => (
+            <tr key={index}>
+              <td>{dataset.name}</td>
+              {dataset.data.map((value, dataIndex) => (
+                <td key={dataIndex} style={{ textAlign: 'end' }}>
+                  {parseInt(value).toLocaleString()}
+                </td>
+              ))}
+            </tr>
+          ))}
+
+          {/* Calculating and displaying the total row */}
+          <tr>
+            <td style={{textAlign:'end'}}><strong>Total: </strong></td>
+            {barImage.datasets[0].data.map((_, colIndex) => {
+              const total = barImage.datasets.reduce(
+                (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                0
+              );
+              return (
+                <td key={colIndex} style={{ textAlign: 'end' }}>
+                  <strong>{total.toLocaleString()}</strong>
+                </td>
+              );
+            })}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
                     <div className="col-md-4 col-sm-12">
                         <Card>
                             <CardBody style={{ height: '430px' }}>
@@ -986,38 +1033,63 @@ const Locationwisereport = () => {
                         </Card>
                     </div>
                     {showTodayFileTable && (
-                        <div className="table-popup">
-                            <div className="table-content">
-                                <div className="popup-header d-flex justify-content-between align-items-center">
-                                    <h5>Location-wise Data</h5>
-                                    <button onClick={closeTodayFileTable} className="btn" style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}>X</button>
-                                </div>
-                                <table className="table table-bordered">
-                                    <thead style={{ color: '#4BC0C0' }}>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>Received</th>
-                                            <th>Scanned</th>
-                                            <th>Approved</th>
-                                            <th>Rectified</th>
-                                            <th>Export</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Mapping through barFile datasets to generate rows */}
-                                        {todayFile.datasets.map((dataset, index) => (
-                                            <tr key={index}>
-                                                <td>{dataset.name}</td>
-                                                {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex} style={{textAlign:'end'}}>{parseInt(value).toLocaleString()}</td>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
+  <div className="table-popup">
+    <div className="table-content">
+      <div className="popup-header d-flex justify-content-between align-items-center">
+        <h5>Location-wise Data</h5>
+        <button
+          onClick={closeTodayFileTable}
+          className="btn"
+          style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+        >
+          X
+        </button>
+      </div>
+      <table className="table table-bordered">
+        <thead style={{ color: '#4BC0C0' }}>
+          <tr>
+            <th>Location</th>
+            <th>Received</th>
+            <th>Scanned</th>
+            <th>Approved</th>
+            <th>Rectified</th>
+            <th>Export</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Mapping through barFile datasets to generate rows */}
+          {todayFile.datasets.map((dataset, index) => (
+            <tr key={index}>
+              <td>{dataset.name}</td>
+              {dataset.data.map((value, dataIndex) => (
+                <td key={dataIndex} style={{ textAlign: 'end' }}>
+                  {parseInt(value).toLocaleString()}
+                </td>
+              ))}
+            </tr>
+          ))}
+
+          {/* Calculating and displaying the total row */}
+          <tr>
+            <td style={{textAlign:'end'}}><strong>Total: </strong></td>
+            {todayFile.datasets[0].data.map((_, colIndex) => {
+              const total = todayFile.datasets.reduce(
+                (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                0
+              );
+              return (
+                <td key={colIndex} style={{ textAlign: 'end' }}>
+                  <strong>{total.toLocaleString()}</strong>
+                </td>
+              );
+            })}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+                   
                     <div className="col-md-4 col-sm-12">
                         <Card>
                             <CardBody>
@@ -1053,45 +1125,70 @@ const Locationwisereport = () => {
                         </Card>
                     </div>
                     {showTodayImageTable && (
-                        <div className="table-popup">
-                            <div className="table-content">
-                                <div className="popup-header d-flex justify-content-between align-items-center">
-                                    <h5>Location-wise Data</h5>
-                                    <button onClick={closeTodayImageTable} className="btn" style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}>X</button>
-                                </div>
-                                <table className="table table-bordered">
-                                    <thead style={{ color: '#4BC0C0' }}>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>Received</th>
-                                            <th>Scanned</th>
-                                            <th>Approved</th>
-                                            <th>Rectified</th>
-                                            <th>Export</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Mapping through barFile datasets to generate rows */}
-                                        {todayImage.datasets.map((dataset, index) => (
-                                            <tr key={index}>
-                                                <td>{dataset.name}</td>
-                                                {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex} style={{textAlign:'end'}}>{parseInt(value).toLocaleString()}</td>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
+  <div className="table-popup">
+    <div className="table-content">
+      <div className="popup-header d-flex justify-content-between align-items-center">
+        <h5>Location-wise Data</h5>
+        <button
+          onClick={closeTodayImageTable}
+          className="btn"
+          style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+        >
+          X
+        </button>
+      </div>
+      <table className="table table-bordered">
+        <thead style={{ color: '#4BC0C0' }}>
+          <tr>
+            <th>Location</th>
+            <th>Received</th>
+            <th>Scanned</th>
+            <th>Approved</th>
+            <th>Rectified</th>
+            <th>Export</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Mapping through barFile datasets to generate rows */}
+          {todayImage.datasets.map((dataset, index) => (
+            <tr key={index}>
+              <td>{dataset.name}</td>
+              {dataset.data.map((value, dataIndex) => (
+                <td key={dataIndex} style={{ textAlign: 'end' }}>
+                  {parseInt(value).toLocaleString()}
+                </td>
+              ))}
+            </tr>
+          ))}
+
+          {/* Calculating and displaying the total row */}
+          <tr>
+            <td style={{textAlign:'end'}}><strong>Total: </strong></td>
+            {todayImage.datasets[0].data.map((_, colIndex) => {
+              const total = todayImage.datasets.reduce(
+                (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                0
+              );
+              return (
+                <td key={colIndex} style={{ textAlign: 'end' }}>
+                  <strong>{total.toLocaleString()}</strong>
+                </td>
+              );
+            })}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
                 </div>
                 <div className="row mt-3">
                     <div>
                         <Card>
                             <CardBody>
-                                <CardTitle tag="h5">Cumulative Status Images for 2024</CardTitle>
-                                <CardSubtitle className="mb-2 text-muted">Monthly Overview</CardSubtitle>
+                                <CardTitle tag="h5">Cumulative Images of Last 12 Months</CardTitle>
+                               
                                 <Chart
                                     options={chartData.options}
                                     series={chartData.series}
@@ -1179,8 +1276,8 @@ const Locationwisereport = () => {
 
                                         {/* Total Row */}
                                         {report && (
-                                            <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold" }}>
-                                                <td>Total</td>
+                                            <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold",  textAlign:'end' }}>
+                                                <td>Total: </td>
                                                 <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td>
                                                 <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputImages)) ? 0 : parseInt(elem.InputImages)), 0).toLocaleString()}</td>
                                                 <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>

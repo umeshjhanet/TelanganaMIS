@@ -482,9 +482,10 @@ input[type="submit"]:hover {
   padding: 20px;
   border: 1px solid black;
   border-radius: 5px;
-  width: 80%;
-  max-width: 550px;
-  height: 350px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 350px;
+  overflow: auto;
 }
 
 .location-card {
