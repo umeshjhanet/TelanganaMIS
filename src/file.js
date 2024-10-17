@@ -166,7 +166,7 @@
 // export default File;
 import React, { useState, useEffect, useRef } from 'react';
 import Header from './Components/Header';
-import Footer from './Footer';
+import Footer from './Components/Footer';
 import { API_URL } from './Api';
 import axios from 'axios';
 

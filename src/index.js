@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './Components/Header';
-import Footer from './Footer';
+import Footer from './Components/Footer';
 import Dashboard from './dashboard';
 import Report from './report';
 import File from './file';
