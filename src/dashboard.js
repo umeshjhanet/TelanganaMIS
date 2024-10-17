@@ -11,7 +11,7 @@ import {
 import Header from "./Components/Header";
 import axios, { all } from "axios";
 import "./App.css";
-import Footer from "./Footer";
+import Footer from "./Components/Footer";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";

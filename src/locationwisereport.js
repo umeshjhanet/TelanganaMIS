@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaChartBar, FaChartLine } from "react-icons/fa";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import Header from "./Components/Header";
+import Footer from "./Components/Footer";
 const newData = [{ name: 'Page A', uv: 400, pv: 2400, amt: 2400 }, { name: 'Page B', uv: 450, pv: 2400, amt: 2400 },];
 
 const Locationwisereport = () => {
@@ -130,7 +131,7 @@ const Locationwisereport = () => {
             xaxis: {
                 categories: []
             },
-            
+
             plotOptions: {
                 bar: {
                     horizontal: false,
@@ -553,20 +554,20 @@ const Locationwisereport = () => {
             if (selectedLocations && selectedLocations.length > 0) {
                 params.locationname = selectedLocations; // Ensure we're filtering by location
             }
-        
+
             try {
                 const response = await axios.get(`${API_URL}/cumulative-status-images`, { params });
                 console.log("API Response Data:", response.data); // Log the API response
-        
+
                 // Ensure that we are handling the case where no data is returned
                 if (!response.data || response.data.length === 0) {
                     console.log("No data returned from the API");
                     // Optionally, set an empty state or handle this case
                     return;
                 }
-        
+
                 const data = response.data;
-        
+
                 // Calculate the last 12 months dynamically
                 const today = new Date();
                 const last12Months = [];
@@ -574,7 +575,7 @@ const Locationwisereport = () => {
                     const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
                     last12Months.push(`${("0" + (month.getMonth() + 1)).slice(-2)}-${month.getFullYear()}`);
                 }
-        
+
                 // Create a mapping from formattedMonth to dataset
                 const dataMap = data.reduce((acc, item) => {
                     acc[item.formattedMonth] = {
@@ -586,21 +587,21 @@ const Locationwisereport = () => {
                     };
                     return acc;
                 }, {});
-        
+
                 // Prepare the data for the chart based on last12Months
                 const inputData = last12Months.map(month => dataMap[month]?.Received || 0);
                 const scannedData = last12Months.map(month => dataMap[month]?.Scanned || 0);
                 const approvedData = last12Months.map(month => dataMap[month]?.Approved || 0);
                 const rectifiedData = last12Months.map(month => dataMap[month]?.Rectified || 0);
                 const exportPdfData = last12Months.map(month => dataMap[month]?.ExportPdf || 0);
-        
+
                 // Log the data that will be passed to the chart
                 console.log("Input Data:", inputData);
                 console.log("Scanned Data:", scannedData);
                 console.log("Approved Data:", approvedData);
                 console.log("Rectified Data:", rectifiedData);
                 console.log("Export PDF Data:", exportPdfData);
-        
+
                 // Set chart data
                 setChartData({
                     options: {
@@ -751,63 +752,63 @@ const Locationwisereport = () => {
                 </div>
                 <div className="row  mt-2">
                     <div>
-                    <div className="search-report-card">
-                        <div className="col-md-4 col-sm-12">
-                            <div
-                                ref={dropdownRef}
-                                className="search-bar"
-                                style={{
-                                    border: "1px solid #000",
-                                    padding: "5px",
-                                    borderRadius: "5px",
-                                    minHeight: "30px",
-                                }}
+                        <div className="search-report-card">
+                            <div className="col-md-4 col-sm-12">
+                                <div
+                                    ref={dropdownRef}
+                                    className="search-bar"
+                                    style={{
+                                        border: "1px solid #000",
+                                        padding: "5px",
+                                        borderRadius: "5px",
+                                        minHeight: "30px",
+                                    }}
 
-                                contentEditable={true}
-                                onClick={() => setShowLocation(!showLocation)}
-                            >
-                                {selectedLocations.length === 0 && !showLocation && (
-                                    <span className="placeholder-text">Search Locations...</span>
-                                )}
-                                {selectedLocations.map((location, index) => (
-                                    <span key={index} className="selected-location">
-                                        {location}
-                                        <button
-                                            onClick={() => removeLocation(location)}
-                                            style={{
-                                                backgroundColor: "black",
-                                                color: "white",
-                                                border: "none",
-                                                marginLeft: "5px",
-                                            }}
-                                        >
-                                            x
-                                        </button>
-                                        &nbsp;
+                                    contentEditable={true}
+                                    onClick={() => setShowLocation(!showLocation)}
+                                >
+                                    {selectedLocations.length === 0 && !showLocation && (
+                                        <span className="placeholder-text">Search Locations...</span>
+                                    )}
+                                    {selectedLocations.map((location, index) => (
+                                        <span key={index} className="selected-location">
+                                            {location}
+                                            <button
+                                                onClick={() => removeLocation(location)}
+                                                style={{
+                                                    backgroundColor: "black",
+                                                    color: "white",
+                                                    border: "none",
+                                                    marginLeft: "5px",
+                                                }}
+                                            >
+                                                x
+                                            </button>
+                                            &nbsp;
+                                        </span>
+                                    ))}
+                                    <span style={{ minWidth: "5px", display: "inline-block" }}>
+                                        &#8203;
                                     </span>
-                                ))}
-                                <span style={{ minWidth: "5px", display: "inline-block" }}>
-                                    &#8203;
-                                </span>
+                                </div>
+                                {showLocation && (
+                                    <>
+                                        <div className="location-card">
+                                            {tableData &&
+                                                tableData.map((item, index) => (
+                                                    <div key={index}>
+                                                        <p
+                                                            onClick={() => handleLocation(item.LocationName)}
+                                                        >
+                                                            {item.LocationName}
+                                                        </p>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                            {showLocation && (
-                                <>
-                                    <div className="location-card">
-                                        {tableData &&
-                                            tableData.map((item, index) => (
-                                                <div key={index}>
-                                                    <p
-                                                        onClick={() => handleLocation(item.LocationName)}
-                                                    >
-                                                        {item.LocationName}
-                                                    </p>
-                                                </div>
-                                            ))}
-                                    </div>
-                                </>
-                            )}
                         </div>
-                    </div>
                     </div>
                 </div>
                 <div className="row mt-2">
@@ -818,7 +819,7 @@ const Locationwisereport = () => {
                             {statusDetails && statusDetails.map((elem, index) => (
                                 <>
                                     <div className="col-md-3 col-sm-12" key={index}>
-                                    <p>Project Start Date: <b>{`${new Date(elem.Start_Date).getDate().toString().padStart(2, '0')}-${(new Date(elem.Start_Date).getMonth() + 1).toString().padStart(2, '0')}-${new Date(elem.Start_Date).getFullYear()}`}</b></p>
+                                        <p>Project Start Date: <b>{`${new Date(elem.Start_Date).getDate().toString().padStart(2, '0')}-${(new Date(elem.Start_Date).getMonth() + 1).toString().padStart(2, '0')}-${new Date(elem.Start_Date).getFullYear()}`}</b></p>
 
                                     </div>
                                     <div className="col-md-3 col-sm-12">
@@ -835,373 +836,9 @@ const Locationwisereport = () => {
                         </div>
                     </div>
                 </div>
-                <div className="row mt-3">
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                    <span>Cumulative Files</span>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                    <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
-                                    {chartFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                </div>
-                                    <VscTable  size={20} onClick={handleFileTable} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </CardTitle>
-                                
-                                <Chart
-                                    options={formatChartData(barFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
-                                    series={formatChartData(barFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
-                                    type={chartFileType}
-                                    height="350"
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                    {showFileTable && (
-  <div className="table-popup">
-    <div className="table-content">
-      <div className="popup-header d-flex justify-content-between align-items-center">
-        <h5>Location-wise Data</h5>
-        <button
-          onClick={closeFileTable}
-          className="btn"
-          style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-        >
-          X
-        </button>
-      </div>
-      <table className="table table-bordered">
-        <thead style={{ color: '#4BC0C0' }}>
-          <tr>
-            <th>Location</th>
-            <th>Received</th>
-            <th>Scanned</th>
-            <th>Approved</th>
-            <th>Rectified</th>
-            <th>Export</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Mapping through barFile datasets to generate rows */}
-          {barFile.datasets.map((dataset, index) => (
-            <tr key={index}>
-              <td>{dataset.name}</td>
-              {dataset.data.map((value, dataIndex) => (
-                <td key={dataIndex} style={{ textAlign: 'end' }}>
-                  {parseInt(value).toLocaleString()}
-                </td>
-              ))}
-            </tr>
-          ))}
-
-          {/* Calculating and displaying the total row */}
-          <tr>
-            <td style={{textAlign:'end'}}><strong>Total: </strong></td>
-            {barFile.datasets[0].data.map((_, colIndex) => {
-              const total = barFile.datasets.reduce(
-                (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                0
-              );
-              return (
-                <td key={colIndex} style={{ textAlign: 'end' }}>
-                  <strong>{total.toLocaleString()}</strong>
-                </td>
-              );
-            })}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
-
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                    <span>Cumulative Images</span>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                    <div className="me-2" onClick={toggleChartImageType} style={{ cursor: "pointer" }}>
-                                    {chartImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                </div>
-                                    <VscTable  size={20} onClick={handleImageTable} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </CardTitle>
-                               
-                                <Chart
-                                    options={formatChartData(barImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
-                                    series={formatChartData(barImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
-                                    type={chartImageType}
-                                    height="350"
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                    {showImageTable && (
-  <div className="table-popup">
-    <div className="table-content">
-      <div className="popup-header d-flex justify-content-between align-items-center">
-        <h5>Location-wise Data</h5>
-        <button
-          onClick={closeImageTable}
-          className="btn"
-          style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-        >
-          X
-        </button>
-      </div>
-      <table className="table table-bordered">
-        <thead style={{ color: '#4BC0C0' }}>
-          <tr>
-            <th>Location</th>
-            <th>Received</th>
-            <th>Scanned</th>
-            <th>Approved</th>
-            <th>Rectified</th>
-            <th>Export</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Mapping through barFile datasets to generate rows */}
-          {barImage.datasets.map((dataset, index) => (
-            <tr key={index}>
-              <td>{dataset.name}</td>
-              {dataset.data.map((value, dataIndex) => (
-                <td key={dataIndex} style={{ textAlign: 'end' }}>
-                  {parseInt(value).toLocaleString()}
-                </td>
-              ))}
-            </tr>
-          ))}
-
-          {/* Calculating and displaying the total row */}
-          <tr>
-            <td style={{textAlign:'end'}}><strong>Total: </strong></td>
-            {barImage.datasets[0].data.map((_, colIndex) => {
-              const total = barImage.datasets.reduce(
-                (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                0
-              );
-              return (
-                <td key={colIndex} style={{ textAlign: 'end' }}>
-                  <strong>{total.toLocaleString()}</strong>
-                </td>
-              );
-            })}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
-
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody style={{ height: '430px' }}>
-                                <div className="row">
-                                    <h5>Remarks:</h5>
-                                </div>
-                                <div className="row" style={{ marginTop: '180px' }}>
-                                    <h5>Special Requests:</h5>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </div>
-                </div>
-                <div className="row mt-3">
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                    <span>Files on: {formattedYesterdayDate}</span>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                    <div className="me-2" onClick={toggleChartTodayFileType} style={{ cursor: "pointer" }}>
-                                    {chartTodayFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                </div>
-                                    <VscTable  size={20} onClick={handleTodayFileTable} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </CardTitle>
-                                
-                                <Chart
-                                    options={formatChartData(todayFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
-                                    series={formatChartData(todayFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
-                                    type={chartTodayFileType}
-                                    height="350"
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                    {showTodayFileTable && (
-  <div className="table-popup">
-    <div className="table-content">
-      <div className="popup-header d-flex justify-content-between align-items-center">
-        <h5>Location-wise Data</h5>
-        <button
-          onClick={closeTodayFileTable}
-          className="btn"
-          style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-        >
-          X
-        </button>
-      </div>
-      <table className="table table-bordered">
-        <thead style={{ color: '#4BC0C0' }}>
-          <tr>
-            <th>Location</th>
-            <th>Received</th>
-            <th>Scanned</th>
-            <th>Approved</th>
-            <th>Rectified</th>
-            <th>Export</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Mapping through barFile datasets to generate rows */}
-          {todayFile.datasets.map((dataset, index) => (
-            <tr key={index}>
-              <td>{dataset.name}</td>
-              {dataset.data.map((value, dataIndex) => (
-                <td key={dataIndex} style={{ textAlign: 'end' }}>
-                  {parseInt(value).toLocaleString()}
-                </td>
-              ))}
-            </tr>
-          ))}
-
-          {/* Calculating and displaying the total row */}
-          <tr>
-            <td style={{textAlign:'end'}}><strong>Total: </strong></td>
-            {todayFile.datasets[0].data.map((_, colIndex) => {
-              const total = todayFile.datasets.reduce(
-                (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                0
-              );
-              return (
-                <td key={colIndex} style={{ textAlign: 'end' }}>
-                  <strong>{total.toLocaleString()}</strong>
-                </td>
-              );
-            })}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
-                   
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                    <span>Images on: {formattedYesterdayDate}</span>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                    <div className="me-2" onClick={toggleChartTodayImageType} style={{ cursor: "pointer" }}>
-                                    {chartTodayImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                </div>
-                                    <VscTable  size={20} onClick={handleTodayImageTable} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </CardTitle>
-                               
-                                <Chart
-                                    options={formatChartData(todayImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
-                                    series={formatChartData(todayImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
-                                    type={chartTodayImageType}
-                                    height="350"
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody style={{ height: '430px' }}>
-                                <div className="row">
-                                    <h5>Remarks:</h5>
-                                </div>
-                                <div className="row" style={{ marginTop: '180px' }}>
-                                    <h5>Special Requests:</h5>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </div>
-                    {showTodayImageTable && (
-  <div className="table-popup">
-    <div className="table-content">
-      <div className="popup-header d-flex justify-content-between align-items-center">
-        <h5>Location-wise Data</h5>
-        <button
-          onClick={closeTodayImageTable}
-          className="btn"
-          style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-        >
-          X
-        </button>
-      </div>
-      <table className="table table-bordered">
-        <thead style={{ color: '#4BC0C0' }}>
-          <tr>
-            <th>Location</th>
-            <th>Received</th>
-            <th>Scanned</th>
-            <th>Approved</th>
-            <th>Rectified</th>
-            <th>Export</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Mapping through barFile datasets to generate rows */}
-          {todayImage.datasets.map((dataset, index) => (
-            <tr key={index}>
-              <td>{dataset.name}</td>
-              {dataset.data.map((value, dataIndex) => (
-                <td key={dataIndex} style={{ textAlign: 'end' }}>
-                  {parseInt(value).toLocaleString()}
-                </td>
-              ))}
-            </tr>
-          ))}
-
-          {/* Calculating and displaying the total row */}
-          <tr>
-            <td style={{textAlign:'end'}}><strong>Total: </strong></td>
-            {todayImage.datasets[0].data.map((_, colIndex) => {
-              const total = todayImage.datasets.reduce(
-                (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                0
-              );
-              return (
-                <td key={colIndex} style={{ textAlign: 'end' }}>
-                  <strong>{total.toLocaleString()}</strong>
-                </td>
-              );
-            })}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
-
-                </div>
-                <div className="row mt-3">
-                    <div>
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5">Cumulative Images of Last 12 Months</CardTitle>
-                               
-                                <Chart
-                                    options={chartData.options}
-                                    series={chartData.series}
-                                    type="bar"
-                                    height={350}
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                </div>
                 <div className="row mt-2">
                     <div>
-                        <div className="table-card">
+                        <div className="table-card" style={{marginBottom:'25px'}}>
                             <div
                                 className=""
                                 style={{
@@ -1257,18 +894,18 @@ const Locationwisereport = () => {
                                             report.map((elem, index) => (
                                                 <tr key={index} style={{ backgroundColor: "white" }}>
                                                     <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.InputImages)) ? "0" : parseInt(elem.InputImages).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
-                                                    <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputImages)) ? "0" : parseInt(elem.InputImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
                                                     <td></td>
                                                 </tr>
                                             ))
@@ -1276,7 +913,7 @@ const Locationwisereport = () => {
 
                                         {/* Total Row */}
                                         {report && (
-                                            <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold",  textAlign:'end' }}>
+                                            <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
                                                 <td>Total: </td>
                                                 <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td>
                                                 <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputImages)) ? 0 : parseInt(elem.InputImages)), 0).toLocaleString()}</td>
@@ -1300,8 +937,388 @@ const Locationwisereport = () => {
                         </div>
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                    <span>Cumulative Files</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
+                                            {chartFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
+                                        </div>
+                                        <VscTable size={20} onClick={handleFileTable} style={{ cursor: 'pointer' }} />
+                                    </div>
+                                </CardTitle>
 
+                                <Chart
+                                    options={formatChartData(barFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
+                                    series={formatChartData(barFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
+                                    type={chartFileType}
+                                    height="350"
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                    {showFileTable && (
+                        <div className="table-popup">
+                            <div className="table-content">
+                                <div className="popup-header d-flex justify-content-between align-items-center">
+                                    <h5>Location-wise Data</h5>
+                                    <button
+                                        onClick={closeFileTable}
+                                        className="btn"
+                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                                <table className="table table-bordered">
+                                    <thead style={{ color: '#4BC0C0' }}>
+                                        <tr>
+                                            <th>Location</th>
+                                            <th>Received</th>
+                                            <th>Scanned</th>
+                                            <th>Approved</th>
+                                            <th>Rectified</th>
+                                            <th>Export</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* Mapping through barFile datasets to generate rows */}
+                                        {barFile.datasets.map((dataset, index) => (
+                                            <tr key={index}>
+                                                <td>{dataset.name}</td>
+                                                {dataset.data.map((value, dataIndex) => (
+                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                        {parseInt(value).toLocaleString()}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
 
+                                        {/* Calculating and displaying the total row */}
+                                        <tr>
+                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                            {barFile.datasets[0].data.map((_, colIndex) => {
+                                                const total = barFile.datasets.reduce(
+                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                    0
+                                                );
+                                                return (
+                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                        <strong>{total.toLocaleString()}</strong>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                    <span>Cumulative Images</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="me-2" onClick={toggleChartImageType} style={{ cursor: "pointer" }}>
+                                            {chartImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
+                                        </div>
+                                        <VscTable size={20} onClick={handleImageTable} style={{ cursor: 'pointer' }} />
+                                    </div>
+                                </CardTitle>
+
+                                <Chart
+                                    options={formatChartData(barImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
+                                    series={formatChartData(barImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
+                                    type={chartImageType}
+                                    height="350"
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                    {showImageTable && (
+                        <div className="table-popup">
+                            <div className="table-content">
+                                <div className="popup-header d-flex justify-content-between align-items-center">
+                                    <h5>Location-wise Data</h5>
+                                    <button
+                                        onClick={closeImageTable}
+                                        className="btn"
+                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                                <table className="table table-bordered">
+                                    <thead style={{ color: '#4BC0C0' }}>
+                                        <tr>
+                                            <th>Location</th>
+                                            <th>Received</th>
+                                            <th>Scanned</th>
+                                            <th>Approved</th>
+                                            <th>Rectified</th>
+                                            <th>Export</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* Mapping through barFile datasets to generate rows */}
+                                        {barImage.datasets.map((dataset, index) => (
+                                            <tr key={index}>
+                                                <td>{dataset.name}</td>
+                                                {dataset.data.map((value, dataIndex) => (
+                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                        {parseInt(value).toLocaleString()}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
+
+                                        {/* Calculating and displaying the total row */}
+                                        <tr>
+                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                            {barImage.datasets[0].data.map((_, colIndex) => {
+                                                const total = barImage.datasets.reduce(
+                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                    0
+                                                );
+                                                return (
+                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                        <strong>{total.toLocaleString()}</strong>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody style={{ height: '430px' }}>
+                                <div className="row">
+                                    <h5>Remarks:</h5>
+                                </div>
+                                <div className="row" style={{ marginTop: '180px' }}>
+                                    <h5>Special Requests:</h5>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
+                </div>
+                <div className="row mt-3">
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                    <span>Files on: {formattedYesterdayDate}</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="me-2" onClick={toggleChartTodayFileType} style={{ cursor: "pointer" }}>
+                                            {chartTodayFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
+                                        </div>
+                                        <VscTable size={20} onClick={handleTodayFileTable} style={{ cursor: 'pointer' }} />
+                                    </div>
+                                </CardTitle>
+
+                                <Chart
+                                    options={formatChartData(todayFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
+                                    series={formatChartData(todayFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
+                                    type={chartTodayFileType}
+                                    height="350"
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                    {showTodayFileTable && (
+                        <div className="table-popup">
+                            <div className="table-content">
+                                <div className="popup-header d-flex justify-content-between align-items-center">
+                                    <h5>Location-wise Data</h5>
+                                    <button
+                                        onClick={closeTodayFileTable}
+                                        className="btn"
+                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                                <table className="table table-bordered">
+                                    <thead style={{ color: '#4BC0C0' }}>
+                                        <tr>
+                                            <th>Location</th>
+                                            <th>Received</th>
+                                            <th>Scanned</th>
+                                            <th>Approved</th>
+                                            <th>Rectified</th>
+                                            <th>Export</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* Mapping through barFile datasets to generate rows */}
+                                        {todayFile.datasets.map((dataset, index) => (
+                                            <tr key={index}>
+                                                <td>{dataset.name}</td>
+                                                {dataset.data.map((value, dataIndex) => (
+                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                        {parseInt(value).toLocaleString()}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
+
+                                        {/* Calculating and displaying the total row */}
+                                        <tr>
+                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                            {todayFile.datasets[0].data.map((_, colIndex) => {
+                                                const total = todayFile.datasets.reduce(
+                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                    0
+                                                );
+                                                return (
+                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                        <strong>{total.toLocaleString()}</strong>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                    <span>Images on: {formattedYesterdayDate}</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="me-2" onClick={toggleChartTodayImageType} style={{ cursor: "pointer" }}>
+                                            {chartTodayImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
+                                        </div>
+                                        <VscTable size={20} onClick={handleTodayImageTable} style={{ cursor: 'pointer' }} />
+                                    </div>
+                                </CardTitle>
+
+                                <Chart
+                                    options={formatChartData(todayImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
+                                    series={formatChartData(todayImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
+                                    type={chartTodayImageType}
+                                    height="350"
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody style={{ height: '430px' }}>
+                                <div className="row">
+                                    <h5>Remarks:</h5>
+                                </div>
+                                <div className="row" style={{ marginTop: '180px' }}>
+                                    <h5>Special Requests:</h5>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
+                    {showTodayImageTable && (
+                        <div className="table-popup">
+                            <div className="table-content">
+                                <div className="popup-header d-flex justify-content-between align-items-center">
+                                    <h5>Location-wise Data</h5>
+                                    <button
+                                        onClick={closeTodayImageTable}
+                                        className="btn"
+                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                                <table className="table table-bordered">
+                                    <thead style={{ color: '#4BC0C0' }}>
+                                        <tr>
+                                            <th>Location</th>
+                                            <th>Received</th>
+                                            <th>Scanned</th>
+                                            <th>Approved</th>
+                                            <th>Rectified</th>
+                                            <th>Export</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* Mapping through barFile datasets to generate rows */}
+                                        {todayImage.datasets.map((dataset, index) => (
+                                            <tr key={index}>
+                                                <td>{dataset.name}</td>
+                                                {dataset.data.map((value, dataIndex) => (
+                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                        {parseInt(value).toLocaleString()}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
+
+                                        {/* Calculating and displaying the total row */}
+                                        <tr>
+                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                            {todayImage.datasets[0].data.map((_, colIndex) => {
+                                                const total = todayImage.datasets.reduce(
+                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                    0
+                                                );
+                                                return (
+                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                        <strong>{total.toLocaleString()}</strong>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+                <div className="row mt-3 mb-5">
+                    <div>
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5">Cumulative Images of Last 12 Months</CardTitle>
+
+                                <Chart
+                                    options={chartData.options}
+                                    series={chartData.series}
+                                    type="bar"
+                                    height={350}
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+            <div className='d-none d-xl-block d-sm-none'>
+                <div className='container footer'>
+                    <div className='row'>
+                        <div className='col-12 text-center'>
+                        <p>© 2024 CBSLGROUP All rights reserved</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className='d-block d-xl-none d-sm-block'>
+                <div className='container '>
+                    <div className='row'>
+                        <div className='col-12 text-center'>
+                            <p>© 2024 CBSLGROUP All rights reserved</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     )
