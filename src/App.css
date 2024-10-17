@@ -473,7 +473,7 @@ input[type="submit"]:hover {
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  /* overflow: auto; */
   background-color: rgba(0, 0, 0, 0.5);
 }
 .table-content{
@@ -483,9 +483,9 @@ input[type="submit"]:hover {
   border: 1px solid black;
   border-radius: 5px;
   width: 100%;
-  max-width: 600px;
+  max-width: 620px;
   max-height: 350px;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .location-card {
