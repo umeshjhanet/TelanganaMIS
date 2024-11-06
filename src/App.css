@@ -562,6 +562,13 @@ tr:nth-child(even) {background-color: #f2f2f2;}
   background-color: #4BC0C0;
 
 }
+.client-view-btn{
+  background-color: #4BC0C0;
+}
+.client-view-btn:hover{
+  background-color: #263e42;
+  color: white;
+}
 
 .main-summary-card {
   padding-bottom: 20px;

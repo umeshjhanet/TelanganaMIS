@@ -120,6 +120,7 @@ const SiteReports = () => {
                     <tr>
                       <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Sr.No</th>
                       <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Location Name</th>
+                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>CSV Uploaded Date</th>
                       <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Free CPU</th>
                       <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Free Memory</th>
                       <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Server Logs</th>
@@ -143,6 +144,7 @@ const SiteReports = () => {
                       <tr key={index}>
                         <td>{indexOfFirstServer + index + 1}</td>
                         <td>{elem.location}</td>
+                        <td style={{whiteSpace:'nowrap'}}>{elem.csv_upload_dt}</td>
                         <td style={{ textAlign: 'center' }}><span
                             style={{
                               backgroundColor: '#4bc0c0',

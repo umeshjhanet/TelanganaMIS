@@ -144,6 +144,7 @@ const Header = () => {
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
                     </div>
+                   
                     {showMasterDropdown && (
                       <>
                         <hr />
@@ -154,6 +155,9 @@ const Header = () => {
                         <hr />
                       </>
                     )}
+                     <div className='row ' onClick={handleActiveTab}>
+                    <Link to='/addRemarks' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '5px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Remarks</Link>
+                    </div>
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -777,6 +781,9 @@ const Header = () => {
                 <div className='row' onClick={handleActiveTab}>
                   <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                 </div>
+                <div className='row mt-1' onClick={handleActiveTab}>
+                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
+                    </div>
                 {showReportDropdown && (
                   <>
                     <hr />

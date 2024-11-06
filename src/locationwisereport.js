@@ -37,10 +37,18 @@ const Locationwisereport = () => {
     const [showTodayFileTable, setShowTodayFileTable] = useState(false);
     const [showTodayImageTable, setShowTodayImageTable] = useState(false);
     const [report, setReport] = useState([]);
-    const [chartFileType, setChartFileType] = useState("line");
-    const [chartImageType, setChartImageType] = useState("line");
-    const [chartTodayFileType, setChartTodayFileType] = useState("line");
-    const [chartTodayImageType, setChartTodayImageType] = useState("line");
+    const [yesterdayReport, setYesterdayReport] = useState([]);
+    const [chartFileType, setChartFileType] = useState("bar");
+    const [chartImageType, setChartImageType] = useState("bar");
+    const [chartTodayFileType, setChartTodayFileType] = useState("bar");
+    const [chartTodayImageType, setChartTodayImageType] = useState("bar");
+    const [dailyRemarks, setDailyRemarks] = useState('');
+    const [cumulativeRemarks, setCumulativeRemarks] = useState('');
+    const [dailySpecialRequests, setDailySpecialRequests] = useState('');
+    const [cumulativeSpecialRequests, setCumulativeSpecialRequests] = useState('');
+    const [isViewDailyModalOpen, setIsViewDailyModalOpen] = useState(false);
+    const [isViewCumulativeModalOpen, setIsViewCumulativeModalOpen] = useState(false);
+    const [specialRequests, setSpecialRequests] = useState('');
     // Function to toggle chart type
     const toggleChartFileType = () => {
         setChartFileType((prevType) => (prevType === "line" ? "bar" : "line"));
@@ -66,7 +74,7 @@ const Locationwisereport = () => {
         datasets: [
             {
                 label: "No. of Images",
-                backgroundColor: "#8DECB4",
+                // backgroundColor: "#8DECB4",
                 data: [],
             },
         ],
@@ -76,7 +84,7 @@ const Locationwisereport = () => {
         datasets: [
             {
                 label: "No. of Files",
-                backgroundColor: "#8DECB4",
+                // backgroundColor: "#8DECB4",
                 data: [],
             },
         ],
@@ -96,7 +104,7 @@ const Locationwisereport = () => {
         datasets: [
             {
                 label: "No. of Images",
-                backgroundColor: "#1679AB",
+                // backgroundColor: "#1679AB",
                 data: [],
             },
         ],
@@ -106,7 +114,7 @@ const Locationwisereport = () => {
         datasets: [
             {
                 label: "No. of Files",
-                backgroundColor: "#1679AB",
+                // backgroundColor: "#1679AB",
                 data: [],
             },
         ],
@@ -239,6 +247,7 @@ const Locationwisereport = () => {
             totalImagesSum,
         };
     };
+    
 
     useEffect(() => {
         const fetchLocationData = async () => {
@@ -301,6 +310,7 @@ const Locationwisereport = () => {
                 .get(apiUrl)
                 .then((response) => {
                     const apiData = response.data;
+
                     if (!apiData || apiData.length === 0) {
                         console.error("No data received from the API");
                         return;
@@ -308,37 +318,29 @@ const Locationwisereport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Received", "Scanned", "Approved", "Rectified", "Export PDF"];
+                    const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
 
-                    // Define specific colors for locations
-                    const colors = [
-                        "#4BC0C0", // Color for location 1
-                        "#FF6384", // Color for location 2
-                        "#193860", // Color for location 3
-                        "#FFCE56", // Color for location 4
-                        "#8DECB4", // Color for location 5
-                        // Add more colors as needed
+                    // Extract the first (and only) item in the response for process counts
+                    const data = apiData[0];
+
+                    // Create datasets for the chart
+                    const datasets = [
+                        {
+                            label: 'Processes',
+                            data: [
+                                parseFloat(data.Scanned) || 0,
+                                parseFloat(data.QC) || 0,
+                                parseFloat(data.OfferedforQA) || 0,
+                                parseFloat(data.ClientQADone) || 0,
+                            ],
+
+                        }
                     ];
 
-                    // Create datasets for each location with predefined colors
-                    const datasets = apiData.map((location, index) => {
-                        return {
-                            name: location.locationname,
-                            data: [
-                                parseFloat(location.Received) || 0,
-                                parseFloat(location.Scanned) || 0,
-                                parseFloat(location.Approved) || 0,
-                                parseFloat(location.Rectified) || 0,
-                                parseFloat(location['Export PDF']) || 0,
-                            ],
-                            // Assign predefined color from the array
-                            color: colors[index % colors.length], // Cycle through colors if more locations than colors
-                        };
-                    });
-
+                    // Set the bar image state with the new data
                     setBarImage({
-                        labels: labels,  // Processes (Input, Scanned, etc.)
-                        datasets: datasets,  // Location data with predefined colors
+                        labels: labels,  // Labels representing the processes
+                        datasets: datasets,
                     });
                 })
                 .catch((error) => {
@@ -347,59 +349,53 @@ const Locationwisereport = () => {
         };
         const fetchTodayGraphImageData = (selectedLocations) => {
             let apiUrl = `${API_URL}/todaystatusimages`;
-
-            // Check if any locations are selected and append them as a query parameter
+        
+            // Append location query parameters if selected
             if (selectedLocations && selectedLocations.length > 0) {
-                const locationQuery = `locationNames=${encodeURIComponent(selectedLocations.join(','))}`;
+                const locationQuery = selectedLocations
+                    .map((location) => `locationNames=${encodeURIComponent(location)}`)
+                    .join("&");
                 apiUrl += `?${locationQuery}`;
             }
-
+        
+            // Fetch data from API
             axios
                 .get(apiUrl)
                 .then((response) => {
                     const apiData = response.data;
-
-                    // Check if data is received from the API
+        
+                    // Handle case where no data is returned
                     if (!apiData || apiData.length === 0) {
                         console.error("No data received from the API");
                         return;
                     }
-
+        
                     console.log("API Data:", apiData);
-
+        
                     // Labels representing the different processes
-                    const labels = ["Received", "Scanned", "Approved", "Rectified", "Export PDF"];
-
-                    // Define specific colors for locations
-                    const colors = [
-                        "#4BC0C0", // Color for location 1
-                        "#FF6384", // Color for location 2
-                        "#193860", // Color for location 3
-                        "#FFCE56", // Color for location 4
-                        "#8DECB4", // Color for location 5
-                        // Add more colors if needed
-                    ];
-
-                    // Create datasets for each location with predefined colors
-                    const datasets = apiData.map((location, index) => {
-                        return {
-                            name: location.locationname,  // The name of the location
+                    const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
+        
+                    // If the API returns a single object (totals), no need to access the first item
+                    const data = apiData;
+        
+                    // Create datasets for the chart
+                    const datasets = [
+                        {
+                            label: 'Processes',
+                            backgroundColor: ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56"],  // Custom colors for each bar
                             data: [
-                                parseFloat(location.Received) || 0,
-                                parseFloat(location.Scanned) || 0,
-                                parseFloat(location.Approved) || 0,
-                                parseFloat(location.Rectified) || 0,
-                                parseFloat(location['Export PDF']) || 0,
+                                parseFloat(data.Scanned) || 0,
+                                parseFloat(data.QC) || 0,
+                                parseFloat(data.OfferedforQA) || 0,
+                                parseFloat(data.ClientQADone) || 0,
                             ],
-                            // Assign predefined color from the array
-                            color: colors[index % colors.length], // Cycle through colors if more locations than colors
-                        };
-                    });
-
-                    // Set the data for the chart
+                        }
+                    ];
+        
+                    // Update the chart data
                     setTodayImage({
-                        labels: labels,  // Processes (Input, Scanned, etc.)
-                        datasets: datasets,  // Location data with predefined colors
+                        labels: labels,
+                        datasets: datasets,
                     });
                 })
                 .catch((error) => {
@@ -420,6 +416,7 @@ const Locationwisereport = () => {
                 .get(apiUrl)
                 .then((response) => {
                     const apiData = response.data;
+
                     if (!apiData || apiData.length === 0) {
                         console.error("No data received from the API");
                         return;
@@ -427,37 +424,29 @@ const Locationwisereport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Received", "Scanned", "Approved", "Rectified", "Export PDF"];
+                    const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
 
-                    // Define specific colors for locations
-                    const colors = [
-                        "#4BC0C0", // Color for location 1
-                        "#FF6384", // Color for location 2
-                        "#193860", // Color for location 3
-                        "#FFCE56", // Color for location 4
-                        "#8DECB4", // Color for location 5
-                        // Add more colors as needed
+                    // Extract the first (and only) item in the response for process counts
+                    const data = apiData[0];
+
+                    // Create datasets for the chart
+                    const datasets = [
+                        {
+                            label: 'Processes',
+                            data: [
+                                parseFloat(data.Scanned) || 0,
+                                parseFloat(data.QC) || 0,
+                                parseFloat(data.OfferedforQA) || 0,
+                                parseFloat(data.ClientQADone) || 0,
+                            ],
+
+                        }
                     ];
 
-                    // Create datasets for each location with predefined colors
-                    const datasets = apiData.map((location, index) => {
-                        return {
-                            name: location.locationname,
-                            data: [
-                                parseFloat(location.Received) || 0,
-                                parseFloat(location.Scanned) || 0,
-                                parseFloat(location.Approved) || 0,
-                                parseFloat(location.Rectified) || 0,
-                                parseFloat(location['Export PDF']) || 0,
-                            ],
-                            // Assign predefined color from the array
-                            color: colors[index % colors.length], // Cycle through colors if more locations than colors
-                        };
-                    });
-
+                    // Set the bar image state with the new data
                     setBarFile({
-                        labels: labels,  // Processes (Input, Scanned, etc.)
-                        datasets: datasets,  // Location data with predefined colors
+                        labels: labels,  // Labels representing the processes
+                        datasets: datasets,
                     });
                 })
                 .catch((error) => {
@@ -466,62 +455,60 @@ const Locationwisereport = () => {
         };
         const fetchTodayGraphFileData = (selectedLocations) => {
             let apiUrl = `${API_URL}/todaystatusfiles`;
-
+        
+            // Append location query parameters if selected
             if (selectedLocations && selectedLocations.length > 0) {
                 const locationQuery = selectedLocations
-                    .map((location) => `locationname=${encodeURIComponent(location)}`)
+                    .map((location) => `locationNames=${encodeURIComponent(location)}`)
                     .join("&");
                 apiUrl += `?${locationQuery}`;
             }
-
+        
+            // Fetch data from API
             axios
                 .get(apiUrl)
                 .then((response) => {
                     const apiData = response.data;
+        
+                    // Handle case where no data is returned
                     if (!apiData || apiData.length === 0) {
                         console.error("No data received from the API");
                         return;
                     }
-                    console.log("Api Data", apiData);
-
+        
+                    console.log("API Data:", apiData);
+        
                     // Labels representing the different processes
-                    const labels = ["Received", "Scanned", "Approved", "Rectified", "Export PDF"];
-
-                    // Define specific colors for locations
-                    const colors = [
-                        "#4BC0C0", // Color for location 1
-                        "#FF6384", // Color for location 2
-                        "#193860", // Color for location 3
-                        "#FFCE56", // Color for location 4
-                        "#8DECB4", // Color for location 5
-                        // Add more colors as needed
-                    ];
-
-                    // Create datasets for each location with predefined colors
-                    const datasets = apiData.map((location, index) => {
-                        return {
-                            name: location.locationname,
+                    const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
+        
+                    // If the API returns a single object (totals), no need to access the first item
+                    const data = apiData;
+        
+                    // Create datasets for the chart
+                    const datasets = [
+                        {
+                            label: 'Processes',
+                            backgroundColor: ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56"],  // Custom colors for each bar
                             data: [
-                                parseFloat(location.Received) || 0,
-                                parseFloat(location.Scanned) || 0,
-                                parseFloat(location.Approved) || 0,
-                                parseFloat(location.Rectified) || 0,
-                                parseFloat(location['Export PDF']) || 0,
+                                parseFloat(data.Scanned) || 0,
+                                parseFloat(data.QC) || 0,
+                                parseFloat(data.OfferedforQA) || 0,
+                                parseFloat(data.ClientQADone) || 0,
                             ],
-                            // Assign predefined color from the array
-                            color: colors[index % colors.length], // Cycle through colors if more locations than colors
-                        };
-                    });
-
+                        }
+                    ];
+        
+                    // Update the chart data
                     setTodayFile({
-                        labels: labels,  // Processes (Input, Scanned, etc.)
-                        datasets: datasets,  // Location data with predefined colors
+                        labels: labels,
+                        datasets: datasets,
                     });
                 })
                 .catch((error) => {
                     console.error("Error fetching data:", error);
                 });
         };
+        
         const fetchTableData = () => {
             axios
                 .get(`${API_URL}/tabularData`)
@@ -548,88 +535,70 @@ const Locationwisereport = () => {
                 })
                 .catch((error) => console.error(error));
         };
-
         const fetchData = async (selectedLocations) => {
             let params = {};
             if (selectedLocations && selectedLocations.length > 0) {
-                params.locationname = selectedLocations; // Ensure we're filtering by location
+                params.locationname = selectedLocations; // Filter by location if provided
             }
-
+        
             try {
                 const response = await axios.get(`${API_URL}/cumulative-status-images`, { params });
                 console.log("API Response Data:", response.data); // Log the API response
-
-                // Ensure that we are handling the case where no data is returned
+        
                 if (!response.data || response.data.length === 0) {
                     console.log("No data returned from the API");
-                    // Optionally, set an empty state or handle this case
                     return;
                 }
-
+        
                 const data = response.data;
-
-                // Calculate the last 12 months dynamically
-                const today = new Date();
-                const last12Months = [];
-                for (let i = 11; i >= 0; i--) {
-                    const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
-                    last12Months.push(`${("0" + (month.getMonth() + 1)).slice(-2)}-${month.getFullYear()}`);
-                }
-
-                // Create a mapping from formattedMonth to dataset
-                const dataMap = data.reduce((acc, item) => {
-                    acc[item.formattedMonth] = {
-                        Received: Number(item.Received) || 0,
-                        Scanned: Number(item.Scanned) || 0,
-                        Approved: Number(item.Approved) || 0,
-                        Rectified: Number(item.Rectified) || 0,
-                        ExportPdf: Number(item['Export PDF']) || 0
-                    };
-                    return acc;
-                }, {});
-
-                // Prepare the data for the chart based on last12Months
-                const inputData = last12Months.map(month => dataMap[month]?.Received || 0);
-                const scannedData = last12Months.map(month => dataMap[month]?.Scanned || 0);
-                const approvedData = last12Months.map(month => dataMap[month]?.Approved || 0);
-                const rectifiedData = last12Months.map(month => dataMap[month]?.Rectified || 0);
-                const exportPdfData = last12Months.map(month => dataMap[month]?.ExportPdf || 0);
-
+        
+                // Prepare the data for the last 30 days by mapping the correct fields
+                const last30Days = data.map(item => ({
+                    date: item.formattedDate,
+                    scanned: Number(item.ScannedImages) || 0,
+                    qc: Number(item.QCImages) || 0,
+                    offeredForQA: Number(item.CBSLQAImages) || 0,
+                    clientQADone: Number(item.ApprovedImages) || 0,
+                }));
+        
+                // Extract individual data arrays for charting
+                const dates = last30Days.map(item => item.date);
+                const scannedData = last30Days.map(item => item.scanned);
+                const qcData = last30Days.map(item => item.qc);
+                const cbslqaData = last30Days.map(item => item.offeredForQA);
+                const clientData = last30Days.map(item => item.clientQADone);
+        
                 // Log the data that will be passed to the chart
-                console.log("Input Data:", inputData);
+                console.log("Dates:", dates);
                 console.log("Scanned Data:", scannedData);
-                console.log("Approved Data:", approvedData);
-                console.log("Rectified Data:", rectifiedData);
-                console.log("Export PDF Data:", exportPdfData);
-
+                console.log("QC Data:", qcData);
+                console.log("Offered for QA Data:", cbslqaData);
+                console.log("Customer QA Done Data:", clientData);
+        
                 // Set chart data
                 setChartData({
                     options: {
                         ...chartData.options,
                         xaxis: {
-                            categories: last12Months // Set categories to last 12 months
+                            categories: dates // Set categories to last 30 days (dates)
                         }
                     },
                     series: [
-                        {
-                            name: 'Received',
-                            data: inputData
-                        },
                         {
                             name: 'Scanned',
                             data: scannedData
                         },
                         {
-                            name: 'Approved',
-                            data: approvedData
+                            name: 'QC',
+                            data: qcData
                         },
                         {
-                            name: 'Rectified',
-                            data: rectifiedData
+                            name: 'Offered for QA',
+                            data: cbslqaData
                         },
                         {
-                            name: 'Export PDF',
-                            data: exportPdfData
+                            name: 'Customer QA Done',
+                            data: clientData
                         }
                     ]
                 });
@@ -637,6 +606,7 @@ const Locationwisereport = () => {
                 console.error('Error fetching data:', err);
             }
         };
+        
         const fetchReportData = (locationName) => {
             // Create an object to hold query parameters
             const params = {};
@@ -655,9 +625,27 @@ const Locationwisereport = () => {
                 })
                 .catch((error) => console.error(error));
         };
-
-
+        const fetchYesterdayReportData = (selectedLocations) => {
+            // Create an object to hold query parameters
+            const params = {};
+        
+            // If selectedLocations are provided, join them into a comma-separated string
+            if (selectedLocations && selectedLocations.length > 0) {
+                params.locationNames = selectedLocations.join(',');
+            }
+        
+            // Make the API request with optional parameters
+            axios
+                .get(`${API_URL}/yesterday-table`, { params })
+                .then((response) => {
+                    setYesterdayReport(response.data);
+                    console.log("Table Data", response.data); // Log inside the then block
+                })
+                .catch((error) => console.error(error));
+        };
+        
         fetchReportData(locationName);
+        fetchYesterdayReportData(locationName);
         fetchData(locationName);
         fetchGraphImageData(locationName);
         fetchTodayGraphImageData(locationName);
@@ -737,7 +725,121 @@ const Locationwisereport = () => {
     const closeTodayImageTable = () => {
         setShowTodayImageTable(false);
     };
+    const handlePrint = () => {
+        window.print(); // This will open the print dialog
+    };
+    const exportToCSV = () => {
+        if (!report || report.length === 0) {
+            return;
+        }
 
+        // Define the header for the CSV
+        const headers = [
+            "Location Name",
+            "Scanned Files",
+            "Scanned Images",
+            "QC Files",
+            "QC Images",
+            "Offered for QA Files",
+            "Offered for QA Images",
+            "Client QA Done Files",
+            "Client QA Done Images"
+        ];
+
+        // Map the data rows for the CSV
+        const rows = report.map(user => [
+            user.LocationName || '',
+            user.ScannedFiles || '',
+            user.ScannedImages || '',
+            user.QCFiles || '',
+            user.QCImages || '',
+            user.CBSLQAFiles || '',
+            user.CBSLQAImages || '',
+            user.ApprovedFiles || '',
+            user.ApprovedImages || ''
+        ]);
+
+        // Combine the headers and rows
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
+        ].join('\n');
+
+        // Create a Blob from the CSV string
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a temporary link element to trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'users_data.csv';
+        a.click();
+
+        // Clean up the URL and the link element
+        window.URL.revokeObjectURL(url);
+    };
+    const exportToCSVYesterday = () => {
+        if (!yesterdayReport || yesterdayReport.length === 0) {
+            return;
+        }
+
+        // Define the header for the CSV
+        const headers = [
+            "Location Name",
+            "Scanned Files",
+            "Scanned Images",
+            "QC Files",
+            "QC Images",
+            "Offered for QA Files",
+            "Offered for QA Images",
+            "Client QA Done Files",
+            "Client QA Done Images"
+        ];
+
+        // Map the data rows for the CSV
+        const rows = yesterdayReport.map(user => [
+            user.locationname || '',
+            user.ScannedFiles || '',
+            user.ScannedImages || '',
+            user.QCFiles || '',
+            user.QCImages || '',
+            user.CBSLQAFiles || '',
+            user.CBSLQAImages || '',
+            user.ApprovedFiles || '',
+            user.ApprovedImages || ''
+        ]);
+
+        // Combine the headers and rows
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
+        ].join('\n');
+
+        // Create a Blob from the CSV string
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a temporary link element to trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'users_data.csv';
+        a.click();
+
+        // Clean up the URL and the link element
+        window.URL.revokeObjectURL(url);
+    };
+
+    const handleViewDailyClick = (dailyRemarks,dailySpecialRequests) => {
+        setDailyRemarks(dailyRemarks)
+        setDailySpecialRequests(dailySpecialRequests)
+        setIsViewDailyModalOpen(true);
+    };
+
+    const handleViewCumulativeClick = (cumulativeRemarks, cumulativeSpecialRequests) => {
+        setCumulativeRemarks(cumulativeRemarks);
+        setCumulativeSpecialRequests(cumulativeSpecialRequests)
+        setIsViewCumulativeModalOpen(!isViewCumulativeModalOpen);
+    };
 
     return (
         <>
@@ -752,7 +854,7 @@ const Locationwisereport = () => {
                 </div>
                 <div className="row  mt-2">
                     <div>
-                        <div className="search-report-card">
+                        <div className="search-report-card" style={{ height:'60px', padding:'10px'}}>
                             <div className="col-md-4 col-sm-12">
                                 <div
                                     ref={dropdownRef}
@@ -814,7 +916,7 @@ const Locationwisereport = () => {
                 <div className="row mt-2">
                     <div>
                         <div className="search-report-card"
-                            style={{ display: "flex", justifyContent: "space-between" }}
+                            style={{ display: "flex", justifyContent: "space-between", height:'50px', padding:'10px' }}
                         >
                             {statusDetails && statusDetails.map((elem, index) => (
                                 <>
@@ -836,492 +938,670 @@ const Locationwisereport = () => {
                         </div>
                     </div>
                 </div>
+                {/* <button onClick={handlePrint} style={{ padding: '10px 20px', fontSize: '16px' }}>
+                    Print this page
+                </button> */}
                 <div className="row mt-2">
-                    <div>
-                        <div className="table-card" style={{marginBottom:'25px'}}>
+                        <div>
+                            <div className="table-card" style={{ marginBottom: '25px' }}>
                             <div
-                                className=""
+                                className="d-flex justify-content-between align-items-center"
                                 style={{
-                                    padding: "5px",
+                                    padding: "10px 10px 0px",
                                     backgroundColor: "#4BC0C0",
-                                    paddingTop: "15px",
+                                    // paddingTop: "15px",
                                 }}
                             >
-                                <h6 className="text-center" style={{ color: "white" }}>
-                                    PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE
-                                    RECORDS FOR DISTRICT COURT OF TELANGANA
-                                </h6>
-                            </div>
-                            <div
-                                className="row mt-5 ms-2 me-2"
-                                style={{ overflowX: "auto", overflowY: 'auto' }}
-                            >
-                                <table class="table table-hover table-bordered table-responsive data-table">
-                                    <thead
-                                        style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
-                                    >
-                                        <tr>
-                                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered to Dept</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Approved by Dept</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th>
-                                            <th>Remarks</th>
-                                        </tr>
-                                        <tr
-                                            style={{ color: "#4BC0C0", fontWeight: '300' }}
+                               
+                                    <h6 className="text-center" style={{ color: "white" }}>
+                                        PROJECT UPDATE REPORT OF  {formattedYesterdayDate} FOR SCANNING AND DIGITIZATION OF CASE
+                                        RECORDS FOR DISTRICT COURT OF TELANGANA
+                                    </h6>
+                               
+                               
+                                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSVYesterday}>
+                                        {" "}
+                                        <MdFileDownload style={{ fontSize: "20px" }} />
+                                        Export CSV
+                                    </h6>
+
+                                
+                                </div>
+                                <div
+                                    className="row mt-2 ms-2 me-2"
+                                    style={{ overflowX: "auto", overflowY: 'auto' }}
+                                >
+                                    <table class="table table-hover table-bordered table-responsive data-table">
+                                        <thead
+                                            style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
                                         >
-                                            <th>Files</th>
-                                            <th>Images</th>
-                                            <th>Files</th>
-                                            <th>Images</th>
-                                            <th>Files</th>
-                                            <th>Images</th>
-                                            <th>Files</th>
-                                            <th>Images</th>
-                                            <th>Files</th>
-                                            <th>Images</th>
-                                            <th>Files</th>
-                                            <th>Images</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody
-                                        style={{ color: "gray" }}
-                                    >
-                                        {report &&
-                                            report.map((elem, index) => (
-                                                <tr key={index} style={{ backgroundColor: "white" }}>
-                                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputImages)) ? "0" : parseInt(elem.InputImages).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
+                                            <tr>
+                                                <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                                {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
+                                                {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
+                                                {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
+                                                <th>Remarks</th>
+                                            </tr>
+                                            <tr
+                                                style={{ color: "#4BC0C0", fontWeight: '300' }}
+                                            >
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                {/* <th>Files</th>
+                                            <th>Images</th> */}
+                                                {/* <th>Files</th>
+                                            <th>Images</th> */}
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            style={{ color: "gray" }}
+                                        >
+                                            {yesterdayReport &&
+                                                yesterdayReport.map((elem, index) => (
+                                                    <tr key={index} style={{ backgroundColor: "white" }}>
+                                                        <td style={{ whiteSpace: 'nowrap' }}>{elem.locationname}</td>
+                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
+                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td> */}
+                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
+                                                        <td className="text-center"><button
+                                                        className="btn client-view-btn"
+                                                         onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}
+                                                        >
+                                                            View
+                                                         </button>
+                                                         </td>
+                                                    </tr>
+                                                ))
+                                            }
+
+                                            {/* Total Row */}
+                                            {yesterdayReport && (
+                                                <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
+                                                    <td>Total: </td>
+                                                    {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td> */}
+                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>
+                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
+                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
+                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
+                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
+                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
+                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
+                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
+                                                    {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedImages)) ? 0 : parseInt(elem.RectifiedImages)), 0).toLocaleString()}</td> */}
+                                                    {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0).toLocaleString()}</td> */}
                                                     <td></td>
                                                 </tr>
-                                            ))
-                                        }
+                                            )}
+                                        </tbody>
+                                    </table>
 
-                                        {/* Total Row */}
-                                        {report && (
-                                            <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
-                                                <td>Total: </td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputImages)) ? 0 : parseInt(elem.InputImages)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedImages)) ? 0 : parseInt(elem.RectifiedImages)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0).toLocaleString()}</td>
-                                                <td></td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                    <span>Cumulative Files</span>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
-                                            {chartFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                        </div>
-                                        <VscTable size={20} onClick={handleFileTable} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </CardTitle>
-
-                                <Chart
-                                    options={formatChartData(barFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
-                                    series={formatChartData(barFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
-                                    type={chartFileType}
-                                    height="350"
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                    {showFileTable && (
-                        <div className="table-popup">
-                            <div className="table-content">
-                                <div className="popup-header d-flex justify-content-between align-items-center">
-                                    <h5>Location-wise Data</h5>
-                                    <button
-                                        onClick={closeFileTable}
-                                        className="btn"
-                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-                                    >
-                                        X
-                                    </button>
-                                </div>
-                                <table className="table table-bordered">
-                                    <thead style={{ color: '#4BC0C0' }}>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>Received</th>
-                                            <th>Scanned</th>
-                                            <th>Approved</th>
-                                            <th>Rectified</th>
-                                            <th>Export</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Mapping through barFile datasets to generate rows */}
-                                        {barFile.datasets.map((dataset, index) => (
-                                            <tr key={index}>
-                                                <td>{dataset.name}</td>
-                                                {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
-                                                        {parseInt(value).toLocaleString()}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        ))}
-
-                                        {/* Calculating and displaying the total row */}
-                                        <tr>
-                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
-                                            {barFile.datasets[0].data.map((_, colIndex) => {
-                                                const total = barFile.datasets.reduce(
-                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                                                    0
-                                                );
-                                                return (
-                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
-                                                        <strong>{total.toLocaleString()}</strong>
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                    <span>Cumulative Images</span>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="me-2" onClick={toggleChartImageType} style={{ cursor: "pointer" }}>
-                                            {chartImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                        </div>
-                                        <VscTable size={20} onClick={handleImageTable} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </CardTitle>
-
-                                <Chart
-                                    options={formatChartData(barImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
-                                    series={formatChartData(barImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
-                                    type={chartImageType}
-                                    height="350"
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                    {showImageTable && (
-                        <div className="table-popup">
-                            <div className="table-content">
-                                <div className="popup-header d-flex justify-content-between align-items-center">
-                                    <h5>Location-wise Data</h5>
-                                    <button
-                                        onClick={closeImageTable}
-                                        className="btn"
-                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-                                    >
-                                        X
-                                    </button>
-                                </div>
-                                <table className="table table-bordered">
-                                    <thead style={{ color: '#4BC0C0' }}>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>Received</th>
-                                            <th>Scanned</th>
-                                            <th>Approved</th>
-                                            <th>Rectified</th>
-                                            <th>Export</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Mapping through barFile datasets to generate rows */}
-                                        {barImage.datasets.map((dataset, index) => (
-                                            <tr key={index}>
-                                                <td>{dataset.name}</td>
-                                                {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
-                                                        {parseInt(value).toLocaleString()}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        ))}
-
-                                        {/* Calculating and displaying the total row */}
-                                        <tr>
-                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
-                                            {barImage.datasets[0].data.map((_, colIndex) => {
-                                                const total = barImage.datasets.reduce(
-                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                                                    0
-                                                );
-                                                return (
-                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
-                                                        <strong>{total.toLocaleString()}</strong>
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody style={{ height: '430px' }}>
-                                <div className="row">
-                                    <h5>Remarks:</h5>
-                                </div>
-                                <div className="row" style={{ marginTop: '180px' }}>
-                                    <h5>Special Requests:</h5>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </div>
-                </div>
-                <div className="row mt-3">
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                    <span>Files on: {formattedYesterdayDate}</span>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="me-2" onClick={toggleChartTodayFileType} style={{ cursor: "pointer" }}>
-                                            {chartTodayFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                        </div>
-                                        <VscTable size={20} onClick={handleTodayFileTable} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </CardTitle>
-
-                                <Chart
-                                    options={formatChartData(todayFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
-                                    series={formatChartData(todayFile, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
-                                    type={chartTodayFileType}
-                                    height="350"
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                    {showTodayFileTable && (
-                        <div className="table-popup">
-                            <div className="table-content">
-                                <div className="popup-header d-flex justify-content-between align-items-center">
-                                    <h5>Location-wise Data</h5>
-                                    <button
-                                        onClick={closeTodayFileTable}
-                                        className="btn"
-                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-                                    >
-                                        X
-                                    </button>
-                                </div>
-                                <table className="table table-bordered">
-                                    <thead style={{ color: '#4BC0C0' }}>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>Received</th>
-                                            <th>Scanned</th>
-                                            <th>Approved</th>
-                                            <th>Rectified</th>
-                                            <th>Export</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Mapping through barFile datasets to generate rows */}
-                                        {todayFile.datasets.map((dataset, index) => (
-                                            <tr key={index}>
-                                                <td>{dataset.name}</td>
-                                                {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
-                                                        {parseInt(value).toLocaleString()}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        ))}
-
-                                        {/* Calculating and displaying the total row */}
-                                        <tr>
-                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
-                                            {todayFile.datasets[0].data.map((_, colIndex) => {
-                                                const total = todayFile.datasets.reduce(
-                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                                                    0
-                                                );
-                                                return (
-                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
-                                                        <strong>{total.toLocaleString()}</strong>
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                    <span>Images on: {formattedYesterdayDate}</span>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="me-2" onClick={toggleChartTodayImageType} style={{ cursor: "pointer" }}>
-                                            {chartTodayImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                        </div>
-                                        <VscTable size={20} onClick={handleTodayImageTable} style={{ cursor: 'pointer' }} />
-                                    </div>
-                                </CardTitle>
-
-                                <Chart
-                                    options={formatChartData(todayImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).options}
-                                    series={formatChartData(todayImage, ["#4BC0C0", "#FF6384", "#36A2EB", "#FFCE56", "#8DECB4"]).series}
-                                    type={chartTodayImageType}
-                                    height="350"
-                                />
-                            </CardBody>
-                        </Card>
-                    </div>
-                    <div className="col-md-4 col-sm-12">
-                        <Card>
-                            <CardBody style={{ height: '430px' }}>
-                                <div className="row">
-                                    <h5>Remarks:</h5>
-                                </div>
-                                <div className="row" style={{ marginTop: '180px' }}>
-                                    <h5>Special Requests:</h5>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </div>
-                    {showTodayImageTable && (
-                        <div className="table-popup">
-                            <div className="table-content">
-                                <div className="popup-header d-flex justify-content-between align-items-center">
-                                    <h5>Location-wise Data</h5>
-                                    <button
-                                        onClick={closeTodayImageTable}
-                                        className="btn"
-                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-                                    >
-                                        X
-                                    </button>
-                                </div>
-                                <table className="table table-bordered">
-                                    <thead style={{ color: '#4BC0C0' }}>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>Received</th>
-                                            <th>Scanned</th>
-                                            <th>Approved</th>
-                                            <th>Rectified</th>
-                                            <th>Export</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Mapping through barFile datasets to generate rows */}
-                                        {todayImage.datasets.map((dataset, index) => (
-                                            <tr key={index}>
-                                                <td>{dataset.name}</td>
-                                                {dataset.data.map((value, dataIndex) => (
-                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
-                                                        {parseInt(value).toLocaleString()}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        ))}
-
-                                        {/* Calculating and displaying the total row */}
-                                        <tr>
-                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
-                                            {todayImage.datasets[0].data.map((_, colIndex) => {
-                                                const total = todayImage.datasets.reduce(
-                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                                                    0
-                                                );
-                                                return (
-                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
-                                                        <strong>{total.toLocaleString()}</strong>
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
-
-                </div>
-                <div className="row mt-3 mb-5">
+                <div className="row mt-2">
                     <div>
-                        <Card>
-                            <CardBody>
-                                <CardTitle tag="h5">Cumulative Images of Last 12 Months</CardTitle>
+                        <div className="table-card" style={{ marginBottom: '25px' }}>
+                            <div
+                                className="d-flex justify-content-between align-items-center"
+                                style={{
+                                    padding: "10px 10px 0px",
+                                    backgroundColor: "#4BC0C0",
+                                    // paddingTop: "15px",
+                                }}
+                            >
+                               
+                                    <h6 className="text-center" style={{ color: "white" }}>
+                                        PROJECT UPDATE CUMULATIVE REPORT FOR SCANNING AND DIGITIZATION OF CASE
+                                        RECORDS FOR DISTRICT COURT OF TELANGANA
+                                    </h6>
+                               
+                               
+                                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSV}>
+                                        {" "}
+                                        <MdFileDownload style={{ fontSize: "20px" }} />
+                                        Export CSV
+                                    </h6>
 
-                                <Chart
-                                    options={chartData.options}
-                                    series={chartData.series}
-                                    type="bar"
-                                    height={350}
-                                />
-                            </CardBody>
-                        </Card>
+                                
+                                </div>
+                                <div
+                                    className="row mt-2 ms-2 me-2"
+                                    style={{ overflowX: "auto", overflowY: 'auto' }}
+                                >
+                                    <table class="table table-hover table-bordered table-responsive data-table">
+                                        <thead
+                                            style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
+                                        >
+                                            <tr>
+                                                <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                                {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
+                                                {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
+                                                {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
+                                                <th>Remarks</th>
+                                            </tr>
+                                            <tr
+                                                style={{ color: "#4BC0C0", fontWeight: '300' }}
+                                            >
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                {/* <th>Files</th>
+                                            <th>Images</th> */}
+                                                {/* <th>Files</th>
+                                            <th>Images</th> */}
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            style={{ color: "gray" }}
+                                        >
+                                            {report &&
+                                                report.map((elem, index) => (
+                                                    <tr key={index} style={{ backgroundColor: "white" }}>
+                                                        <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
+                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
+                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td> */}
+                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
+                                                        <td className="text-center"><button
+                                                        className="btn client-view-btn"
+                                                         onClick={() => handleViewCumulativeClick(elem.Remarks, elem.SpecialRequests)}
+                                                        >
+                                                            View
+                                                         </button>
+                                                         </td>
+                                                    </tr>
+                                                ))
+                                            }
+
+                                            {/* Total Row */}
+                                            {report && (
+                                                <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
+                                                    <td>Total: </td>
+                                                    {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td> */}
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
+                                                    {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedImages)) ? 0 : parseInt(elem.RectifiedImages)), 0).toLocaleString()}</td> */}
+                                                    {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0).toLocaleString()}</td> */}
+                                                    <td></td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <div className="row mt-3 mb-5">
+                        <div>
+                            <Card>
+                                <CardBody>
+                                    <CardTitle tag="h5">Cumulative Images of Last 30 Days</CardTitle>
+
+                                    <Chart
+                                        options={chartData.options}
+                                        series={chartData.series}
+                                        type="bar"
+                                        height={350}
+                                    />
+                                </CardBody>
+                            </Card>
+                        </div>
+                    </div>
+                    <div className="row mt-3">
+                        <div className="col-md-4 col-sm-12">
+                            <Card>
+                                <CardBody>
+                                    <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                        <span>Cumulative Files</span>
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            {/* <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
+                                                {chartFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
+                                            </div> */}
+                                            <VscTable size={20} onClick={handleFileTable} style={{ cursor: 'pointer' }} />
+                                        </div>
+                                    </CardTitle>
+                                    <Chart
+                                        options={formatChartData(barFile, ["#4BC0C0"]).options}
+                                        series={formatChartData(barFile, ["#4BC0C0"]).series}
+                                        type={chartFileType}
+                                        height="350"
+                                    />
+                                </CardBody>
+                            </Card>
+                        </div>
+                        {showFileTable && (
+                            <div className="table-popup">
+                                <div className="table-content">
+                                    <div className="popup-header d-flex justify-content-between align-items-center">
+                                        <h5>Cumulative (Files)</h5>
+                                        <button
+                                            onClick={closeFileTable}
+                                            className="btn"
+                                            style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                    <table className="table table-bordered">
+                                        <thead style={{ color: '#4BC0C0' }}>
+                                            <tr>
+                                                <th></th>
+                                                <th>Scanned</th>
+                                                <th>QC</th>
+                                                <th>Offered for QA</th>
+                                                <th>Client QA Done</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {/* Mapping through barFile datasets to generate rows */}
+                                            {barFile.datasets.map((dataset, index) => (
+                                                <tr key={index}>
+                                                    <td>{dataset.name}</td>
+                                                    {dataset.data.map((value, dataIndex) => (
+                                                        <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                            {parseInt(value).toLocaleString()}
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+
+                                            {/* Calculating and displaying the total row */}
+                                            <tr>
+                                                <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                                {barFile.datasets[0].data.map((_, colIndex) => {
+                                                    const total = barFile.datasets.reduce(
+                                                        (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                        0
+                                                    );
+                                                    return (
+                                                        <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                            <strong>{total.toLocaleString()}</strong>
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="col-md-4 col-sm-12">
+                            <Card>
+                                <CardBody>
+                                    <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                        <span>Cumulative Images</span>
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            {/* <div className="me-2" onClick={toggleChartImageType} style={{ cursor: "pointer" }}>
+                                                {chartImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
+                                            </div> */}
+                                            <VscTable size={20} onClick={handleImageTable} style={{ cursor: 'pointer' }} />
+                                        </div>
+                                    </CardTitle>
+
+                                    <Chart
+                                        options={formatChartData(barImage, ["#FF6384"]).options}
+                                        series={formatChartData(barImage, ["#FF6384"]).series}
+                                        type={chartImageType}
+                                        height="350"
+                                    />
+                                </CardBody>
+                            </Card>
+                        </div>
+                        {showImageTable && (
+                            <div className="table-popup">
+                                <div className="table-content">
+                                    <div className="popup-header d-flex justify-content-between align-items-center">
+                                        <h5>Cumulative (Images)</h5>
+                                        <button
+                                            onClick={closeImageTable}
+                                            className="btn"
+                                            style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                    <table className="table table-bordered">
+                                        <thead style={{ color: '#4BC0C0' }}>
+                                            <tr>
+                                                <th></th>
+                                                <th>Scanned</th>
+                                                <th>QC</th>
+                                                <th>Offered for QA</th>
+                                                <th>Client QA Done</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {/* Mapping through barFile datasets to generate rows */}
+                                            {barImage.datasets.map((dataset, index) => (
+                                                <tr key={index}>
+                                                    <td>{dataset.name}</td>
+                                                    {dataset.data.map((value, dataIndex) => (
+                                                        <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                            {parseInt(value).toLocaleString()}
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+
+                                            {/* Calculating and displaying the total row */}
+                                            <tr>
+                                                <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                                {barImage.datasets[0].data.map((_, colIndex) => {
+                                                    const total = barImage.datasets.reduce(
+                                                        (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                        0
+                                                    );
+                                                    return (
+                                                        <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                            <strong>{total.toLocaleString()}</strong>
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="col-md-4 col-sm-12">
+                            <Card>
+                                <CardBody style={{ height: '430px' }}>
+                                    <div className="row">
+                                        <h5>Remarks:</h5>
+                                    </div>
+                                    <div className="row" style={{ marginTop: '180px' }}>
+                                        <h5>Special Requests:</h5>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        </div>
+                    </div>
+                    <div className="row mt-3">
+                        <div className="col-md-4 col-sm-12">
+                            <Card>
+                                <CardBody>
+                                    <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                        <span>Process(Files) Dated: {formattedYesterdayDate}</span>
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            {/* <div className="me-2" onClick={toggleChartTodayFileType} style={{ cursor: "pointer" }}>
+                                                {chartTodayFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
+                                            </div> */}
+                                            <VscTable size={20} onClick={handleTodayFileTable} style={{ cursor: 'pointer' }} />
+                                        </div>
+                                    </CardTitle>
+
+                                    <Chart
+                                        options={formatChartData(todayFile, ["#4BC0C0"]).options}
+                                        series={formatChartData(todayFile, ["#4BC0C0"]).series}
+                                        type={chartTodayFileType}
+                                        height="350"
+                                    />
+                                </CardBody>
+                            </Card>
+                        </div>
+                        {showTodayFileTable && (
+                            <div className="table-popup">
+                                <div className="table-content">
+                                    <div className="popup-header d-flex justify-content-between align-items-center">
+                                        <h5>Process(Files) Dated: {formattedYesterdayDate}</h5>
+                                        <button
+                                            onClick={closeTodayFileTable}
+                                            className="btn"
+                                            style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                    <table className="table table-bordered">
+                                        <thead style={{ color: '#4BC0C0' }}>
+                                            <tr>
+                                                <th></th>
+                                                <th>Scanned</th>
+                                                <th>QC</th>
+                                                <th>Offered for QA</th>
+                                                <th>Client QA Done</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {/* Mapping through barFile datasets to generate rows */}
+                                            {todayFile.datasets.map((dataset, index) => (
+                                                <tr key={index}>
+                                                    <td>{dataset.name}</td>
+                                                    {dataset.data.map((value, dataIndex) => (
+                                                        <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                            {parseInt(value).toLocaleString()}
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+
+                                            {/* Calculating and displaying the total row */}
+                                            <tr>
+                                                <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                                {todayFile.datasets[0].data.map((_, colIndex) => {
+                                                    const total = todayFile.datasets.reduce(
+                                                        (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                        0
+                                                    );
+                                                    return (
+                                                        <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                            <strong>{total.toLocaleString()}</strong>
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="col-md-4 col-sm-12">
+                            <Card>
+                                <CardBody>
+                                    <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                        <span>Process(Images) Dated: {formattedYesterdayDate}</span>
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            {/* <div className="me-2" onClick={toggleChartTodayImageType} style={{ cursor: "pointer" }}>
+                                                {chartTodayImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
+                                            </div> */}
+                                            <VscTable size={20} onClick={handleTodayImageTable} style={{ cursor: 'pointer' }} />
+                                        </div>
+                                    </CardTitle>
+
+                                    <Chart
+                                        options={formatChartData(todayImage, ["#FF6384"]).options}
+                                        series={formatChartData(todayImage, ["#FF6384"]).series}
+                                        type={chartTodayImageType}
+                                        height="350"
+                                    />
+                                </CardBody>
+                            </Card>
+                        </div>
+                        <div className="col-md-4 col-sm-12">
+                            <Card>
+                                <CardBody style={{ height: '430px' }}>
+                                    <div className="row">
+                                        <h5>Remarks:</h5>
+                                    </div>
+                                    <div className="row" style={{ marginTop: '180px' }}>
+                                        <h5>Special Requests:</h5>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        </div>
+                        {showTodayImageTable && (
+                            <div className="table-popup">
+                                <div className="table-content">
+                                    <div className="popup-header d-flex justify-content-between align-items-center">
+                                        <h5>Process(Images) Dated: {formattedYesterdayDate}</h5>
+                                        <button
+                                            onClick={closeTodayImageTable}
+                                            className="btn"
+                                            style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                    <table className="table table-bordered">
+                                        <thead style={{ color: '#4BC0C0' }}>
+                                            <tr>
+                                                <th></th>
+                                                <th>Scanned</th>
+                                                <th>QC</th>
+                                                <th>Offered for QA</th>
+                                                <th>Client QA Done</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {/* Mapping through barFile datasets to generate rows */}
+                                            {todayImage.datasets.map((dataset, index) => (
+                                                <tr key={index}>
+                                                    <td>{dataset.name}</td>
+                                                    {dataset.data.map((value, dataIndex) => (
+                                                        <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                            {parseInt(value).toLocaleString()}
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+
+                                            {/* Calculating and displaying the total row */}
+                                            <tr>
+                                                <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                                {todayImage.datasets[0].data.map((_, colIndex) => {
+                                                    const total = todayImage.datasets.reduce(
+                                                        (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                        0
+                                                    );
+                                                    return (
+                                                        <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                            <strong>{total.toLocaleString()}</strong>
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+
                 </div>
-            </div>
-            <div className='d-none d-xl-block d-sm-none'>
-                <div className='container footer'>
-                    <div className='row'>
-                        <div className='col-12 text-center'>
-                        <p>© 2024 CBSLGROUP All rights reserved</p>
+                <div className='d-none d-xl-block d-sm-none'>
+                    <div className='container footer'>
+                        <div className='row'>
+                            <div className='col-12 text-center'>
+                                <p>© 2024 CBSLGROUP All rights reserved</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className='d-block d-xl-none d-sm-block'>
-                <div className='container '>
-                    <div className='row'>
-                        <div className='col-12 text-center'>
-                            <p>© 2024 CBSLGROUP All rights reserved</p>
+                <div className='d-block d-xl-none d-sm-block'>
+                    <div className='container '>
+                        <div className='row'>
+                            <div className='col-12 text-center'>
+                                <p>© 2024 CBSLGROUP All rights reserved</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </>
-    )
+                {isViewDailyModalOpen && (
+                <ViewDailyRemarksModal
+                    remarks={dailyRemarks}
+                    special_requests={dailySpecialRequests}
+                    onClose={() => setIsViewDailyModalOpen(false)}
+                />
+            )}
+            {isViewCumulativeModalOpen && (
+                <ViewCumulativeRemarksModal
+                    remarks={cumulativeRemarks}
+                    special_requests={cumulativeSpecialRequests}
+                    onClose={() => setIsViewCumulativeModalOpen(false)}
+                />
+            )}
+            </>
+            )
 }
+
+const ViewDailyRemarksModal = ({ remarks, onClose, special_requests }) => {
+    return (
+        <div className="modal">
+            <div className="modal-content">
+                <h2>View Remarks</h2>
+                <p><b>Remarks:</b> {remarks}</p>
+                <p><b>Special Requests:</b> {special_requests}</p>
+                <button className='btn add-btn ms-0' style={{ backgroundColor: 'red' }} onClick={onClose}>Close</button>
+            </div>
+        </div>
+    );
+};
+const ViewCumulativeRemarksModal = ({ remarks, onClose, special_requests }) => {
+    return (
+        <div className="modal">
+            <div className="modal-content">
+                <h2>View Remarks</h2>
+                <p>Remarks: {remarks}</p>
+                <p>Special Requests: {special_requests}</p>
+                <button className='btn add-btn ms-0' style={{ backgroundColor: 'red' }} onClick={onClose}>Close</button>
+            </div>
+        </div>
+    );
+};
 
 export default Locationwisereport

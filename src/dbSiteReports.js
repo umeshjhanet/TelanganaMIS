@@ -130,6 +130,7 @@ const DBSiteReports = () => {
                     <tr>
                       <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Sr.No</th>
                       <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Location Name</th>
+                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>CSV Uploaded Date</th>
                       <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Backup Path</th>
                       <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Backup Size</th>
                       <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Backup Date Time</th>
@@ -162,6 +163,7 @@ const DBSiteReports = () => {
                         <tr key={index}>
                           <td>{indexOfFirstServer + index + 1}</td>
                           <td>{elem.location}</td>
+                          <td style={{whiteSpace:'nowrap'}}>{formatDateTo12Hour(elem.csv_upload_dt)}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.backuppath}</td>
                           <td style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
                             <span
