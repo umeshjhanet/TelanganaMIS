@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './Components/Header';
-import Footer from './Footer';
+import Footer from './Components/Footer';
 import Dashboard from './dashboard';
 import Report from './report';
 import File from './file';
@@ -27,6 +27,8 @@ import DBSiteReports from './dbSiteReports';
 import SiteReports from './siteReports';
 import PrivateRoute from './PrivateRoute';
 import DailyReport from './dailyReport';
+import Locationwisereport from './locationwisereport';
+import AddRemarks from './addRemarks';
 
 const App = () => {
   return (
@@ -51,6 +53,8 @@ const App = () => {
         <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC />} />} />
         <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
         <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport />} />} />
+        <Route path="/locationwisereport" element={<PrivateRoute element={<Locationwisereport />} />} />
+        <Route path="/addRemarks" element={<PrivateRoute element={<AddRemarks />} />} />
       </Routes>
     </Router>
     

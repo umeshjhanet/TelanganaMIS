@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Header from "./Components/Header";
-import Footer from "./Footer";
+import Footer from "./Components/Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
 import { API_URL } from "./Api";
