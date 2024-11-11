@@ -28,7 +28,7 @@ const MIS_Form = () => {
   const [selectedLocationId, setSelectedLocationId] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [status, setStatus] = useState();
-  const [manpowerForm, setManpowerForm] = useState({
+  const [manpowerForm,setManpowerForm ] = useState({
     PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Id: '', Coll_Index_MP: '', Barc_MP: '', Barc_TF: '', Barc_TI: '', Page_No_MP: '', Prepare_MP: '',
     Prepare_TF: '', Prepare_TI: '', Scan_MP: '', Cover_Page_MP: '', Cover_Page_TF: '', Rescan_MP: '', Image_QC_MP: '', Doc_MP: '', Index_MP: '', CBSL_QA_MP: '',
     Ready_Cust_QA_MP: '', Cust_QA_Done_MP: '', PDF_Export_MP: '', Refilling_Files_MP: '', Inventory_MP: '', Location_ID: '',
@@ -39,15 +39,7 @@ const MIS_Form = () => {
   const[excelData,setExcelData]=useState(null);
   
   useEffect(() => {
-    // const fetchData = () => {
-    //   fetch("http://localhost:3001/users")
-    //   .then(response => response.json())
-    //   .then(data => setBLRData(data))
-    //   .catch(error => console.error(error))
-    //   console.log("Data",blrData);
-
-
-    // }
+    
     const locationData = () => {
       fetch(`${API_URL}/locations`)
         .then(respsone => respsone.json())
@@ -85,19 +77,11 @@ const MIS_Form = () => {
         console.error("Error fetching last inserted data:", error);
       }
     };
-
-
     fetchLastInsertedData();
-
-
-
-    // fetchData();
     locationData();
     designationData();
     usermasterData();
     const intervalId = setInterval(designationData, usermasterData, 2000);
-
-
     return () => clearInterval(intervalId);
   }, [])
   const handleShowLocation = () => {
@@ -121,7 +105,6 @@ const MIS_Form = () => {
     setFormData({ ...formData, [name]: value });
     setNewData({ ...newData, [name]: value });
   };
-
   const handleSelectPH = (id, name) => {
     setSelectedPH(name);
     setSelectedPHId(parseInt(id));
@@ -146,9 +129,7 @@ const MIS_Form = () => {
     const { name, value } = e.target;
     setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, SM_Id: selectedSMId, PH_Id: selectedPHId, Location_ID: selectedLocationId });
   }
-
-
-  const handleManPowerForm = async () => {
+ const handleManPowerForm = async () => {
     const formData = new FormData();
     formData.append('file', excelData);
   
@@ -186,18 +167,10 @@ const MIS_Form = () => {
       setErrorMessage('Error submitting data. Please try again.');
       console.error("Error submitting data:", error);
     }
-  };
-  
-  
+  }; 
   const handleFileUpload = (e) => {
     setExcelData(e.target.files[0]);
-};
-                                                                      
-
-  // if (!designation)
-  //   return (
-  //     <>Loading...</>
-  //   )
+};                                                                    
   return (
     <>
       <Header />
