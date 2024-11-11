@@ -7,11 +7,13 @@ import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import readXlsxFile from 'read-excel-file';
 import { API_URL } from './Api';
+import { ToastContainer, toast } from 'react-toastify';
 
 const MIS_Form = () => {
   const [blrData, setBLRData] = useState();
   const [startDate, setStartDate] = useState(new Date());
   const [location, setLocation] = useState();
+  const [manager, setManager] = useState();
   const [showLocation, setShowLocation] = useState(false);
   const [designation, setDesignation] = useState();
   const [usermaster, setUsermaster] = useState();
@@ -29,11 +31,11 @@ const MIS_Form = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [status, setStatus] = useState();
   const [manpowerForm,setManpowerForm ] = useState({
-    PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Id: '', Coll_Index_MP: '', Barc_MP: '', Barc_TF: '', Barc_TI: '', Page_No_MP: '', Prepare_MP: '',
+    PH_Id: '', PM_Id: '',Coll_Index_MP: '', Barc_MP: '', Barc_TF: '', Barc_TI: '', Page_No_MP: '', Prepare_MP: '',
     Prepare_TF: '', Prepare_TI: '', Scan_MP: '', Cover_Page_MP: '', Cover_Page_TF: '', Rescan_MP: '', Image_QC_MP: '', Doc_MP: '', Index_MP: '', CBSL_QA_MP: '',
-    Ready_Cust_QA_MP: '', Cust_QA_Done_MP: '', PDF_Export_MP: '', Refilling_Files_MP: '', Inventory_MP: '', Location_ID: '',
+    Ready_Cust_QA_MP: '', Cust_QA_Done_MP: '', PDF_Export_MP: '', Refilling_Files_MP: '', Inventory_MP: '',Scaning_Target_A3:'', Scaning_Target_A4:'', Scaning_Capacity_A3:'',Scaning_Capacity_A4:'', QC_Target:'', Post_QC_Target:'', Location_ID: '',
   })
-  const [newData, setNewData] = useState({ PH_Id: '', PO_Id: '', PM_Id: '', PCo_Id: '', SM_Id: '', Location_Id: '', });
+  const [newData, setNewData] = useState({ PH_Id: '',PM_Id: '',Location_Id: '', });
   const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
   const [errorMessage, setErrorMessage] = useState('');
   const[excelData,setExcelData]=useState(null);
@@ -46,6 +48,13 @@ const MIS_Form = () => {
         .then(data => setLocation(data))
         .catch(error => console.error(error))
       console.log("Locations", location);
+    }
+    const ManagerData = () => {
+      fetch(`${API_URL}/getmanager`)
+        .then(respsone => respsone.json())
+        .then(data => setManager(data))
+        .catch(error => console.error(error))
+      console.log("Manager", manager);
     }
     const designationData = () => {
       fetch(`${API_URL}/designations`)
@@ -64,8 +73,6 @@ const MIS_Form = () => {
       try {
         const response = await axios.get(`${API_URL}/site_MPData`);
         const site_MPData = response.data;
-
-
         console.log("Manpower Data" , site_MPData);
         setFormData({
           // PM_Id: site_MPData.PM_Id || '',
@@ -79,6 +86,7 @@ const MIS_Form = () => {
     };
     fetchLastInsertedData();
     locationData();
+    ManagerData();
     designationData();
     usermasterData();
     const intervalId = setInterval(designationData, usermasterData, 2000);
@@ -127,7 +135,7 @@ const MIS_Form = () => {
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, SM_Id: selectedSMId, PH_Id: selectedPHId, Location_ID: selectedLocationId });
+    setManpowerForm({ ...manpowerForm, [name]: value, PM_Id: selectedPMId, PH_Id: selectedPHId, Location_ID: selectedLocationId });
   }
  const handleManPowerForm = async () => {
     const formData = new FormData();
@@ -149,9 +157,10 @@ const MIS_Form = () => {
     }
   
     try {
+      let response;
       if (excelData) {
         // If an Excel file is uploaded, call the uploadExcel API
-        const response = await axios.post(`${API_URL}/uploadExcel`, formData, {
+         response = await axios.post(`${API_URL}/uploadExcel`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -159,8 +168,14 @@ const MIS_Form = () => {
         console.log("Data from Excel file submitted:", response.data);
       } else {
         // If no Excel file is uploaded, submit the form with manually entered data using the site_MP API
-        const response = await axios.post(`${API_URL}/site_MP`, manpowerForm);
-        console.log("Data from input fields submitted:", response.data);
+         response = await axios.post(`${API_URL}/site_MP`, manpowerForm);
+       
+        
+      }
+      if (response.status === 200) {
+        toast.success("Data Submitted Successfully");
+      } else {
+        throw new Error("Failed to submit data");
       }
       setErrorMessage('');
     } catch (error) {
@@ -174,6 +189,7 @@ const MIS_Form = () => {
   return (
     <>
       <Header />
+      <ToastContainer />
       {/* <div className='container-fluid'>
       <div className='row'>
         <div className='col-2'></div>
@@ -241,18 +257,18 @@ const MIS_Form = () => {
                     </div>
                   )}
                 </div>
-                <div className='row mt-2'>
+                {/* <div className='row mt-2'>
                   <div className='col-5'><span>Project Owner Name: </span></div>
                   <div className='col-7'><input type='text' placeholder='Select PO Name' name='PO_Id' onClick={handleShowProjectOwner} onChange={handleInputChange} /></div>
-                </div>
+                </div> */}
                 <div className='row mt-2'>
                   <div className='col-5'><span>Project Manager Name: </span></div>
                   <div className='col-7'><input type='text' placeholder='Select PM Name' name='PM_Id' value={selectedPM || ''} onClick={handleShowProjectMan} onChange={handleInputChange} /></div>
                   {projectMan && (
                     <div className='dropdown-card'>
-                      {usermaster.filter(user => user.designation.toLowerCase() === "project manager").map((elem, index) => (
-                        <div key={index} onClick={() => handleSelectPM(elem.user_id, `${elem.first_name} ${elem.last_name}`)}>
-                          <p>{elem.first_name} {elem.last_name}</p>
+                      {manager && manager.map((elem, index) => (
+                        <div key={index} onClick={() => handleSelectPM(elem.id, `${elem.Manager_Name}`)}>
+                          <p>{elem.Manager_Name}</p>
                         </div>
                       ))}
 
@@ -260,7 +276,7 @@ const MIS_Form = () => {
                     </div>
                   )}
                 </div>
-                <div className='row mt-2'>
+                {/* <div className='row mt-2'>
                   <div className='col-5'><span>Project Coordinator Name: </span></div>
                   <div className='col-7'><input type='text' placeholder='Select PCo Name' name='PCo_Id' onChange={handleInputChange} /></div>
                 </div>
@@ -278,7 +294,7 @@ const MIS_Form = () => {
 
                     </div>
                   )}
-                </div>
+                </div> */}
               </div>
 
 
@@ -427,7 +443,42 @@ const MIS_Form = () => {
                   <input type='text' name='Inventory_MP' onChange={handleInputChange} required /><br />
                 </div>
               </div>
-              
+              <h6 className='mt-2'>Scanning Target</h6>
+              <div className='row process-card'>
+                <div className='col-4'>
+                  <span>A3: </span>
+                  <input type='text' name='Scaning_Target_A3' onChange={handleInputChange} required /><br />
+                </div>
+                <div className='col-4'>
+                  <span>A4: </span>
+                  <input type='text' name='Scaning_Target_A4' onChange={handleInputChange} required />
+                </div>
+              </div>
+              <h6 className='mt-2'>Scanning Capacity</h6>
+              <div className='row process-card'>
+                <div className='col-4'>
+                  <span>A3: </span>
+                  <input type='text' name='Scaning_Capacity_A3' onChange={handleInputChange} required /><br />
+                </div>      
+                <div className='col-4'>
+                  <span>A4: </span>
+                  <input type='text' name='Scaning_Capacity_A4' onChange={handleInputChange} required /><br />
+                </div>         
+              </div>
+              <h6 className='mt-2'>QC Target</h6>
+              <div className='row process-card'>
+                <div className='col-4'>
+                  <span>Target: </span>
+                  <input type='text' name='QC_Target' onChange={handleInputChange} required /><br />
+                </div>        
+              </div>
+              <h6 className='mt-2'>Post QC Target</h6>
+              <div className='row process-card'>
+                <div className='col-4'>
+                  <span>Target: </span>
+                  <input type='text' name='Post_QC_Target' onChange={handleInputChange} required /><br />
+                </div>        
+              </div>
             </div>
 
 
