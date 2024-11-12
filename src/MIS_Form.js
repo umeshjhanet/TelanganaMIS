@@ -228,7 +228,7 @@ const MIS_Form = () => {
         <div className='row'>
           <div className='col-2'></div>
           <div className='col-10'>
-            <h3 className='text-center'>UPDC MIS</h3>
+            <h3 className='text-center'>Telangana MIS</h3>
             <h5 className='text-center'>Input Screen for user at site to enter the data on daily basis</h5>
 
 

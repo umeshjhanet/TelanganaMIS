@@ -362,7 +362,7 @@ const User_Form = () => {
                     <input type='text' placeholder='Enter Last Name' name="last_name" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     {lastNameError && <span style={{ color: 'red' }}>Last name is required<br /></span>}
                     <label className='mt-1'>Email Address<span style={{ color: 'red' }}>*</span></label><br />
-                    <input type='email' placeholder='Enter Email Id' name="user_email_id" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
+                    <input type='text' placeholder='Enter Email Id' name="user_email_id" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     {emailError && <span style={{ color: 'red' }}>Email ID is required<br /></span>}
                     <label className='mt-1'>Employee Id</label><br />
                     <input type='text' placeholder='Enter Employee Id' name="emp_id" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />

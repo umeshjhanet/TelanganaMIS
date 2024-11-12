@@ -27,7 +27,7 @@ import DBSiteReports from './dbSiteReports';
 import SiteReports from './siteReports';
 import PrivateRoute from './PrivateRoute';
 import DailyReport from './dailyReport';
-import Locationwisereport from './locationwisereport';
+import Locationwisereport from './clientreport';
 import AddRemarks from './addRemarks';
 
 const App = () => {
@@ -53,7 +53,7 @@ const App = () => {
         <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC />} />} />
         <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
         <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport />} />} />
-        <Route path="/locationwisereport" element={<PrivateRoute element={<Locationwisereport />} />} />
+        <Route path="/clientreport" element={<PrivateRoute element={<Locationwisereport />} />} />
         <Route path="/addRemarks" element={<PrivateRoute element={<AddRemarks />} />} />
       </Routes>
     </Router>
