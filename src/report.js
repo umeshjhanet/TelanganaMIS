@@ -280,8 +280,8 @@ const Report = () => {
     'Export_PdfImages',
     'Client_QAFiles',
     'Client_QAImages',
-    'Digi_SignFiles',
-    'Digi_SignImages'
+    'InventoryFiles',
+    'InventoryImages'
   ];
   function convertJSONToCSVSummary(summary, columnHeaders) {
     if (summary.length === 0) return '';
@@ -345,8 +345,8 @@ const Report = () => {
       columnStyles: {
         // Adjust column widths if necessary
         0: { cellWidth: 30 },
-        1: { cellWidth: 50 },
-        2: { cellWidth: 50 },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 40 },
         // Add more column widths if needed
       },
       pageBreak: 'auto', // Automatically handle page breaks
