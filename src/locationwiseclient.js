@@ -795,10 +795,10 @@ const Locationwiseclientreport = () => {
                                             <p>No. of Locations: <b>{elem.Total_locations}</b></p>
                                         </div>
                                         <div className="col-md-3 col-sm-12">
-                                            <p>No. of Files: <b>{parseInt(elem.Total_Files).toLocaleString()}</b></p>
+                                            <p>No. of Files Scanned: <b>{parseInt(elem.Total_Files).toLocaleString()}</b></p>
                                         </div>
                                         <div className="col-md-3 col-sm-12">
-                                            <p>No. of Images: <b>{parseInt(elem.Total_Images).toLocaleString()}</b></p>
+                                            <p>No. of Images Scanned: <b>{parseInt(elem.Total_Images).toLocaleString()}</b></p>
                                         </div>
                                     </>
                                 ))}
