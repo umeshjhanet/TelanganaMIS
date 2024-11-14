@@ -29,6 +29,7 @@ import PrivateRoute from './PrivateRoute';
 import DailyReport from './dailyReport';
 import Locationwisereport from './locationwisereport';
 import AddRemarks from './addRemarks';
+import DPRReport from './DPRReport';
 
 const App = () => {
   return (
@@ -53,6 +54,7 @@ const App = () => {
         <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC />} />} />
         <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
         <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport />} />} />
+        <Route path="/DPRReport" element={<PrivateRoute element={<DPRReport />} />} />
         <Route path="/locationwisereport" element={<PrivateRoute element={<Locationwisereport />} />} />
         <Route path="/addRemarks" element={<PrivateRoute element={<AddRemarks />} />} />
       </Routes>
