@@ -135,7 +135,7 @@ const Header = () => {
                         <hr />
                         <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
                         <Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
-                        <br/><Link to='/dailyReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                        <br /><Link to='/dailyReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
                         <hr />
                       </>
                     )}
@@ -148,7 +148,7 @@ const Header = () => {
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
                     </div>
-                   
+
                     {showMasterDropdown && (
                       <>
                         <hr />
@@ -159,8 +159,8 @@ const Header = () => {
                         <hr />
                       </>
                     )}
-                     <div className='row ' onClick={handleActiveTab}>
-                    <Link to='/addRemarks' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '5px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Remarks</Link>
+                    <div className='row ' onClick={handleActiveTab}>
+                      <Link to='/addRemarks' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '5px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Remarks</Link>
                     </div>
                   </div>
                 </div>
@@ -204,8 +204,8 @@ const Header = () => {
                   <>
                     <hr />
                     <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-                    <br /><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link><br/>
-                    <br/><Link to='/dailyReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                    <br /><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link><br />
+                    <br /><Link to='/dailyReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
                     <hr />
                   </>
                 )}
@@ -719,6 +719,7 @@ const Header = () => {
                       <Link to='/locationwisereport' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#337ab7' }} />New Page</Link>
                     </div>
                     <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <Link to='/addRemarks' style={{textDecoration:'none',color:'black'}}><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                   </div>
                 </div>
                 <div className='col-11'></div>
@@ -745,15 +746,17 @@ const Header = () => {
                       <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                     </div>
                     {showReportDropdown && (
-                  <>
-                    <hr />
-                    <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-                    <br /><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link><br/>
-                    <br/><Link to='/dailyReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
-                    <hr />
-                  </>
-                )}
-
+                      <>
+                        <hr />
+                        <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                        <br /><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link><br />
+                        <br /><Link to='/dailyReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                        <hr />
+                      </>
+                    )}
+                    <div className='row' onClick={handleActiveTab}>
+                      <Link to='/addRemarks' style={{textDecoration:'none',color:'black'}}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Remarks</Link>
+                    </div>
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -789,18 +792,20 @@ const Header = () => {
                   <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                 </div>
                 <div className='row mt-1' onClick={handleActiveTab}>
-                      <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
-                    </div>
+                  <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaUserAlt style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Masters <IoIosArrowDown style={{ marginLeft: '73px' }} onClick={handleMasterDropdown} /></a>
+                </div>
                 {showReportDropdown && (
                   <>
                     <hr />
                     <Link to='/report' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-                    <br /><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link><br/>
+                    <br /><Link to='/file' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link><br />
                     <Link to='/dailyReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', marginTop: '20px', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
                     <hr />
                   </>
                 )}
-
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/addRemarks' style={{textDecoration:'none',color:'black'}}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Remarks</Link>
+                </div>
               </div>
             </div>
           }
@@ -809,14 +814,14 @@ const Header = () => {
     )
   }
   const externalClient = () => {
-    return(
+    return (
       <>
-      <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
+        <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
           <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
             <div className="container-fluid" >
-            <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                  <img src='logo.png' />
-                </div>
+              <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                <img src='logo.png' />
+              </div>
               <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 </ul>
@@ -830,9 +835,9 @@ const Header = () => {
         <div className='d-block d-xl-none d-lg-none d-md-block d-sm-block'>
           <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
             <div className="container-fluid" >
-            <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-                  <img src='logo.png' />
-                </div>
+              <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                <img src='logo.png' />
+              </div>
               <form className="d-flex">
                 <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
               </form>

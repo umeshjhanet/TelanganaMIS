@@ -14,7 +14,7 @@ import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 const newData = [{ name: 'Page A', uv: 400, pv: 2400, amt: 2400 }, { name: 'Page B', uv: 450, pv: 2400, amt: 2400 },];
 
-const Locationwisereport = () => {
+const Locationwiseclientreport = () => {
     const currentDate = new Date();
     const yesterdayDate = sub(currentDate, { days: 1 });
     const previousDate = sub(currentDate, { days: 2 });
@@ -48,25 +48,8 @@ const Locationwisereport = () => {
     const [cumulativeSpecialRequests, setCumulativeSpecialRequests] = useState('');
     const [isViewDailyModalOpen, setIsViewDailyModalOpen] = useState(false);
     const [isViewCumulativeModalOpen, setIsViewCumulativeModalOpen] = useState(false);
-    const [specialRequests, setSpecialRequests] = useState('');
-    // Function to toggle chart type
-    const toggleChartFileType = () => {
-        setChartFileType((prevType) => (prevType === "line" ? "bar" : "line"));
-    };
-    const toggleChartImageType = () => {
-        setChartImageType((prevType) => (prevType === "line" ? "bar" : "line"));
-    };
-    const toggleChartTodayFileType = () => {
-        setChartTodayFileType((prevType) => (prevType === "line" ? "bar" : "line"));
-    };
-    const toggleChartTodayImageType = () => {
-        setChartTodayImageType((prevType) => (prevType === "line" ? "bar" : "line"));
-    };
     const navigate = useNavigate();
 
-    const getStyle = (property) => {
-        return getComputedStyle(document.documentElement).getPropertyValue(property);
-    };
     const userLog = JSON.parse(localStorage.getItem("user"));
     console.log("User's Info", userLog);
     const [barImage, setBarImage] = useState({
@@ -247,7 +230,7 @@ const Locationwisereport = () => {
             totalImagesSum,
         };
     };
-    
+
 
     useEffect(() => {
         const fetchLocationData = async () => {
@@ -296,18 +279,12 @@ const Locationwisereport = () => {
                     console.error("Error in exporting data:", error);
                 });
         };
-        const fetchGraphImageData = (selectedLocations) => {
-            let apiUrl = `${API_URL}/currentstatusimages`;
-
-            if (selectedLocations && selectedLocations.length > 0) {
-                const locationQuery = selectedLocations
-                    .map((location) => `locationname=${encodeURIComponent(location)}`)
-                    .join("&");
-                apiUrl += `?${locationQuery}`;
-            }
-
+        const fetchGraphImageData = () => {
+            const locationNames = userLog.locations.map(location => `${location.name}`);
             axios
-                .get(apiUrl)
+                .get(`${API_URL}/currentstatusimages`, {
+                    params: { locationname: locationNames }
+                  }) // Include params in the request
                 .then((response) => {
                     const apiData = response.data;
 
@@ -347,37 +324,29 @@ const Locationwisereport = () => {
                     console.error("Error fetching data:", error);
                 });
         };
-        const fetchTodayGraphImageData = (selectedLocations) => {
-            let apiUrl = `${API_URL}/todaystatusimages`;
-        
-            // Append location query parameters if selected
-            if (selectedLocations && selectedLocations.length > 0) {
-                const locationQuery = selectedLocations
-                    .map((location) => `locationNames=${encodeURIComponent(location)}`)
-                    .join("&");
-                apiUrl += `?${locationQuery}`;
-            }
-        
-            // Fetch data from API
+        const fetchTodayGraphImageData = () => {
+            const locationNames = userLog.locations.map(location => location.name).join(',');
             axios
-                .get(apiUrl)
+                .get(`${API_URL}/todaystatusimages`, {
+                    params: { locationNames: locationNames }
+                  }) // Include params in the request
                 .then((response) => {
                     const apiData = response.data;
-        
+
                     // Handle case where no data is returned
                     if (!apiData || apiData.length === 0) {
                         console.error("No data received from the API");
                         return;
                     }
-        
+
                     console.log("API Data:", apiData);
-        
+
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
-        
+
                     // If the API returns a single object (totals), no need to access the first item
                     const data = apiData;
-        
+
                     // Create datasets for the chart
                     const datasets = [
                         {
@@ -391,7 +360,7 @@ const Locationwisereport = () => {
                             ],
                         }
                     ];
-        
+
                     // Update the chart data
                     setTodayImage({
                         labels: labels,
@@ -402,18 +371,12 @@ const Locationwisereport = () => {
                     console.error("Error fetching data:", error);
                 });
         };
-        const fetchGraphFileData = (selectedLocations) => {
-            let apiUrl = `${API_URL}/currentstatusfiles`;
-
-            if (selectedLocations && selectedLocations.length > 0) {
-                const locationQuery = selectedLocations
-                    .map((location) => `locationname=${encodeURIComponent(location)}`)
-                    .join("&");
-                apiUrl += `?${locationQuery}`;
-            }
-
+        const fetchGraphFileData = () => {
+            const locationNames = userLog.locations.map(location => `${location.name}`);
             axios
-                .get(apiUrl)
+                .get(`${API_URL}/currentstatusfiles`, {
+                    params: { locationname: locationNames }
+                  }) // Include params in the request
                 .then((response) => {
                     const apiData = response.data;
 
@@ -453,37 +416,29 @@ const Locationwisereport = () => {
                     console.error("Error fetching data:", error);
                 });
         };
-        const fetchTodayGraphFileData = (selectedLocations) => {
-            let apiUrl = `${API_URL}/todaystatusfiles`;
-        
-            // Append location query parameters if selected
-            if (selectedLocations && selectedLocations.length > 0) {
-                const locationQuery = selectedLocations
-                    .map((location) => `locationNames=${encodeURIComponent(location)}`)
-                    .join("&");
-                apiUrl += `?${locationQuery}`;
-            }
-        
-            // Fetch data from API
+        const fetchTodayGraphFileData = () => {
+            const locationNames = userLog.locations.map(location => location.name).join(',');
             axios
-                .get(apiUrl)
+                .get(`${API_URL}/todaystatusfiles`, {
+                    params: { locationNames: locationNames }
+                  }) // Include params in the request
                 .then((response) => {
                     const apiData = response.data;
-        
+
                     // Handle case where no data is returned
                     if (!apiData || apiData.length === 0) {
                         console.error("No data received from the API");
                         return;
                     }
-        
+
                     console.log("API Data:", apiData);
-        
+
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
-        
+
                     // If the API returns a single object (totals), no need to access the first item
                     const data = apiData;
-        
+
                     // Create datasets for the chart
                     const datasets = [
                         {
@@ -497,7 +452,7 @@ const Locationwisereport = () => {
                             ],
                         }
                     ];
-        
+
                     // Update the chart data
                     setTodayFile({
                         labels: labels,
@@ -508,50 +463,36 @@ const Locationwisereport = () => {
                     console.error("Error fetching data:", error);
                 });
         };
-        
-        const fetchTableData = () => {
-            axios
-                .get(`${API_URL}/tabularData`)
-                .then((response) => {
-                    setTableData(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
-                })
-                .catch((error) => console.error(error));
-        };
-        const fetchStatusDetails = (selectedLocations) => {
-            // Prepare the query parameters
-            const params = {};
 
-            // Check if selectedLocations is an array and add it to the params
-            if (selectedLocations && selectedLocations.length > 0) {
-                params.locationname = selectedLocations; // This allows passing multiple location names
-            }
+        const fetchStatusDetails = () => {
+            const locationNames = userLog.locations.map(location => `${location.name}`);
 
             axios
-                .get(`${API_URL}/statusDetails`, { params }) // Include params in the request
+                .get(`${API_URL}/statusDetails`, {
+                    params: { locationname: locationNames }
+                  }) // Include params in the request
                 .then((response) => {
                     setStatusDetails(response.data);
                     console.log("Table Data", response.data); // Log inside the then block
                 })
                 .catch((error) => console.error(error));
         };
-        const fetchData = async (selectedLocations) => {
-            let params = {};
-            if (selectedLocations && selectedLocations.length > 0) {
-                params.locationname = selectedLocations; // Filter by location if provided
-            }
-        
+        const fetchData = async () => {
+            const locationNames = userLog.locations.map(location => `${location.name}`);
+
             try {
-                const response = await axios.get(`${API_URL}/cumulative-status-images`, { params });
+                const response = await axios.get(`${API_URL}/cumulative-status-images`,{
+                    params: { locationname: locationNames }
+                  });
                 console.log("API Response Data:", response.data); // Log the API response
-        
+
                 if (!response.data || response.data.length === 0) {
                     console.log("No data returned from the API");
                     return;
                 }
-        
+
                 const data = response.data;
-        
+
                 // Prepare the data for the last 30 days by mapping the correct fields
                 const last30Days = data.map(item => ({
                     date: item.formattedDate,
@@ -560,21 +501,21 @@ const Locationwisereport = () => {
                     offeredForQA: Number(item.CBSLQAImages) || 0,
                     clientQADone: Number(item.ApprovedImages) || 0,
                 }));
-        
+
                 // Extract individual data arrays for charting
                 const dates = last30Days.map(item => item.date);
                 const scannedData = last30Days.map(item => item.scanned);
                 const qcData = last30Days.map(item => item.qc);
                 const cbslqaData = last30Days.map(item => item.offeredForQA);
                 const clientData = last30Days.map(item => item.clientQADone);
-        
+
                 // Log the data that will be passed to the chart
                 console.log("Dates:", dates);
                 console.log("Scanned Data:", scannedData);
                 console.log("QC Data:", qcData);
                 console.log("Offered for QA Data:", cbslqaData);
                 console.log("Customer QA Done Data:", clientData);
-        
+
                 // Set chart data
                 setChartData({
                     options: {
@@ -606,56 +547,45 @@ const Locationwisereport = () => {
                 console.error('Error fetching data:', err);
             }
         };
-        
-        const fetchReportData = (locationName) => {
-            // Create an object to hold query parameters
-            const params = {};
 
-            // If locationName is provided, add it to the params object
-            if (locationName) {
-                params.locationName = selectedLocations;
-            }
+        const fetchReportData = () => {
+            const locationNames = userLog.locations.map(location => `${location.name}`);
 
             // Make the API request with optional parameters
             axios
-                .get(`${API_URL}/Table`, { params })
+                .get(`${API_URL}/Table`,  {
+                    params: { locationName: locationNames }
+                  })
                 .then((response) => {
                     setReport(response.data);
                     console.log("Table Data", response.data); // Log inside the then block
                 })
                 .catch((error) => console.error(error));
         };
-        const fetchYesterdayReportData = (selectedLocations) => {
-            // Create an object to hold query parameters
-            const params = {};
-        
-            // If selectedLocations are provided, join them into a comma-separated string
-            if (selectedLocations && selectedLocations.length > 0) {
-                params.locationNames = selectedLocations.join(',');
-            }
-        
-            // Make the API request with optional parameters
+        const fetchYesterdayReportData = () => {
+            const locationNames = userLog.locations.map(location => location.name).join(',');
             axios
-                .get(`${API_URL}/yesterday-table`, { params })
+                .get(`${API_URL}/yesterday-table`, {
+                    params: { locationNames: locationNames }
+                  })
                 .then((response) => {
                     setYesterdayReport(response.data);
                     console.log("Table Data", response.data); // Log inside the then block
                 })
                 .catch((error) => console.error(error));
         };
-        
-        fetchReportData(locationName);
-        fetchYesterdayReportData(locationName);
-        fetchData(locationName);
-        fetchGraphImageData(locationName);
-        fetchTodayGraphImageData(locationName);
-        fetchGraphFileData(locationName);
-        fetchTodayGraphFileData(locationName);
-        fetchTableData();
-        fetchExportCsvFile();
-        fetchStatusDetails(locationName);
 
-    }, [selectedLocations]);
+        fetchReportData();
+        fetchYesterdayReportData();
+        fetchData();
+        fetchGraphImageData();
+        fetchTodayGraphImageData();
+        fetchGraphFileData();
+        fetchTodayGraphFileData();
+        fetchExportCsvFile();
+        fetchStatusDetails();
+
+    }, []);
 
     const columnSums = calculateColumnSum();
 
@@ -700,7 +630,6 @@ const Locationwisereport = () => {
         },
         series: data.datasets,
     });
-
     const handleFileTable = () => {
         setShowFileTable(!showFileTable);
     }
@@ -828,144 +757,82 @@ const Locationwisereport = () => {
         // Clean up the URL and the link element
         window.URL.revokeObjectURL(url);
     };
-
-    const handleViewDailyClick = (dailyRemarks,dailySpecialRequests) => {
+    const handleViewDailyClick = (dailyRemarks, dailySpecialRequests) => {
         setDailyRemarks(dailyRemarks)
         setDailySpecialRequests(dailySpecialRequests)
         setIsViewDailyModalOpen(true);
     };
-
     const handleViewCumulativeClick = (cumulativeRemarks, cumulativeSpecialRequests) => {
         setCumulativeRemarks(cumulativeRemarks);
         setCumulativeSpecialRequests(cumulativeSpecialRequests)
         setIsViewCumulativeModalOpen(!isViewCumulativeModalOpen);
     };
-
+   
     return (
         <>
-            <Header />
-            <div className="container-fluid">
-                <div className="row mt-2">
-                    <div
-                        style={{ display: "flex", justifyContent: "space-between" }}
-                    >
-                        <h4>Telangana High Court Digitization Project</h4>
+            
+                <div className="container-fluid">
+                    <div className="row mt-2">
+                        <div
+                            style={{ display: "flex", justifyContent: "space-between" }}
+                        >
+                            <h4>Telangana High Court Digitization Project</h4>
+                        </div>
                     </div>
-                </div>
-                <div className="row  mt-2">
-                    <div>
-                        <div className="search-report-card" style={{ height:'60px', padding:'10px'}}>
-                            <div className="col-md-4 col-sm-12">
-                                <div
-                                    ref={dropdownRef}
-                                    className="search-bar"
-                                    style={{
-                                        border: "1px solid #000",
-                                        padding: "5px",
-                                        borderRadius: "5px",
-                                        minHeight: "30px",
-                                    }}
-
-                                    contentEditable={true}
-                                    onClick={() => setShowLocation(!showLocation)}
-                                >
-                                    {selectedLocations.length === 0 && !showLocation && (
-                                        <span className="placeholder-text">Search Locations...</span>
-                                    )}
-                                    {selectedLocations.map((location, index) => (
-                                        <span key={index} className="selected-location">
-                                            {location}
-                                            <button
-                                                onClick={() => removeLocation(location)}
-                                                style={{
-                                                    backgroundColor: "black",
-                                                    color: "white",
-                                                    border: "none",
-                                                    marginLeft: "5px",
-                                                }}
-                                            >
-                                                x
-                                            </button>
-                                            &nbsp;
-                                        </span>
-                                    ))}
-                                    <span style={{ minWidth: "5px", display: "inline-block" }}>
-                                        &#8203;
-                                    </span>
-                                </div>
-                                {showLocation && (
+                   
+                    <div className="row mt-2">
+                        <div>
+                            <div className="search-report-card"
+                                style={{ display: "flex", justifyContent: "space-between", height: '50px', padding: '10px' }}
+                            >
+                                {statusDetails && statusDetails.map((elem, index) => (
                                     <>
-                                        <div className="location-card">
-                                            {tableData &&
-                                                tableData.map((item, index) => (
-                                                    <div key={index}>
-                                                        <p
-                                                            onClick={() => handleLocation(item.LocationName)}
-                                                        >
-                                                            {item.LocationName}
-                                                        </p>
-                                                    </div>
-                                                ))}
+                                        <div className="col-md-3 col-sm-12" key={index}>
+                                            <p>Project Start Date: <b>{`${new Date(elem.Start_Date).getDate().toString().padStart(2, '0')}-${(new Date(elem.Start_Date).getMonth() + 1).toString().padStart(2, '0')}-${new Date(elem.Start_Date).getFullYear()}`}</b></p>
+
+                                        </div>
+                                        <div className="col-md-3 col-sm-12">
+                                            <p>No. of Locations: <b>{elem.Total_locations}</b></p>
+                                        </div>
+                                        <div className="col-md-3 col-sm-12">
+                                            <p>No. of Files Scanned: <b>{parseInt(elem.Total_Files).toLocaleString()}</b></p>
+                                        </div>
+                                        <div className="col-md-3 col-sm-12">
+                                            <p>No. of Images Scanned: <b>{parseInt(elem.Total_Images).toLocaleString()}</b></p>
                                         </div>
                                     </>
-                                )}
+                                ))}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="row mt-2">
-                    <div>
-                        <div className="search-report-card"
-                            style={{ display: "flex", justifyContent: "space-between", height:'50px', padding:'10px' }}
-                        >
-                            {statusDetails && statusDetails.map((elem, index) => (
-                                <>
-                                    <div className="col-md-3 col-sm-12" key={index}>
-                                        <p>Project Start Date: <b>{`${new Date(elem.Start_Date).getDate().toString().padStart(2, '0')}-${(new Date(elem.Start_Date).getMonth() + 1).toString().padStart(2, '0')}-${new Date(elem.Start_Date).getFullYear()}`}</b></p>
-
-                                    </div>
-                                    <div className="col-md-3 col-sm-12">
-                                        <p>No. of Locations: <b>{elem.Total_locations}</b></p>
-                                    </div>
-                                    <div className="col-md-3 col-sm-12">
-                                        <p>No. of Files: <b>{parseInt(elem.Total_Files).toLocaleString()}</b></p>
-                                    </div>
-                                    <div className="col-md-3 col-sm-12">
-                                        <p>No. of Images: <b>{parseInt(elem.Total_Images).toLocaleString()}</b></p>
-                                    </div>
-                                </>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-                {/* <button onClick={handlePrint} style={{ padding: '10px 20px', fontSize: '16px' }}>
+                    {/* <button onClick={handlePrint} style={{ padding: '10px 20px', fontSize: '16px' }}>
                     Print this page
                 </button> */}
-                <div className="row mt-2">
+                    <div className="row mt-2">
                         <div>
                             <div className="table-card" style={{ marginBottom: '25px' }}>
-                            <div
-                                className="d-flex justify-content-between align-items-center"
-                                style={{
-                                    padding: "10px 10px 0px",
-                                    backgroundColor: "#4BC0C0",
-                                    // paddingTop: "15px",
-                                }}
-                            >
-                               
+                                <div
+                                    className="d-flex justify-content-between align-items-center"
+                                    style={{
+                                        padding: "10px 10px 0px",
+                                        backgroundColor: "#4BC0C0",
+                                        // paddingTop: "15px",
+                                    }}
+                                >
+
                                     <h6 className="text-center" style={{ color: "white" }}>
                                         PROJECT UPDATE REPORT OF  {formattedYesterdayDate} FOR SCANNING AND DIGITIZATION OF CASE
                                         RECORDS FOR DISTRICT COURT OF TELANGANA
                                     </h6>
-                               
-                               
+
+
                                     <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSVYesterday}>
                                         {" "}
                                         <MdFileDownload style={{ fontSize: "20px" }} />
                                         Export CSV
                                     </h6>
 
-                                
+
                                 </div>
                                 <div
                                     className="row mt-2 ms-2 me-2"
@@ -1024,12 +891,12 @@ const Locationwisereport = () => {
                                                         {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
                                                         <td className="text-center"><button
-                                                        className="btn client-view-btn"
-                                                         onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}
+                                                            className="btn client-view-btn"
+                                                            onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}
                                                         >
                                                             View
-                                                         </button>
-                                                         </td>
+                                                        </button>
+                                                        </td>
                                                     </tr>
                                                 ))
                                             }
@@ -1061,31 +928,31 @@ const Locationwisereport = () => {
                             </div>
                         </div>
                     </div>
-                <div className="row mt-2">
-                    <div>
-                        <div className="table-card" style={{ marginBottom: '25px' }}>
-                            <div
-                                className="d-flex justify-content-between align-items-center"
-                                style={{
-                                    padding: "10px 10px 0px",
-                                    backgroundColor: "#4BC0C0",
-                                    // paddingTop: "15px",
-                                }}
-                            >
-                               
+                    <div className="row mt-2">
+                        <div>
+                            <div className="table-card" style={{ marginBottom: '25px' }}>
+                                <div
+                                    className="d-flex justify-content-between align-items-center"
+                                    style={{
+                                        padding: "10px 10px 0px",
+                                        backgroundColor: "#4BC0C0",
+                                        // paddingTop: "15px",
+                                    }}
+                                >
+
                                     <h6 className="text-center" style={{ color: "white" }}>
                                         PROJECT UPDATE CUMULATIVE REPORT FOR SCANNING AND DIGITIZATION OF CASE
                                         RECORDS FOR DISTRICT COURT OF TELANGANA
                                     </h6>
-                               
-                               
+
+
                                     <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSV}>
                                         {" "}
                                         <MdFileDownload style={{ fontSize: "20px" }} />
                                         Export CSV
                                     </h6>
 
-                                
+
                                 </div>
                                 <div
                                     className="row mt-2 ms-2 me-2"
@@ -1144,12 +1011,12 @@ const Locationwisereport = () => {
                                                         {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
                                                         <td className="text-center"><button
-                                                        className="btn client-view-btn"
-                                                         onClick={() => handleViewCumulativeClick(elem.Remarks, elem.SpecialRequests)}
+                                                            className="btn client-view-btn"
+                                                            onClick={() => handleViewCumulativeClick(elem.Remarks, elem.SpecialRequests)}
                                                         >
                                                             View
-                                                         </button>
-                                                         </td>
+                                                        </button>
+                                                        </td>
                                                     </tr>
                                                 ))
                                             }
@@ -1181,7 +1048,7 @@ const Locationwisereport = () => {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="row mt-3 mb-5">
                         <div>
                             <Card>
@@ -1562,21 +1429,22 @@ const Locationwisereport = () => {
                     </div>
                 </div>
                 {isViewDailyModalOpen && (
-                <ViewDailyRemarksModal
-                    remarks={dailyRemarks}
-                    special_requests={dailySpecialRequests}
-                    onClose={() => setIsViewDailyModalOpen(false)}
-                />
-            )}
-            {isViewCumulativeModalOpen && (
-                <ViewCumulativeRemarksModal
-                    remarks={cumulativeRemarks}
-                    special_requests={cumulativeSpecialRequests}
-                    onClose={() => setIsViewCumulativeModalOpen(false)}
-                />
-            )}
+                    <ViewDailyRemarksModal
+                        remarks={dailyRemarks}
+                        special_requests={dailySpecialRequests}
+                        onClose={() => setIsViewDailyModalOpen(false)}
+                    />
+                )}
+                {isViewCumulativeModalOpen && (
+                    <ViewCumulativeRemarksModal
+                        remarks={cumulativeRemarks}
+                        special_requests={cumulativeSpecialRequests}
+                        onClose={() => setIsViewCumulativeModalOpen(false)}
+                    />
+                )}
             </>
-            )
+       
+    )
 }
 
 const ViewDailyRemarksModal = ({ remarks, onClose, special_requests }) => {
@@ -1604,4 +1472,4 @@ const ViewCumulativeRemarksModal = ({ remarks, onClose, special_requests }) => {
     );
 };
 
-export default Locationwisereport
+export default Locationwiseclientreport

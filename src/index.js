@@ -27,7 +27,7 @@ import DBSiteReports from './dbSiteReports';
 import SiteReports from './siteReports';
 import PrivateRoute from './PrivateRoute';
 import DailyReport from './dailyReport';
-import Locationwisereport from './locationwisereport';
+import Locationwisereport from './clientreport';
 import AddRemarks from './addRemarks';
 import DPRReport from './DPRReport';
 
