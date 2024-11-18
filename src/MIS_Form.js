@@ -89,8 +89,7 @@ const MIS_Form = () => {
     ManagerData();
     designationData();
     usermasterData();
-    const intervalId = setInterval(designationData, usermasterData, 2000);
-    return () => clearInterval(intervalId);
+   
   }, [])
   const handleShowLocation = () => {
     setShowLocation(!showLocation);
