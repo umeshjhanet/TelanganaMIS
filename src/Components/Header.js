@@ -98,6 +98,7 @@ const Header = () => {
                     </div>
                     <Link to='/dashboard'><p className='ms-4 mt-5'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                     <Link to='/uploadDatabase'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <Link to='/DPRReport'><p className='ms-4 '><MdUpload style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                     <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                     <Link to='/User_List'><p className='ms-4 '><FaUserAlt style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                   </div>
@@ -121,6 +122,9 @@ const Header = () => {
                     </div>
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
+                    </div>
+                    <div className='row mt-1' onClick={handleActiveTab}>
+                      <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
                     </div>
 
                     <div className='row mt-1' onClick={handleActiveTab}>
@@ -189,6 +193,9 @@ const Header = () => {
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
