@@ -1349,7 +1349,7 @@ const Report = () => {
                           ) {
                             return (
                               <tr key={index} style={{ backgroundColor: "white" }}>
-                                <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
+                                <td style={{ whiteSpace: 'nowrap', textAlign:'left'}}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
@@ -1478,8 +1478,8 @@ const Report = () => {
                               ) {
                                 return (
                                   <tr key={index} style={{ backgroundColor: "white" }}>
-                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.locationName}</td>
-                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.Date || "N/A"}</td>
+                                    <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.locationName}</td>
+                                    <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.Date || "N/A"}</td>
                                     <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>

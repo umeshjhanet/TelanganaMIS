@@ -1185,7 +1185,7 @@ const Dashboard = () => {
                             return (
                               <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td>{elem.LocationName}</td>
+                                <td style={{textAlign:'left'}}>{elem.LocationName}</td>
                                 <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
                                 <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
                                 <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
