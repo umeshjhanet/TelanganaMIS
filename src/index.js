@@ -32,6 +32,7 @@ import AddRemarks from './addRemarks';
 import DPRReport from './DPRReport';
 import ClientDPR from './ClientDPR';
 import FollowUpReportForm from './follow_up_report';
+import CostingReport from './CostingReport';
 
 const App = () => {
   return (
@@ -60,6 +61,7 @@ const App = () => {
         <Route path="/locationwisereport" element={<PrivateRoute element={<Locationwisereport />} />} />
         <Route path="/addRemarks" element={<PrivateRoute element={<AddRemarks />} />} />
         <Route path="/ClientDPR" element={<PrivateRoute element={<ClientDPR />} />} />
+        <Route path="/CostingReport" element={<PrivateRoute element={<CostingReport />} />} />
         <Route path="/follow_up_report" element={<PrivateRoute element={<FollowUpReportForm />} />} />
       </Routes>
     </Router>

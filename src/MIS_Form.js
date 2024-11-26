@@ -29,7 +29,12 @@ const MIS_Form = () => {
   const [selectedSM, setSelectedSM] = useState(null);
   const [selectedLocationId, setSelectedLocationId] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [lastInsertedData, setLastInsertedData] = useState(null);
   const [status, setStatus] = useState();
+  const [manpowerData, setManpowerData] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
   const [manpowerForm, setManpowerForm] = useState({
     PH_Id: '', PM_Id: '', Coll_Index_MP: '', Barc_MP: '', Barc_TF: '', Barc_TI: '', Page_No_MP: '', Prepare_MP: '',
     Prepare_TF: '', Prepare_TI: '', Scan_MP: '', Cover_Page_MP: '', Cover_Page_TF: '', Rescan_MP: '', Image_QC_MP: '',
@@ -44,6 +49,33 @@ const MIS_Form = () => {
   const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
   const [errorMessage, setErrorMessage] = useState('');
   const [excelData, setExcelData] = useState(null);
+
+  const fetchLastRow = async () => {
+    try {
+      const { locationname, entryDate } = formData;
+      if (locationname && entryDate) {
+        const response = await axios.get("/manpower_data", {
+          params: { locationname, EntryDate: entryDate },
+        });
+        if (response.data.length > 0) {
+          setFormData({
+            ...formData,
+            manpowerCount: response.data[0].manpowerCount,
+            otherDetails: response.data[0].otherDetails,
+          });
+        } else {
+          setFormData({
+            ...formData,
+            manpowerCount: "",
+            otherDetails: "",
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching last row:", err);
+      setError("Failed to fetch data.");
+    }
+  };
 
   useEffect(() => {
 
@@ -74,42 +106,81 @@ const MIS_Form = () => {
         .catch(error => console.error(error))
       console.log("Designations", usermaster);
     }
-    const fetchLastInsertedData = async () => {
+   
+    const fetchManpowerData = async () => {
+      setIsLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/site_MPData`);
-        const site_MPData = response.data;
-        console.log("Manpower Data", site_MPData);
-        setFormData({
-          // PM_Id: site_MPData.PM_Id || '',
-          // SM_Name: site_MPData.SM_Name || '',
-          Coll_Index_MP: site_MPData.Coll_Index_MP || ''
-        });
-        console.log("PM_ID", site_MPData);
-      } catch (error) {
-        console.error("Error fetching last inserted data:", error);
+          const response = await axios.get(`${API_URL}/manpower_data`);
+          setManpowerData(response.data);
+      } catch (err) {
+          setError('Error fetching report data. Please try again later.');
+      } finally {
+          setIsLoading(false);
       }
-    };
+  };
+  const fetchLastInsertedData = async (locationId) => {
+    try {
+      const response = await fetch(`${API_URL}/manpower_data?locationname=${selectedLocationId}`);
+      const data = await response.json();
+  
+      if (data) {
+        setLastInsertedData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching last inserted data:', error);
+    }
+  };
+  
+    fetchManpowerData();
     fetchLastInsertedData();
     locationData();
     ManagerData();
     designationData();
     usermasterData();
 
-  }, [])
+  }, [formData.locationname, formData.entryDate,selectedLocationId])
+
+  useEffect(() => {
+    if (lastInsertedData) {
+      setFormData({
+        Coll_Index_MP: lastInsertedData.Coll_Index_MP, 
+        Barc_MP: lastInsertedData.Barc_MP, 
+        Barc_TF: lastInsertedData.Barc_TF, 
+        Barc_TI: lastInsertedData.Barc_TI, 
+        Page_No_MP: lastInsertedData.Page_No_MP, 
+        Prepare_MP: lastInsertedData.Prepare_MP,
+        Prepare_TF: lastInsertedData.Prepare_TF,
+        Prepare_TI: lastInsertedData.Prepare_TI, 
+        Scan_MP: lastInsertedData.Scan_MP, 
+        Cover_Page_MP: lastInsertedData.Cover_Page_MP, 
+        Cover_Page_TF: lastInsertedData.Cover_Page_TF, 
+        Rescan_MP: lastInsertedData.Rescan_MP, 
+        Image_QC_MP: lastInsertedData.Image_QC_MP,
+        Doc_MP: lastInsertedData.Doc_MP, 
+        Index_MP: lastInsertedData.Index_MP, 
+        CBSL_QA_MP: lastInsertedData.CBSL_QA_MP, 
+        Ready_Cust_QA_MP: lastInsertedData.Ready_Cust_QA_MP, 
+        Cust_QA_Done_MP: lastInsertedData.Cust_QA_Done_MP, 
+        PDF_Export_MP: lastInsertedData.PDF_Export_MP,
+        Refilling_Files_MP: lastInsertedData.Refilling_Files_MP, 
+        Inventory_MP: lastInsertedData.Inventory_MP, 
+        Scaning_Target_A3: lastInsertedData.Scaning_Target_A3,
+        Scaning_Capacity_A3: lastInsertedData.Scaning_Capacity_A3, 
+        Scaning_Capacity_A4: lastInsertedData.Scaning_Capacity_A4, 
+        QC_Target: lastInsertedData.QC_Target, 
+        Post_QC_Target: lastInsertedData.Post_QC_Target,  
+        expected_volume: lastInsertedData.expected_volume
+      });
+    }
+  }, [lastInsertedData, selectedLocationId]);
   const handleShowLocation = () => {
     setShowLocation(!showLocation);
   }
   const handleShowProjectHead = () => {
     showProjectHead(!projectHead);
   }
-  const handleShowProjectOwner = () => {
-    showProjectOwner(!projectOwner);
-  }
   const handleShowProjectMan = () => {
     showProjectMan(!projectMan);
-  }
-  const handleShowSiteMan = () => {
-    showSiteMan(!siteMan);
   }
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -136,6 +207,7 @@ const MIS_Form = () => {
     setSelectedLocation(name);
     setSelectedLocationId(parseInt(id));
     setShowLocation(!showLocation);
+
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -158,27 +230,20 @@ const MIS_Form = () => {
   const handleManPowerForm = async () => {
     const formData = new FormData();
     formData.append('file', excelData);
-
-    // Append other fields to 
     formData.append('PH_Id', selectedPHId);
     formData.append('PO_Id', 23);
     formData.append('PM_Id', selectedPMId);
     formData.append('PCo_Id', '59');
     formData.append('SM_Id', selectedSMId);
     formData.append('Location_ID', selectedLocationId);
-    
-
-    // Append manpowerForm fields to FormData if not using Excel data
-    if (!excelData) {
+        if (!excelData) {
       Object.entries(manpowerForm).forEach(([key, value]) => {
         formData.append(key, value);
       });
     }
-
     try {
       let response;
       if (excelData) {
-        // If an Excel file is uploaded, call the uploadExcel API
         response = await axios.post(`${API_URL}/uploadExcel`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -186,10 +251,7 @@ const MIS_Form = () => {
         });
         console.log("Data from Excel file submitted:", response.data);
       } else {
-        // If no Excel file is uploaded, submit the form with manually entered data using the site_MP API
         response = await axios.post(`${API_URL}/site_MP`, manpowerForm);
-
-
       }
       if (response.status === 200) {
         toast.success("Data Submitted Successfully");
@@ -294,133 +356,163 @@ const MIS_Form = () => {
                 <div className='row'>
                   <div className='col-3'>
                     <span>Collection MP: </span>
-                    <input type='text' name='Coll_Index_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Coll_Index_MP' 
+                     value={formData.Coll_Index_MP}
+                     onChange={(e) => setFormData({ ...formData, Coll_Index_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Barcoding MP: </span>
-                    <input type='text' name='Barc_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Barc_MP'value={formData.Barc_MP}
+                     onChange={(e) => setFormData({ ...formData, Barc_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3 '>
                     <span>Barcoding Files: </span>
-                    <input type='text' name='Barc_TF' onChange={handleInputChange} required />
+                    <input type='text' name='Barc_TF'value={formData.Barc_TF}
+                     onChange={(e) => setFormData({ ...formData, Barc_TF: e.target.value })} required />
                   </div>
                   <div className='col-3'>
                     <span>Barcoding Images: </span>
-                    <input type='text' name='Barc_TI' onChange={handleInputChange} required />
+                    <input type='text' name='Barc_TI' value={formData.Barc_TI}
+                     onChange={(e) => setFormData({ ...formData, Barc_TI: e.target.value })} required />
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-3'>
                     <span>Page Numbering MP: </span>
-                    <input type='text' name='Page_No_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Page_No_MP' value={formData.Page_No_MP}
+                     onChange={(e) => setFormData({ ...formData, Page_No_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Preparation MP: </span>
-                    <input type='text' name='Prepare_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Prepare_MP' value={formData.Prepare_MP}
+                     onChange={(e) => setFormData({ ...formData, Prepare_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Preparation Files: </span>
-                    <input type='text' name='Prepare_TF' onChange={handleInputChange} required />
+                    <input type='text' name='Prepare_TF' value={formData.Prepare_TF}
+                     onChange={(e) => setFormData({ ...formData, Prepare_TF: e.target.value })} required />
                   </div>
                   <div className='col-3'>
                     <span>Preparation Images: </span>
-                    <input type='text' name='Prepare_TI' onChange={handleInputChange} required />
+                    <input type='text' name='Prepare_TI' value={formData.Prepare_TI}
+                     onChange={(e) => setFormData({ ...formData, Prepare_TI: e.target.value })} required />
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-3'>
                     <span>Scanning MP: </span>
-                    <input type='text' name='Scan_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Scan_MP' value={formData.Scan_MP}
+                     onChange={(e) => setFormData({ ...formData, Scan_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Cover Page Scanning MP: </span>
-                    <input type='text' name='Cover_Page_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Cover_Page_MP' value={formData.Cover_Page_MP}
+                     onChange={(e) => setFormData({ ...formData, Cover_Page_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Cover Page Scanning Files: </span>
-                    <input type='text' name='Cover_Page_TF' onChange={handleInputChange} required />
+                    <input type='text' name='Cover_Page_TF' value={formData.Cover_Page_TF}
+                     onChange={(e) => setFormData({ ...formData, Cover_Page_TF: e.target.value })} required />
                   </div>
                   <div className='col-3'>
                     <span>Rescanning MP: </span>
-                    <input type='text' name='Rescan_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Rescan_MP' value={formData.Rescan_MP}
+                     onChange={(e) => setFormData({ ...formData, Rescan_MP: e.target.value })} required /><br />
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-3'>
                     <span>Image QC MP: </span>
-                    <input type='text' name='Image_QC_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Image_QC_MP' value={formData.Image_QC_MP}
+                     onChange={(e) => setFormData({ ...formData, Image_QC_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Flagging MP: </span>
-                    <input type='text' name='Doc_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Doc_MP' value={formData.Doc_MP}
+                     onChange={(e) => setFormData({ ...formData, Doc_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Indexing MP: </span>
-                    <input type='text' name='Index_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Index_MP' value={formData.Index_MP}
+                     onChange={(e) => setFormData({ ...formData, Index_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>CBSL QA MP: </span>
-                    <input type='text' name='CBSL_QA_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='CBSL_QA_MP' value={formData.CBSL_QA_MP}
+                     onChange={(e) => setFormData({ ...formData, CBSL_QA_MP: e.target.value })} required /><br />
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-3'>
                     <span>Ready for Custom QA MP: </span>
-                    <input type='text' name='Ready_Cust_QA_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Ready_Cust_QA_MP' value={formData.Ready_Cust_QA_MP}
+                     onChange={(e) => setFormData({ ...formData, Ready_Cust_QA_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Customer QA Done MP: </span>
-                    <input type='text' name='Cust_QA_Done_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Cust_QA_Done_MP' value={formData.Cust_QA_Done_MP}
+                     onChange={(e) => setFormData({ ...formData, Cust_QA_Done_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>DMS Upload MP: </span>
-                    <input type='text' name='PDF_Export_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='PDF_Export_MP' value={formData.PDF_Export_MP}
+                     onChange={(e) => setFormData({ ...formData, PDF_Export_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Inventory Out MP: </span>
-                    <input type='text' name='Inventory_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Inventory_MP' value={formData.Inventory_MP}
+                     onChange={(e) => setFormData({ ...formData, Inventory_MP: e.target.value })} required /><br />
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-3'>
                     <span>Refilling MP: </span>
-                    <input type='text' name='Refilling_Files_MP' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Refilling_Files_MP' value={formData.Refilling_Files_MP}
+                     onChange={(e) => setFormData({ ...formData, Refilling_Files_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Refilling Files: </span>
-                    <input type='text' name='Refilling_Files_TF' onChange={handleInputChange} required />
+                    <input type='text' name='Refilling_Files_TF' value={formData.Refilling_Files_TF}
+                     onChange={(e) => setFormData({ ...formData, Refilling_Files_TF: e.target.value })} required />
                   </div>
                   <div className='col-3'>
                     <span>Refilling Images: </span>
-                    <input type='text' name='Refilling_Files_TI' onChange={handleInputChange} required />
+                    <input type='text' name='Refilling_Files_TI' value={formData.Refilling_Files_TI}
+                     onChange={(e) => setFormData({ ...formData, Refilling_Files_TI: e.target.value })} required />
                   </div>
                   <div className='col-3'>
                     <span>Scanning Target: </span>
-                    <input type='text' name='Scaning_Target_A3' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Scaning_Target_A3' value={formData.Scaning_Target_A3}
+                     onChange={(e) => setFormData({ ...formData, Scaning_Target_A3: e.target.value })} required /><br />
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-3'>
                     <span>Scanning Capacity A3: </span>
-                    <input type='text' name='Scaning_Capacity_A3' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Scaning_Capacity_A3' value={formData.Scaning_Capacity_A3}
+                     onChange={(e) => setFormData({ ...formData, Scaning_Capacity_A3: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>Scanning Capacity A4: </span>
-                    <input type='text' name='Scaning_Capacity_A4' onChange={handleInputChange} required /><br />
+                    <input type='text' name='Scaning_Capacity_A4' value={formData.Scaning_Capacity_A4}
+                     onChange={(e) => setFormData({ ...formData, Scaning_Capacity_A4: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
                     <span>QC Target: </span>
-                    <input type='text' name='QC_Target' onChange={handleInputChange} required /><br />
+                    <input type='text' name='QC_Target' value={formData.QC_Target}
+                     onChange={(e) => setFormData({ ...formData, QC_Target: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
-                    <span>Target: </span>
-                    <input type='text' name='Post_QC_Target' onChange={handleInputChange} required /><br />
+                    <span>Post QC Target: </span>
+                    <input type='text' name='Post_QC_Target' value={formData.Post_QC_Target}
+                     onChange={(e) => setFormData({ ...formData, Post_QC_Target: e.target.value })} required /><br />
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-3'>
                     <span>Expected Volume: </span>
-                    <input type='text' name='expected_volume' onChange={handleInputChange} required /><br />
+                    <input type='text' name='expected_volume' value={formData.expected_volume}
+                     onChange={(e) => setFormData({ ...formData, expected_volume: e.target.value })} required /><br />
                   </div>
                 </div>
               </div>
@@ -437,6 +529,4 @@ const MIS_Form = () => {
     </>
   )
 }
-
-
 export default MIS_Form;

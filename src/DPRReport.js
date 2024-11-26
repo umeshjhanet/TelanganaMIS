@@ -747,7 +747,7 @@ const DPRReport = () => {
                         return (
                           <tr key={index} style={{ backgroundColor: "white" }}>
                             <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>
-                            <td>{totalManpower.toLocaleString()}</td>
+                            <td>{elem.TotalManpower}</td>
                             <td>{totalManpower.toLocaleString()}</td>
                             <td>{isNaN(parseInt(elem.ReceivedFiles)) ? "0" : parseInt(elem.ReceivedFiles).toLocaleString()}</td>
                             <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>

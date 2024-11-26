@@ -173,6 +173,9 @@ const Header = () => {
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <Link to='/follow_up_report' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdMessage style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Follow Ups</Link>
                     </div>
+                    <div className='row mt-1' onClick={handleActiveTab}>
+                      <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
+                    </div>
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -242,6 +245,9 @@ const Header = () => {
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/follow_up_report' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdNote style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Follow Ups</Link>
+                </div>
+                <div className='row mt-1' onClick={handleActiveTab}>
+                  <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
                 </div>
               </div>
             </div>
@@ -790,6 +796,9 @@ const Header = () => {
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <Link to='/follow_up_report' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdMessage style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Follow Ups</Link>
                     </div>
+                    <div className='row mt-1' onClick={handleActiveTab}>
+                      <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
+                    </div>
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -840,17 +849,20 @@ const Header = () => {
                   <Link to='/addRemarks' style={{ textDecoration: 'none', color: 'black' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Remarks</Link>
                 </div>
                 <div className='row' onClick={handleActiveTab}>
-                      <Link to='/MIS_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdAdd style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Manpower</Link>
-                    </div>
-                    <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
-                    </div>
-                    <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/ClientDPR' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client DPR</Link>
-                    </div>
-                    <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/follow_up_report' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdMessage style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Follow Ups</Link>
-                    </div>
+                  <Link to='/MIS_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdAdd style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Manpower</Link>
+                </div>
+                <div className='row mt-1' onClick={handleActiveTab}>
+                  <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
+                </div>
+                <div className='row mt-1' onClick={handleActiveTab}>
+                  <Link to='/ClientDPR' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client DPR</Link>
+                </div>
+                <div className='row mt-1' onClick={handleActiveTab}>
+                  <Link to='/follow_up_report' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdMessage style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Follow Ups</Link>
+                </div>
+                <div className='row mt-1' onClick={handleActiveTab}>
+                  <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
+                </div>
               </div>
             </div>
           }
