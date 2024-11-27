@@ -222,7 +222,7 @@ const ClientDPR = () => {
                                         <th>Images</th>
                                     </tr>
                                 </thead>
-                                <tbody className="scrollable" style={{ color: "#4bc0c0", height: "80px" }}>
+                                <tbody className="scrollable" style={{  height: "80px" }}>
                                     {tableData && tableData.map((elem, index) => (
                                         <tr key={index} style={{ backgroundColor: "white" }}>
                                             <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>

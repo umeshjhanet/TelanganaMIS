@@ -291,7 +291,7 @@ const FollowUpReportForm = () => {
                                 </button>
                             </div>
                             <table className="table table-hover table-bordered table-responsive data-table">
-                                <thead>
+                                <thead style={{color:'#4BC0C0'}}>
                                     <tr>
                                         <th>Sr. No.</th>
                                         <th>Issue Raise Date</th>

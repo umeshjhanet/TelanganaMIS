@@ -9,6 +9,7 @@ const CostingReport = () => {
     const [dataMapping, setDataMapping] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [showEditable, setShowEditable] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -129,6 +130,71 @@ const CostingReport = () => {
             toast.error("Failed to save salary");
         }
     };
+    const handleEditButton = () => {
+        setShowEditable(!showEditable);
+    }
+   
+        const handleDownloadCSV = () => {
+            // Initialize totals
+            let totalSalary = 0;
+            let totalManpower = 0;
+            let totalExpense = 0;
+            let totalCostPerImage = 0;
+            let validCostCount = 0;
+    
+            // Prepare CSV headers
+            const csvRows = [['Head', 'Salary', 'Production', 'Manpower Used', 'Expense', 'Cost per Image']];
+    
+            // Generate rows and calculate totals
+            Object.entries(dataMapping).forEach(([head, { production, manpower }]) => {
+                const salary = parseFloat(salaries[head] || 0);
+                const manpowerValue = parseFloat(manpower || 0);
+                const expense = salary * manpowerValue; // 5th column
+                const costPerImage = production ? (expense / production).toFixed(2) : 'N/A'; // 6th column
+    
+                // Accumulate totals
+                totalSalary += salary;
+                totalManpower += manpowerValue || 0;
+                totalExpense += expense;
+                if (production) {
+                    totalCostPerImage += expense / production;
+                    validCostCount++;
+                }
+    
+                // Add row to CSV
+                csvRows.push([
+                    head,
+                    salary.toFixed(2) || 'N/A',
+                    production || 'N/A',
+                    manpower || 'N/A',
+                    expense.toFixed(2) || 'N/A',
+                    costPerImage,
+                ]);
+            });
+    
+            // Add totals row
+            csvRows.push([
+                'Total',
+                totalSalary.toFixed(2),
+                'N/A',
+                totalManpower,
+                totalExpense.toFixed(2),
+                validCostCount ? (totalCostPerImage / validCostCount).toFixed(2) : 'N/A',
+            ]);
+    
+            // Convert rows to CSV string
+            const csvContent = csvRows.map((row) => row.join(',')).join('\n');
+    
+            // Create a blob and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'report.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
 
     if (isLoading) {
         return <p>Loading...</p>;
@@ -147,84 +213,168 @@ const CostingReport = () => {
                     <div className="col-2"></div>
                     <div className="col-10">
                         <h4 className='text-center'>Process Wise Costing Report</h4>
-                        <div className='search-report-card' style={{height:'auto'}}>
-                            <table className="table table-hover table-bordered table-responsive data-table">
-                                <thead style={{backgroundColor:'#4BC0C0', color:'white'}}>
-                                    <tr>
-                                        <th>Head</th>
-                                        <th>Salary</th>
-                                        <th>Production</th>
-                                        <th>Manpower Used</th>
-                                        <th>Expense</th>
-                                        <th>Cost per Image</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {(() => {
-                                        // Initialize totals
-                                        let totalSalary = 0;
-                                        let totalManpower = 0;
-                                        let totalExpense = 0;
-                                        let totalCostPerImage = 0;
-                                        let validCostCount = 0;
-
-                                        const rows = Object.entries(dataMapping).map(([head, { production, manpower }]) => {
-                                            const salary = parseFloat(salaries[head] || 0);
-                                            const expense = salary * (manpower || 0); // 5th column
-                                            const costPerImage = production ? (expense / production).toFixed(2) : 'N/A'; // 6th column
-                                            const manpowerValue = parseFloat(manpower || 0);
-                                            // Accumulate totals
-                                            totalSalary += salary;
-                                            totalManpower += manpowerValue || 0;
-                                            totalExpense += expense;
-                                            if (production) {
-                                                totalCostPerImage += expense / production;
-                                                validCostCount++;
-                                            }
-
-                                            return (
-                                                <tr key={head}>
-                                                    <td style={{ textAlign: "left" }}>{head}</td>
-                                                    <td style={{ textAlign: 'left' }}>
-                                                        <input
-                                                            type="number"
-                                                            value={salaries[head] || ''}
-                                                            onChange={(e) => handleSalaryChange(head, e.target.value)}
-                                                            style={{ width: "100px" }}
-                                                        />
-                                                        <button
-                                                            className="btn btn-primary btn-sm ms-2"
-                                                            onClick={() => saveSalary(head)}
-                                                        >
-                                                            Save
-                                                        </button>
-                                                    </td>
-                                                    <td>{production || 'N/A'}</td>
-                                                    <td>{manpower || 'N/A'}</td>
-                                                    <td>{expense.toFixed(2) || 'N/A'}</td>
-                                                    <td>{costPerImage}</td>
-                                                </tr>
-                                            );
-                                        });
-
-                                        // Add totals row
-                                        rows.push(
-                                            <tr key="totals" style={{ fontWeight: "bold", backgroundColor: "#f9f9f9" }}>
-                                                <td>Total</td>
-                                                <td>{totalSalary.toFixed(2)}</td>
-                                                <td>N/A</td>
-                                                <td>{totalManpower}</td>
-                                                <td>{totalExpense.toFixed(2)}</td>
-                                                <td>{validCostCount ? (totalCostPerImage / validCostCount).toFixed(2) : 'N/A'}</td>
+                        {showEditable ?
+                            <>
+                                <div className='search-report-card' style={{ height: 'auto' }}>
+                                    <div className='row'>
+                                        <div className='col-10'></div>
+                                        <div className='col-2'>
+                                        <button className='btn add-btn mb-2 ms-4' style={{ width: 'auto' }} onClick={handleEditButton}>Hide Edit</button>
+                                        </div>
+                                    </div>
+                                    <table className="table table-hover table-bordered table-responsive data-table">
+                                        <thead style={{ color: '#4BC0C0' }}>
+                                            <tr>
+                                                <th>Head</th>
+                                                <th>Salary</th>
+                                                <th>Production</th>
+                                                <th>Manpower Used</th>
+                                                <th>Expense</th>
+                                                <th>Cost per Image</th>
                                             </tr>
-                                        );
+                                        </thead>
+                                        <tbody>
+                                            {(() => {
+                                                // Initialize totals
+                                                let totalSalary = 0;
+                                                let totalManpower = 0;
+                                                let totalExpense = 0;
+                                                let totalCostPerImage = 0;
+                                                let validCostCount = 0;
 
-                                        return rows;
-                                    })()}
-                                </tbody>
+                                                const rows = Object.entries(dataMapping).map(([head, { production, manpower }]) => {
+                                                    const salary = parseFloat(salaries[head] || 0);
+                                                    const expense = salary * (manpower || 0); // 5th column
+                                                    const costPerImage = production ? (expense / production).toFixed(2) : 'N/A'; // 6th column
+                                                    const manpowerValue = parseFloat(manpower || 0);
+                                                    // Accumulate totals
+                                                    totalSalary += salary;
+                                                    totalManpower += manpowerValue || 0;
+                                                    totalExpense += expense;
+                                                    if (production) {
+                                                        totalCostPerImage += expense / production;
+                                                        validCostCount++;
+                                                    }
 
-                            </table>
-                        </div>
+                                                    return (
+                                                        <tr key={head}>
+                                                            <td style={{ textAlign: "left" }}>{head}</td>
+                                                            <td style={{ textAlign: 'left' }}>
+                                                                <input
+                                                                    type="number"
+                                                                    value={salaries[head] || ''}
+                                                                    onChange={(e) => handleSalaryChange(head, e.target.value)}
+                                                                    style={{ width: "100px" }}
+                                                                />
+                                                                <button
+                                                                    className="btn btn-primary btn-sm ms-2"
+                                                                    onClick={() => saveSalary(head)}
+                                                                >
+                                                                    Save
+                                                                </button>
+                                                            </td>
+                                                            <td>{production || 'N/A'}</td>
+                                                            <td>{manpower || 'N/A'}</td>
+                                                            <td>{expense.toFixed(2) || 'N/A'}</td>
+                                                            <td>{costPerImage}</td>
+                                                        </tr>
+                                                    );
+                                                });
+
+                                                // Add totals row
+                                                rows.push(
+                                                    <tr key="totals" style={{ fontWeight: "bold", backgroundColor: "#f9f9f9" }}>
+                                                        <td>Total</td>
+                                                        <td>{totalSalary.toFixed(2)}</td>
+                                                        <td></td>
+                                                        <td>{totalManpower}</td>
+                                                        <td>{totalExpense.toFixed(2)}</td>
+                                                        <td>{validCostCount ? (totalCostPerImage / validCostCount).toFixed(2) : 'N/A'}</td>
+                                                    </tr>
+                                                );
+
+                                                return rows;
+                                            })()}
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </> :
+                            <>
+                                <div className='search-report-card' style={{ height: 'auto' }}>
+                                    <div className='row'>
+                                        <div className='col-10'></div>
+                                        <div className='col-1'>
+                                        <button className='btn add-btn' style={{ width: 'auto' }} onClick={handleDownloadCSV}>Export</button>
+                                        </div>
+                                        <div className='col-1'>
+                                        <button className='btn add-btn mb-2 ms-1 me-0' style={{ width: 'auto' }} onClick={handleEditButton}>Edit</button>   
+                                        </div>
+                                    </div>
+                                    <table className="table table-hover table-bordered table-responsive data-table">
+                                        <thead style={{ color: '#4BC0C0' }}>
+                                            <tr>
+                                                <th>Head</th>
+                                                <th>Salary</th>
+                                                <th>Production</th>
+                                                <th>Manpower Used</th>
+                                                <th>Expense</th>
+                                                <th>Cost per Image</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {(() => {
+                                                // Initialize totals
+                                                let totalSalary = 0;
+                                                let totalManpower = 0;
+                                                let totalExpense = 0;
+                                                let totalCostPerImage = 0;
+                                                let validCostCount = 0;
+
+                                                const rows = Object.entries(dataMapping).map(([head, { production, manpower }]) => {
+                                                    const salary = parseFloat(salaries[head] || 0);
+                                                    const expense = salary * (manpower || 0); // 5th column
+                                                    const costPerImage = production ? (expense / production).toFixed(2) : 'N/A'; // 6th column
+                                                    const manpowerValue = parseFloat(manpower || 0);
+                                                    // Accumulate totals
+                                                    totalSalary += salary;
+                                                    totalManpower += manpowerValue || 0;
+                                                    totalExpense += expense;
+                                                    if (production) {
+                                                        totalCostPerImage += expense / production;
+                                                        validCostCount++;
+                                                    }
+
+                                                    return (
+                                                        <tr key={head}>
+                                                            <td style={{ textAlign: "left" }}>{head}</td>
+                                                            <td>{salaries[head] || "N/A"}</td>
+                                                            <td>{production || 'N/A'}</td>
+                                                            <td>{manpower || 'N/A'}</td>
+                                                            <td>{expense.toFixed(2) || 'N/A'}</td>
+                                                            <td>{costPerImage}</td>
+                                                        </tr>
+                                                    );
+                                                });
+
+                                                // Add totals row
+                                                rows.push(
+                                                    <tr key="totals" style={{ fontWeight: "bold", backgroundColor: "#f9f9f9" }}>
+                                                        <td>Total</td>
+                                                        <td>{totalSalary.toFixed(2)}</td>
+                                                        <td></td>
+                                                        <td>{totalManpower}</td>
+                                                        <td>{totalExpense.toFixed(2)}</td>
+                                                        <td>{validCostCount ? (totalCostPerImage / validCostCount).toFixed(2) : 'N/A'}</td>
+                                                    </tr>
+                                                );
+
+                                                return rows;
+                                            })()}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>}
                     </div>
                 </div>
             </div>
