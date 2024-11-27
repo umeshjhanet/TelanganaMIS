@@ -46,36 +46,9 @@ const MIS_Form = () => {
 
   })
   const [newData, setNewData] = useState({ PH_Id: '', PM_Id: '', Location_Id: '', });
-  const [formData, setFormData] = useState({ Desig_ID: '', Desig_name: '' })
+  const [formData, setFormData] = useState('')
   const [errorMessage, setErrorMessage] = useState('');
   const [excelData, setExcelData] = useState(null);
-
-  const fetchLastRow = async () => {
-    try {
-      const { locationname, entryDate } = formData;
-      if (locationname && entryDate) {
-        const response = await axios.get("/manpower_data", {
-          params: { locationname, EntryDate: entryDate },
-        });
-        if (response.data.length > 0) {
-          setFormData({
-            ...formData,
-            manpowerCount: response.data[0].manpowerCount,
-            otherDetails: response.data[0].otherDetails,
-          });
-        } else {
-          setFormData({
-            ...formData,
-            manpowerCount: "",
-            otherDetails: "",
-          });
-        }
-      }
-    } catch (err) {
-      console.error("Error fetching last row:", err);
-      setError("Failed to fetch data.");
-    }
-  };
 
   useEffect(() => {
 
@@ -138,11 +111,15 @@ const MIS_Form = () => {
     designationData();
     usermasterData();
 
-  }, [formData.locationname, formData.entryDate,selectedLocationId])
+  }, [selectedLocationId])
 
   useEffect(() => {
     if (lastInsertedData) {
+      
       setFormData({
+        PH_Id: selectedPHId,
+        PM_Id: selectedPMId,
+        Location_ID: selectedLocationId,
         Coll_Index_MP: lastInsertedData.Coll_Index_MP, 
         Barc_MP: lastInsertedData.Barc_MP, 
         Barc_TF: lastInsertedData.Barc_TF, 
@@ -168,7 +145,8 @@ const MIS_Form = () => {
         Scaning_Capacity_A3: lastInsertedData.Scaning_Capacity_A3, 
         Scaning_Capacity_A4: lastInsertedData.Scaning_Capacity_A4, 
         QC_Target: lastInsertedData.QC_Target, 
-        Post_QC_Target: lastInsertedData.Post_QC_Target,  
+        Post_QC_Target: lastInsertedData.Post_QC_Target,
+        EntryDate: manpowerForm.EntryDate,
         expected_volume: lastInsertedData.expected_volume
       });
     }
@@ -218,8 +196,8 @@ const MIS_Form = () => {
         ? new Date(value).toISOString().split("T")[0] // Format the date to YYYY-MM-DD
         : value; // Use the value as-is for other fields
 
-    setManpowerForm((prevState) => ({
-      ...prevState,
+    setFormData((formData) => ({
+      ...formData,
       [name]: formattedValue,
       PM_Id: selectedPMId,
       PH_Id: selectedPHId,
@@ -228,31 +206,8 @@ const MIS_Form = () => {
   };
 
   const handleManPowerForm = async () => {
-    const formData = new FormData();
-    formData.append('file', excelData);
-    formData.append('PH_Id', selectedPHId);
-    formData.append('PO_Id', 23);
-    formData.append('PM_Id', selectedPMId);
-    formData.append('PCo_Id', '59');
-    formData.append('SM_Id', selectedSMId);
-    formData.append('Location_ID', selectedLocationId);
-        if (!excelData) {
-      Object.entries(manpowerForm).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-    }
     try {
-      let response;
-      if (excelData) {
-        response = await axios.post(`${API_URL}/uploadExcel`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        console.log("Data from Excel file submitted:", response.data);
-      } else {
-        response = await axios.post(`${API_URL}/site_MP`, manpowerForm);
-      }
+       const response = await axios.post(`${API_URL}/site_MP`, formData);
       if (response.status === 200) {
         toast.success("Data Submitted Successfully");
       } else {

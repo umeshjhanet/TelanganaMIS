@@ -178,30 +178,28 @@ const ClientDPR = () => {
         <>
             {isLoading && <Loader />}
             <Header />
-            <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
+            <div className={`container-fluid mb-4 ${isLoading ? 'blur' : ''}`}>
                 <div className="row">
                     <div className="col-lg-2 col-md-0 "></div>
                     <div className="col-lg-10 col-md-12 col-sm-12">
                         <div className="row mt-2 me-1">
-                            <div className="card" style={{ padding: "5px", backgroundColor: "#4BC0C0" }}>
-                                <h6 className="" style={{ color: "white" }}>Dashboard / Client Report</h6>
-                            </div>
+                                <h4 className="text-center">Client Report</h4>
                         </div>
-                        <div className="row mt-3 ms-2 me-2 search-report-card" style={{ height: '500px', overflowX: "auto" }}>
-                            
-                            <div className='row'>
-                                <div className='col-11'><h4 style={{ textAlign: "center" }}>Telangana District Court</h4></div>
-                                <div className='col-1'>
+                        <div className='row mt-1 me-1'>
+                        <div className='table-card'  style={{ marginBottom: "0px" }}>
+                        <div className='row' style={{ padding: "5px", backgroundColor: "#4BC0C0", paddingTop: "15px" }}>
+                                <div className='col-10'><h6 style={{color:'white'}}>Telangana District Court</h6></div>
+                                <div className='col-2'>
                                     <button
-                                        className='btn text-end ms-4'
-                                        style={{ backgroundColor: '#4BC0C0' }}
+                                      className="btn btn-light" style={{ marginTop: '-10px' }}
                                         onClick={() => exportDistrictCourtData()}
                                     >
-                                        <IoDownload style={{ color: 'white' }} />
+                                        Export to CSV
                                     </button>
                                 </div>
                             </div>
-                            <table className="table table-hover table-bordered table-responsive data-table" style={{marginTop:'-70px'}}>
+                        <div className="row ms-2 me-2" style={{ height: '500px', overflowX: "auto" }}>
+                            <table className="table table-hover table-bordered table-responsive data-table" >
                                 <thead style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}>
                                     <tr>
                                         <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle', width: '150px' }}>
@@ -215,7 +213,7 @@ const ClientDPR = () => {
                                         </th>
                                         <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle', width: '150px' }}>Remarks</th>
                                     </tr>
-                                    <tr style={{ color: "black", fontWeight: '300' }}>
+                                    <tr style={{ color: "#4BC0C0", fontWeight: '300' }}>
                                         <th>Files</th>
                                         <th>Images</th>
                                         <th>Files</th>
@@ -235,8 +233,10 @@ const ClientDPR = () => {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="row mt-2">
-                            <div className="card">
+                        </div>
+                        </div>
+                        <div className="row mt-2 me-1">
+                           
                                 <Card>
                                     <CardBody>
                                         <CardTitle tag="h5">SCANNED REPORT OF LAST 15 DAYS </CardTitle>
@@ -249,7 +249,7 @@ const ClientDPR = () => {
                                     </CardBody>
                                 </Card>
 
-                            </div>
+                           
                         </div>
                     </div>
                 </div>

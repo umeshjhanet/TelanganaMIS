@@ -441,10 +441,8 @@ const DPRReport = () => {
         <div className="row">
           <div className="col-lg-2 col-md-0 "></div>
           <div className="col-lg-10 col-md-12 col-sm-12">
-            <div className="row mt-2 me-1">
-              <div className="card" style={{ padding: "5px", backgroundColor: "#4BC0C0" }}>
-                <h6 className="" style={{ color: "white" }}>Dashboard / DPR Report</h6>
-              </div>
+            <div className="row mt-2 me-1">           
+                <h4 className="text-center">DPR Report</h4>
             </div>
             <div className="row mt-1 me-1">
               <div className="table-card" style={{ marginBottom: "0px" }}>
@@ -657,14 +655,14 @@ const DPRReport = () => {
                         <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle', width: '150px' }}>
                           Site Name
                         </th>
-                        <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle', width: '150px' }}>
+                        <th rowSpan="2" style={{  verticalAlign: 'middle' }}>
                           Total Manpower
                         </th>
                         <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle', width: '150px' }}>
                           MP
                         </th>
                         <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
-                          Collection/Barcode Of Records
+                          Collection Of Records
                         </th>
                         <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
                           Scanning
@@ -820,13 +818,13 @@ const DPRReport = () => {
                       </tr>
                       <tr style={{ color: "black", fontWeight: '300' }}>
 
-                        <th>Scanning</th>
-                        <th>Image QC</th>
-                        <th>Flagging </th>
-                        <th>Indexing</th>
-                        <th>CBSL QA</th>
-                        <th>Client QC</th>
-                        <th>DMS Upload</th>
+                        <th style={{ verticalAlign: 'middle'}}>Scanning</th>
+                        <th style={{ verticalAlign: 'middle'}}>Image QC</th>
+                        <th style={{ verticalAlign: 'middle'}}>Flagging </th>
+                        <th style={{ verticalAlign: 'middle'}}>Indexing</th>
+                        <th style={{ verticalAlign: 'middle'}}>CBSL QA</th>
+                        <th style={{ verticalAlign: 'middle'}}>Client QC</th>
+                        <th style={{ verticalAlign: 'middle'}}>DMS Upload</th>
                       </tr>
                     </thead>
                     <tbody className="scrollable" style={{ color: "#4bc0c0", height: "80px" }}>
@@ -879,12 +877,12 @@ const DPRReport = () => {
                       </tr>
                       <tr style={{ color: "black", fontWeight: '300' }}>
 
-                        <th>Scanning</th>
-                        <th>Achieved % as per scanning</th>
-                        <th>QC </th>
-                        <th>Achieved % as per Qc</th>
-                        <th>Submitted for customer QA</th>
-                        <th>Achieved % as per Submitted for customer QA</th>
+                        <th style={{ verticalAlign: 'middle'}}>Scanning</th>
+                        <th style={{ verticalAlign: 'middle'}}>Achieved % as per scanning</th>
+                        <th style={{ verticalAlign: 'middle'}}>QC </th>
+                        <th style={{ verticalAlign: 'middle'}}>Achieved % as per Qc</th>
+                        <th style={{ verticalAlign: 'middle'}}>Submitted for customer QA</th>
+                        <th style={{ verticalAlign: 'middle'}}>Achieved % as per Submitted for customer QA</th>
                       </tr>
                     </thead>
                     <tbody className="scrollable" style={{ color: "#4bc0c0", height: "80px" }}>

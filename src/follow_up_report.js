@@ -55,7 +55,7 @@ const FollowUpReportForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if(!formData.startDate || !formData.description || !formData.endDate ){
+        if (!formData.startDate || !formData.description || !formData.endDate) {
             toast.error("Please enter start date, description and end date");
         }
         try {
@@ -94,10 +94,10 @@ const FollowUpReportForm = () => {
                 startDate: format(new Date(selectedRecord.startDate), "yyyy-MM-dd"),
                 endDate: selectedRecord.endDate ? format(new Date(selectedRecord.endDate), "yyyy-MM-dd") : null,
             };
-            
+
             // Send PUT request to update the record
             await axios.put(`${API_URL}/follow-up-report/${selectedRecord.id}`, formattedRecord);
-    
+
             toast.success('Record updated successfully');
             setIsEditModalOpen(false);
             fetchFollowupData(); // Refresh data after updating
@@ -106,7 +106,7 @@ const FollowUpReportForm = () => {
             toast.error('Failed to update record');
         }
     };
-    
+
 
 
 
@@ -157,12 +157,13 @@ const FollowUpReportForm = () => {
     return (
         <>
             <Header />
-            <div className='container-fluid mb-5'>
+            <div className='container-fluid mt-2 mb-5'>
                 <div className='row'>
                     <div className='col-2'></div>
                     <div className='col-10'>
+
+                        <h4 className='text-center'>Follow-Up Form</h4>
                         <div className='follow_up-form mt-4'>
-                            <h4 className='text-center'>Follow-Up Form</h4>
                             <form onSubmit={handleSubmit}>
                                 <div className='row mt-2'>
                                     <div className='col-4'>
@@ -278,52 +279,56 @@ const FollowUpReportForm = () => {
                                 </div>
                             </form>
                         </div>
-
-                        <div className="row mt-3 search-report-card" style={{ height: '500px', overflowX: "auto" }}>
-                            <div className='col-11'><h4 style={{ textAlign: "center" }}>Follow Up Report</h4></div>
-                            <div className='col-1'>
-                                <button
-                                    className='btn text-end'
-                                    style={{ backgroundColor: '#4BC0C0' }}
-                                    onClick={exportFollowUpData}
-                                >
-                                    <IoDownload style={{ color: 'white' }} />
-                                </button>
+                        <div className='row mt-2 me-1'>
+                            <div className='table-card' style={{ marginBottom: "0px" }}>
+                                <div className='row' style={{ padding: "5px", backgroundColor: "#4BC0C0", paddingTop: "15px" }}>
+                                    <div className='col-10'><h6 style={{ color: 'white' }}>Follow Up Report</h6></div>
+                                    <div className='col-2'>
+                                        <button
+                                            className="btn btn-light" style={{ marginTop: '-10px' }}
+                                            onClick={exportFollowUpData}
+                                        >
+                                            Export to CSV
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="row ms-2 me-2" style={{  overflowX: "auto" }}>
+                                    <table className="table table-hover table-bordered table-responsive data-table">
+                                        <thead style={{ color: '#4BC0C0' }}>
+                                            <tr>
+                                                <th>Sr. No.</th>
+                                                <th>Issue Raise Date</th>
+                                                <th>Discussion Point</th>
+                                                <th>Description</th>
+                                                <th>Responsibility</th>
+                                                <th>Remarks</th>
+                                                <th>Status as on Date</th>
+                                                <th>Status</th>
+                                                <th>Timeline</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {followupData.map((elem, index) => (
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{format(new Date(elem.startDate), "yyyy-MM-dd")}</td>
+                                                    <td>{elem.name}</td>
+                                                    <td>{elem.description}</td>
+                                                    <td>{elem.responsible_person}</td>
+                                                    <td>{elem.remarks}</td>
+                                                    <td>{elem.status_as_on_date}</td>
+                                                    <td>{["Pending", "In Progress", "Completed"][elem.work_status]}</td>
+                                                    <td>{elem.endDate ? format(new Date(elem.endDate), "yyyy-MM-dd") : "N/A"}</td>
+                                                    <td>
+                                                        <button className='btn add-btn' style={{ width: "60px" }} onClick={() => handleEditClick(elem)}>Edit</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <table className="table table-hover table-bordered table-responsive data-table">
-                                <thead style={{color:'#4BC0C0'}}>
-                                    <tr>
-                                        <th>Sr. No.</th>
-                                        <th>Issue Raise Date</th>
-                                        <th>Discussion Point</th>
-                                        <th>Description</th>
-                                        <th>Responsibility</th>
-                                        <th>Remarks</th>
-                                        <th>Status as on Date</th>
-                                        <th>Status</th>
-                                        <th>Timeline</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {followupData.map((elem, index) => (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{format(new Date(elem.startDate), "yyyy-MM-dd")}</td>
-                                            <td>{elem.name}</td>
-                                            <td>{elem.description}</td>
-                                            <td>{elem.responsible_person}</td>
-                                            <td>{elem.remarks}</td>
-                                            <td>{elem.status_as_on_date}</td>
-                                            <td>{["Pending", "In Progress", "Completed"][elem.work_status]}</td>
-                                            <td>{elem.endDate ? format(new Date(elem.endDate), "yyyy-MM-dd") : "N/A"}</td>
-                                            <td>
-                                                <button className='btn add-btn' style={{ width: "60px" }} onClick={() => handleEditClick(elem)}>Edit</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>

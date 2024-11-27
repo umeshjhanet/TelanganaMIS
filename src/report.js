@@ -1313,7 +1313,7 @@ const Report = () => {
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                       </tr>
                       <tr
-                        style={{ color: "black", fontWeight: '300' }}
+                        style={{ color: "#4BC0C0", fontWeight: '300' }}
                       >
                         <th>Files</th>
                         <th>Images</th>
@@ -1442,7 +1442,7 @@ const Report = () => {
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                           </tr>
                           <tr
-                            style={{ color: "black", fontWeight: '300' }}
+                            style={{ color: "#4BC0C0", fontWeight: '300' }}
                           >
                             <th>Files</th>
                             <th>Images</th>
