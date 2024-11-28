@@ -240,7 +240,7 @@ const MIS_Form = () => {
                 <input
                   type="date"
                   name="EntryDate"
-                  value={manpowerForm.EntryDate}
+                  value={formData.EntryDate}
                   onChange={handleInputChange}
                 />
               </div>
@@ -443,12 +443,12 @@ const MIS_Form = () => {
                 </div>
                 <div className='row'>
                   <div className='col-3'>
-                    <span>Scanning Capacity A3: </span>
+                    <span>Scanner Count A3: </span>
                     <input type='text' name='Scaning_Capacity_A3' value={formData.Scaning_Capacity_A3}
                      onChange={(e) => setFormData({ ...formData, Scaning_Capacity_A3: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
-                    <span>Scanning Capacity A4: </span>
+                    <span>Scanner Count A4: </span>
                     <input type='text' name='Scaning_Capacity_A4' value={formData.Scaning_Capacity_A4}
                      onChange={(e) => setFormData({ ...formData, Scaning_Capacity_A4: e.target.value })} required /><br />
                   </div>

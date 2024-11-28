@@ -766,9 +766,7 @@ const Header = () => {
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
                     </div>
-                    <div className='row' onClick={handleActiveTab}>
-                      <Link to='/locationwisereport' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#337ab7' }} />New Page</Link>
-                    </div>
+                   
                     <div className='row' onClick={handleActiveTab}>
                       <a className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                     </div>
