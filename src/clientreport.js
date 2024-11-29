@@ -1006,7 +1006,7 @@ const Locationwisereport = () => {
                                                 {yesterdayReport &&
                                                     yesterdayReport.map((elem, index) => (
                                                         <tr key={index} style={{ backgroundColor: "white" }}>
-                                                            <td style={{ whiteSpace: 'nowrap' }}>{elem.locationname}</td>
+                                                            <td style={{ whiteSpace: 'nowrap', textAlign:'left'}}>{elem.locationname}</td>
                                                             {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
@@ -1126,7 +1126,7 @@ const Locationwisereport = () => {
                                                 {report &&
                                                     report.map((elem, index) => (
                                                         <tr key={index} style={{ backgroundColor: "white" }}>
-                                                            <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
+                                                            <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.LocationName}</td>
                                                             {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
