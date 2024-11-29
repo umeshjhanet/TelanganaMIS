@@ -42,7 +42,7 @@ const MIS_Form = () => {
     Refilling_Files_MP: '', Inventory_MP: '', Scaning_Target_A3: '',
     Scaning_Capacity_A3: '', Scaning_Capacity_A4: '', QC_Target: '', Post_QC_Target: '', Location_ID: '', 
     EntryDate: '',
-    expected_volume: ''
+    expected_volume: '', Inv_Out_Files: ''
 
   })
   const [newData, setNewData] = useState({ PH_Id: '', PM_Id: '', Location_Id: '', });
@@ -98,6 +98,8 @@ const MIS_Form = () => {
   
       if (data) {
         setLastInsertedData(data);
+      } else {
+        setLastInsertedData(null);
       }
     } catch (error) {
       console.error('Error fetching last inserted data:', error);
@@ -147,7 +149,8 @@ const MIS_Form = () => {
         QC_Target: lastInsertedData.QC_Target, 
         Post_QC_Target: lastInsertedData.Post_QC_Target,
         EntryDate: manpowerForm.EntryDate,
-        expected_volume: lastInsertedData.expected_volume
+        expected_volume: lastInsertedData.expected_volume,
+        Inv_Out_Files: lastInsertedData.Inv_Out_Files
       });
     }
   }, [lastInsertedData, selectedLocationId]);
@@ -420,6 +423,11 @@ const MIS_Form = () => {
                   </div>
                 </div>
                 <div className='row'>
+                <div className='col-3'>
+                    <span>Inventory Out Files: </span>
+                    <input type='text' name='Inv_Out_Files' value={formData.Inv_Out_Files}
+                     onChange={(e) => setFormData({ ...formData, Inv_Out_Files: e.target.value })} required /><br />
+                  </div>
                   <div className='col-3'>
                     <span>Refilling MP: </span>
                     <input type='text' name='Refilling_Files_MP' value={formData.Refilling_Files_MP}
@@ -435,13 +443,13 @@ const MIS_Form = () => {
                     <input type='text' name='Refilling_Files_TI' value={formData.Refilling_Files_TI}
                      onChange={(e) => setFormData({ ...formData, Refilling_Files_TI: e.target.value })} required />
                   </div>
-                  <div className='col-3'>
+                </div>
+                <div className='row'>
+                <div className='col-3'>
                     <span>Scanning Target: </span>
                     <input type='text' name='Scaning_Target_A3' value={formData.Scaning_Target_A3}
                      onChange={(e) => setFormData({ ...formData, Scaning_Target_A3: e.target.value })} required /><br />
                   </div>
-                </div>
-                <div className='row'>
                   <div className='col-3'>
                     <span>Scanner Count A3: </span>
                     <input type='text' name='Scaning_Capacity_A3' value={formData.Scaning_Capacity_A3}
@@ -457,13 +465,13 @@ const MIS_Form = () => {
                     <input type='text' name='QC_Target' value={formData.QC_Target}
                      onChange={(e) => setFormData({ ...formData, QC_Target: e.target.value })} required /><br />
                   </div>
-                  <div className='col-3'>
+                </div>
+                <div className='row'>
+                <div className='col-3'>
                     <span>Post QC Target: </span>
                     <input type='text' name='Post_QC_Target' value={formData.Post_QC_Target}
                      onChange={(e) => setFormData({ ...formData, Post_QC_Target: e.target.value })} required /><br />
                   </div>
-                </div>
-                <div className='row'>
                   <div className='col-3'>
                     <span>Expected Volume: </span>
                     <input type='text' name='expected_volume' value={formData.expected_volume}
