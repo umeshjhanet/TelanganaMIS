@@ -319,11 +319,11 @@ const File = () => {
                                         if (selectedLocations.length === 0 || selectedLocations.includes(elem.locationname)) {
                                             return (
                                                 <tr key={index}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{elem.locationname}</td>
-                                                    <td>{formatDate(elem.filedate)}</td>
-                                                    <td>{formatDateTime(elem.uploaddate)}</td>
-                                                    <td>{elem.appVersion}</td>
+                                                    <td style={{textAlign:'left'}}>{index + 1}</td>
+                                                    <td style={{textAlign:'left'}}>{elem.locationname}</td>
+                                                    <td style={{textAlign:'left'}}>{formatDate(elem.filedate)}</td>
+                                                    <td style={{textAlign:'left'}}>{formatDateTime(elem.uploaddate)}</td>
+                                                    <td style={{textAlign:'left'}}>{elem.appVersion}</td>
                                                 </tr>
                                             );
                                         }
