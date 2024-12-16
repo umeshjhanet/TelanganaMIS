@@ -1420,7 +1420,7 @@ const Report = () => {
                     </div>
                     <div
                       className="row mt-3 ms-2 me-2"
-                      style={{ overflowX: "auto" }}
+                      style={{ overflowX: "auto",maxHeight:'500px' }}
                     >
                       <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
                       <table class="table table-hover table-bordered table-responsive date-table">

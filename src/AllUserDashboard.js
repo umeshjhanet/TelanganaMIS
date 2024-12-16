@@ -40,7 +40,8 @@ const Dashboard = () => {
   const [districtUser, setDistrictUser] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showFormatDropdown, setShowFormatDropdown] = useState(false);
-  const [exportTableFormat,setExportTableFormat] = useState('csv')
+  const [exportTableFormat, setExportTableFormat] = useState('csv');
+  const [chartData, setChartData] = useState(null);
   const navigate = useNavigate();
 
   const userLog = JSON.parse(localStorage.getItem("user"));
@@ -730,7 +731,77 @@ const Dashboard = () => {
         })
         .catch((error) => console.error(error));
     };
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/7daysimages`, {
+          params: { locationName },
+        });
 
+        const data = response.data;
+
+        // Process data for the chart
+        const dates = data.map((item) => item.date);
+        const scannedImages = data.map((item) => parseInt(item.ScannedImages, 10));
+        const qcImages = data.map((item) => parseInt(item.QCImages, 10));
+        const cbslQaImages = data.map((item) => parseInt(item.CBSL_QAImages, 10));
+
+        setChartData({
+          series: [
+            { name: "Scanned Images", type: "bar", data: scannedImages, color: "#1E90FF" },
+            { name: "QC Images", type: "bar", data: qcImages, color: "#32CD32" },
+            { name: "CBSL QA Images", type: "bar", data: cbslQaImages, color: "#FF4500" },
+            { name: "Scanned Images (Line)", type: "line", data: scannedImages, color: "#1E90FF" },
+            { name: "QC Images (Line)", type: "line", data: qcImages, color: "#32CD32" },
+            { name: "CBSL QA Images (Line)", type: "line", data: cbslQaImages, color: "#FF4500" },
+          ],
+          options: {
+            chart: {
+              type: "line",
+              toolbar: { show: true },
+            },
+            stroke: {
+              width: [0, 0, 0, 2, 2, 2], // Line series has width 2, bars have 0
+              curve: "smooth",
+            },
+            xaxis: {
+              categories: dates,
+              title: { text: "Date" },
+            },
+            yaxis: {
+              title: { text: "Images Count" },
+            },
+            plotOptions: {
+              bar: {
+                columnWidth: "50%",
+                dataLabels: { position: "top" },
+              },
+            },
+            dataLabels: {
+              enabled: true,
+              enabledOnSeries: [0, 1, 2], // Only for bar series
+              formatter: (val) => val,
+              offsetY: -10,
+              style: { fontSize: "12px", colors: ["#304758"] },
+            },
+            tooltip: {
+              shared: true,
+              sharedOnSeries: [3,4,5],
+              intersect: false,
+            },
+            legend: {
+              position: "top",
+            },
+          },
+        });
+        
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+
+    fetchData();
     fetchGraphFileData(locationName);
     fetchGraphImageData(locationName);
     fetchWeekFileGraphData(locationName);
@@ -892,60 +963,60 @@ const Dashboard = () => {
 
   const donutImageData = formatDonutData(weekImage);
   const donutFileData = formatDonutData(weekFile);
- 
+
   function downloadCSVFromTable() {
     const table = document.querySelector(".data-table"); // Select the table by class
     let csvContent = "";
-  
+
     // Define the full header row
     const headerRow1 = [
-      "Sr. No.", 
-      "Location", 
-      `Scanned (${formattedPreviousDate})`, "", 
-      `Scanned (${formattedYesterdayDate})`, "", 
-      `Scanned (${formattedCurrentDate})`, "", 
+      "Sr. No.",
+      "Location",
+      `Scanned (${formattedPreviousDate})`, "",
+      `Scanned (${formattedYesterdayDate})`, "",
+      `Scanned (${formattedCurrentDate})`, "",
       "Cumulative till date", ""
     ];
-  
+
     // Define the second row of headers
     const headerRow2 = [
-      "", "", 
-      "Files", "Images", 
-      "Files", "Images", 
-      "Files", "Images", 
-      "Files", "Images", 
+      "", "",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
       ""
     ];
-  
+
     // Join both header rows to create the full CSV header
     csvContent += headerRow1.join(",") + "\n";
     csvContent += headerRow2.join(",") + "\n";
-  
+
     // Extract the table body rows
     const rows = table.querySelectorAll("tbody tr");
     rows.forEach((row, index) => {
       const cells = row.querySelectorAll("td");
       const rowContent = [];
-      
+
       cells.forEach((cell) => {
         // Remove any commas from cell content to avoid CSV issues
         rowContent.push(cell.innerText.replace(/,/g, ""));
       });
-      
+
       // Ensure the row has the correct number of columns
       while (rowContent.length < headerRow1.length) {
         rowContent.push(""); // Add empty data if there are fewer columns
       }
-  
+
       // For the last row (Total row), handle the colspan=2 logic
       if (index === rows.length - 1) {
         // Insert an empty cell after "Total" to account for the colspan=2
         rowContent.splice(1, 0, "");
       }
-  
+
       csvContent += rowContent.join(",") + "\n";
     });
-    
+
     // Create a blob and trigger download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -957,7 +1028,7 @@ const Dashboard = () => {
   }
   function exportTableToPDFTable() {
     const input = document.querySelector(".data-table"); // Target the table
-    
+
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
@@ -965,19 +1036,19 @@ const Dashboard = () => {
         unit: 'pt',
         format: 'a4',
       });
-  
+
       // Add heading
       pdf.setFontSize(18);
       pdf.setTextColor(0, 0, 0); // Set text color to black
       pdf.text("PROJECT UPDATE OF SCANNING FOR DISTRICT COURT OF TELANGANA", 40, 30); // Add heading at position (40, 30)
-  
+
       // Adjusting image width and height to fit in the PDF
       const imgWidth = 825; // Fit landscape A4 width
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
+
       // Add the table image below the heading
       pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, imgHeight); // Adjust y-coordinate to fit below heading
-  
+
       pdf.save("Scannedreport.pdf");
     });
   }
@@ -1121,27 +1192,27 @@ const Dashboard = () => {
                     </h6>
                   </div>
                   <div className="col-2">
-                  <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
+                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
                       Export CSV
                     </h6>
-                   
+
                   </div>
                   {showFormatDropdown && (
-                       <div style={{height:'0px',overflow:'visible',display:'flex',justifyContent:'right'}}>
+                    <div style={{ height: '0px', overflow: 'visible', display: 'flex', justifyContent: 'right' }}>
                       <div className="export-dropdown-card">
                         <p onClick={() => handleTableDropdownChange('csv')}>CSV</p>
                         <p onClick={() => handleTableDropdownChange('excel')}>Excel</p>
                         <p onClick={() => handleTableDropdownChange('pdf')}>PDF</p>
                       </div>
-                      </div>
-                    )}
+                    </div>
+                  )}
                   {showConfirmation && (
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
                         <p className="fw-bold">Are you sure you want to export the CSV file?</p>
-                        <button className="btn btn-success mt-3 ms-5"  onClick={downloadAllFormatsSummary}>Yes</button>
+                        <button className="btn btn-success mt-3 ms-5" onClick={downloadAllFormatsSummary}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
                       </div>
                     </div>
@@ -1154,8 +1225,8 @@ const Dashboard = () => {
                   <table class="table table-hover table-bordered table-responsive data-table">
                     <thead style={{ color: "#4BC0C0" }}>
                       <tr>
-                        <th rowspan="2" style={{verticalAlign:'middle'}}>Sr. No.</th>
-                        <th rowspan="2" style={{verticalAlign:'middle'}}>Location</th>
+                        <th rowspan="2" style={{ verticalAlign: 'middle' }}>Sr. No.</th>
+                        <th rowspan="2" style={{ verticalAlign: 'middle' }}>Location</th>
                         <th colspan="2">Scanned ({formattedPreviousDate})</th>
                         <th colspan="2">
                           Scanned ({formattedYesterdayDate})
@@ -1185,16 +1256,16 @@ const Dashboard = () => {
                             return (
                               <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td style={{textAlign:'left'}}>{elem.LocationName}</td>
-                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
-                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
-                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
-                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
-                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
-                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
-                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
-                                <td style={{textAlign:'end'}}>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-                                
+                                <td style={{ textAlign: 'left' }}>{elem.LocationName}</td>
+                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
+                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
+                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
+                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
+                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
+                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
+                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
+                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
+
                               </tr>
                             );
                           }
@@ -1230,7 +1301,7 @@ const Dashboard = () => {
                         <td>
                           <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
                         </td>
-                        
+
                       </tr>
                     </tbody>
 
@@ -1391,20 +1462,21 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* <div className="row mt-4">
+            <div className="row mt-4">
               <Card>
                 <CardBody>
-                  <CardTitle tag="h5">Weekly Report</CardTitle>
-                  <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                  <Chart
-                    options={formatWeekChartData(allWeekImage, ["#088395", "#F0A500", "#FF3D00", "#4CAF50", "#FF9800", "#9C27B0", "#2196F3", "#E91E63", "#607D8B"]).options}
-                    series={formatWeekChartData(allWeekImage, ["#088395", "#F0A500", "#FF3D00", "#4CAF50", "#FF9800", "#9C27B0", "#2196F3", "#E91E63", "#607D8B"]).series}
-                    type="bar"
-                    height="350"
-                  />
+                  <CardTitle tag="h5">Images Processing Chart</CardTitle>
+                  {chartData && (
+                    <Chart
+                      options={chartData.options}
+                      series={chartData.series}
+                      type="line" // Line type for mixed chart
+                      height={400}
+                    />
+                  )}
                 </CardBody>
               </Card>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

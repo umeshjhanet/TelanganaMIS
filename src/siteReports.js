@@ -85,6 +85,39 @@ const SiteReports = () => {
   const currentServers = filteredServers.slice(indexOfFirstServer, indexOfLastServer);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const exportToCSV = (data, filename) => {
+    // Define headers for the CSV file
+    const headers = [
+      'Sr.No', 'Location Name', 'CSV Uploaded Date', 'Free CPU', 'Free Memory','Server Logs',
+      'Server Status', 'Server IP','NA S File System','NA S Storage Size', 'NA S Storage Used',
+      'NA S Storage Available','NA S Storage Use Percentage', 'NA S Mounted On', 'NA S Latency'
+    ];
+
+    // Map data to CSV rows
+    const rows = data.map((elem, index) => ([
+      index + 1, elem.location, elem.csv_upload_dt, `${elem.cpustatus}%`, `${((elem.freeram / elem.totalram) * 100).toFixed(2)}%`,
+      elem.systemLogs || '', elem.max_con, elem.filesystems, elem.sizes, elem.used, elem.avail,
+      elem.use_percentage, elem.mounted_on, elem.latencyFromNAS
+    ]));
+
+    // Combine headers and rows
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(item => `"${item}"`).join(','))
+      .join('\n');
+
+    // Create a Blob for the CSV file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.href = url;
+    link.download = `${filename}.csv`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       {isLoading && <Loader />}
@@ -103,7 +136,7 @@ const SiteReports = () => {
                 </h6>
               </div>
             </div>
-            <div className="row user-list-card mt-3 mb-5">
+            <div className="user-list-card mt-3 mb-5">
               <div className="row">
                 <input
                   type='text'
@@ -113,6 +146,24 @@ const SiteReports = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <button className='btn search-btn mb-1' style={{ color: 'white' }}>Search</button>
+              </div>
+              <div className='row'>
+                <div className='col-11'></div>
+                <div className='col-1'>
+                  <button
+                    onClick={() => exportToCSV(currentServers, 'server_report')}
+                    style={{
+                      backgroundColor: '#4bc0c0',
+                      color: 'white',
+                      borderRadius: '5px',
+                      padding: '10px 15px',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Export
+                  </button>
+                </div>
               </div>
               <div className='server-report'>
                 <table className='server-reports table-bordered mt-1 mb-4'>
