@@ -11,7 +11,7 @@ import {
 import Header from "./Components/Header";
 import axios, { all } from "axios";
 import "./App.css";
-import Footer from "./Footer";
+import Footer from "./Components/Footer";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
@@ -20,28 +20,34 @@ import AllUserDashboard from "./AllUserDashboard";
 import LocationWiseDashboard from "./LocationWiseDashboard";
 import CbslAdminDashboard from "./CbslAdminDashboard";
 
+
 const Dashboard = () => {
   const userLog = JSON.parse(localStorage.getItem("user"));
   console.log("User's Info", userLog);
   const isDistrictHeadUser =
     userLog && userLog.user_roles.includes("All District Head");
 
-    const iscbslAdmin =
+  const iscbslAdmin =
     userLog && userLog.user_roles.includes("CBSL Admin");
+  const isExternalClient = userLog && userLog.user_roles.includes("Client");
 
-  const isEmptyLocations = userLog.locations.length === 1 && 
-                           userLog.locations[0].id === null && 
-                           userLog.locations[0].name === null;
+  const isEmptyLocations = userLog.locations.length === 1 &&
+    userLog.locations[0].id === null &&
+    userLog.locations[0].name === null;
 
   return (
     <>
-       <Header />
+      <Header />
       {isDistrictHeadUser ? (
         <DistrictHeadDashboard />
-      ) : isEmptyLocations ? (
+      ) : 
+      // isExternalClient ? (
+      //   <Locationwisereport />
+      // ):
+       isEmptyLocations ? (
         <AllUserDashboard />
-      ) : iscbslAdmin ?(
-        <CbslAdminDashboard/>
+      ) : iscbslAdmin ? (
+        <CbslAdminDashboard />
       ) : (
         <LocationWiseDashboard location={userLog.locations} />
       )

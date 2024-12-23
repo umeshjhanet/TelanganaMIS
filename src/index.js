@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './Components/Header';
-import Footer from './Footer';
+import Footer from './Components/Footer';
 import Dashboard from './dashboard';
 import Report from './report';
 import File from './file';
@@ -27,6 +27,12 @@ import DBSiteReports from './dbSiteReports';
 import SiteReports from './siteReports';
 import PrivateRoute from './PrivateRoute';
 import DailyReport from './dailyReport';
+import Locationwisereport from './clientreport';
+import AddRemarks from './addRemarks';
+import DPRReport from './DPRReport';
+import ClientDPR from './ClientDPR';
+import FollowUpReportForm from './follow_up_report';
+import CostingReport from './CostingReport';
 
 const App = () => {
   return (
@@ -51,6 +57,12 @@ const App = () => {
         <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC />} />} />
         <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
         <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport />} />} />
+        <Route path="/DPRReport" element={<PrivateRoute element={<DPRReport />} />} />
+        <Route path="/locationwisereport" element={<PrivateRoute element={<Locationwisereport />} />} />
+        <Route path="/addRemarks" element={<PrivateRoute element={<AddRemarks />} />} />
+        <Route path="/ClientDPR" element={<PrivateRoute element={<ClientDPR />} />} />
+        <Route path="/CostingReport" element={<PrivateRoute element={<CostingReport />} />} />
+        <Route path="/follow_up_report" element={<PrivateRoute element={<FollowUpReportForm />} />} />
       </Routes>
     </Router>
     

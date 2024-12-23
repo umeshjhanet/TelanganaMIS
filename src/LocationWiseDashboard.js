@@ -32,7 +32,7 @@
 //     labels: [],
 //     datasets: [
 //       {
-//         label: "No. of Images",
+//         label: "Images",
 //         backgroundColor: "#66b3ff",
 //         data: [],
 //       },
@@ -42,7 +42,7 @@
 //     labels: [],
 //     datasets: [
 //       {
-//         label: "No. of Images",
+//         label: "Images",
 //         backgroundColor: "#f87979",
 //         data: [],
 //       },
@@ -52,7 +52,7 @@
 //     labels: [],
 //     datasets: [
 //       {
-//         label: "No. of Images",
+//         label: "Images",
 //         backgroundColor: "#02B2AF",
 //         data: [],
 //       },
@@ -112,7 +112,7 @@
 //           setAllLocationYesImage({
 //             labels: labels,
 //             datasets: [{
-//               label: "No. of Images",
+//               label: "Images",
 //               data: data,
 //               backgroundColor: "#4BC0C0",
 //             }],
@@ -147,7 +147,7 @@
 //           setAllLocationImage({
 //             labels: labels,
 //             datasets: [{
-//               label: "No. of Images",
+//               label: "Images",
 //               data: data,
 //               backgroundColor: "#4BC0C0",
 //             }],
@@ -415,7 +415,7 @@ const LocationWiseDashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#66b3ff",
         data: [],
       },
@@ -425,7 +425,7 @@ const LocationWiseDashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#f87979",
         data: [],
       },
@@ -435,7 +435,7 @@ const LocationWiseDashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#02B2AF",
         data: [],
       },
@@ -488,7 +488,7 @@ const LocationWiseDashboard = () => {
           setAllLocationYesImage({
             labels: labels,
             datasets: [{
-              label: "No. of Images",
+              label: "Images",
               data: data,
               backgroundColor: "#4BC0C0",
             }],
@@ -519,7 +519,7 @@ const LocationWiseDashboard = () => {
           setAllLocationImage({
             labels: labels,
             datasets: [{
-              label: "No. of Images",
+              label: "Images",
               data: data,
               backgroundColor: "#4BC0C0",
             }],
@@ -737,7 +737,7 @@ const LocationWiseDashboard = () => {
                     return (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{elem.LocationName}</td>
+                        <td style={{textAlign:'left'}}>{elem.LocationName}</td>
                         <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>

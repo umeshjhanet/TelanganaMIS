@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Header from "./Components/Header";
-import Footer from "./Footer";
+import Footer from "./Components/Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
 import { API_URL } from "./Api";
@@ -244,7 +244,10 @@ const Report = () => {
     }
     summaryData();
     fetchReportData();
-    fetchDateReportData();
+    if(startDate && endDate){
+      fetchDateReportData();
+    }
+    
     fetchFileTypes();
 
   }, [selectedLocations, selectedFileTypes, endDate]);
@@ -252,6 +255,7 @@ const Report = () => {
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
     setTotalLocations(uniqueLocations.length);
+    console.log("Total locations number",totalLocations);
   };
   const Loader = () => (
     <div className="loader-overlay">
@@ -276,8 +280,8 @@ const Report = () => {
     'Export_PdfImages',
     'Client_QAFiles',
     'Client_QAImages',
-    'Digi_SignFiles',
-    'Digi_SignImages'
+    'InventoryFiles',
+    'InventoryImages'
   ];
   function convertJSONToCSVSummary(summary, columnHeaders) {
     if (summary.length === 0) return '';
@@ -341,8 +345,8 @@ const Report = () => {
       columnStyles: {
         // Adjust column widths if necessary
         0: { cellWidth: 30 },
-        1: { cellWidth: 50 },
-        2: { cellWidth: 50 },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 40 },
         // Add more column widths if needed
       },
       pageBreak: 'auto', // Automatically handle page breaks
@@ -1309,7 +1313,7 @@ const Report = () => {
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                       </tr>
                       <tr
-                        style={{ color: "black", fontWeight: '300' }}
+                        style={{ color: "#4BC0C0", fontWeight: '300' }}
                       >
                         <th>Files</th>
                         <th>Images</th>
@@ -1345,7 +1349,7 @@ const Report = () => {
                           ) {
                             return (
                               <tr key={index} style={{ backgroundColor: "white" }}>
-                                <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
+                                <td style={{ whiteSpace: 'nowrap', textAlign:'left'}}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
@@ -1416,7 +1420,7 @@ const Report = () => {
                     </div>
                     <div
                       className="row mt-3 ms-2 me-2"
-                      style={{ overflowX: "auto" }}
+                      style={{ overflowX: "auto",maxHeight:'500px' }}
                     >
                       <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
                       <table class="table table-hover table-bordered table-responsive date-table">
@@ -1438,7 +1442,7 @@ const Report = () => {
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                           </tr>
                           <tr
-                            style={{ color: "black", fontWeight: '300' }}
+                            style={{ color: "#4BC0C0", fontWeight: '300' }}
                           >
                             <th>Files</th>
                             <th>Images</th>
@@ -1474,8 +1478,8 @@ const Report = () => {
                               ) {
                                 return (
                                   <tr key={index} style={{ backgroundColor: "white" }}>
-                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.locationName}</td>
-                                    <td style={{ whiteSpace: 'nowrap' }}>{elem.Date || "N/A"}</td>
+                                    <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.locationName}</td>
+                                    <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.Date || "N/A"}</td>
                                     <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Header from './Components/Header'
-import Footer from './Footer'
+import Footer from './Components/Footer'
 import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
@@ -126,9 +126,9 @@ const GroupManager = () => {
                         <tbody>
                             {filteredGroups && filteredGroups.map((elem,index) => (
                                 <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{elem.group_name}</td>
-                                    <td><BiEdit onClick={() => handleOpenModal(elem.group_id)} style={{color:'blue',fontSize:'20px'}}/> 
+                                    <td style={{textAlign:'left'}}>{index + 1}</td>
+                                    <td style={{textAlign:'left'}}>{elem.group_name}</td>
+                                    <td  style={{textAlign:'left'}}><BiEdit onClick={() => handleOpenModal(elem.group_id)} style={{color:'blue',fontSize:'20px'}}/> 
                                     / <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.group_id)} style={{color:'red',fontSize:'20px'}}/></td>
                                 </tr>
                             ))}

@@ -90,8 +90,10 @@ const Login = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user && user.user_roles && user.user_roles.includes("Cbsl User")) {
       navigate('/uploadDatabase');
+    } else if (user && user.user_roles && user.user_roles.includes("Client")) {
+      navigate('/locationwisereport');
     } else {
-      navigate('/dashboard');
+      navigate('/dashboard')
     }
   };
 
@@ -131,7 +133,7 @@ const Login = () => {
                           <FaUserLarge className="me-2" size={20} color="gray" />
                         </span>
                         <input
-                          type='email'
+                          type='text'
                           name='uname'
                           placeholder='Username'
                           value={username}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Header from "./Components/Header";
-import Footer from "./Footer";
+import Footer from "./Components/Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
 import { API_URL } from "./Api";
@@ -916,7 +916,7 @@ const DailyReport = () => {
                                                         return (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{elem.LocationName}</td>
+                                                                <td style={{textAlign:'left'}}>{elem.LocationName}</td>
                                                                 <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
@@ -1133,7 +1133,7 @@ const DailyReport = () => {
                                                     ) {
                                                         return (
                                                             <tr key={index} style={{ backgroundColor: "white" }}>
-                                                                <td style={{ whiteSpace: 'nowrap' }}>{elem.LocationName}</td>
+                                                                <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.LocationName}</td>
                                                                 <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
@@ -1196,7 +1196,7 @@ const DailyReport = () => {
                                 <tbody>
                                     {manPowerData && manPowerData.map((elem, index) => (
                                         <tr key={index}>
-                                            <td>{elem.LocationName}</td>
+                                            <td style={{textAlign:'left'}}>{elem.LocationName}</td>
                                             <td>{elem.ScannedUser}</td>
                                             <td>{elem.QCUser}</td>
                                             <td>{elem.FlaggingUser}</td>

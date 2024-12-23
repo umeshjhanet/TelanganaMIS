@@ -13,7 +13,7 @@ import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import Header from "./Components/Header";
 import axios, { all } from "axios";
 import "./App.css";
-import Footer from "./Footer";
+import Footer from "./Components/Footer";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
@@ -60,7 +60,7 @@ const DistrictHeadDashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#02B2AF",
         data: [],
       },
@@ -70,7 +70,7 @@ const DistrictHeadDashboard = () => {
     labels: [],
     datasets: [
       {
-        label: "No. of Images",
+        label: "Images",
         backgroundColor: "#f87979",
         data: [],
       },
@@ -304,7 +304,7 @@ const DistrictHeadDashboard = () => {
             labels: labels,
             datasets: [
               {
-                label: "No. of Images",
+                label: "Images",
                 data: data,
                 backgroundColor: "#02B2AF",
               },
@@ -399,8 +399,7 @@ const DistrictHeadDashboard = () => {
       `Scanned (${formattedPreviousDate})`, "", 
       `Scanned (${formattedYesterdayDate})`, "", 
       `Scanned (${formattedCurrentDate})`, "", 
-      "Cumulative till date", "", 
-      "Remarks"
+      "Cumulative till date", ""
     ];
   
     // Define the second row of headers
@@ -684,7 +683,7 @@ const DistrictHeadDashboard = () => {
                             return (
                               <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td>{elem.LocationName}</td>
+                                <td style={{textAlign:'left'}}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Components/Header";
-import Footer from "./Footer";
+import Footer from "./Components/Footer";
 import axios from "axios";
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
@@ -145,16 +145,16 @@ const User_List = () => {
         <tbody>
           {filteredUsers.map((elem, index) => (
             <tr key={elem.user_id}>
-              <td>{index + 1}</td>
-              <td>
+              <td  style={{textAlign:'left'}}>{index + 1}</td>
+              <td  style={{textAlign:'left'}}>
                 {elem.first_name} {elem.middle_name} {elem.last_name}
               </td>
-              <td>{elem.designation}</td>
-              <td>{elem.user_email_id}</td>
+              <td style={{textAlign:'left'}}>{elem.designation}</td>
+              <td style={{textAlign:'left'}}>{elem.user_email_id}</td>
               <td>{elem.phone_no}</td>
-              <td>{elem.user_role}</td>
-              <td>{getLocationNameById(elem.locations)}</td>
-              <td>
+              <td style={{textAlign:'left'}}>{elem.user_role}</td>
+              <td style={{textAlign:'left'}}>{getLocationNameById(elem.locations)}</td>
+              <td style={{textAlign:'left'}}>
                 <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{ color: 'blue', fontSize: '20px' }} />
                 /
                 <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
@@ -169,16 +169,16 @@ const User_List = () => {
         <tbody>
           {currentUsers.map((elem, index) => (
             <tr key={elem.user_id}>
-              <td>{index + 1}</td>
-              <td>
+              <td style={{textAlign:'left'}}>{index + 1}</td>
+              <td style={{textAlign:'left'}}>
                 {elem.first_name} {elem.middle_name} {elem.last_name}
               </td>
-              <td>{elem.designation}</td>
-              <td>{elem.user_email_id}</td>
+              <td style={{textAlign:'left'}}>{elem.designation}</td>
+              <td style={{textAlign:'left'}}>{elem.user_email_id}</td>
               <td>{elem.phone_no}</td>
-              <td>{elem.user_roles}</td>
-              <td>{getLocationNameById(elem.locations)}</td>
-              <td>
+              <td style={{textAlign:'left'}}>{elem.user_roles}</td>
+              <td style={{textAlign:'left'}}>{getLocationNameById(elem.locations)}</td>
+              <td style={{textAlign:'left'}}>
                 <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{ color: 'blue', fontSize: '20px' }} />
                 /
                 <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
