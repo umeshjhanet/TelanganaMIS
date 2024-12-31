@@ -988,7 +988,7 @@ const Report = () => {
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.FlsggingImages) || 0 : 0);
+                                return acc + (locationData ? parseInt(locationData.FlaggingImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
