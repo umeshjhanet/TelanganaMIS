@@ -534,6 +534,7 @@ const Header = () => {
                     </div>
                     <Link to='/dashboard'><p className='ms-4'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                     <Link to='/dbSiteReports'><p className='ms-4 '><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <Link to='/siteReports'><p className='ms-4 '><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                   </div>
                 </div>
                 <div className='col-11'></div>
@@ -552,6 +553,9 @@ const Header = () => {
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dbSiteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server/DB Site Reports</Link>
+                    </div>
+                    <div className='row' onClick={handleActiveTab}>
+                      <Link to='/siteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server Site Reports</Link>
                     </div>
                   </div>
                 </div>
@@ -581,6 +585,9 @@ const Header = () => {
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dbSiteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server/DB Site Reports</Link>
+                </div>
+                <div className='row' onClick={handleActiveTab}>
+                  <Link to='/siteReports' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server Site Reports</Link>
                 </div>
               </div>
             </div>
