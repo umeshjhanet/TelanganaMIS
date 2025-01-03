@@ -115,8 +115,8 @@ const Header = () => {
                     <div className='row header-image'>
                       <img src='logo.png' />
                     </div>
-                    <div className='row' onClick={() => window.open("/Super_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    <div className='row' >
+                      <Link to='#' onClick={() => window.open("/Super_Admin.pdf", '_blank')} className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -199,8 +199,8 @@ const Header = () => {
                 <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
                   <img src='logo.png' />
                 </div>
-                <div className='row' onClick={() => window.open("/Super_Admin.pdf", '_blank')}>
-                  <Link to='#' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                <div className='row'>
+                  <Link to='#'  onClick={() => window.open("/Super_Admin.pdf", '_blank')} className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dashboard' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -302,8 +302,8 @@ const Header = () => {
                     <div className='row header-image'>
                       <img src='logo.png' />
                     </div>
-                    <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    <div className='row'>
+                      <Link to='#'  onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')} className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -345,8 +345,8 @@ const Header = () => {
                 <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
                   <img src='logo.png' />
                 </div>
-                <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                  <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                <div className='row'>
+                  <Link to='#'  onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')} className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dashboard' className='ms-4 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
@@ -409,8 +409,8 @@ const Header = () => {
                     <div className='row shrink-header-image' >
                       <img src='logo.png' />
                     </div>
-                    <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    <div className='row'>
+                      <Link to='#' onClick={() => window.open("/Cbsl_User.pdf", '_blank')} className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <Link to='/dashboard'><p className='ms-4'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
 
@@ -429,8 +429,8 @@ const Header = () => {
                     <div className='row header-image'>
                       <img src='logo.png' />
                     </div>
-                    <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    <div className='row'>
+                      <Link to='#'  onClick={() => window.open("/Cbsl_User.pdf", '_blank')} className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -482,8 +482,8 @@ const Header = () => {
                 <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
                   <img src='logo.png' />
                 </div>
-                <div className='row' onClick={() => window.open("/Cbsl_User.pdf", '_blank')}>
-                  <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                <div className='row'>
+                  <Link to='#'  onClick={() => window.open("/Cbsl_User.pdf", '_blank')} className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dashboard' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
@@ -628,8 +628,8 @@ const Header = () => {
                     <div className='row shrink-header-image' >
                       <img src='logo.png' />
                     </div>
-                    <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    <div className='row'>
+                      <Link to='#'  onClick={() => window.open("/District_Head.pdf", '_blank')} className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <Link to='/dashboard'><p className='ms-4'><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                     <Link to='/locationwisereport'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
@@ -647,8 +647,8 @@ const Header = () => {
                     <div className='row header-image'>
                       <img src='logo.png' />
                     </div>
-                    <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    <div className='row'>
+                      <Link to='#'  onClick={() => window.open("/District_Head.pdf", '_blank')} className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -693,7 +693,7 @@ const Header = () => {
                   <img src='logo.png' />
                 </div>
                 <div className='row' onClick={() => window.open("/District_Head.pdf", '_blank')}>
-                  <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                  <Link to='#' onClick={() => window.open("/District_Head.pdf", '_blank')} className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dashboard' className='ms-4 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px' }} />Dashboard</Link>
@@ -745,8 +745,8 @@ const Header = () => {
                     <div className='row shrink-header-image' >
                       <img src='logo.png' />
                     </div>
-                    <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    <div className='row'>
+                      <Link to='#' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')} className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <Link to='/dashboard'><p className='ms-4 '><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
                     <div className='row' onClick={handleActiveTab}>
@@ -767,8 +767,8 @@ const Header = () => {
                     <div className='row header-image'>
                       <img src='logo.png' />
                     </div>
-                    <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                      <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    <div className='row'>
+                      <Link to='#' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')} className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                     </div>
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/dashboard' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
@@ -829,8 +829,8 @@ const Header = () => {
                 <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
                   <img src='logo.png' />
                 </div>
-                <div className='row' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')}>
-                  <Link to='#' className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                <div className='row'>
+                  <Link to='#' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')} className='ms-1 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
                 </div>
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/dashboard' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>

@@ -301,7 +301,7 @@ const CostingReport = () => {
                                 </div>
                             </> :
                             <>
-                                <div className='search-report-card' style={{ height: 'auto' }}>
+                                <div className='search-report-card' style={{ height: '500px' }}>
                                     <div className='row'>
                                         <div className='col-10'></div>
                                         <div className='col-1'>

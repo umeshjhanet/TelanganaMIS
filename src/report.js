@@ -1283,7 +1283,7 @@ const Report = () => {
                   {showConfirmationBox && (
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
-                        <p className="fw-bold">Are you sure you want to export the CSV file?</p>
+                        <p className="fw-bold">Are you sure you want to export {exportTableFormat.toUpperCase()} file?</p>
                         <button className="btn btn-success mt-3 ms-5" onClick={downloadAllFormats}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleReportCancelExport}>No</button>
                       </div>
