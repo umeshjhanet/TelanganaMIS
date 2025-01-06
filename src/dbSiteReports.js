@@ -105,14 +105,17 @@ const DBSiteReports = () => {
       'NA S Storage Size', 'NA S Storage Used', 'NA S Storage Available',
       'NA S Storage Use Percentage', 'NA S Mounted On', 'NA S Latency'
     ];
-
+    const convertToGB = (sizeInK) => {
+      const sizeInKB = parseFloat(sizeInK.replace('K', ''));
+      return (sizeInKB / (1024 * 1024)).toFixed(2); // Convert to GB and round to 2 decimal places
+    };
     // Map data to CSV rows
     const rows = data.map((elem, index) => ([
       index + 1, elem.location, elem.csv_upload_dt, elem.backuppath, elem.backupsize,
       elem.backuptime, `${elem.cpustatus}%`, `${((elem.freeram / elem.totalram) * 100).toFixed(2)}%`,
       elem.errorlogs || '', elem.systemLogs || '', elem.innoDBStatus, elem.max_con, elem.bind_add,
       elem.general_log, elem.slowQuery, elem.ftpFilePath, elem.ftpFileSizeInGB, elem.FTPBackupCreateTime,
-      elem.filesystems, elem.sizes, elem.used, elem.avail, elem.use_percentage, elem.mounted_on,
+      elem.filesystems, convertToGB(elem.sizes), convertToGB(elem.used), convertToGB(elem.avail), elem.use_percentage, elem.mounted_on,
       elem.latencyFromNAS
     ]));
 
@@ -215,7 +218,10 @@ const DBSiteReports = () => {
                   <tbody>
                     {currentServers.map((elem, index) => {
                       const freeMemory = () => (elem.freeram / elem.totalram) * 100;
-
+                      const convertToGB = (sizeInK) => {
+                        const sizeInKB = parseFloat(sizeInK.replace('K', ''));
+                        return (sizeInKB / (1024 * 1024)).toFixed(2); // Convert to GB and round to 2 decimal places
+                      };
                       return (
                         <tr key={index}>
                           <td>{indexOfFirstServer + index + 1}</td>
@@ -289,9 +295,9 @@ const DBSiteReports = () => {
                           <td style={{ whiteSpace: 'nowrap' }}>{formatSize(elem.ftpFileSizeInGB)}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{formatDateTo12Hour(elem.FTPBackupCreateTime)}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.filesystems}</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{elem.sizes}</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{elem.used}</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{elem.avail}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.sizes)} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.used)} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.avail)} GB</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.use_percentage}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.mounted_on}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.latencyFromNAS}</td>
