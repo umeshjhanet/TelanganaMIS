@@ -58,7 +58,7 @@ const App = () => {
         <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
         <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport />} />} />
         <Route path="/DPRReport" element={<PrivateRoute element={<DPRReport />} />} />
-        <Route path="/locationwisereport" element={<PrivateRoute element={<Locationwisereport />} />} />
+        <Route path="/clientreport" element={<PrivateRoute element={<Locationwisereport />} />} />
         <Route path="/addRemarks" element={<PrivateRoute element={<AddRemarks />} />} />
         <Route path="/ClientDPR" element={<PrivateRoute element={<ClientDPR />} />} />
         <Route path="/CostingReport" element={<PrivateRoute element={<CostingReport />} />} />

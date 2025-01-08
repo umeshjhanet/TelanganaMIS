@@ -91,7 +91,7 @@ const Login = () => {
     if (user && user.user_roles && user.user_roles.includes("Cbsl User")) {
       navigate('/uploadDatabase');
     } else if (user && user.user_roles && user.user_roles.includes("Client")) {
-      navigate('/locationwisereport');
+      navigate('/clientreport');
     } else {
       navigate('/dashboard')
     }
