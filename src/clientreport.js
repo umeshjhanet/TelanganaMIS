@@ -501,7 +501,6 @@ const Locationwisereport = () => {
                     console.error("Error fetching data:", error);
                 });
         };
-
         const fetchTableData = () => {
             axios
                 .get(`${API_URL}/tabularData`)
@@ -635,7 +634,6 @@ const Locationwisereport = () => {
                 console.error('Error fetching data:', err);
             }
         };
-
         const fetchReportData = (locationName) => {
             // Create an object to hold query parameters
             const params = {};
@@ -672,7 +670,6 @@ const Locationwisereport = () => {
                 })
                 .catch((error) => console.error(error));
         };
-
         fetchReportData(locationName);
         fetchYesterdayReportData(locationName);
         fetchData(locationName);
@@ -729,7 +726,6 @@ const Locationwisereport = () => {
         },
         series: data.datasets,
     });
-
     const handleFileTable = () => {
         setShowFileTable(!showFileTable);
     }
@@ -769,6 +765,10 @@ const Locationwisereport = () => {
             "Scanned Images",
             "QC Files",
             "QC Images",
+            "Flagging Files",
+            "Flagging Images",
+            "Indexing Files",
+            "Indexing Images",
             "Offered for QA Files",
             "Offered for QA Images",
             "Client QA Done Files",
@@ -782,6 +782,10 @@ const Locationwisereport = () => {
             user.ScannedImages || '',
             user.QCFiles || '',
             user.QCImages || '',
+            user.FlaggingFiles || '',
+            user.FlaggingImages || '',
+            user.IndexingFiles || '',
+            user.IndexingImages || '',
             user.CBSLQAFiles || '',
             user.CBSLQAImages || '',
             user.ApprovedFiles || '',
@@ -819,6 +823,10 @@ const Locationwisereport = () => {
             "Scanned Images",
             "QC Files",
             "QC Images",
+            "Flagging Files",
+            "Flagging Images",
+            "Indexing Files",
+            "Indexing Images",
             "Offered for QA Files",
             "Offered for QA Images",
             "Client QA Done Files",
@@ -832,6 +840,10 @@ const Locationwisereport = () => {
             user.ScannedImages || '',
             user.QCFiles || '',
             user.QCImages || '',
+            user.FlaggingFiles || '',
+            user.FlaggingImages || '',
+            user.IndexingFiles || '',
+            user.IndexingImages || '',
             user.CBSLQAFiles || '',
             user.CBSLQAImages || '',
             user.ApprovedFiles || '',
