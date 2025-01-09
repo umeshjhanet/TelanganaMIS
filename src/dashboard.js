@@ -19,7 +19,7 @@ import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import AllUserDashboard from "./AllUserDashboard";
 import LocationWiseDashboard from "./LocationWiseDashboard";
 import CbslAdminDashboard from "./CbslAdminDashboard";
-import Locationwisereport from "./locationwisereport";
+
 
 const Dashboard = () => {
   const userLog = JSON.parse(localStorage.getItem("user"));

@@ -637,7 +637,7 @@ const DistrictHeadDashboard = () => {
                   {showConfirmation && (
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
-                        <p className="fw-bold">Are you sure you want to export the CSV file?</p>
+                        <p className="fw-bold">Are you sure you want to export the {exportTableFormat.toUpperCase()} file?</p>
                         <button className="btn btn-success mt-3 ms-5"  onClick={downloadAllFormatsSummary}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
                       </div>
@@ -683,7 +683,7 @@ const DistrictHeadDashboard = () => {
                             return (
                               <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td>{elem.LocationName}</td>
+                                <td style={{textAlign:'left'}}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>

@@ -85,6 +85,42 @@ const SiteReports = () => {
   const currentServers = filteredServers.slice(indexOfFirstServer, indexOfLastServer);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const exportToCSV = (data, filename) => {
+    // Define headers for the CSV file
+    const headers = [
+      'Sr.No', 'Location Name', 'CSV Uploaded Date', 'Free CPU', 'Free Memory', 'Server Logs',
+      'Server Status', 'Server IP', 'NAS File System', 'NAS Storage Size', 'NAS Storage Used',
+      'NAS Storage Available', 'NAS Storage Use Percentage', 'NAS Mounted On', 'NAS Latency'
+    ];
+    const convertToGB = (sizeInK) => {
+      const sizeInKB = parseFloat(sizeInK.replace('K', ''));
+      return (sizeInKB / (1024 * 1024)).toFixed(2); // Convert to GB and round to 2 decimal places
+    };
+    // Map data to CSV rows
+    const rows = data.map((elem, index) => ([
+      index + 1, elem.location, elem.csv_upload_dt, `${elem.cpustatus}%`, `${((elem.freeram / elem.totalram) * 100).toFixed(2)}%`,
+      elem.systemLogs || '', elem.innoDBStatus || '', elem.bind_add, elem.filesystems, convertToGB(elem.sizes), 
+      convertToGB(elem.used), convertToGB(elem.avail), elem.use_percentage, elem.mounted_on, elem.latencyFromNAS
+    ]));
+
+    // Combine headers and rows
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(item => `"${item}"`).join(','))
+      .join('\n');
+
+    // Create a Blob for the CSV file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.href = url;
+    link.download = `${filename}.csv`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       {isLoading && <Loader />}
@@ -103,7 +139,7 @@ const SiteReports = () => {
                 </h6>
               </div>
             </div>
-            <div className="row user-list-card mt-3 mb-5">
+            <div className="user-list-card mt-3 mb-5">
               <div className="row">
                 <input
                   type='text'
@@ -114,79 +150,120 @@ const SiteReports = () => {
                 />
                 <button className='btn search-btn mb-1' style={{ color: 'white' }}>Search</button>
               </div>
+              <div className='row'>
+                <div className='col-11'></div>
+                <div className='col-1'>
+                  <button
+                    onClick={() => exportToCSV(currentServers, 'server_report')}
+                    style={{
+                      backgroundColor: '#4bc0c0',
+                      color: 'white',
+                      borderRadius: '5px',
+                      padding: '10px 15px',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Export
+                  </button>
+                </div>
+              </div>
               <div className='server-report'>
                 <table className='server-reports table-bordered mt-1 mb-4'>
                   <thead>
                     <tr>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Sr.No</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Location Name</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Free CPU</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Free Memory</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Server Logs</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Server Status</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>Server IP</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>NA S File System</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>NA S Storage Size</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>NA S Storage Used</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>NA S Storage Available</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>NA S Storage Use Percentage</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>NA S Mounted On</th>
-                      <th style={{ whiteSpace: 'nowrap',color:'#4bc0c0' }}>NA S Latency</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Sr.No</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Location Name</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>CSV Uploaded Date</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Free CPU</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Free Memory</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Server Logs</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Server Status</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Server IP</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>NAS File System</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>NAS Storage Size</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>NAS Storage Used</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>NAS Storage Available</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>NAS Storage Use Percentage</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>NAS Mounted On</th>
+                      <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>NAS Latency</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {currentServers.map((elem, index) => 
-                      {
-                        const freeMemory = () => (elem.freeram / elem.totalram) * 100;
-  
-                        return (
-                      <tr key={index}>
-                        <td>{indexOfFirstServer + index + 1}</td>
-                        <td>{elem.location}</td>
-                        <td style={{ textAlign: 'center' }}><span
-                            style={{
-                              backgroundColor: '#4bc0c0',
-                              color: 'white',
-                              borderRadius: '25px',
-                              padding: '2px',
-                              fontSize: '12px',
-                              fontWeight: 'bold'
-                            }}>{elem.cpustatus}%</span></td>
-                        <td style={{ textAlign: 'center' }}><span
-                            style={{
-                              backgroundColor: '#4bc0c0',
-                              color: 'white',
-                              borderRadius: '25px',
-                              padding: '2px',
-                              fontSize: '12px',
-                              fontWeight: 'bold'
-                            }}>{freeMemory().toFixed(2)}%</span></td>
-                        <td>
-                          {elem.systemLogs && elem.systemLogs.trim() !== "" && (
-                            <button onClick={() => handleShowServerError(elem.systemLogs)} 
-                            style={{
-                                backgroundColor:'#4bc0c0',
-                                height:'25px',
-                                width:'100px',
-                                padding:'0px',
-                                border:'none',
-                                borderRadius:'8px',
-                                color:'white'
-                            }}>Show Error</button>
-                          )}
-                        </td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.innoDBStatus}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.bind_add}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.filesystems}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.sizes}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.used}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.avail}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.use_percentage}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.mounted_on}</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>{elem.latencyFromNAS}</td>
-                      </tr>
-                    )})}
+                    {currentServers.map((elem, index) => {
+                      // Utility function to convert KB to GB
+                      const convertToGB = (sizeInK) => {
+                        const sizeInKB = parseFloat(sizeInK.replace('K', ''));
+                        return (sizeInKB / (1024 * 1024)).toFixed(2); // Convert to GB and round to 2 decimal places
+                      };
+
+                      const freeMemory = () => (elem.freeram / elem.totalram) * 100;
+
+                      return (
+                        <tr key={index}>
+                          <td>{indexOfFirstServer + index + 1}</td>
+                          <td style={{ textAlign: 'left' }}>{elem.location}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.csv_upload_dt}</td>
+                          <td style={{ textAlign: 'center' }}>
+                            <span
+                              style={{
+                                backgroundColor: '#4bc0c0',
+                                color: 'white',
+                                borderRadius: '25px',
+                                padding: '2px',
+                                fontSize: '12px',
+                                fontWeight: 'bold',
+                              }}
+                            >
+                              {elem.cpustatus}%
+                            </span>
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <span
+                              style={{
+                                backgroundColor: '#4bc0c0',
+                                color: 'white',
+                                borderRadius: '25px',
+                                padding: '2px',
+                                fontSize: '12px',
+                                fontWeight: 'bold',
+                              }}
+                            >
+                              {freeMemory().toFixed(2)}%
+                            </span>
+                          </td>
+                          <td>
+                            {elem.systemLogs && elem.systemLogs.trim() !== "" && (
+                              <button
+                                onClick={() => handleShowServerError(elem.systemLogs)}
+                                style={{
+                                  backgroundColor: '#4bc0c0',
+                                  height: '25px',
+                                  width: '100px',
+                                  padding: '0px',
+                                  border: 'none',
+                                  borderRadius: '8px',
+                                  color: 'white',
+                                }}
+                              >
+                                Show Error
+                              </button>
+                            )}
+                          </td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.innoDBStatus}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.bind_add}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.filesystems}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.sizes)} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.used)} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.avail)} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.use_percentage}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.mounted_on}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.latencyFromNAS}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
+
                 </table>
               </div>
               <div className="row">
@@ -216,14 +293,14 @@ const SiteReports = () => {
       {showServerError && (
         <div className="modal">
           <div className="modal-content">
-          <h2>Server Error Logs</h2>
-          <div className='' style={{border:'1px solid gray',padding:'2px'}}>
-            <p>{selectedServerErrorLogs}</p>
+            <h2>Server Error Logs</h2>
+            <div className='' style={{ border: '1px solid gray', padding: '2px' }}>
+              <p>{selectedServerErrorLogs}</p>
             </div>
-            <div className='mt-2' style={{textAlign:'end'}}>
-            <button onClick={handleCloseServerError} className="btn btn-success" style={{width:'100px'}}>
-              Close
-            </button>
+            <div className='mt-2' style={{ textAlign: 'end' }}>
+              <button onClick={handleCloseServerError} className="btn btn-success" style={{ width: '100px' }}>
+                Close
+              </button>
             </div>
           </div>
         </div>
