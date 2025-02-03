@@ -1064,6 +1064,8 @@ const Locationwisereport = () => {
                                                     <th>Images</th>
                                                     <th>Files</th>
                                                     <th>Images</th>
+                                                    <th>Files</th>
+                                                    <th>Images</th>
                                                     {/* <th>Files</th>
                                             <th>Images</th> */}
                                                     {/* <th>Files</th>
@@ -1323,6 +1325,8 @@ const Locationwisereport = () => {
                                                     <th></th>
                                                     <th>Scanned</th>
                                                     <th>QC</th>
+                                                    <th>Flagging</th>
+                                                    <th>Indexing</th>
                                                     <th>Offered for QA</th>
                                                     <th>Client QA Done</th>
                                                 </tr>
@@ -1402,6 +1406,8 @@ const Locationwisereport = () => {
                                                     <th></th>
                                                     <th>Scanned</th>
                                                     <th>QC</th>
+                                                    <th>Flagging</th>
+                                                    <th>Indexing</th>
                                                     <th>Offered for QA</th>
                                                     <th>Client QA Done</th>
                                                 </tr>
@@ -1495,6 +1501,8 @@ const Locationwisereport = () => {
                                                     <th></th>
                                                     <th>Scanned</th>
                                                     <th>QC</th>
+                                                    <th>Flagging</th>
+                                                    <th>Indexing</th>
                                                     <th>Offered for QA</th>
                                                     <th>Client QA Done</th>
                                                 </tr>
@@ -1584,6 +1592,8 @@ const Locationwisereport = () => {
                                                     <th></th>
                                                     <th>Scanned</th>
                                                     <th>QC</th>
+                                                    <th>Flagging</th>
+                                                    <th>Indexing</th>
                                                     <th>Offered for QA</th>
                                                     <th>Client QA Done</th>
                                                 </tr>

@@ -295,7 +295,7 @@ const Locationwiseclientreport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
 
                     // Extract the first (and only) item in the response for process counts
                     const data = apiData[0];
@@ -307,6 +307,8 @@ const Locationwiseclientreport = () => {
                             data: [
                                 parseFloat(data.Scanned) || 0,
                                 parseFloat(data.QC) || 0,
+                                parseFloat(data.Flagging) || 0,
+                                parseFloat(data.Indexing) || 0,
                                 parseFloat(data.OfferedforQA) || 0,
                                 parseFloat(data.ClientQADone) || 0,
                             ],
@@ -342,7 +344,7 @@ const Locationwiseclientreport = () => {
                     console.log("API Data:", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
 
                     // If the API returns a single object (totals), no need to access the first item
                     const data = apiData;
@@ -355,6 +357,8 @@ const Locationwiseclientreport = () => {
                             data: [
                                 parseFloat(data.Scanned) || 0,
                                 parseFloat(data.QC) || 0,
+                                parseFloat(data.Flagging) || 0,
+                                parseFloat(data.Indexing) || 0,
                                 parseFloat(data.OfferedforQA) || 0,
                                 parseFloat(data.ClientQADone) || 0,
                             ],
@@ -387,7 +391,7 @@ const Locationwiseclientreport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
 
                     // Extract the first (and only) item in the response for process counts
                     const data = apiData[0];
@@ -399,6 +403,8 @@ const Locationwiseclientreport = () => {
                             data: [
                                 parseFloat(data.Scanned) || 0,
                                 parseFloat(data.QC) || 0,
+                                parseFloat(data.Flagging) || 0,
+                                parseFloat(data.Indexing) || 0,
                                 parseFloat(data.OfferedforQA) || 0,
                                 parseFloat(data.ClientQADone) || 0,
                             ],
@@ -434,7 +440,7 @@ const Locationwiseclientreport = () => {
                     console.log("API Data:", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
 
                     // If the API returns a single object (totals), no need to access the first item
                     const data = apiData;
@@ -447,6 +453,8 @@ const Locationwiseclientreport = () => {
                             data: [
                                 parseFloat(data.Scanned) || 0,
                                 parseFloat(data.QC) || 0,
+                                parseFloat(data.Flagging) || 0,
+                                parseFloat(data.Indexing) || 0,
                                 parseFloat(data.OfferedforQA) || 0,
                                 parseFloat(data.ClientQADone) || 0,
                             ],
@@ -498,6 +506,8 @@ const Locationwiseclientreport = () => {
                     date: item.formattedDate,
                     scanned: Number(item.ScannedImages) || 0,
                     qc: Number(item.QCImages) || 0,
+                    flagging: Number(item.FlaggingImages) || 0,
+                    index: Number(item.IndexImages) || 0,
                     offeredForQA: Number(item.CBSLQAImages) || 0,
                     clientQADone: Number(item.ApprovedImages) || 0,
                 }));
@@ -506,6 +516,8 @@ const Locationwiseclientreport = () => {
                 const dates = last30Days.map(item => item.date);
                 const scannedData = last30Days.map(item => item.scanned);
                 const qcData = last30Days.map(item => item.qc);
+                const flaggingData = last30Days.map(item => item.flagging);
+                const indexData = last30Days.map(item => item.index);
                 const cbslqaData = last30Days.map(item => item.offeredForQA);
                 const clientData = last30Days.map(item => item.clientQADone);
 
@@ -532,6 +544,14 @@ const Locationwiseclientreport = () => {
                         {
                             name: 'QC',
                             data: qcData
+                        },
+                        {
+                            name: 'Flagging',
+                            data: flaggingData
+                        },
+                        {
+                            name: 'Indexing',
+                            data: indexData
                         },
                         {
                             name: 'Offered for QA',
@@ -847,6 +867,8 @@ const Locationwiseclientreport = () => {
                                                 {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
                                                 {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
@@ -856,6 +878,10 @@ const Locationwiseclientreport = () => {
                                             <tr
                                                 style={{ color: "#4BC0C0", fontWeight: '300' }}
                                             >
+                                                <th>Files</th>
+                                                <th>Images</th>
+                                                <th>Files</th>
+                                                <th>Images</th>
                                                 <th>Files</th>
                                                 <th>Images</th>
                                                 <th>Files</th>
@@ -882,6 +908,10 @@ const Locationwiseclientreport = () => {
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexFiles)) ? "0" : parseInt(elem.IndexFiles).toLocaleString()}</td>
+                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexImages)) ? "0" : parseInt(elem.IndexImages).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
@@ -910,6 +940,10 @@ const Locationwiseclientreport = () => {
                                                     <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
                                                     <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
                                                     <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0).toLocaleString()}</td>
+                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0).toLocaleString()}</td>
+                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexFiles)) ? 0 : parseInt(elem.IndexFiles)), 0).toLocaleString()}</td>
+                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexImages)) ? 0 : parseInt(elem.IndexImages)), 0).toLocaleString()}</td>
                                                     <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
                                                     <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
                                                     <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
@@ -967,6 +1001,8 @@ const Locationwiseclientreport = () => {
                                                 {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
+                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
                                                 {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
@@ -982,6 +1018,10 @@ const Locationwiseclientreport = () => {
                                                 <th>Images</th>
                                                 <th>Files</th>
                                                 <th>Images</th>
+                                                <th>Files</th>
+                                                    <th>Images</th>
+                                                    <th>Files</th>
+                                                    <th>Images</th>
                                                 <th>Files</th>
                                                 <th>Images</th>
                                                 {/* <th>Files</th>
@@ -1002,6 +1042,10 @@ const Locationwiseclientreport = () => {
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexFiles)) ? "0" : parseInt(elem.IndexFiles).toLocaleString()}</td>
+                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexImages)) ? "0" : parseInt(elem.IndexImages).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
                                                         <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
@@ -1030,6 +1074,10 @@ const Locationwiseclientreport = () => {
                                                     <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
                                                     <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
                                                     <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
+                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0).toLocaleString()}</td>
+                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0).toLocaleString()}</td>
+                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexFiles)) ? 0 : parseInt(elem.IndexFiles)), 0).toLocaleString()}</td>
+                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexImages)) ? 0 : parseInt(elem.IndexImages)), 0).toLocaleString()}</td>
                                                     <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
                                                     <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
                                                     <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
@@ -1106,6 +1154,8 @@ const Locationwiseclientreport = () => {
                                                 <th></th>
                                                 <th>Scanned</th>
                                                 <th>QC</th>
+                                                <th>Flagging</th>
+                                                <th>Indexing</th>
                                                 <th>Offered for QA</th>
                                                 <th>Client QA Done</th>
                                             </tr>
@@ -1185,6 +1235,8 @@ const Locationwiseclientreport = () => {
                                                 <th></th>
                                                 <th>Scanned</th>
                                                 <th>QC</th>
+                                                <th>Flagging</th>
+                                                <th>Indexing</th>
                                                 <th>Offered for QA</th>
                                                 <th>Client QA Done</th>
                                             </tr>
@@ -1278,6 +1330,8 @@ const Locationwiseclientreport = () => {
                                                 <th></th>
                                                 <th>Scanned</th>
                                                 <th>QC</th>
+                                                <th>Flagging</th>
+                                                <th>Indexing</th>
                                                 <th>Offered for QA</th>
                                                 <th>Client QA Done</th>
                                             </tr>
@@ -1369,6 +1423,8 @@ const Locationwiseclientreport = () => {
                                                 <th></th>
                                                 <th>Scanned</th>
                                                 <th>QC</th>
+                                                <th>Flagging</th>
+                                                <th>Indexing</th>
                                                 <th>Offered for QA</th>
                                                 <th>Client QA Done</th>
                                             </tr>

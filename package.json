@@ -16,6 +16,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "date-fns": "^3.3.1",
     "file-saver": "^2.0.5",
+    "file-server": "^2.2.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.3",
