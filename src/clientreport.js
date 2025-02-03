@@ -143,6 +143,20 @@ const Locationwisereport = () => {
             dataLabels: {
                 enabled: false
             },
+            tooltip: {
+                enabled: true,
+                y: {
+                    formatter: function (val) {
+                        if (val >= 100000) {
+                            return (val / 100000).toFixed(2) + " L"; // Convert to lakhs
+                        }
+                        return val.toLocaleString(); // Format numbers below 1 lakh normally
+                    }
+                },
+                x: {
+                    show: false // Hide date from tooltip
+                }
+            },
             colors: [
                 '#FF5733', // Input
                 '#4BC0C0', // Scanned
@@ -701,6 +715,20 @@ const Locationwisereport = () => {
             dataLabels: {
                 enabled: false,
             },
+            tooltip: {
+                enabled: true,
+                y: {
+                    formatter: function (val) {
+                        if (val >= 100000) {
+                            return (val / 100000).toFixed(2) + " L"; // Convert to lakhs
+                        }
+                        return val.toLocaleString(); // Format numbers below 1 lakh normally
+                    }
+                },
+                x: {
+                    show: false // Hide date from tooltip
+                }
+            },
             stroke: {
                 show: true,
                 width: 2,
@@ -869,13 +897,11 @@ const Locationwisereport = () => {
         // Clean up the URL and the link element
         window.URL.revokeObjectURL(url);
     };
-
     const handleViewDailyClick = (dailyRemarks, dailySpecialRequests) => {
         setDailyRemarks(dailyRemarks)
         setDailySpecialRequests(dailySpecialRequests)
         setIsViewDailyModalOpen(true);
     };
-
     const handleViewCumulativeClick = (cumulativeRemarks, cumulativeSpecialRequests) => {
         setCumulativeRemarks(cumulativeRemarks);
         setCumulativeSpecialRequests(cumulativeSpecialRequests)
@@ -908,7 +934,6 @@ const Locationwisereport = () => {
                                                 borderRadius: "5px",
                                                 minHeight: "30px",
                                             }}
-
                                             contentEditable={true}
                                             onClick={() => setShowLocation(!showLocation)}
                                         >
@@ -995,20 +1020,15 @@ const Locationwisereport = () => {
                                             // paddingTop: "15px",
                                         }}
                                     >
-
                                         <h6 className="text-center" style={{ color: "white" }}>
                                             PROJECT UPDATE REPORT OF  {formattedYesterdayDate} FOR SCANNING AND DIGITIZATION OF CASE
                                             RECORDS FOR DISTRICT COURT OF TELANGANA
                                         </h6>
-
-
                                         <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSVYesterday}>
                                             {" "}
                                             <MdFileDownload style={{ fontSize: "20px" }} />
                                             Export CSV
                                         </h6>
-
-
                                     </div>
                                     <div
                                         className="row mt-2 ms-2 me-2"
@@ -1084,8 +1104,6 @@ const Locationwisereport = () => {
                                                         </tr>
                                                     ))
                                                 }
-
-                                                {/* Total Row */}
                                                 {yesterdayReport && (
                                                     <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
                                                         <td>Total: </td>
@@ -1094,10 +1112,10 @@ const Locationwisereport = () => {
                                                         <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
                                                         <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
                                                         <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexFiles)) ? 0 : parseInt(elem.IndexFiles)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexImages)) ? 0 : parseInt(elem.IndexImages)), 0).toLocaleString()}</td>
+                                                        <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0).toLocaleString()}</td>
+                                                        <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0).toLocaleString()}</td>
+                                                        <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexFiles)) ? 0 : parseInt(elem.IndexFiles)), 0).toLocaleString()}</td>
+                                                        <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexImages)) ? 0 : parseInt(elem.IndexImages)), 0).toLocaleString()}</td>
                                                         <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
                                                         <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
                                                         <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
@@ -1111,7 +1129,6 @@ const Locationwisereport = () => {
                                                 )}
                                             </tbody>
                                         </table>
-
                                     </div>
                                 </div>
                             </div>
@@ -1515,7 +1532,6 @@ const Locationwisereport = () => {
                                     </div>
                                 </div>
                             )}
-
                             <div className="col-md-4 col-sm-12">
                                 <Card>
                                     <CardBody>
@@ -1528,7 +1544,6 @@ const Locationwisereport = () => {
                                                 <VscTable size={20} onClick={handleTodayImageTable} style={{ cursor: 'pointer' }} />
                                             </div>
                                         </CardTitle>
-
                                         <Chart
                                             options={formatChartData(todayImage, ["#FF6384"]).options}
                                             series={formatChartData(todayImage, ["#FF6384"]).series}
