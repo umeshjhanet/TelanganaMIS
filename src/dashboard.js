@@ -19,6 +19,7 @@ import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import AllUserDashboard from "./AllUserDashboard";
 import LocationWiseDashboard from "./LocationWiseDashboard";
 import CbslAdminDashboard from "./CbslAdminDashboard";
+import ExclusiveDashboard from "./exclusiveDashboard";
 
 
 const Dashboard = () => {
@@ -34,7 +35,7 @@ const Dashboard = () => {
   const isEmptyLocations = userLog.locations.length === 1 &&
     userLog.locations[0].id === null &&
     userLog.locations[0].name === null;
-
+    const exclusiveUser = userLog && (userLog.user_id === 99 || userLog.user_id === 209);
   return (
     <>
       <Header />
@@ -44,6 +45,9 @@ const Dashboard = () => {
       // isExternalClient ? (
       //   <Locationwisereport />
       // ):
+       exclusiveUser ? (
+        <ExclusiveDashboard />
+      ):
        isEmptyLocations ? (
         <AllUserDashboard />
       ) : iscbslAdmin ? (

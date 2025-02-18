@@ -107,42 +107,71 @@ const Locationwiseclientreport = () => {
         datasets: [
             {
                 label: "No. of Images",
-                backgroundColor: "#AF8260",
+                // backgroundColor: "#AF8260",
                 data: [],
             },
         ],
     });
-
-    const [chartData, setChartData] = useState({
-        options: {
-            chart: {
-                type: 'bar',
-                height: '350'
+    const [allLocationYesImage, setAllLocationYesImage] = useState({
+        labels: [],
+        datasets: [
+            {
+                label: "Images",
+                backgroundColor: "#66b3ff",
+                data: [],
             },
-            xaxis: {
-                categories: []
-            },
-
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            colors: [
-                '#FF5733', // Input
-                '#4BC0C0', // Scanned
-                '#3357FF', // Approved
-                '#FF33A1', // Rectified
-                '#FFBD33'  // Export PDF
-            ]
-        },
-        series: []
+        ],
     });
+     const [chartData, setChartData] = useState({
+            options: {
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: { show: false },
+                    events: {
+                        legendClick: function (chartContext, seriesIndex, config) {
+                            // Find the corresponding line/bar index
+                            const pairedIndex = seriesIndex % 2 === 0 ? seriesIndex + 1 : seriesIndex - 1;
+        
+                            // Toggle both the clicked series and its pair
+                            chartContext.toggleSeries(config.config.series[seriesIndex].name);
+                            chartContext.toggleSeries(config.config.series[pairedIndex].name);
+                        }
+                    }
+                },
+                xaxis: { categories: [] },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '60%',
+                        grouped: true
+                    }
+                },
+                dataLabels: { enabled: false },
+                tooltip: {
+                    enabled: true,
+                    shared: false, // Ensures tooltip shows values for all series
+                    intersect: false, // Prevents conflicting tooltip behavior
+                    y: {
+                        formatter: function (val) {
+                            return val >= 100000 ? (val / 100000).toFixed(2) + " L" : val.toLocaleString();
+                        }
+                    }
+                },
+                stroke: { width: [0, 2], curve: 'smooth' },
+                colors: [
+                    '#FF5733', '#FF5733', // Scanned (Bar & Line)
+                    '#4BC0C0', '#4BC0C0', // QC
+                    '#FFBD33', '#FFBD33', // Flagging
+                    '#335700', '#335700', // Indexing
+                    '#FF33A1', '#FF33A1', // Offered for QA
+                    '#3674B5', '#3674B5'  // Customer QA Done
+                ],
+                grid: { padding: { left: 20, right: 20 } },
+                legend: { show: true }
+            },
+            series: [] // Dynamically updated
+        });
     const random = () => Math.round(Math.random() * 100);
 
     useEffect(() => {
@@ -284,7 +313,7 @@ const Locationwiseclientreport = () => {
             axios
                 .get(`${API_URL}/currentstatusimages`, {
                     params: { locationname: locationNames }
-                  }) // Include params in the request
+                }) // Include params in the request
                 .then((response) => {
                     const apiData = response.data;
 
@@ -295,7 +324,7 @@ const Locationwiseclientreport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
                     // Extract the first (and only) item in the response for process counts
                     const data = apiData[0];
@@ -331,7 +360,7 @@ const Locationwiseclientreport = () => {
             axios
                 .get(`${API_URL}/todaystatusimages`, {
                     params: { locationNames: locationNames }
-                  }) // Include params in the request
+                }) // Include params in the request
                 .then((response) => {
                     const apiData = response.data;
 
@@ -344,7 +373,7 @@ const Locationwiseclientreport = () => {
                     console.log("API Data:", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
                     // If the API returns a single object (totals), no need to access the first item
                     const data = apiData;
@@ -380,7 +409,7 @@ const Locationwiseclientreport = () => {
             axios
                 .get(`${API_URL}/currentstatusfiles`, {
                     params: { locationname: locationNames }
-                  }) // Include params in the request
+                }) // Include params in the request
                 .then((response) => {
                     const apiData = response.data;
 
@@ -391,7 +420,7 @@ const Locationwiseclientreport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
                     // Extract the first (and only) item in the response for process counts
                     const data = apiData[0];
@@ -427,7 +456,7 @@ const Locationwiseclientreport = () => {
             axios
                 .get(`${API_URL}/todaystatusfiles`, {
                     params: { locationNames: locationNames }
-                  }) // Include params in the request
+                }) // Include params in the request
                 .then((response) => {
                     const apiData = response.data;
 
@@ -440,7 +469,7 @@ const Locationwiseclientreport = () => {
                     console.log("API Data:", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
                     // If the API returns a single object (totals), no need to access the first item
                     const data = apiData;
@@ -471,14 +500,13 @@ const Locationwiseclientreport = () => {
                     console.error("Error fetching data:", error);
                 });
         };
-
         const fetchStatusDetails = () => {
             const locationNames = userLog.locations.map(location => `${location.name}`);
 
             axios
                 .get(`${API_URL}/statusDetails`, {
                     params: { locationname: locationNames }
-                  }) // Include params in the request
+                }) // Include params in the request
                 .then((response) => {
                     setStatusDetails(response.data);
                     console.log("Table Data", response.data); // Log inside the then block
@@ -489,9 +517,9 @@ const Locationwiseclientreport = () => {
             const locationNames = userLog.locations.map(location => `${location.name}`);
 
             try {
-                const response = await axios.get(`${API_URL}/cumulative-status-images`,{
+                const response = await axios.get(`${API_URL}/cumulative-status-images`, {
                     params: { locationname: locationNames }
-                  });
+                });
                 console.log("API Response Data:", response.data); // Log the API response
 
                 if (!response.data || response.data.length === 0) {
@@ -529,53 +557,44 @@ const Locationwiseclientreport = () => {
                 console.log("Customer QA Done Data:", clientData);
 
                 // Set chart data
-                setChartData({
+                setChartData(prevData => ({
+                    ...prevData,
                     options: {
-                        ...chartData.options,
-                        xaxis: {
-                            categories: dates // Set categories to last 30 days (dates)
-                        }
+                        ...prevData.options,
+                        xaxis: { categories: dates }
                     },
                     series: [
-                        {
-                            name: 'Scanned',
-                            data: scannedData
-                        },
-                        {
-                            name: 'QC',
-                            data: qcData
-                        },
-                        {
-                            name: 'Flagging',
-                            data: flaggingData
-                        },
-                        {
-                            name: 'Indexing',
-                            data: indexData
-                        },
-                        {
-                            name: 'Offered for QA',
-                            data: cbslqaData
-                        },
-                        {
-                            name: 'Customer QA Done',
-                            data: clientData
-                        }
+                        { name: 'Scanned', type: "bar", data: scannedData },
+                        { name: 'Scanned (Trend)', type: "line", data: scannedData },
+        
+                        { name: 'QC', type: "bar", data: qcData },
+                        { name: 'QC (Trend)', type: "line", data: qcData },
+        
+                        { name: 'Flagging', type: "bar", data: flaggingData },
+                        { name: 'Flagging (Trend)', type: "line", data: flaggingData },
+        
+                        { name: 'Indexing', type: "bar", data: indexData },
+                        { name: 'Indexing (Trend)', type: "line", data: indexData },
+        
+                        { name: 'Offered for QA', type: "bar", data: cbslqaData },
+                        { name: 'Offered for QA (Trend)', type: "line", data: cbslqaData },
+        
+                        { name: 'Customer QA Done', type: "bar", data: clientData },
+                        { name: 'Customer QA Done (Trend)', type: "line", data: clientData }
                     ]
-                });
+                }));
             } catch (err) {
                 console.error('Error fetching data:', err);
             }
         };
-
         const fetchReportData = () => {
             const locationNames = userLog.locations.map(location => `${location.name}`);
 
             // Make the API request with optional parameters
             axios
-                .get(`${API_URL}/Table`,  {
+                .get(`${API_URL}/Table`, {
                     params: { locationName: locationNames }
-                  })
+                })
                 .then((response) => {
                     setReport(response.data);
                     console.log("Table Data", response.data); // Log inside the then block
@@ -587,14 +606,152 @@ const Locationwiseclientreport = () => {
             axios
                 .get(`${API_URL}/yesterday-table`, {
                     params: { locationNames: locationNames }
-                  })
+                })
                 .then((response) => {
                     setYesterdayReport(response.data);
                     console.log("Table Data", response.data); // Log inside the then block
                 })
                 .catch((error) => console.error(error));
         };
+        const fetchAllYesGraphImageData = () => {
+            const locationNames = userLog.locations.map(location => location.name).join(',');
+            axios
+            .get(`${API_URL}/today-location-process-graph`, {
+                params: { locationname: locationNames }
+            }).then((response) => {
+                    const apiData = response.data;
+                    if (!apiData || apiData.length === 0) {
+                        console.error("No data received from the API");
+                        return;
+                    }
 
+                    const labels = apiData.map((item) => item["Location Name"]);
+                    const imagesData = apiData.map((item) => item["Scanned"]);
+                    const qcImagesData = apiData.map((item) => item["QC"]);
+                    const flaggingImagesData = apiData.map((item) => item["Flagging"]);
+                    const indexingImagesData = apiData.map((item) => item["Indexing"]);
+                    const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
+                    const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
+
+                    console.log("Yesterday Labels:", labels);
+                    console.log("Scanned Images:", imagesData);
+                    console.log("QC Images:", qcImagesData);
+                    console.log("Flagging Images:", flaggingImagesData);
+                    console.log("Indexing Images:", indexingImagesData);
+                    console.log("CBSL QA Images:", cbslQaImagesData);
+                    console.log("Client QA Images:", clientQaImagesData);
+
+                    setAllLocationYesImage({
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Scanned",
+                                data: imagesData,
+                                backgroundColor: "#02B2AF",
+                            },
+                            {
+                                label: "QC",
+                                data: qcImagesData,
+                                backgroundColor: "#FF6384",
+                            },
+                            {
+                                label: "Flagging",
+                                data: flaggingImagesData,
+                                backgroundColor: "#36A2EB",
+                            },
+                            {
+                                label: "Indexing",
+                                data: indexingImagesData,
+                                backgroundColor: "#FFCE56",
+                            },
+                            {
+                                label: "Offered for QA",
+                                data: cbslQaImagesData,
+                                backgroundColor: "#4BC0C0",
+                            },
+                            {
+                                label: "Customer QA Done",
+                                data: clientQaImagesData,
+                                backgroundColor: "#9966FF",
+                            },
+                        ],
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+        };
+        const fetchAllGraphImageData = () => {
+            const locationNames = userLog.locations.map(location => location.name).join(',');
+            axios
+            .get(`${API_URL}/cumulative-location-process-graph`, {
+                params: { locationname: locationNames }
+            }).then((response) => {
+                    const apiData = response.data;
+                    if (!apiData || apiData.length === 0) {
+                        console.error("No data received from the API");
+                        return;
+                    }
+
+                    const labels = apiData.map((item) => item["Location Name"]);
+                    const imagesData = apiData.map((item) => item["Scanned"]);
+                    const qcImagesData = apiData.map((item) => item["QC"]);
+                    const flaggingImagesData = apiData.map((item) => item["Flagging"]);
+                    const indexingImagesData = apiData.map((item) => item["Indexing"]);
+                    const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
+                    const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
+
+                    console.log("Labels:", labels);
+                    console.log("Images Data:", imagesData);
+                    console.log("QC Images Data:", qcImagesData);
+                    console.log("Flagging Images Data:", flaggingImagesData);
+                    console.log("Indexing Images Data:", indexingImagesData);
+                    console.log("CBSL QA Images Data:", cbslQaImagesData);
+                    console.log("Client QA Images Data:", clientQaImagesData);
+
+                    setAllLocationImage({
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Scanned",
+                                data: imagesData,
+                                backgroundColor: "#02B2AF",
+                            },
+                            {
+                                label: "QC",
+                                data: qcImagesData,
+                                backgroundColor: "#FF6384",
+                            },
+                            {
+                                label: "Flagging",
+                                data: flaggingImagesData,
+                                backgroundColor: "#36A2EB",
+                            },
+                            {
+                                label: "Indexing",
+                                data: indexingImagesData,
+                                backgroundColor: "#FFCE56",
+                            },
+                            {
+                                label: "Offered for QA",
+                                data: cbslQaImagesData,
+                                backgroundColor: "#4BC0C0",
+                            },
+                            {
+                                label: "Customer QA Done",
+                                data: clientQaImagesData,
+                                backgroundColor: "#9966FF",
+                            },
+                        ],
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+        };
+
+        fetchAllGraphImageData();
+        fetchAllYesGraphImageData();
         fetchReportData();
         fetchYesterdayReportData();
         fetchData();
@@ -624,6 +781,20 @@ const Locationwiseclientreport = () => {
             },
             dataLabels: {
                 enabled: false,
+            },
+            tooltip: {
+                enabled: true,
+                y: {
+                    formatter: function (val) {
+                        if (val >= 100000) {
+                            return (val / 100000).toFixed(2) + " L"; // Convert to lakhs
+                        }
+                        return val.toLocaleString(); // Format numbers below 1 lakh normally
+                    }
+                },
+                x: {
+                    show: false // Hide date from tooltip
+                }
             },
             stroke: {
                 show: true,
@@ -787,719 +958,804 @@ const Locationwiseclientreport = () => {
         setCumulativeSpecialRequests(cumulativeSpecialRequests)
         setIsViewCumulativeModalOpen(!isViewCumulativeModalOpen);
     };
-   
+    const formatProcessChartData = (data, colors = ["#02B2AF", "#02B2AF", "#FF6384", "#FF6384","#4335A7",
+        "#4335A7",  "#FF9D23","#FF9D23","#5CB338","#5CB338","#9966FF", "#9966FF",]) => ({
+        options: {
+            chart: {
+                type: 'bar',  // Mixed chart type
+                toolbar: { show: false },
+                events: {
+                    legendClick: function (chartContext, seriesIndex, config) {
+                        // Find the corresponding bar/line index
+                        const pairedIndex = seriesIndex % 2 === 0 ? seriesIndex + 1 : seriesIndex - 1;
+                        
+                        // Toggle both the clicked series and its pair
+                        chartContext.toggleSeries(config.config.series[seriesIndex].name);
+                        chartContext.toggleSeries(config.config.series[pairedIndex].name);
+                    }
+                }
+            },
+            dataLabels: { enabled: false },
+            tooltip: {
+                enabled: true,
+                shared: false,  // Ensures tooltips show all values together
+                intersect: false,
+                y: {
+                    formatter: function (val) {
+                        return val >= 100000 ? (val / 100000).toFixed(2) + " L" : val.toLocaleString();
+                    }
+                }
+            },
+            stroke: { width: [2, 2, 2, 2, 2, 2], curve: 'smooth' },
+            legend: { show: true },
+            colors: [...colors, ...colors], // Ensures bars & lines have the same colors
+            xaxis: { categories: data.labels || [] },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%'
+                }
+            },
+            responsive: [{ breakpoint: 1024, options: { chart: { type: 'bar' } } }]
+        },
+        series: [
+            // Bars
+            { name: "Scanned", type: "bar", data: data.datasets[0]?.data || [] },
+            { name: "Scanned (Trend)", type: "line", data: data.datasets[0]?.data || [] },
+    
+            { name: "QC", type: "bar", data: data.datasets[1]?.data || [] },
+            { name: "QC (Trend)", type: "line", data: data.datasets[1]?.data || [] },
+    
+            { name: "Flagging", type: "bar", data: data.datasets[2]?.data || [] },
+            { name: "Flagging (Trend)", type: "line", data: data.datasets[2]?.data || [] },
+    
+            { name: "Indexing", type: "bar", data: data.datasets[3]?.data || [] },
+            { name: "Indexing (Trend)", type: "line", data: data.datasets[3]?.data || [] },
+    
+            { name: "Offered for QA", type: "bar", data: data.datasets[4]?.data || [] },
+            { name: "Offered for QA (Trend)", type: "line", data: data.datasets[4]?.data || [] },
+    
+            { name: "Customer QA Done", type: "bar", data: data.datasets[5]?.data || [] },
+            { name: "Customer QA Done (Trend)", type: "line", data: data.datasets[5]?.data || [] }
+        ]
+    });
+
     return (
         <>
-            
-                <div className="container-fluid">
-                    <div className="row mt-2">
-                        <div
-                            style={{ display: "flex", justifyContent: "space-between" }}
+
+            <div className="container-fluid">
+                <div className="row mt-2">
+                    <div
+                        style={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                        <h4>Telangana High Court Digitization Project</h4>
+                    </div>
+                </div>
+
+                <div className="row mt-2">
+                    <div>
+                        <div className="search-report-card"
+                            style={{ display: "flex", justifyContent: "space-between", height: '50px', padding: '10px' }}
                         >
-                            <h4>Telangana High Court Digitization Project</h4>
+                            {statusDetails && statusDetails.map((elem, index) => (
+                                <>
+                                    <div className="col-md-3 col-sm-12" key={index}>
+                                        <p>Project Start Date: <b>{`${new Date(elem.Start_Date).getDate().toString().padStart(2, '0')}-${(new Date(elem.Start_Date).getMonth() + 1).toString().padStart(2, '0')}-${new Date(elem.Start_Date).getFullYear()}`}</b></p>
+
+                                    </div>
+                                    <div className="col-md-3 col-sm-12">
+                                        <p>No. of Locations: <b>{elem.Total_locations}</b></p>
+                                    </div>
+                                    <div className="col-md-3 col-sm-12">
+                                        <p>No. of Files Scanned: <b>{parseInt(elem.Total_Files).toLocaleString()}</b></p>
+                                    </div>
+                                    <div className="col-md-3 col-sm-12">
+                                        <p>No. of Images Scanned: <b>{parseInt(elem.Total_Images).toLocaleString()}</b></p>
+                                    </div>
+                                </>
+                            ))}
                         </div>
                     </div>
-                   
-                    <div className="row mt-2">
-                        <div>
-                            <div className="search-report-card"
-                                style={{ display: "flex", justifyContent: "space-between", height: '50px', padding: '10px' }}
+                </div>
+                <div className="row mt-4">
+                    <Card>
+                        <CardBody>
+                            <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
+                            <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                            <Chart
+                                options={formatProcessChartData(allLocationYesImage).options}
+                                series={formatProcessChartData(allLocationYesImage).series}
+                                type="bar"
+                                height="350"
+                            />
+
+                        </CardBody>
+                    </Card>
+                </div>
+                <div className="row mt-3">
+                    <div>
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5">Comparative Workflow Trend of Last 10 Days(Figure in Lakhs)</CardTitle>
+                                <Chart
+                                    options={chartData.options}
+                                    series={chartData.series}
+                                    type="bar"
+                                    height={350}
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                </div>
+                <div className="row mt-4">
+                    <Card>
+                        <CardBody>
+                            <CardTitle tag="h5">Cumulative Production Till Date(Figure in Lakhs)</CardTitle>
+                            <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                            <Chart
+                                options={formatProcessChartData(allLocationImage).options}
+                                series={formatProcessChartData(allLocationImage).series}
+                                type="bar"
+                                height="350"
+                            />
+                        </CardBody>
+                    </Card>
+                </div>
+                <div className="row mt-2">
+                    <div>
+                        <div className="table-card" style={{ marginBottom: '25px' }}>
+                            <div
+                                className="d-flex justify-content-between align-items-center"
+                                style={{
+                                    padding: "10px 10px 0px",
+                                    backgroundColor: "#4BC0C0",
+                                    // paddingTop: "15px",
+                                }}
                             >
-                                {statusDetails && statusDetails.map((elem, index) => (
-                                    <>
-                                        <div className="col-md-3 col-sm-12" key={index}>
-                                            <p>Project Start Date: <b>{`${new Date(elem.Start_Date).getDate().toString().padStart(2, '0')}-${(new Date(elem.Start_Date).getMonth() + 1).toString().padStart(2, '0')}-${new Date(elem.Start_Date).getFullYear()}`}</b></p>
 
-                                        </div>
-                                        <div className="col-md-3 col-sm-12">
-                                            <p>No. of Locations: <b>{elem.Total_locations}</b></p>
-                                        </div>
-                                        <div className="col-md-3 col-sm-12">
-                                            <p>No. of Files Scanned: <b>{parseInt(elem.Total_Files).toLocaleString()}</b></p>
-                                        </div>
-                                        <div className="col-md-3 col-sm-12">
-                                            <p>No. of Images Scanned: <b>{parseInt(elem.Total_Images).toLocaleString()}</b></p>
-                                        </div>
-                                    </>
-                                ))}
+                                <h6 className="text-center" style={{ color: "white" }}>
+                                    PROJECT UPDATE REPORT OF  {formattedYesterdayDate} FOR SCANNING AND DIGITIZATION OF CASE
+                                    RECORDS FOR DISTRICT COURT OF TELANGANA
+                                </h6>
+
+
+                                <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSVYesterday}>
+                                    {" "}
+                                    <MdFileDownload style={{ fontSize: "20px" }} />
+                                    Export CSV
+                                </h6>
+
+
                             </div>
-                        </div>
-                    </div>
-                    {/* <button onClick={handlePrint} style={{ padding: '10px 20px', fontSize: '16px' }}>
-                    Print this page
-                </button> */}
-                    <div className="row mt-2">
-                        <div>
-                            <div className="table-card" style={{ marginBottom: '25px' }}>
-                                <div
-                                    className="d-flex justify-content-between align-items-center"
-                                    style={{
-                                        padding: "10px 10px 0px",
-                                        backgroundColor: "#4BC0C0",
-                                        // paddingTop: "15px",
-                                    }}
-                                >
-
-                                    <h6 className="text-center" style={{ color: "white" }}>
-                                        PROJECT UPDATE REPORT OF  {formattedYesterdayDate} FOR SCANNING AND DIGITIZATION OF CASE
-                                        RECORDS FOR DISTRICT COURT OF TELANGANA
-                                    </h6>
-
-
-                                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSVYesterday}>
-                                        {" "}
-                                        <MdFileDownload style={{ fontSize: "20px" }} />
-                                        Export CSV
-                                    </h6>
-
-
-                                </div>
-                                <div
-                                    className="row mt-2 ms-2 me-2"
-                                    style={{ overflowX: "auto", overflowY: 'auto' }}
-                                >
-                                    <table class="table table-hover table-bordered table-responsive data-table">
-                                        <thead
-                                            style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
+                            <div
+                                className="row mt-2 ms-2 me-2"
+                                style={{ overflowX: "auto", overflowY: 'auto' }}
+                            >
+                                <table class="table table-hover table-bordered table-responsive data-table">
+                                    <thead
+                                        style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
+                                    >
+                                        <tr>
+                                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                            {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
+                                            {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
+                                            {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
+                                            <th>Remarks</th>
+                                        </tr>
+                                        <tr
+                                            style={{ color: "#4BC0C0", fontWeight: '300' }}
                                         >
-                                            <tr>
-                                                <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                                                {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
-                                                {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
-                                                {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
-                                                <th>Remarks</th>
-                                            </tr>
-                                            <tr
-                                                style={{ color: "#4BC0C0", fontWeight: '300' }}
-                                            >
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                {/* <th>Files</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            {/* <th>Files</th>
                                             <th>Images</th> */}
-                                                {/* <th>Files</th>
+                                            {/* <th>Files</th>
                                             <th>Images</th> */}
-                                            </tr>
-                                        </thead>
-                                        <tbody
-                                            style={{ color: "gray" }}
-                                        >
-                                            {yesterdayReport &&
-                                                yesterdayReport.map((elem, index) => (
-                                                    <tr key={index} style={{ backgroundColor: "white" }}>
-                                                        <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.locationname}</td>
-                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
-                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
-                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexFiles)) ? "0" : parseInt(elem.IndexFiles).toLocaleString()}</td>
-                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexImages)) ? "0" : parseInt(elem.IndexImages).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
-                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        style={{ color: "gray" }}
+                                    >
+                                        {yesterdayReport &&
+                                            yesterdayReport.map((elem, index) => (
+                                                <tr key={index} style={{ backgroundColor: "white" }}>
+                                                    <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationname}</td>
+                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexFiles)) ? "0" : parseInt(elem.IndexFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexImages)) ? "0" : parseInt(elem.IndexImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
+                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td> */}
-                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
-                                                        <td className="text-center"><button
-                                                            className="btn client-view-btn"
-                                                            onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}
-                                                        >
-                                                            View
-                                                        </button>
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            }
+                                                    <td className="text-center"><button
+                                                        className="btn client-view-btn"
+                                                        onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}
+                                                    >
+                                                        View
+                                                    </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        }
 
-                                            {/* Total Row */}
-                                            {yesterdayReport && (
-                                                <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
-                                                    <td>Total: </td>
-                                                    {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td> */}
-                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>
-                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
-                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
-                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexFiles)) ? 0 : parseInt(elem.IndexFiles)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexImages)) ? 0 : parseInt(elem.IndexImages)), 0).toLocaleString()}</td>
-                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
-                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
-                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
-                                                    <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
-                                                    {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
+                                        {/* Total Row */}
+                                        {yesterdayReport && (
+                                            <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
+                                                <td>Total: </td>
+                                                {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td> */}
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexFiles)) ? 0 : parseInt(elem.IndexFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexImages)) ? 0 : parseInt(elem.IndexImages)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
+                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
+                                                {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
                                                 <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedImages)) ? 0 : parseInt(elem.RectifiedImages)), 0).toLocaleString()}</td> */}
-                                                    {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
+                                                {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
                                                 <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0).toLocaleString()}</td> */}
-                                                    <td></td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
+                                                <td></td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
 
-                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className="row mt-2">
-                        <div>
-                            <div className="table-card" style={{ marginBottom: '25px' }}>
-                                <div
-                                    className="d-flex justify-content-between align-items-center"
-                                    style={{
-                                        padding: "10px 10px 0px",
-                                        backgroundColor: "#4BC0C0",
-                                        // paddingTop: "15px",
-                                    }}
-                                >
+                </div>
+                <div className="row mt-2">
+                    <div>
+                        <div className="table-card" style={{ marginBottom: '25px' }}>
+                            <div
+                                className="d-flex justify-content-between align-items-center"
+                                style={{
+                                    padding: "10px 10px 0px",
+                                    backgroundColor: "#4BC0C0",
+                                    // paddingTop: "15px",
+                                }}
+                            >
 
-                                    <h6 className="text-center" style={{ color: "white" }}>
-                                        PROJECT UPDATE CUMULATIVE REPORT FOR SCANNING AND DIGITIZATION OF CASE
-                                        RECORDS FOR DISTRICT COURT OF TELANGANA
-                                    </h6>
-
-
-                                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSV}>
-                                        {" "}
-                                        <MdFileDownload style={{ fontSize: "20px" }} />
-                                        Export CSV
-                                    </h6>
+                                <h6 className="text-center" style={{ color: "white" }}>
+                                    PROJECT UPDATE CUMULATIVE REPORT FOR SCANNING AND DIGITIZATION OF CASE
+                                    RECORDS FOR DISTRICT COURT OF TELANGANA
+                                </h6>
 
 
-                                </div>
-                                <div
-                                    className="row mt-2 ms-2 me-2"
-                                    style={{ overflowX: "auto", overflowY: 'auto' }}
-                                >
-                                    <table class="table table-hover table-bordered table-responsive data-table">
-                                        <thead
-                                            style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
+                                <h6 style={{ color: "white", cursor: "pointer" }} onClick={exportToCSV}>
+                                    {" "}
+                                    <MdFileDownload style={{ fontSize: "20px" }} />
+                                    Export CSV
+                                </h6>
+
+
+                            </div>
+                            <div
+                                className="row mt-2 ms-2 me-2"
+                                style={{ overflowX: "auto", overflowY: 'auto' }}
+                            >
+                                <table class="table table-hover table-bordered table-responsive data-table">
+                                    <thead
+                                        style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
+                                    >
+                                        <tr>
+                                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                            {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
+                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
+                                            {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
+                                            {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
+                                            <th>Remarks</th>
+                                        </tr>
+                                        <tr
+                                            style={{ color: "#4BC0C0", fontWeight: '300' }}
                                         >
-                                            <tr>
-                                                <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                                                {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
-                                                <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
-                                                {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
-                                                {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
-                                                <th>Remarks</th>
-                                            </tr>
-                                            <tr
-                                                style={{ color: "#4BC0C0", fontWeight: '300' }}
-                                            >
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                <th>Files</th>
-                                                    <th>Images</th>
-                                                    <th>Files</th>
-                                                    <th>Images</th>
-                                                <th>Files</th>
-                                                <th>Images</th>
-                                                {/* <th>Files</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            <th>Files</th>
+                                            <th>Images</th>
+                                            {/* <th>Files</th>
                                             <th>Images</th> */}
-                                                {/* <th>Files</th>
+                                            {/* <th>Files</th>
                                             <th>Images</th> */}
-                                            </tr>
-                                        </thead>
-                                        <tbody
-                                            style={{ color: "gray" }}
-                                        >
-                                            {report &&
-                                                report.map((elem, index) => (
-                                                    <tr key={index} style={{ backgroundColor: "white" }}>
-                                                        <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.LocationName}</td>
-                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
-                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
-                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexFiles)) ? "0" : parseInt(elem.IndexFiles).toLocaleString()}</td>
-                                                            <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexImages)) ? "0" : parseInt(elem.IndexImages).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
-                                                        <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
-                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        style={{ color: "gray" }}
+                                    >
+                                        {report &&
+                                            report.map((elem, index) => (
+                                                <tr key={index} style={{ backgroundColor: "white" }}>
+                                                    <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>
+                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexFiles)) ? "0" : parseInt(elem.IndexFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.IndexImages)) ? "0" : parseInt(elem.IndexImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAFiles)) ? "0" : parseInt(elem.CBSLQAFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
+                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
+                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td> */}
-                                                        {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
-                                                        <td className="text-center"><button
-                                                            className="btn client-view-btn"
-                                                            onClick={() => handleViewCumulativeClick(elem.Remarks, elem.SpecialRequests)}
-                                                        >
-                                                            View
-                                                        </button>
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            }
-
-                                            {/* Total Row */}
-                                            {report && (
-                                                <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
-                                                    <td>Total: </td>
-                                                    {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td> */}
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexFiles)) ? 0 : parseInt(elem.IndexFiles)), 0).toLocaleString()}</td>
-                                                        <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexImages)) ? 0 : parseInt(elem.IndexImages)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
-                                                    <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
-                                                    {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedImages)) ? 0 : parseInt(elem.RectifiedImages)), 0).toLocaleString()}</td> */}
-                                                    {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0).toLocaleString()}</td> */}
-                                                    <td></td>
+                                                    <td className="text-center"><button
+                                                        className="btn client-view-btn"
+                                                        onClick={() => handleViewCumulativeClick(elem.Remarks, elem.SpecialRequests)}
+                                                    >
+                                                        View
+                                                    </button>
+                                                    </td>
                                                 </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
+                                            ))
+                                        }
 
-                                </div>
+                                        {/* Total Row */}
+                                        {report && (
+                                            <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
+                                                <td>Total: </td>
+                                                {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td> */}
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexFiles)) ? 0 : parseInt(elem.IndexFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.IndexImages)) ? 0 : parseInt(elem.IndexImages)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAFiles)) ? 0 : parseInt(elem.CBSLQAFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
+                                                {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedImages)) ? 0 : parseInt(elem.RectifiedImages)), 0).toLocaleString()}</td> */}
+                                                {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
+                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0).toLocaleString()}</td> */}
+                                                <td></td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+
                             </div>
                         </div>
                     </div>
-
-                    <div className="row mt-3 mb-5">
-                        <div>
-                            <Card>
-                                <CardBody>
-                                    <CardTitle tag="h5">Cumulative Images of Last 30 Days</CardTitle>
-
-                                    <Chart
-                                        options={chartData.options}
-                                        series={chartData.series}
-                                        type="bar"
-                                        height={350}
-                                    />
-                                </CardBody>
-                            </Card>
-                        </div>
-                    </div>
-                    <div className="row mt-3">
-                        <div className="col-md-4 col-sm-12">
-                            <Card>
-                                <CardBody>
-                                    <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                        <span>Cumulative Files</span>
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            {/* <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
+                </div>
+                <div className="row mt-3">
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                    <span>Cumulative Files</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        {/* <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
                                                 {chartFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
                                             </div> */}
-                                            <VscTable size={20} onClick={handleFileTable} style={{ cursor: 'pointer' }} />
-                                        </div>
-                                    </CardTitle>
-                                    <Chart
-                                        options={formatChartData(barFile, ["#4BC0C0"]).options}
-                                        series={formatChartData(barFile, ["#4BC0C0"]).series}
-                                        type={chartFileType}
-                                        height="350"
-                                    />
-                                </CardBody>
-                            </Card>
-                        </div>
-                        {showFileTable && (
-                            <div className="table-popup">
-                                <div className="table-content">
-                                    <div className="popup-header d-flex justify-content-between align-items-center">
-                                        <h5>Cumulative (Files)</h5>
-                                        <button
-                                            onClick={closeFileTable}
-                                            className="btn"
-                                            style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-                                        >
-                                            X
-                                        </button>
+                                        <VscTable size={20} onClick={handleFileTable} style={{ cursor: 'pointer' }} />
                                     </div>
-                                    <table className="table table-bordered">
-                                        <thead style={{ color: '#4BC0C0' }}>
-                                            <tr>
-                                                <th></th>
-                                                <th>Scanned</th>
-                                                <th>QC</th>
-                                                <th>Flagging</th>
-                                                <th>Indexing</th>
-                                                <th>Offered for QA</th>
-                                                <th>Client QA Done</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {/* Mapping through barFile datasets to generate rows */}
-                                            {barFile.datasets.map((dataset, index) => (
-                                                <tr key={index}>
-                                                    <td>{dataset.name}</td>
-                                                    {dataset.data.map((value, dataIndex) => (
-                                                        <td key={dataIndex} style={{ textAlign: 'end' }}>
-                                                            {parseInt(value).toLocaleString()}
-                                                        </td>
-                                                    ))}
-                                                </tr>
-                                            ))}
-
-                                            {/* Calculating and displaying the total row */}
-                                            <tr>
-                                                <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
-                                                {barFile.datasets[0].data.map((_, colIndex) => {
-                                                    const total = barFile.datasets.reduce(
-                                                        (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                                                        0
-                                                    );
-                                                    return (
-                                                        <td key={colIndex} style={{ textAlign: 'end' }}>
-                                                            <strong>{total.toLocaleString()}</strong>
-                                                        </td>
-                                                    );
-                                                })}
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                </CardTitle>
+                                <Chart
+                                    options={formatChartData(barFile, ["#4BC0C0"]).options}
+                                    series={formatChartData(barFile, ["#4BC0C0"]).series}
+                                    type={chartFileType}
+                                    height="350"
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                    {showFileTable && (
+                        <div className="table-popup">
+                            <div className="table-content">
+                                <div className="popup-header d-flex justify-content-between align-items-center">
+                                    <h5>Cumulative (Files)</h5>
+                                    <button
+                                        onClick={closeFileTable}
+                                        className="btn"
+                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                    >
+                                        X
+                                    </button>
                                 </div>
-                            </div>
-                        )}
+                                <table className="table table-bordered">
+                                    <thead style={{ color: '#4BC0C0' }}>
+                                        <tr>
+                                            <th></th>
+                                            <th>Scanned</th>
+                                            <th>QC</th>
+                                            <th>Flagging</th>
+                                            <th>Indexing</th>
+                                            <th>Offered for QA</th>
+                                            <th>Client QA Done</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* Mapping through barFile datasets to generate rows */}
+                                        {barFile.datasets.map((dataset, index) => (
+                                            <tr key={index}>
+                                                <td>{dataset.name}</td>
+                                                {dataset.data.map((value, dataIndex) => (
+                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                        {parseInt(value).toLocaleString()}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
 
-                        <div className="col-md-4 col-sm-12">
-                            <Card>
-                                <CardBody>
-                                    <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                        <span>Cumulative Images</span>
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            {/* <div className="me-2" onClick={toggleChartImageType} style={{ cursor: "pointer" }}>
+                                        {/* Calculating and displaying the total row */}
+                                        <tr>
+                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                            {barFile.datasets[0].data.map((_, colIndex) => {
+                                                const total = barFile.datasets.reduce(
+                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                    0
+                                                );
+                                                return (
+                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                        <strong>{total.toLocaleString()}</strong>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                    <span>Cumulative Images</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        {/* <div className="me-2" onClick={toggleChartImageType} style={{ cursor: "pointer" }}>
                                                 {chartImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
                                             </div> */}
-                                            <VscTable size={20} onClick={handleImageTable} style={{ cursor: 'pointer' }} />
-                                        </div>
-                                    </CardTitle>
-
-                                    <Chart
-                                        options={formatChartData(barImage, ["#FF6384"]).options}
-                                        series={formatChartData(barImage, ["#FF6384"]).series}
-                                        type={chartImageType}
-                                        height="350"
-                                    />
-                                </CardBody>
-                            </Card>
-                        </div>
-                        {showImageTable && (
-                            <div className="table-popup">
-                                <div className="table-content">
-                                    <div className="popup-header d-flex justify-content-between align-items-center">
-                                        <h5>Cumulative (Images)</h5>
-                                        <button
-                                            onClick={closeImageTable}
-                                            className="btn"
-                                            style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-                                        >
-                                            X
-                                        </button>
+                                        <VscTable size={20} onClick={handleImageTable} style={{ cursor: 'pointer' }} />
                                     </div>
-                                    <table className="table table-bordered">
-                                        <thead style={{ color: '#4BC0C0' }}>
-                                            <tr>
-                                                <th></th>
-                                                <th>Scanned</th>
-                                                <th>QC</th>
-                                                <th>Flagging</th>
-                                                <th>Indexing</th>
-                                                <th>Offered for QA</th>
-                                                <th>Client QA Done</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {/* Mapping through barFile datasets to generate rows */}
-                                            {barImage.datasets.map((dataset, index) => (
-                                                <tr key={index}>
-                                                    <td>{dataset.name}</td>
-                                                    {dataset.data.map((value, dataIndex) => (
-                                                        <td key={dataIndex} style={{ textAlign: 'end' }}>
-                                                            {parseInt(value).toLocaleString()}
-                                                        </td>
-                                                    ))}
-                                                </tr>
-                                            ))}
+                                </CardTitle>
 
-                                            {/* Calculating and displaying the total row */}
-                                            <tr>
-                                                <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
-                                                {barImage.datasets[0].data.map((_, colIndex) => {
-                                                    const total = barImage.datasets.reduce(
-                                                        (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                                                        0
-                                                    );
-                                                    return (
-                                                        <td key={colIndex} style={{ textAlign: 'end' }}>
-                                                            <strong>{total.toLocaleString()}</strong>
-                                                        </td>
-                                                    );
-                                                })}
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="col-md-4 col-sm-12">
-                            <Card>
-                                <CardBody style={{ height: '430px' }}>
-                                    <div className="row">
-                                        <h5>Remarks:</h5>
-                                    </div>
-                                    <div className="row" style={{ marginTop: '180px' }}>
-                                        <h5>Special Requests:</h5>
-                                    </div>
-                                </CardBody>
-                            </Card>
-                        </div>
+                                <Chart
+                                    options={formatChartData(barImage, ["#FF6384"]).options}
+                                    series={formatChartData(barImage, ["#FF6384"]).series}
+                                    type={chartImageType}
+                                    height="350"
+                                />
+                            </CardBody>
+                        </Card>
                     </div>
-                    <div className="row mt-3">
-                        <div className="col-md-4 col-sm-12">
-                            <Card>
-                                <CardBody>
-                                    <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                        <span>Process(Files) Dated: {formattedYesterdayDate}</span>
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            {/* <div className="me-2" onClick={toggleChartTodayFileType} style={{ cursor: "pointer" }}>
+                    {showImageTable && (
+                        <div className="table-popup">
+                            <div className="table-content">
+                                <div className="popup-header d-flex justify-content-between align-items-center">
+                                    <h5>Cumulative (Images)</h5>
+                                    <button
+                                        onClick={closeImageTable}
+                                        className="btn"
+                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                                <table className="table table-bordered">
+                                    <thead style={{ color: '#4BC0C0' }}>
+                                        <tr>
+                                            <th></th>
+                                            <th>Scanned</th>
+                                            <th>QC</th>
+                                            <th>Flagging</th>
+                                            <th>Indexing</th>
+                                            <th>Offered for QA</th>
+                                            <th>Client QA Done</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* Mapping through barFile datasets to generate rows */}
+                                        {barImage.datasets.map((dataset, index) => (
+                                            <tr key={index}>
+                                                <td>{dataset.name}</td>
+                                                {dataset.data.map((value, dataIndex) => (
+                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                        {parseInt(value).toLocaleString()}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
+
+                                        {/* Calculating and displaying the total row */}
+                                        <tr>
+                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                            {barImage.datasets[0].data.map((_, colIndex) => {
+                                                const total = barImage.datasets.reduce(
+                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                    0
+                                                );
+                                                return (
+                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                        <strong>{total.toLocaleString()}</strong>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody style={{ height: '430px' }}>
+                                <div className="row">
+                                    <h5>Remarks:</h5>
+                                </div>
+                                <div className="row" style={{ marginTop: '180px' }}>
+                                    <h5>Special Requests:</h5>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
+                </div>
+                <div className="row mt-3">
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                    <span>Process(Files) Dated: {formattedYesterdayDate}</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        {/* <div className="me-2" onClick={toggleChartTodayFileType} style={{ cursor: "pointer" }}>
                                                 {chartTodayFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
                                             </div> */}
-                                            <VscTable size={20} onClick={handleTodayFileTable} style={{ cursor: 'pointer' }} />
-                                        </div>
-                                    </CardTitle>
-
-                                    <Chart
-                                        options={formatChartData(todayFile, ["#4BC0C0"]).options}
-                                        series={formatChartData(todayFile, ["#4BC0C0"]).series}
-                                        type={chartTodayFileType}
-                                        height="350"
-                                    />
-                                </CardBody>
-                            </Card>
-                        </div>
-                        {showTodayFileTable && (
-                            <div className="table-popup">
-                                <div className="table-content">
-                                    <div className="popup-header d-flex justify-content-between align-items-center">
-                                        <h5>Process(Files) Dated: {formattedYesterdayDate}</h5>
-                                        <button
-                                            onClick={closeTodayFileTable}
-                                            className="btn"
-                                            style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-                                        >
-                                            X
-                                        </button>
+                                        <VscTable size={20} onClick={handleTodayFileTable} style={{ cursor: 'pointer' }} />
                                     </div>
-                                    <table className="table table-bordered">
-                                        <thead style={{ color: '#4BC0C0' }}>
-                                            <tr>
-                                                <th></th>
-                                                <th>Scanned</th>
-                                                <th>QC</th>
-                                                <th>Flagging</th>
-                                                <th>Indexing</th>
-                                                <th>Offered for QA</th>
-                                                <th>Client QA Done</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {/* Mapping through barFile datasets to generate rows */}
-                                            {todayFile.datasets.map((dataset, index) => (
-                                                <tr key={index}>
-                                                    <td>{dataset.name}</td>
-                                                    {dataset.data.map((value, dataIndex) => (
-                                                        <td key={dataIndex} style={{ textAlign: 'end' }}>
-                                                            {parseInt(value).toLocaleString()}
-                                                        </td>
-                                                    ))}
-                                                </tr>
-                                            ))}
+                                </CardTitle>
 
-                                            {/* Calculating and displaying the total row */}
-                                            <tr>
-                                                <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
-                                                {todayFile.datasets[0].data.map((_, colIndex) => {
-                                                    const total = todayFile.datasets.reduce(
-                                                        (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                                                        0
-                                                    );
-                                                    return (
-                                                        <td key={colIndex} style={{ textAlign: 'end' }}>
-                                                            <strong>{total.toLocaleString()}</strong>
-                                                        </td>
-                                                    );
-                                                })}
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <Chart
+                                    options={formatChartData(todayFile, ["#4BC0C0"]).options}
+                                    series={formatChartData(todayFile, ["#4BC0C0"]).series}
+                                    type={chartTodayFileType}
+                                    height="350"
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                    {showTodayFileTable && (
+                        <div className="table-popup">
+                            <div className="table-content">
+                                <div className="popup-header d-flex justify-content-between align-items-center">
+                                    <h5>Process(Files) Dated: {formattedYesterdayDate}</h5>
+                                    <button
+                                        onClick={closeTodayFileTable}
+                                        className="btn"
+                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                    >
+                                        X
+                                    </button>
                                 </div>
-                            </div>
-                        )}
+                                <table className="table table-bordered">
+                                    <thead style={{ color: '#4BC0C0' }}>
+                                        <tr>
+                                            <th></th>
+                                            <th>Scanned</th>
+                                            <th>QC</th>
+                                            <th>Flagging</th>
+                                            <th>Indexing</th>
+                                            <th>Offered for QA</th>
+                                            <th>Client QA Done</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* Mapping through barFile datasets to generate rows */}
+                                        {todayFile.datasets.map((dataset, index) => (
+                                            <tr key={index}>
+                                                <td>{dataset.name}</td>
+                                                {dataset.data.map((value, dataIndex) => (
+                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                        {parseInt(value).toLocaleString()}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
 
-                        <div className="col-md-4 col-sm-12">
-                            <Card>
-                                <CardBody>
-                                    <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
-                                        <span>Process(Images) Dated: {formattedYesterdayDate}</span>
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            {/* <div className="me-2" onClick={toggleChartTodayImageType} style={{ cursor: "pointer" }}>
+                                        {/* Calculating and displaying the total row */}
+                                        <tr>
+                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                            {todayFile.datasets[0].data.map((_, colIndex) => {
+                                                const total = todayFile.datasets.reduce(
+                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                    0
+                                                );
+                                                return (
+                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                        <strong>{total.toLocaleString()}</strong>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody>
+                                <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
+                                    <span>Process(Images) Dated: {formattedYesterdayDate}</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        {/* <div className="me-2" onClick={toggleChartTodayImageType} style={{ cursor: "pointer" }}>
                                                 {chartTodayImageType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
                                             </div> */}
-                                            <VscTable size={20} onClick={handleTodayImageTable} style={{ cursor: 'pointer' }} />
-                                        </div>
-                                    </CardTitle>
+                                        <VscTable size={20} onClick={handleTodayImageTable} style={{ cursor: 'pointer' }} />
+                                    </div>
+                                </CardTitle>
 
-                                    <Chart
-                                        options={formatChartData(todayImage, ["#FF6384"]).options}
-                                        series={formatChartData(todayImage, ["#FF6384"]).series}
-                                        type={chartTodayImageType}
-                                        height="350"
-                                    />
-                                </CardBody>
-                            </Card>
-                        </div>
-                        <div className="col-md-4 col-sm-12">
-                            <Card>
-                                <CardBody style={{ height: '430px' }}>
-                                    <div className="row">
-                                        <h5>Remarks:</h5>
-                                    </div>
-                                    <div className="row" style={{ marginTop: '180px' }}>
-                                        <h5>Special Requests:</h5>
-                                    </div>
-                                </CardBody>
-                            </Card>
-                        </div>
-                        {showTodayImageTable && (
-                            <div className="table-popup">
-                                <div className="table-content">
-                                    <div className="popup-header d-flex justify-content-between align-items-center">
-                                        <h5>Process(Images) Dated: {formattedYesterdayDate}</h5>
-                                        <button
-                                            onClick={closeTodayImageTable}
-                                            className="btn"
-                                            style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
-                                        >
-                                            X
-                                        </button>
-                                    </div>
-                                    <table className="table table-bordered">
-                                        <thead style={{ color: '#4BC0C0' }}>
-                                            <tr>
-                                                <th></th>
-                                                <th>Scanned</th>
-                                                <th>QC</th>
-                                                <th>Flagging</th>
-                                                <th>Indexing</th>
-                                                <th>Offered for QA</th>
-                                                <th>Client QA Done</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {/* Mapping through barFile datasets to generate rows */}
-                                            {todayImage.datasets.map((dataset, index) => (
-                                                <tr key={index}>
-                                                    <td>{dataset.name}</td>
-                                                    {dataset.data.map((value, dataIndex) => (
-                                                        <td key={dataIndex} style={{ textAlign: 'end' }}>
-                                                            {parseInt(value).toLocaleString()}
-                                                        </td>
-                                                    ))}
-                                                </tr>
-                                            ))}
-
-                                            {/* Calculating and displaying the total row */}
-                                            <tr>
-                                                <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
-                                                {todayImage.datasets[0].data.map((_, colIndex) => {
-                                                    const total = todayImage.datasets.reduce(
-                                                        (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
-                                                        0
-                                                    );
-                                                    return (
-                                                        <td key={colIndex} style={{ textAlign: 'end' }}>
-                                                            <strong>{total.toLocaleString()}</strong>
-                                                        </td>
-                                                    );
-                                                })}
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <Chart
+                                    options={formatChartData(todayImage, ["#FF6384"]).options}
+                                    series={formatChartData(todayImage, ["#FF6384"]).series}
+                                    type={chartTodayImageType}
+                                    height="350"
+                                />
+                            </CardBody>
+                        </Card>
+                    </div>
+                    <div className="col-md-4 col-sm-12">
+                        <Card>
+                            <CardBody style={{ height: '430px' }}>
+                                <div className="row">
+                                    <h5>Remarks:</h5>
                                 </div>
-                            </div>
-                        )}
-
+                                <div className="row" style={{ marginTop: '180px' }}>
+                                    <h5>Special Requests:</h5>
+                                </div>
+                            </CardBody>
+                        </Card>
                     </div>
+                    {showTodayImageTable && (
+                        <div className="table-popup">
+                            <div className="table-content">
+                                <div className="popup-header d-flex justify-content-between align-items-center">
+                                    <h5>Process(Images) Dated: {formattedYesterdayDate}</h5>
+                                    <button
+                                        onClick={closeTodayImageTable}
+                                        className="btn"
+                                        style={{ backgroundColor: 'gray', color: 'white', padding: '0 5px' }}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                                <table className="table table-bordered">
+                                    <thead style={{ color: '#4BC0C0' }}>
+                                        <tr>
+                                            <th></th>
+                                            <th>Scanned</th>
+                                            <th>QC</th>
+                                            <th>Flagging</th>
+                                            <th>Indexing</th>
+                                            <th>Offered for QA</th>
+                                            <th>Client QA Done</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* Mapping through barFile datasets to generate rows */}
+                                        {todayImage.datasets.map((dataset, index) => (
+                                            <tr key={index}>
+                                                <td>{dataset.name}</td>
+                                                {dataset.data.map((value, dataIndex) => (
+                                                    <td key={dataIndex} style={{ textAlign: 'end' }}>
+                                                        {parseInt(value).toLocaleString()}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
+
+                                        {/* Calculating and displaying the total row */}
+                                        <tr>
+                                            <td style={{ textAlign: 'end' }}><strong>Total: </strong></td>
+                                            {todayImage.datasets[0].data.map((_, colIndex) => {
+                                                const total = todayImage.datasets.reduce(
+                                                    (sum, dataset) => sum + parseInt(dataset.data[colIndex] || 0),
+                                                    0
+                                                );
+                                                return (
+                                                    <td key={colIndex} style={{ textAlign: 'end' }}>
+                                                        <strong>{total.toLocaleString()}</strong>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
 
                 </div>
-                <div className='d-none d-xl-block d-sm-none'>
-                    <div className='container footer'>
-                        <div className='row'>
-                            <div className='col-12 text-center'>
-                                <p>© 2024 CBSLGROUP All rights reserved</p>
-                            </div>
+
+            </div>
+            <div className='d-none d-xl-block d-sm-none'>
+                <div className='container footer'>
+                    <div className='row'>
+                        <div className='col-12 text-center'>
+                            <p>© 2024 CBSLGROUP All rights reserved</p>
                         </div>
                     </div>
                 </div>
-                <div className='d-block d-xl-none d-sm-block'>
-                    <div className='container '>
-                        <div className='row'>
-                            <div className='col-12 text-center'>
-                                <p>© 2024 CBSLGROUP All rights reserved</p>
-                            </div>
+            </div>
+            <div className='d-block d-xl-none d-sm-block'>
+                <div className='container '>
+                    <div className='row'>
+                        <div className='col-12 text-center'>
+                            <p>© 2024 CBSLGROUP All rights reserved</p>
                         </div>
                     </div>
                 </div>
-                {isViewDailyModalOpen && (
-                    <ViewDailyRemarksModal
-                        remarks={dailyRemarks}
-                        special_requests={dailySpecialRequests}
-                        onClose={() => setIsViewDailyModalOpen(false)}
-                    />
-                )}
-                {isViewCumulativeModalOpen && (
-                    <ViewCumulativeRemarksModal
-                        remarks={cumulativeRemarks}
-                        special_requests={cumulativeSpecialRequests}
-                        onClose={() => setIsViewCumulativeModalOpen(false)}
-                    />
-                )}
-            </>
-       
+            </div>
+            {isViewDailyModalOpen && (
+                <ViewDailyRemarksModal
+                    remarks={dailyRemarks}
+                    special_requests={dailySpecialRequests}
+                    onClose={() => setIsViewDailyModalOpen(false)}
+                />
+            )}
+            {isViewCumulativeModalOpen && (
+                <ViewCumulativeRemarksModal
+                    remarks={cumulativeRemarks}
+                    special_requests={cumulativeSpecialRequests}
+                    onClose={() => setIsViewCumulativeModalOpen(false)}
+                />
+            )}
+        </>
+
     )
 }
 

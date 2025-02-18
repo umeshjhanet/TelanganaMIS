@@ -33,6 +33,7 @@ import DPRReport from './DPRReport';
 import ClientDPR from './ClientDPR';
 import FollowUpReportForm from './follow_up_report';
 import CostingReport from './CostingReport';
+import CustomerQAReport from './customerQAReport';
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
         <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
         <Route path="/uploadDatabase" element={<PrivateRoute element={<UploadDatabase />} />} />
         <Route path="/report" element={<PrivateRoute element={<Report />} />} />
+        <Route path="/customerQAReport" element={<PrivateRoute element={<CustomerQAReport />} />} />
         <Route path="/dbSiteReports" element={<PrivateRoute element={<DBSiteReports />} />} />
         <Route path="/siteReports"element={<PrivateRoute element={<SiteReports />} />} />
         <Route path="/groupManager" element={<PrivateRoute element={<GroupManager />} />} />

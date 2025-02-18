@@ -39,6 +39,8 @@ const Locationwisereport = () => {
     const [showTodayFileTable, setShowTodayFileTable] = useState(false);
     const [showTodayImageTable, setShowTodayImageTable] = useState(false);
     const [report, setReport] = useState([]);
+    const [cardCumulative, setCardCumulative] = useState([]);
+    const [cardToday, setCardToday] = useState([]);
     const [yesterdayReport, setYesterdayReport] = useState([]);
     const [chartFileType, setChartFileType] = useState("bar");
     const [chartImageType, setChartImageType] = useState("bar");
@@ -118,56 +120,73 @@ const Locationwisereport = () => {
         datasets: [
             {
                 label: "No. of Images",
-                backgroundColor: "#AF8260",
+                // backgroundColor: "#AF8260",
                 data: [],
             },
         ],
     });
+    const [allLocationYesImage, setAllLocationYesImage] = useState({
+        labels: [],
+        datasets: [
+            {
+                label: "Images",
+                backgroundColor: "#66b3ff",
+                data: [],
+            },
+        ],
+    });
+
     const [chartData, setChartData] = useState({
         options: {
             chart: {
                 type: 'bar',
-                height: '350'
-            },
-            xaxis: {
-                categories: []
-            },
+                height: 350,
+                toolbar: { show: false },
+                events: {
+                    legendClick: function (chartContext, seriesIndex, config) {
+                        // Find the corresponding line/bar index
+                        const pairedIndex = seriesIndex % 2 === 0 ? seriesIndex + 1 : seriesIndex - 1;
 
+                        // Toggle both the clicked series and its pair
+                        chartContext.toggleSeries(config.config.series[seriesIndex].name);
+                        chartContext.toggleSeries(config.config.series[pairedIndex].name);
+                    }
+                }
+            },
+            xaxis: { categories: [] },
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: '55%',
-                    endingShape: 'rounded'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            tooltip: {
-                enabled: true,
-                y: {
-                    formatter: function (val) {
-                        if (val >= 100000) {
-                            return (val / 100000).toFixed(2) + " L"; // Convert to lakhs
-                        }
-                        return val.toLocaleString(); // Format numbers below 1 lakh normally
-                    }
-                },
-                x: {
-                    show: false // Hide date from tooltip
+                    columnWidth: '60%',
+                    grouped: true
                 }
             },
+            dataLabels: { enabled: false },
+            tooltip: {
+                enabled: true,
+                shared: false, // Ensures tooltip shows values for all series
+                intersect: false, // Prevents conflicting tooltip behavior
+                y: {
+                    formatter: function (val) {
+                        return val >= 100000 ? (val / 100000).toFixed(2) + " L" : val.toLocaleString();
+                    }
+                }
+            },
+            stroke: { width: [0, 2], curve: 'smooth' },
             colors: [
-                '#FF5733', // Input
-                '#4BC0C0', // Scanned
-                '#3357FF', // Approved
-                '#335700', // Approved
-                '#FF33A1', // Rectified
-                '#FFBD33'  // Export PDF
-            ]
+                '#FF5733', '#FF5733', // Scanned (Bar & Line)
+                '#4BC0C0', '#4BC0C0', // QC
+                '#FFBD33', '#FFBD33', // Flagging
+                '#335700', '#335700', // Indexing
+                '#FF33A1', '#FF33A1', // Offered for QA
+                '#3674B5', '#3674B5'  // Customer QA Done
+            ],
+            grid: { padding: { left: 20, right: 20 } },
+            legend: { show: true }
         },
-        series: []
+        series: [] // Dynamically updated
     });
+
     const random = () => Math.round(Math.random() * 100);
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -317,7 +336,7 @@ const Locationwisereport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
                     // Extract the first (and only) item in the response for process counts
                     const data = apiData[0];
@@ -374,7 +393,7 @@ const Locationwisereport = () => {
                     console.log("API Data:", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
                     // If the API returns a single object (totals), no need to access the first item
                     const data = apiData;
@@ -427,7 +446,7 @@ const Locationwisereport = () => {
                     console.log("Api Data", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
                     // Extract the first (and only) item in the response for process counts
                     const data = apiData[0];
@@ -484,7 +503,7 @@ const Locationwisereport = () => {
                     console.log("API Data:", apiData);
 
                     // Labels representing the different processes
-                    const labels = ["Scanned", "QC","Flagging","Indexing", "Offered for QA", "Client QA Done"];
+                    const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
                     // If the API returns a single object (totals), no need to access the first item
                     const data = apiData;
@@ -543,57 +562,53 @@ const Locationwisereport = () => {
         };
         const fetchData = async (selectedLocations = []) => {
             try {
-                // Ensure selectedLocations is an array
                 if (!Array.isArray(selectedLocations)) {
                     console.error("selectedLocations is not an array:", selectedLocations);
                     selectedLocations = [];
                 }
-        
+
                 let params = {};
                 if (selectedLocations.length > 0) {
-                    params.locationname = selectedLocations; // Filter by location if provided
+                    params.locationname = selectedLocations.join(","); // Convert array to comma-separated values
                 }
-        
+
                 console.log("Fetching data with params:", params);
-        
+
                 const response = await axios.get(`${API_URL}/cumulative-status-images`, { params });
-                console.log("API Response:", response);
-        
-                // Check if response or response.data is null or undefined
+
                 if (!response || !response.data) {
                     console.error("No response or response data from API");
-                    setChartData({
-                        options: {
-                            ...chartData.options,
-                            xaxis: { categories: [] }
-                        },
+                    setChartData(prevData => ({
+                        ...prevData,
+                        options: { ...prevData.options, xaxis: { categories: [] } },
                         series: []
-                    });
+                    }));
                     return;
                 }
+
                 const data = response.data;
                 if (!Array.isArray(data) || data.length === 0) {
                     console.warn("API returned no data or empty array");
-                    setChartData({
-                        options: {
-                            ...chartData.options,
-                            xaxis: { categories: [] }
-                        },
+                    setChartData(prevData => ({
+                        ...prevData,
+                        options: { ...prevData.options, xaxis: { categories: [] } },
                         series: []
-                    });
+                    }));
                     return;
                 }
-                // Prepare the data for the last 30 days by mapping the correct fields
-                const last30Days = data && data.map(item => ({
+
+                // Prepare data for the last 30 days
+                const last30Days = data.map(item => ({
                     date: item.formattedDate || "Unknown Date",
-                    scanned: Number(item.ScannedImages) || 0,
-                    qc: Number(item.QCImages) || 0,
-                    flagging: Number(item.FlaggingImages) || 0,
-                    index: Number(item.IndexImages) || 0,
-                    offeredForQA: Number(item.CBSLQAImages) || 0,
-                    clientQADone: Number(item.ApprovedImages) || 0,
+                    scanned: parseInt(item.ScannedImages, 10) || 0,
+                    qc: parseInt(item.QCImages, 10) || 0,
+                    flagging: parseInt(item.FlaggingImages, 10) || 0,
+                    index: parseInt(item.IndexImages, 10) || 0,
+                    offeredForQA: parseInt(item.CBSLQAImages, 10) || 0,
+                    clientQADone: parseInt(item.ApprovedImages, 10) || 0,
                 }));
-                // Extract individual data arrays for charting
+
+                // Extract data arrays for charting
                 const dates = last30Days.map(item => item.date);
                 const scannedData = last30Days.map(item => item.scanned);
                 const qcData = last30Days.map(item => item.qc);
@@ -601,68 +616,50 @@ const Locationwisereport = () => {
                 const indexData = last30Days.map(item => item.index);
                 const cbslqaData = last30Days.map(item => item.offeredForQA);
                 const clientData = last30Days.map(item => item.clientQADone);
-                // Log the data that will be passed to the chart
-                console.log("Dates:", dates);
-                console.log("Scanned Data:", scannedData);
-                console.log("QC Data:", qcData);
-                console.log("Flagging Data:", flaggingData);
-                console.log("Index Data:", indexData);
-                console.log("Offered for QA Data:", cbslqaData);
-                console.log("Customer QA Done Data:", clientData);
-                // Set chart data
-                setChartData({
+
+                console.log("Processed Chart Data:", { dates, scannedData, qcData, flaggingData, indexData, cbslqaData, clientData });
+
+                // Update chart data
+                setChartData(prevData => ({
+                    ...prevData,
                     options: {
-                        ...chartData.options,
-                        xaxis: {
-                            categories: dates // Set categories to last 30 days (dates)
-                        }
+                        ...prevData.options,
+                        xaxis: { categories: dates }
                     },
                     series: [
-                        {
-                            name: 'Scanned',
-                            data: scannedData
-                        },
-                        {
-                            name: 'QC',
-                            data: qcData
-                        },
-                        {
-                            name: 'Flagging',
-                            data: flaggingData
-                        },
-                        {
-                            name: 'Indexing',
-                            data: indexData
-                        },
-                        {
-                            name: 'Offered for QA',
-                            data: cbslqaData
-                        },
-                        {
-                            name: 'Customer QA Done',
-                            data: clientData
-                        }
+                        { name: 'Scanned', type: "bar", data: scannedData },
+                        { name: 'Scanned (Trend)', type: "line", data: scannedData },
+
+                        { name: 'QC', type: "bar", data: qcData },
+                        { name: 'QC (Trend)', type: "line", data: qcData },
+
+                        { name: 'Flagging', type: "bar", data: flaggingData },
+                        { name: 'Flagging (Trend)', type: "line", data: flaggingData },
+
+                        { name: 'Indexing', type: "bar", data: indexData },
+                        { name: 'Indexing (Trend)', type: "line", data: indexData },
+
+                        { name: 'Offered for QA', type: "bar", data: cbslqaData },
+                        { name: 'Offered for QA (Trend)', type: "line", data: cbslqaData },
+
+                        { name: 'Customer QA Done', type: "bar", data: clientData },
+                        { name: 'Customer QA Done (Trend)', type: "line", data: clientData }
                     ]
-                });
+                }));
             } catch (err) {
-                console.error('Error fetching data:', err);
+                console.error("Error fetching data:", err);
             }
         };
         const fetchReportData = (locationName) => {
-            // Create an object to hold query parameters
             const params = {};
-
-            // If locationName is provided, add it to the params object
             if (locationName) {
                 params.locationName = selectedLocations;
             }
-
-            // Make the API request with optional parameters
             axios
                 .get(`${API_URL}/Table`, { params })
                 .then((response) => {
                     setReport(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                    console.log("Table Data", response.data);
                 })
                 .catch((error) => console.error(error));
         };
@@ -684,6 +681,189 @@ const Locationwisereport = () => {
                 })
                 .catch((error) => console.error(error));
         };
+        const fetchAllYesGraphImageData = (selectedLocations) => {
+            let apiUrl = `${API_URL}/today-location-process-graph`;
+
+            if (selectedLocations && selectedLocations.length > 0) {
+                const locationQuery = selectedLocations
+                    .map((location) => `locationname=${encodeURIComponent(location)}`)
+                    .join("&");
+                apiUrl += `?${locationQuery}`;
+            }
+
+            axios
+                .get(apiUrl)
+                .then((response) => {
+                    const apiData = response.data;
+                    if (!apiData || apiData.length === 0) {
+                        console.error("No data received from the API");
+                        return;
+                    }
+
+                    const labels = apiData.map((item) => item["Location Name"]);
+                    const imagesData = apiData.map((item) => item["Scanned"]);
+                    const qcImagesData = apiData.map((item) => item["QC"]);
+                    const flaggingImagesData = apiData.map((item) => item["Flagging"]);
+                    const indexingImagesData = apiData.map((item) => item["Indexing"]);
+                    const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
+                    const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
+
+                    console.log("Yesterday Labels:", labels);
+                    console.log("Scanned Images:", imagesData);
+                    console.log("QC Images:", qcImagesData);
+                    console.log("Flagging Images:", flaggingImagesData);
+                    console.log("Indexing Images:", indexingImagesData);
+                    console.log("CBSL QA Images:", cbslQaImagesData);
+                    console.log("Client QA Images:", clientQaImagesData);
+
+                    setAllLocationYesImage({
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Scanned",
+                                data: imagesData,
+                                backgroundColor: "#02B2AF",
+                            },
+                            {
+                                label: "QC",
+                                data: qcImagesData,
+                                backgroundColor: "#FF6384",
+                            },
+                            {
+                                label: "Flagging",
+                                data: flaggingImagesData,
+                                backgroundColor: "#36A2EB",
+                            },
+                            {
+                                label: "Indexing",
+                                data: indexingImagesData,
+                                backgroundColor: "#FFCE56",
+                            },
+                            {
+                                label: "Offered for QA",
+                                data: cbslQaImagesData,
+                                backgroundColor: "#4BC0C0",
+                            },
+                            {
+                                label: "Customer QA Done",
+                                data: clientQaImagesData,
+                                backgroundColor: "#9966FF",
+                            },
+                        ],
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+        };
+        const fetchAllGraphImageData = (selectedLocations) => {
+            let apiUrl = `${API_URL}/cumulative-location-process-graph`;
+
+            if (selectedLocations && selectedLocations.length > 0) {
+                const locationQuery = selectedLocations
+                    .map((location) => `locationname=${encodeURIComponent(location)}`)
+                    .join("&");
+                apiUrl += `?${locationQuery}`;
+            }
+
+            axios
+                .get(apiUrl)
+                .then((response) => {
+                    const apiData = response.data;
+                    if (!apiData || apiData.length === 0) {
+                        console.error("No data received from the API");
+                        return;
+                    }
+
+                    const labels = apiData.map((item) => item["Location Name"]);
+                    const imagesData = apiData.map((item) => item["Scanned"]);
+                    const qcImagesData = apiData.map((item) => item["QC"]);
+                    const flaggingImagesData = apiData.map((item) => item["Flagging"]);
+                    const indexingImagesData = apiData.map((item) => item["Indexing"]);
+                    const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
+                    const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
+
+                    console.log("Labels:", labels);
+                    console.log("Images Data:", imagesData);
+                    console.log("QC Images Data:", qcImagesData);
+                    console.log("Flagging Images Data:", flaggingImagesData);
+                    console.log("Indexing Images Data:", indexingImagesData);
+                    console.log("CBSL QA Images Data:", cbslQaImagesData);
+                    console.log("Client QA Images Data:", clientQaImagesData);
+
+                    setAllLocationImage({
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Scanned",
+                                data: imagesData,
+                                backgroundColor: "#02B2AF",
+                            },
+                            {
+                                label: "QC",
+                                data: qcImagesData,
+                                backgroundColor: "#FF6384",
+                            },
+                            {
+                                label: "Flagging",
+                                data: flaggingImagesData,
+                                backgroundColor: "#36A2EB",
+                            },
+                            {
+                                label: "Indexing",
+                                data: indexingImagesData,
+                                backgroundColor: "#FFCE56",
+                            },
+                            {
+                                label: "Offered for QA",
+                                data: cbslQaImagesData,
+                                backgroundColor: "#4BC0C0",
+                            },
+                            {
+                                label: "Customer QA Done",
+                                data: clientQaImagesData,
+                                backgroundColor: "#9966FF",
+                            },
+                        ],
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+        };
+        const fetchCumulativeRemarks = async (selectedLocations) => {
+            const params = {};
+            if (locationName) {
+                params.locationName = selectedLocations;
+            }
+            axios
+                .get(`${API_URL}/getcumulativeremarks`, { params })
+                .then((response) => {
+                    setCardCumulative(response.data);
+                    console.log("cumulativeRemarks Data", response.data);
+                })
+                .catch((error) => console.error(error));
+        };
+
+        const fetchTodayRemarks = async (selectedLocations) => {
+            const params = {};
+            if (locationName) {
+                params.locationName = selectedLocations;
+            }
+            axios
+                .get(`${API_URL}/getdailyremarks`, { params })
+                .then((response) => {
+                    setCardCumulative(response.data);
+                    console.log("dailyRemarks Data", response.data);
+                })
+                .catch((error) => console.error(error));
+        };
+        fetchTodayRemarks(locationName);
+        fetchCumulativeRemarks(locationName);
+
+
+        fetchAllGraphImageData(locationName);
+        fetchAllYesGraphImageData(locationName);
         fetchReportData(locationName);
         fetchYesterdayReportData(locationName);
         fetchData(locationName);
@@ -704,6 +884,68 @@ const Locationwisereport = () => {
     }
     // Log the content of allLocationImage before passing it to the BarChart component
     console.log("allLocationImage content:", allLocationImage);
+    const formatProcessChartData = (data, colors = ["#02B2AF", "#02B2AF", "#FF6384", "#FF6384", "#4335A7",
+        "#4335A7", "#FF9D23", "#FF9D23", "#5CB338", "#5CB338", "#9966FF", "#9966FF",]) => ({
+            options: {
+                chart: {
+                    type: 'bar',  // Mixed chart type
+                    toolbar: { show: false },
+                    events: {
+                        legendClick: function (chartContext, seriesIndex, config) {
+                            // Find the corresponding bar/line index
+                            const pairedIndex = seriesIndex % 2 === 0 ? seriesIndex + 1 : seriesIndex - 1;
+
+                            // Toggle both the clicked series and its pair
+                            chartContext.toggleSeries(config.config.series[seriesIndex].name);
+                            chartContext.toggleSeries(config.config.series[pairedIndex].name);
+                        }
+                    }
+                },
+                dataLabels: { enabled: false },
+                tooltip: {
+                    enabled: true,
+                    shared: false,  // Ensures tooltips show all values together
+                    intersect: false,
+                    y: {
+                        formatter: function (val) {
+                            return val >= 100000 ? (val / 100000).toFixed(2) + " L" : val.toLocaleString();
+                        }
+                    }
+                },
+                stroke: { width: [2, 2, 2, 2, 2, 2], curve: 'smooth' },
+                legend: { show: true },
+                colors: [...colors, ...colors], // Ensures bars & lines have the same colors
+                xaxis: { categories: data.labels || [] },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '50%'
+                    }
+                },
+                responsive: [{ breakpoint: 1024, options: { chart: { type: 'bar' } } }]
+            },
+            series: [
+                // Bars
+                { name: "Scanned", type: "bar", data: data.datasets[0]?.data || [] },
+                { name: "Scanned (Trend)", type: "line", data: data.datasets[0]?.data || [] },
+
+                { name: "QC", type: "bar", data: data.datasets[1]?.data || [] },
+                { name: "QC (Trend)", type: "line", data: data.datasets[1]?.data || [] },
+
+                { name: "Flagging", type: "bar", data: data.datasets[2]?.data || [] },
+                { name: "Flagging (Trend)", type: "line", data: data.datasets[2]?.data || [] },
+
+                { name: "Indexing", type: "bar", data: data.datasets[3]?.data || [] },
+                { name: "Indexing (Trend)", type: "line", data: data.datasets[3]?.data || [] },
+
+                { name: "Offered for QA", type: "bar", data: data.datasets[4]?.data || [] },
+                { name: "Offered for QA (Trend)", type: "line", data: data.datasets[4]?.data || [] },
+
+                { name: "Customer QA Done", type: "bar", data: data.datasets[5]?.data || [] },
+                { name: "Customer QA Done (Trend)", type: "line", data: data.datasets[5]?.data || [] }
+            ]
+        });
+
     const formatChartData = (data, colors) => ({
         options: {
             chart: {
@@ -1006,9 +1248,52 @@ const Locationwisereport = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* <button onClick={handlePrint} style={{ padding: '10px 20px', fontSize: '16px' }}>
-                    Print this page
-                </button> */}
+                        <div className="row mt-4">
+                            <Card>
+                                <CardBody>
+                                    <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
+                                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                                    <Chart
+                                        options={formatProcessChartData(allLocationYesImage).options}
+                                        series={formatProcessChartData(allLocationYesImage).series}
+                                        type="bar"
+                                        height="350"
+                                    />
+
+                                </CardBody>
+                            </Card>
+                        </div>
+                        <div className="row mt-3">
+                            <div>
+                                <Card>
+                                    <CardBody>
+                                        <CardTitle tag="h5">Comparative Workflow Trend of Last 10 Days (Figure in Lakhs)</CardTitle>
+                                        <Chart
+                                            options={chartData.options}
+                                            series={chartData.series}
+                                            type="bar"
+                                            height={350}
+                                        />
+                                    </CardBody>
+                                </Card>
+                            </div>
+                        </div>
+                        <div className="row mt-4">
+                            <Card>
+                                <CardBody>
+                                    <CardTitle tag="h5">Cumulative Production Till Date (Figure in Lakhs)</CardTitle>
+                                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
+                                    <Chart
+                                        options={formatProcessChartData(allLocationImage).options}
+                                        series={formatProcessChartData(allLocationImage).series}
+                                        type="bar"
+                                        height="350"
+                                    />
+                                </CardBody>
+                            </Card>
+                        </div>
+
+                        {/* Older graph and table */}
                         <div className="row mt-2">
                             <div>
                                 <div className="table-card" style={{ marginBottom: '25px' }}>
@@ -1078,7 +1363,7 @@ const Locationwisereport = () => {
                                                 {yesterdayReport &&
                                                     yesterdayReport.map((elem, index) => (
                                                         <tr key={index} style={{ backgroundColor: "white" }}>
-                                                            <td style={{ whiteSpace: 'nowrap', textAlign:'left'}}>{elem.locationname}</td>
+                                                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationname}</td>
                                                             {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
@@ -1209,7 +1494,7 @@ const Locationwisereport = () => {
                                                 {report &&
                                                     report.map((elem, index) => (
                                                         <tr key={index} style={{ backgroundColor: "white" }}>
-                                                            <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.LocationName}</td>
+                                                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>
                                                             {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
@@ -1269,21 +1554,7 @@ const Locationwisereport = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="row mt-3 mb-5">
-                            <div>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle tag="h5">Cumulative Images of Last 30 Days</CardTitle>
-                                        <Chart
-                                            options={chartData.options}
-                                            series={chartData.series}
-                                            type="bar"
-                                            height={350}
-                                        />
-                                    </CardBody>
-                                </Card>
-                            </div>
-                        </div>
+
                         <div className="row mt-3">
                             <div className="col-md-4 col-sm-12">
                                 <Card>
@@ -1364,7 +1635,6 @@ const Locationwisereport = () => {
                                     </div>
                                 </div>
                             )}
-
                             <div className="col-md-4 col-sm-12">
                                 <Card>
                                     <CardBody>
@@ -1445,14 +1715,24 @@ const Locationwisereport = () => {
                                     </div>
                                 </div>
                             )}
-
                             <div className="col-md-4 col-sm-12">
                                 <Card>
                                     <CardBody style={{ height: '430px' }}>
                                         <div className="row">
                                             <h5>Remarks:</h5>
+                                            <div>
+                                                {cardCumulative && cardCumulative.length > 0 ? (
+                                                    cardCumulative.map((elem, index) => (
+                                                        <p key={index} style={{ marginBottom: "5px" }}>
+                                                            {elem.CombinedRemarks}
+                                                        </p>
+                                                    ))
+                                                ) : (
+                                                    <p>No remarks available.</p>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="row" style={{ marginTop: '180px' }}>
+                                        <div className="row" style={{ marginTop: '10px' }}>
                                             <h5>Special Requests:</h5>
                                         </div>
                                     </CardBody>
@@ -1566,8 +1846,19 @@ const Locationwisereport = () => {
                                     <CardBody style={{ height: '430px' }}>
                                         <div className="row">
                                             <h5>Remarks:</h5>
+                                            <div>
+                                                {cardToday && cardToday.length > 0 ? (
+                                                    cardToday.map((elem, index) => (
+                                                        <p key={index} style={{ marginBottom: "5px" }}>
+                                                            {elem.CombinedTodayRemarks}
+                                                        </p>
+                                                    ))
+                                                ) : (
+                                                    <p>No remarks available.</p>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="row" style={{ marginTop: '180px' }}>
+                                        <div className="row" style={{ marginTop: '10px' }}>
                                             <h5>Special Requests:</h5>
                                         </div>
                                     </CardBody>

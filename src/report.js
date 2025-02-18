@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 
+
 const Report = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -39,6 +40,7 @@ const Report = () => {
   const [exportFormat, setExportFormat] = useState('csv');
   const [showTableDropdown, setShowTableDropdown] = useState(false);
   const [exportTableFormat, setExportTableFormat] = useState('csv');
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -104,6 +106,7 @@ const Report = () => {
   const handleReportCsv = () => {
     setShowTableDropdown(!showTableDropdown);
   };
+ 
 
   const handleReportCancelExport = () => {
     setShowConfirmationBox(false);
@@ -231,7 +234,6 @@ const Report = () => {
         setIsLoading(false);
       }
     };
-
     const fetchFileTypes = () => {
       setIsLoading(true);
       axios.get(`${API_URL}/summaryfiletype`)
@@ -242,20 +244,19 @@ const Report = () => {
         .catch(error => console.error(error));
       setIsLoading(false);
     }
+   
     summaryData();
     fetchReportData();
-    if(startDate && endDate){
+    if (startDate && endDate) {
       fetchDateReportData();
     }
-    
     fetchFileTypes();
-
   }, [selectedLocations, selectedFileTypes, endDate]);
 
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
     setTotalLocations(uniqueLocations.length);
-    console.log("Total locations number",totalLocations);
+    console.log("Total locations number", totalLocations);
   };
   const Loader = () => (
     <div className="loader-overlay">
@@ -372,68 +373,6 @@ const Report = () => {
       return '';
     }
   }
-  // function downloadCSVFromTable() {
-  //   const table = document.querySelector(".data-table"); // Select the table by class
-  //   let csvContent = "";
-    
-  //   // Define the full header row
-  //   const headerRow1 = [
-  //     "Sr No",
-  //     "Location",
-  //     "Collection of Records","", "Scanning ADF","", "Image QC","", 
-  //     "Document Classification","","Indexing","", "CBSL QA","", "Export PDF","", 
-  //     "Client QA","", "CSV Generation","", "Inventory Out",""
-  //   ];
-    
-  //   // Define the second row of headers
-  //   const headerRow2 = [
-  //     "",
-  //     "",  // Empty placeholders for Location and Date
-  //     "Files", "Images", 
-  //     "Files", "Images", 
-  //     "Files", "Images",
-  //     "Files", "Images", 
-  //     "Files", "Images",
-  //     "Files", "Images", 
-  //     "Files", "Images", 
-  //     "Files", "Images", 
-  //     "Files", "Images",
-  //     "Files", "Images"
-  //   ];
-    
-  //   // Join both header rows to create the full CSV header
-  //   csvContent += headerRow1.join(",") + "\n";
-  //   csvContent += headerRow2.join(",") + "\n";
-  
-  //   // Extract the table body rows
-  //   const rows = table.querySelectorAll("tbody tr");
-  //   rows.forEach(row => {
-  //     const cells = row.querySelectorAll("td");
-  //     const rowContent = [];
-      
-  //     cells.forEach((cell, index) => {
-  //       // Remove any commas from cell content to avoid CSV issues
-  //       rowContent.push(cell.innerText.replace(/,/g, ""));
-  //     });
-      
-  //     // Ensure the row has the correct number of columns
-  //     while (rowContent.length < headerRow1.length) {
-  //       rowContent.push(""); // Add empty data if there are fewer columns
-  //     }
-  
-  //     csvContent += rowContent.join(",") + "\n";
-  //   });
-    
-  //   // Create a blob and trigger download
-  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  //   const link = document.createElement("a");
-  //   link.href = URL.createObjectURL(blob);
-  //   link.setAttribute("download", "Locationwisedetailedreport.csv");
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  //   setShowConfirmationBox(false);
-  // }
 
   function downloadCSVFromTable() {
     const table = document.querySelector(".data-table"); // Select the table by class
@@ -441,26 +380,26 @@ const Report = () => {
 
     // Define the full header row
     const headerRow1 = [
-        "Sr No",
-        "Location",
-        "Collection of Records", "", "Scanning ADF", "", "Image QC", "",
-        "Document Classification", "", "Indexing", "", "CBSL QA", "", "Export PDF", "",
-        "Client QA", "", "CSV Generation", "", "Inventory Out", ""
+      "Sr No",
+      "Location",
+      "Collection of Records", "", "Scanning ADF", "", "Image QC", "",
+      "Document Classification", "", "Indexing", "", "CBSL QA", "", "Export PDF", "",
+      "Client QA", "", "CSV Generation", "", "Inventory Out", ""
     ];
 
     // Define the second row of headers
     const headerRow2 = [
-        "", "",  // Empty placeholders for Location and Date
-        "Files", "Images",
-        "Files", "Images",
-        "Files", "Images",
-        "Files", "Images",
-        "Files", "Images",
-        "Files", "Images",
-        "Files", "Images",
-        "Files", "Images",
-        "Files", "Images",
-        "Files", "Images"
+      "", "",  // Empty placeholders for Location and Date
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images"
     ];
 
     // Join both header rows to create the full CSV header
@@ -470,23 +409,23 @@ const Report = () => {
     // Extract the table body rows
     const rows = table.querySelectorAll("tbody tr");
     rows.forEach((row, rowIndex) => {
-        const cells = row.querySelectorAll("td");
-        const rowContent = [];
+      const cells = row.querySelectorAll("td");
+      const rowContent = [];
 
-        // Add Sr No (starts from 1)
-        rowContent.push(rowIndex + 1);
+      // Add Sr No (starts from 1)
+      rowContent.push(rowIndex + 1);
 
-        cells.forEach((cell) => {
-            // Remove any commas from cell content to avoid CSV issues
-            rowContent.push(cell.innerText.replace(/,/g, ""));
-        });
+      cells.forEach((cell) => {
+        // Remove any commas from cell content to avoid CSV issues
+        rowContent.push(cell.innerText.replace(/,/g, ""));
+      });
 
-        // Ensure the row has the correct number of columns
-        while (rowContent.length < headerRow1.length) {
-            rowContent.push(""); // Add empty data if there are fewer columns
-        }
+      // Ensure the row has the correct number of columns
+      while (rowContent.length < headerRow1.length) {
+        rowContent.push(""); // Add empty data if there are fewer columns
+      }
 
-        csvContent += rowContent.join(",") + "\n";
+      csvContent += rowContent.join(",") + "\n";
     });
 
     // Create a blob and trigger download
@@ -498,12 +437,10 @@ const Report = () => {
     link.click();
     document.body.removeChild(link);
     setShowConfirmationBox(false);
-}
-
-
+  }
   function exportTableToPDFTable() {
     const input = document.querySelector(".data-table"); // Target the table
-    
+
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
@@ -511,19 +448,19 @@ const Report = () => {
         unit: 'pt',
         format: 'a4',
       });
-  
+
       // Add heading
       pdf.setFontSize(18);
       pdf.setTextColor(0, 0, 0); // Set text color to black
       pdf.text("LOCATION WISE DETAILED REPORT", 40, 30); // Add heading at position (40, 30)
-  
+
       // Adjusting image width and height to fit in the PDF
       const imgWidth = 825; // Fit landscape A4 width
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
+
       // Add the table image below the heading
       pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, imgHeight); // Adjust y-coordinate to fit below heading
-  
+
       pdf.save("Locationwisedetailedreport.pdf");
     });
   }
@@ -597,6 +534,7 @@ const Report = () => {
     }
     setShowConfirmationBoxDate(false);
   }
+ 
 
   return (
     <>
@@ -619,7 +557,7 @@ const Report = () => {
             <div className="row mt-2 me-1 search-report-card" >
               <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
-              
+
                   ref={dropdownRef}
                   className="search-bar"
                   style={{
@@ -1349,7 +1287,7 @@ const Report = () => {
                           ) {
                             return (
                               <tr key={index} style={{ backgroundColor: "white" }}>
-                                <td style={{ whiteSpace: 'nowrap', textAlign:'left'}}>{elem.LocationName}</td>
+                                <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
@@ -1376,11 +1314,11 @@ const Report = () => {
                           return null;
                         })}
                     </tbody>
-
                   </table>
                 </div>
               </div>
             </div>
+           
             {selectedLocations && startDate && endDate ? (
               <>
                 <div className="row mt-3 me-1">
@@ -1420,7 +1358,7 @@ const Report = () => {
                     </div>
                     <div
                       className="row mt-3 ms-2 me-2"
-                      style={{ overflowX: "auto",maxHeight:'500px' }}
+                      style={{ overflowX: "auto", maxHeight: '500px' }}
                     >
                       <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
                       <table class="table table-hover table-bordered table-responsive date-table">
@@ -1478,8 +1416,8 @@ const Report = () => {
                               ) {
                                 return (
                                   <tr key={index} style={{ backgroundColor: "white" }}>
-                                    <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.locationName}</td>
-                                    <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.Date || "N/A"}</td>
+                                    <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationName}</td>
+                                    <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.Date || "N/A"}</td>
                                     <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
