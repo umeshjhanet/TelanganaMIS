@@ -13,6 +13,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
+import { saveAs } from "file-saver";
 
 const Dashboard = () => {
   const [data2, setData2] = useState();
@@ -26,22 +27,25 @@ const Dashboard = () => {
   const [csv, setCsv] = useState(null);
   const [locationWiseCsv, setLocationWiseCsv] = useState();
   const dropdownRef = useRef(null);
+  const vendorDropdownRef = useRef(null);
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
+  const [showVendor, setShowVendor] = useState(false);
+  const [selectedVendors, setSelectedVendors] = useState([]);
   const [locations, setLocations] = useState();
   const [searchInput, setSearchInput] = useState("");
   const [locationData, setLocationData] = useState(null);
-  const [locationGraphData, setLocationGraphData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [locationName, setLocationName] = useState("");
-  const [districtUser, setDistrictUser] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showFormatDropdown, setShowFormatDropdown] = useState(false);
   const [exportTableFormat, setExportTableFormat] = useState('csv');
   const [chartData, setChartData] = useState(null);
+  const [cumulative, setCumulative] = useState();
+  const [target, setTarget] = useState();
+  const [selectedDate, setSelectedDate] = useState("");
+  const [yesterdayReport, setYesterdayReport] = useState([]);
+  const [vendorName, setVendorName] = useState();
   const navigate = useNavigate();
 
   const userLog = JSON.parse(localStorage.getItem("user"));
@@ -159,14 +163,18 @@ const Dashboard = () => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowLocation(false);
+      } 
+      if (vendorDropdownRef.current && !vendorDropdownRef.current.contains(event.target)) {
+        setShowVendor(false);
       }
     };
+  
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [dropdownRef]);
-
+  }, []);
+  
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
       setSelectedLocations([...selectedLocations, locationName]);
@@ -175,26 +183,35 @@ const Dashboard = () => {
     }
     // setShowLocation(false); // Close the dropdown when a location is selected
   };
-
   const removeLocation = (locationName) => {
     setSelectedLocations(
       selectedLocations.filter((loc) => loc !== locationName)
     );
   };
+  const handleVendor = (vendorName) => {
+    if (!selectedVendors.includes(vendorName)) {
+      setSelectedVendors([...selectedVendors, vendorName]);
 
+      setSearchInput("");
+    }
+    // setShowVendor(false); // Close the dropdown when a Vendor is selected
+  };
+  const removeVendor = (vendorName) => {
+    setSelectedVendors(
+      selectedVendors.filter((loc) => loc !== vendorName)
+    );
+  };
   const handleExport = () => {
     setShowFormatDropdown(!showFormatDropdown);
   };
   const handleCancelExport = () => {
     setShowConfirmation(false);
   };
-
   const handleTableDropdownChange = (format) => {
     setExportTableFormat(format);
     setShowFormatDropdown(false);
     setShowConfirmation(true);
   };
-
   const calculateColumnSum = () => {
     let prevFilesSum = 0;
     let prevImagesSum = 0;
@@ -232,7 +249,6 @@ const Dashboard = () => {
       totalImagesSum,
     };
   };
-
   useEffect(() => {
     const fetchLocationData = async () => {
       if (selectedLocations.length > 0) {
@@ -259,7 +275,6 @@ const Dashboard = () => {
       }
     };
     const locationName = selectedLocations;
-
     const fetchGraphFileData = (selectedLocations) => {
       let apiUrl = `${API_URL}/graph1LocationWise`;
 
@@ -353,7 +368,6 @@ const Dashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
       const apiUrl = locationName
@@ -374,7 +388,6 @@ const Dashboard = () => {
           console.error("Error in exporting data:", error);
         });
     };
-
     const fetchGraphImageData = (selectedLocations) => {
       let apiUrl = `${API_URL}/graph2`;
 
@@ -452,7 +465,6 @@ const Dashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
     const fetchTodayGraphImageData = () => {
       let apiUrl = `${API_URL}/graph8`;
 
@@ -492,7 +504,6 @@ const Dashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
     const fetchWeekImageGraphData = async () => {
       try {
         const params = {
@@ -512,7 +523,6 @@ const Dashboard = () => {
         console.error("Error fetching weekImage data:", error);
       }
     };
-
     const fetchWeekFileGraphData = async () => {
       try {
         const params = { params: { locationNames: selectedLocations } };
@@ -527,7 +537,6 @@ const Dashboard = () => {
         console.error("Error fetching weekFile data:", error);
       }
     };
-
     const fetchMonthImageGraphData = () => {
       const params = {
         params: {
@@ -557,7 +566,6 @@ const Dashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
     const fetchCivilCaseGraphData = () => {
       let apiUrl = `${API_URL}/civil`;
 
@@ -596,7 +604,6 @@ const Dashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
     const fetchCriminalCaseGraphData = () => {
       let apiUrl = `${API_URL}/criminal`;
 
@@ -675,7 +682,6 @@ const Dashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
     const fetchAllGraphImageData = (selectedLocations) => {
       let apiUrl = `${API_URL}/graph10`;
 
@@ -713,7 +719,6 @@ const Dashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
     const fetchTableData = () => {
       let apiUrl = `${API_URL}/tabularData`;
 
@@ -785,7 +790,7 @@ const Dashboard = () => {
             },
             tooltip: {
               shared: true,
-              sharedOnSeries: [3,4,5],
+              sharedOnSeries: [3, 4, 5],
               intersect: false,
             },
             legend: {
@@ -793,14 +798,13 @@ const Dashboard = () => {
             },
           },
         });
-        
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
+    fetchYesterdayData();
     fetchData();
-
     fetchData();
     fetchGraphFileData(locationName);
     fetchGraphImageData(locationName);
@@ -816,9 +820,74 @@ const Dashboard = () => {
     fetchTableData();
     fetchExportCsvFile();
     fetchAllWeekImageData(locationName);
-
+    fetchCumulative(locationName);
   }, [selectedLocations]);
-
+  const fetchYesterdayData = async () => {
+    try {
+      const params = {};
+      
+      if (selectedDate) {
+        params.date = selectedDate;
+      }
+      
+      if (selectedVendors) {  // Ensure vendor is included if selected
+        params.vendor = selectedVendors;
+      }
+      
+      if (selectedLocations && selectedLocations.length > 0) { 
+        params.locationName = selectedLocations; // Pass locations if selected
+      }
+  
+      const response = await axios.get(`${API_URL}/vendorReport`, { params });
+      setYesterdayReport(response.data);
+    } catch (error) {
+      console.error("Error fetching report data:", error);
+      setError("Error fetching report data. Please try again.");
+    }
+  };
+  const fetchCumulative = async () => {
+    try {
+      const params = {};
+      if (selectedDate) {
+        params.date = selectedDate;
+      }
+      if (selectedVendors && selectedVendors.length > 0) {  
+        params.vendor = selectedVendors.join(","); // Convert array to comma-separated string
+      }
+      if (selectedLocations && selectedLocations.length > 0) {
+        params.locationName = selectedLocations;
+      }
+      const response = await axios.get(`${API_URL}/fetch-data-sequential`, { params });
+      setCumulative(response.data);
+    } catch {
+      console.log("Error fetching cumulative data");
+    }
+  };
+  useEffect(() => {
+    const fetchTarget = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/mptarget`);
+        setTarget(response.data);
+      } catch {
+        console.log("Error fetching target data");
+      }
+    };
+    const fetchVendor = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/vendorName`);
+        setVendorName(response.data);
+      } catch {
+        console.log("Error fetching target data");
+      }
+    };
+    const fetchData = async () => {
+      setIsLoading(true);  // ✅ Set loading before fetching
+      await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
+      setIsLoading(false); // ✅ Only set false after both complete
+    };
+    fetchData();
+    fetchVendor();
+  }, []);
   const columnSums = calculateColumnSum();
   console.log("WEEK", weekFile);
   if (!userLog) {
@@ -925,8 +994,6 @@ const Dashboard = () => {
       color: colors[index]
     }))
   });
-
-
   const formatDonutData = (data) => {
     const labels = data.map(item => item.scandate);
     const series = data.map(item => parseInt(item.scannedfiles || item.scannedimages, 10));
@@ -960,10 +1027,8 @@ const Dashboard = () => {
       series: series,
     };
   };
-
   const donutImageData = formatDonutData(weekImage);
   const donutFileData = formatDonutData(weekFile);
-
   function downloadCSVFromTable() {
     const table = document.querySelector(".data-table"); // Select the table by class
     let csvContent = "";
@@ -1074,6 +1139,225 @@ const Dashboard = () => {
       return '';
     }
   }
+  const processNames = [
+    "Collection", "Barcoding", "Page Numbering", "Preparation", "Scanning",
+    "ReScanning", "QC", "Flagging", "Indexing", "CBSL QA", "Refilling", "InvOut"
+  ];
+  // Extract data for graph
+  const targetValues = processNames.map(process => {
+    return target?.find(item => item.process_name === process)?.target || 0;
+  });
+  const achievedValues = processNames.map(process => {
+    const processData = [
+      { key: "Collection", manpower: "CollectionMP", files: "total_inventoryfiles" },
+      { key: "Barcoding", manpower: "BarcodingMP", files: "total_barcodingfiles" },
+      { key: "Page Numbering", manpower: "NumberingPreparationMP", files: "-" },
+      { key: "Preparation", manpower: "NumberingPreparationMP", files: "preparefiles" },
+      { key: "Scanning", manpower: "ScanningMP", files: "total_scanfiles" },
+      { key: "ReScanning", manpower: "-", files: "-" },
+      { key: "QC", manpower: "QCMP", files: "total_qcfiles" },
+      { key: "Flagging", manpower: "FlaggingMP", files: "total_flaggingfiles" },
+      { key: "Indexing", manpower: "IndexingMP", files: "total_indexfiles" },
+      { key: "CBSL QA", manpower: "CBSLQAMP", files: "total_cbslqafiles" },
+      { key: "Refilling", manpower: "BindingMP", files: "refillingfiles" },
+      { key: "InvOut", manpower: "-", files: "invoutfiles" }
+    ].find(item => item.key === process);
+
+    if (!processData || processData.manpower === "-" || processData.files === "-") {
+      return 0;
+    }
+
+    const manpower = cumulative?.manpowerData?.[processData.manpower] || 0;
+    const files = cumulative?.scannedData?.[processData.files] || cumulative?.barcodingData?.[processData.files] || 0;
+
+    return manpower && files ? (files / manpower).toFixed(2) : 0;
+  });
+  const differenceValues = achievedValues.map((achieved, index) => {
+    const target = targetValues[index];
+    return target > 0 ? ((achieved / target) * 100).toFixed(2) : 0;
+  });
+  const targetData = {
+    series: [
+      {
+        name: "Target",
+        data: targetValues
+      },
+      {
+        name: "Achieved",
+        data: achievedValues
+      },
+      {
+        name: "Difference (%)",
+        data: differenceValues
+      }
+    ],
+    options: {
+      chart: {
+        type: "bar",
+        height: 400
+      },
+      xaxis: {
+        categories: processNames,
+        labels: {
+          style: { fontSize: "12px" }
+        }
+      },
+      yaxis: [
+        {
+          title: { text: "Files per MP" }
+        },
+        {
+          opposite: true,
+          title: { text: "Difference (%)" }
+        }
+      ],
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "55%",
+          endingShape: "rounded"
+        }
+      },
+      colors: ["#FF5733", "#33FF57", "#337ab7"],
+      markers: {
+        size: 5
+      },
+      dataLabels: {
+        enabled: false
+      },
+      legend: {
+        position: "bottom"
+      }
+    }
+  };
+  const handleExportYesterdayCSV = () => {
+    if (!yesterdayReport || yesterdayReport.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    // Define the header row
+    const headers = [
+      "Location Name",
+      "Total ManPower",
+      "Scaning Target A3",
+      "QC Target",
+      "Post QC Target",
+      "Scanner Count A3",
+      "Scanner Count A4",
+      "Collection Files",
+      "Collection MP",
+      "Scanning Files",
+      "Scanning Images",
+      "Scanning MP",
+      "QC Files",
+      "QC Images",
+      "QC MP",
+      "Flagging Files",
+      "Flagging Images",
+      "Flagging MP",
+      "Indexing Files",
+      "Indexing Images",
+      "Indexing MP",
+      "CBSL QA Files",
+      "CBSL QA Images",
+      "CBSL QA MP",
+      "Ready For Customer QA Files",
+      "Ready For Customer QA Images",
+      "Ready For Customer QA MP",
+      "Customer QA Done Files",
+      "Customer QA Done Images",
+      "Customer QA Done MP",
+      "DMS Uploaded Files",
+      "DMS Uploaded Images",
+      "DMS Uploaded MP",
+      "Re-Filing Binding Files",
+      "Re-Filing Binding MP",
+      "Inventory Out Files",
+      "Inventory Out MP",
+    ];
+
+    // Generate rows
+    const rows = yesterdayReport.map((elem) => [
+      elem.LocationName,
+      parseFloat(elem.TotalManPower) || 0,
+      parseFloat(elem.Scaning_Target_A3) || 0,
+      parseFloat(elem.QC_Target) || 0,
+      parseFloat(elem.Post_QC_Target) || 0,
+      parseFloat(elem.Scaning_Capacity_A3) || 0,
+      parseFloat(elem.Scaning_Capacity_A4) || 0,
+      parseFloat(elem.ReceivedFiles) || 0,
+      parseFloat(elem.Coll__Index_MP) || 0,
+      parseFloat(elem.ScannedFiles) || 0,
+      parseFloat(elem.ScannedImages) || 0,
+      parseFloat(elem.Scan_MP) || 0,
+      parseFloat(elem.QCFiles) || 0,
+      parseFloat(elem.QCImages) || 0,
+      parseFloat(elem.Image_QC_MP) || 0,
+      parseFloat(elem.FlaggingFiles) || 0,
+      parseFloat(elem.FlaggingImages) || 0,
+      parseFloat(elem.Flagging_MP) || 0,
+      parseFloat(elem.IndexingFiles) || 0,
+      parseFloat(elem.IndexingImages) || 0,
+      parseFloat(elem.Index_MP) || 0,
+      parseFloat(elem.CBSL_QAFiles) || 0,
+      parseFloat(elem.CBSL_QAImages) || 0,
+      parseFloat(elem.CBSL_QA_MP) || 0,
+      parseFloat(elem.SubmittedForFiles) || 0,
+      parseFloat(elem.SubmittedForImages) || 0,
+      parseFloat(elem.Submitted_For_MP) || 0,
+      parseFloat(elem.Client_QA_AcceptedFiles) || 0,
+      parseFloat(elem.Client_QA_AcceptedImages) || 0,
+      parseFloat(elem.Cust_QA_Done_MP) || 0,
+      parseFloat(elem.DMS_UploadFiles) || 0,
+      parseFloat(elem.DMS_UploadImages) || 0,
+      parseFloat(elem.DMS_Upload_MP) || 0,
+      parseFloat(elem.Refilling_Files_TF) || 0,
+      parseFloat(elem.Refilling_MP) || 0,
+      parseFloat(elem.Inv_Out_Files) || 0,
+      parseFloat(elem.InventoryOut_MP) || 0,
+    ]);
+
+    // Calculate totals
+    const totalRow = [
+      "Total", // Label for the total row
+      ...headers.slice(1).map((_, index) => {
+        // Sum up all the values in each column, ensuring each value is parsed as a float
+        return rows.reduce((sum, row) => sum + (parseFloat(row[index + 1]) || 0), 0);
+      }),
+    ];
+
+    // Convert to CSV string
+    const csvContent = [headers, ...rows, totalRow]
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, `Production_Report-${formattedYesterdayDate}.csv`);
+  };
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+  const handleDateFilter = () => {
+    if (!selectedVendors && !selectedDate) {
+      alert("Please select at least a vendor or a date");
+      return;
+    }
+  
+    if (selectedVendors && !selectedDate) {
+      // Only vendor is selected, call fetchYesterdayData
+      fetchYesterdayData();
+      fetchCumulative(selectedVendors);
+    } else if (selectedVendors && selectedDate) {
+      // Both vendor and date are selected, call both functions
+      fetchCumulative(selectedLocations);
+      fetchYesterdayData();
+    } else if (!selectedVendors && selectedDate) {
+      // Only date is selected, call fetchCumulative
+      fetchCumulative(selectedLocations);
+    }
+  };
 
   return (
     <>
@@ -1477,15 +1761,413 @@ const Dashboard = () => {
                 </CardBody>
               </Card>
             </div>
+            <div className="row search-report-card mt-2">
+              <div className="col-2">
+                <input type="date" value={selectedDate} onChange={handleDateChange} 
+                style={{height:'40px'}}/>
+              </div>
+              <div className="col-md-4 col-sm-12">
+                <div
+                  ref={vendorDropdownRef}
+                  className="search-bar"
+                  style={{
+                    border: "1px solid #000",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    minHeight: "30px",
+                    width:'250px'
+                  }}
+
+                  contentEditable={true}
+                  onClick={() => setShowVendor(!showVendor)}
+                >
+                  {selectedVendors.length === 0 && !showVendor && (
+                    <span className="placeholder-text">Search Vendors...</span>
+                  )}
+                  {selectedVendors.map((vendor, index) => (
+                    <span key={index} className="selected-location">
+                      {vendor}
+                      <button
+                        onClick={() => removeVendor(vendor)}
+                        style={{
+                          backgroundColor: "black",
+                          color: "white",
+                          border: "none",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        x
+                      </button>
+                      &nbsp;
+                    </span>
+                  ))}
+                  <span style={{ minWidth: "5px", display: "inline-block" }}>
+                    &#8203;
+                  </span>
+                </div>
+                {showVendor && (
+                  <>
+                    <div className="location-card">
+                      {vendorName &&
+                        vendorName.map((item, index) => (
+                          <div key={index}>
+                            <p
+                              onClick={() => handleVendor(item.Vendor)}
+                            >
+                              {item.Vendor}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="col-3">
+                <button className="btn add-btn" onClick={handleDateFilter}>Submit</button>
+              </div>
+            </div>
+            <div className="row mt-3 me-1">
+              <div className="table-card">
+                <div
+                  className="row"
+                  style={{
+                    padding: "5px",
+                    backgroundColor: "#4bc0c0",
+                    paddingTop: "15px",
+                  }}
+                >
+                  <div className="col-10">
+                    <h6 className="" style={{ color: "white" }}>
+                      MANPOWER ANALYZE REPORT
+                    </h6>
+                  </div>
+                </div>
+                <div
+                  className="row mt-3 ms-2 me-2"
+                  style={{ overflowX: "auto", maxHeight: '500px' }}
+                >
+                  <table class="table table-hover table-bordered table-responsive date-table" style={{ zIndex: '0' }}>
+                    <thead>
+                      <tr>
+                        <th>Process Steps</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>Manpower Target</th>
+                        <th>Average</th>
+                        <th>Differences B/W Target & Achieved</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { name: "Received/ Collection of records", manpower: cumulative?.manpowerData?.CollectionMP, files: cumulative?.scannedData?.total_inventoryfiles, images: "-", processKey: "Collection" },
+                        { name: "Scanning (ADF)", manpower: cumulative?.manpowerData?.ScanningMP, files: cumulative?.scannedData?.total_scanfiles, images: cumulative?.scannedData?.total_scanimages, processKey: "Scanning" },
+                        { name: "Image QC", manpower: cumulative?.manpowerData?.QCMP, files: cumulative?.scannedData?.total_qcfiles, images: cumulative?.scannedData?.total_qcimages, processKey: "QC" },
+                        { name: "Document Classification (Flagging)", manpower: cumulative?.manpowerData?.FlaggingMP, files: cumulative?.scannedData?.total_flaggingfiles, images: cumulative?.scannedData?.total_flaggingimages, processKey: "Flagging" },
+                        { name: "Indexing (Data Entry)", manpower: cumulative?.manpowerData?.IndexingMP, files: cumulative?.scannedData?.total_indexfiles, images: cumulative?.scannedData?.total_indeximages, processKey: "Indexing" },
+                        { name: "CBSL QA", manpower: cumulative?.manpowerData?.CBSLQAMP, files: cumulative?.scannedData?.total_cbslqafiles, images: cumulative?.scannedData?.total_cbslqaimages, processKey: "CBSL QA" },
+                        { name: "Client QC", manpower: cumulative?.manpowerData?.ClientQAMP, files: cumulative?.scannedData?.total_clientqaacceptfiles, images: cumulative?.scannedData?.total_clientqaacceptimages, processKey: "Client QC" },
+                        { name: "DMS Upload", manpower: cumulative?.manpowerData?.DMSUploadMP, files: "-", images: "-", processKey: "DMS Upload" },
+                        { name: "Inventory In & Out", manpower: cumulative?.manpowerData?.InventoryMP, files: cumulative?.barcodingData?.invoutfiles, images: "-", processKey: "InvOut" }
+                      ].map((row, index) => {
+                        const targetValue = target?.find(targetItem => targetItem.process_name === row.processKey)?.target || "-";
+
+                        // ✅ Calculate Average (Files / Manpower)
+                        const average = row.manpower && row.images && row.manpower !== "-" && row.images !== "-"
+                          ? (parseInt(row.images) / parseInt(row.manpower)).toFixed(2)
+                          : "-";
+
+                        // ✅ Calculate Difference (Average / Target * 100)
+                        const difference = targetValue !== "-" && average !== "-"
+                          ? ((parseFloat(average) / parseFloat(targetValue) * 100)).toFixed(2)
+                          : "-";
+
+                        // ✅ Determine Cell Color for Difference Column
+                        let differenceStyle = {};
+                        if (difference === "-") {
+                          differenceStyle = { backgroundColor: "#fff" }; // Orange for empty
+                        } else if (parseFloat(difference) < 90) {
+                          differenceStyle = { backgroundColor: "red" }; // Red for below 90%
+                        } else {
+                          differenceStyle = { backgroundColor: "green" }; // Green for 90% and above
+                        }
+
+                        return (
+                          <tr key={index}>
+                            <td style={{ textAlign: 'left' }}>{row.name}</td>
+                            <td>{row.manpower}</td>
+                            <td>{row.files}</td>
+                            <td>{row.images}</td>
+                            <td>{targetValue}</td>
+                            <td>{average}</td>
+                            <td style={differenceStyle}>{difference !== "-" ? `${difference}%` : "-"}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div className="row mt-2 me-1">
+              <div className="table-card" style={{ marginBottom: "0px" }}>
+                <div className="row" style={{ padding: "5px", backgroundColor: "#4BC0C0", paddingTop: "15px" }}>
+                  <div className="col-10">
+                    <h6 className="" style={{ color: "white" }}>Production Report ({formattedYesterdayDate})</h6>
+                  </div>
+                  {/* <div className="col-2 text-end">
+                    <button onClick={handleExportYesterdayCSV} className="btn btn-light" style={{ marginTop: '-10px' }}>
+                      Export to CSV
+                    </button>
+                  </div> */}
+                </div>
+                <div className="row mt-3 ms-2 me-2" style={{ overflowX: "auto" }}>
+                  <table className="table table-hover table-bordered table-responsive data-table">
+                    <thead style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}>
+                      <tr>
+                        <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle', width: '150px' }}>
+                          Location
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle' }}>
+                          Vendor Deployment
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Scanner Deployment
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          System Deployment
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Target
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Present ManPower
+                        </th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Collection Files
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Scanning
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Image QC
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Flagging
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Indexing
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          CBSL QA
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Customer QA
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          DMS Uploaded
+                        </th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Inventory Out
+                        </th>
+                      </tr>
+                      <tr style={{ color: "black", fontWeight: '300' }}>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                      </tr>
+                    </thead>
+                    <tbody className="scrollable" style={{ color: "#4bc0c0", height: "80px" }}>
+                      {yesterdayReport && yesterdayReport.map((elem, index) => {
+                        // Calculate total manpower for each row
+                        const totalManpower = [
+                          parseInt(elem.Scan_MP) || 0,
+                          parseInt(elem.Image_QC_MP) || 0,
+                          parseInt(elem.Flagging_MP) || 0,
+                          parseInt(elem.Index_MP) || 0,
+                          parseInt(elem.CBSL_QA_MP) || 0,
+                          parseInt(elem.Ready_Cust_QA_MP) || 0,
+                          parseInt(elem.Cust_QA_Done_MP) || 0,
+                          parseInt(elem.DMS_Upload_MP) || 0,
+                          parseInt(elem.Refilling_MP) || 0,
+                          parseInt(elem.Inventory_MP) || 0,
+                        ].reduce((sum, manpower) => sum + manpower, 0);
+
+                        return (
+                          <tr key={index} style={{ backgroundColor: "white" }}>
+                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationname}</td>
+                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.Vendor}</td>
+                            <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScannerAvailability) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.SystemAvailability) || 0), 0).toLocaleString()}
+                        </td>
+                            <td>{elem.ScanningTarget}</td>
+                            <td>{totalManpower.toString()}</td>
+                            <td>{isNaN(parseInt(elem.Coll_Index_MP)) ? "0" : parseInt(elem.Coll_Index_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.ReceivedFiles)) ? "0" : parseInt(elem.ReceivedFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Scan_MP)) ? "0" : parseInt(elem.Scan_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Image_QC_MP)) ? "0" : parseInt(elem.Image_QC_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Flagging_MP)) ? "0" : parseInt(elem.Flagging_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Index_MP)) ? "0" : parseInt(elem.Index_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.IndexingFiles)) ? "0" : parseInt(elem.IndexingFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.IndexingImages)) ? "0" : parseInt(elem.IndexingImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CBSL_QA_MP)) ? "0" : parseInt(elem.CBSL_QA_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CBSL_QAFiles)) ? "0" : parseInt(elem.CBSL_QAFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Cust_QA_Done_MP)) ? "0" : parseInt(elem.Cust_QA_Done_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? "0" : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Client_QA_AcceptedImages)) ? "0" : parseInt(elem.Client_QA_AcceptedImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.DMS_Upload_MP)) ? "0" : parseInt(elem.DMS_Upload_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.DMS_UploadFiles)) ? "0" : parseInt(elem.DMS_UploadFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.DMS_UploadImages)) ? "0" : parseInt(elem.DMS_UploadImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Inventory_MP)) ? "0" : parseInt(elem.Inventory_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Inv_Out_Files)) ? "0" : parseInt(elem.Inv_Out_Files).toLocaleString()}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                    <tfoot>
+                      <tr style={{ color: "#4BC0C0", fontWeight: "bold", textAlign: 'right' }}>
+                        <td style={{ textAlign: 'left' }}>Total</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScanningTarget) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((total, elem) => {
+                            const manpower = [
+                              parseInt(elem.Scan_MP) || 0,
+                              parseInt(elem.Image_QC_MP) || 0,
+                              parseInt(elem.Flagging_MP) || 0,
+                              parseInt(elem.Index_MP) || 0,
+                              parseInt(elem.CBSL_QA_MP) || 0,
+                              parseInt(elem.Ready_Cust_QA_MP) || 0,
+                              parseInt(elem.Cust_QA_Done_MP) || 0,
+                              parseInt(elem.DMS_Upload_MP) || 0,
+                              parseInt(elem.Refilling_MP) || 0,
+                              parseInt(elem.Inventory_MP) || 0,
+                            ].reduce((sum, manpower) => sum + manpower, 0);
+                            return total + manpower;
+                          }, 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Coll_Index_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ReceivedFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Scan_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScannedFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScannedImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Image_QC_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.QCFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.QCImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Flagging_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.FlaggingFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.FlaggingImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Index_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.IndexingFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.IndexingImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.CBSL_QA_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.CBSL_QAFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.CBSL_QAImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Cust_QA_Done_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Client_QA_AcceptedFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Client_QA_AcceptedImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.DMS_Upload_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.DMS_UploadFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.DMS_UploadImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Inventory_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Inv_Out_Files) || 0), 0).toLocaleString()}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </>
   );
 };
-
-
-
-
 
 export default Dashboard;

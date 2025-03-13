@@ -319,6 +319,22 @@ const MIS_Form = () => {
                      onChange={(e) => setFormData({ ...formData, Coll_Index_MP: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
+                    <span>Scanning MP: </span>
+                    <input type='text' name='Scan_MP' value={formData.Scan_MP}
+                     onChange={(e) => setFormData({ ...formData, Scan_MP: e.target.value })} required /><br />
+                  </div>
+                  <div className='col-3'>
+                    <span>Image QC MP: </span>
+                    <input type='text' name='Image_QC_MP' value={formData.Image_QC_MP}
+                     onChange={(e) => setFormData({ ...formData, Image_QC_MP: e.target.value })} required /><br />
+                  </div>
+                  <div className='col-3'>
+                    <span>Flagging MP: </span>
+                    <input type='text' name='Doc_MP' value={formData.Doc_MP}
+                     onChange={(e) => setFormData({ ...formData, Doc_MP: e.target.value })} required /><br />
+                  </div>
+                 
+                  {/* <div className='col-3'>
                     <span>Barcoding MP: </span>
                     <input type='text' name='Barc_MP'value={formData.Barc_MP}
                      onChange={(e) => setFormData({ ...formData, Barc_MP: e.target.value })} required /><br />
@@ -332,9 +348,9 @@ const MIS_Form = () => {
                     <span>Barcoding Images: </span>
                     <input type='text' name='Barc_TI' value={formData.Barc_TI}
                      onChange={(e) => setFormData({ ...formData, Barc_TI: e.target.value })} required />
-                  </div>
+                  </div> */}
                 </div>
-                <div className='row'>
+                {/* <div className='row'>
                   <div className='col-3'>
                     <span>Page Numbering MP: </span>
                     <input type='text' name='Page_No_MP' value={formData.Page_No_MP}
@@ -355,13 +371,8 @@ const MIS_Form = () => {
                     <input type='text' name='Prepare_TI' value={formData.Prepare_TI}
                      onChange={(e) => setFormData({ ...formData, Prepare_TI: e.target.value })} required />
                   </div>
-                </div>
-                <div className='row'>
-                  {/* <div className='col-3'>
-                    <span>Scanning MP: </span>
-                    <input type='text' name='Scan_MP' value={formData.Scan_MP}
-                     onChange={(e) => setFormData({ ...formData, Scan_MP: e.target.value })} required /><br />
-                  </div> */}
+                </div> */}
+                {/* <div className='row'>
                   <div className='col-3'>
                     <span>Cover Page Scanning MP: </span>
                     <input type='text' name='Cover_Page_MP' value={formData.Cover_Page_MP}
@@ -377,23 +388,9 @@ const MIS_Form = () => {
                     <input type='text' name='Rescan_MP' value={formData.Rescan_MP}
                      onChange={(e) => setFormData({ ...formData, Rescan_MP: e.target.value })} required /><br />
                   </div>
-                  <div className='col-3'>
-                    <span>DMS Upload MP: </span>
-                    <input type='text' name='PDF_Export_MP' value={formData.PDF_Export_MP}
-                     onChange={(e) => setFormData({ ...formData, PDF_Export_MP: e.target.value })} required /><br />
-                  </div>
-                </div>
-                {/* <div className='row'>
-                  <div className='col-3'>
-                    <span>Image QC MP: </span>
-                    <input type='text' name='Image_QC_MP' value={formData.Image_QC_MP}
-                     onChange={(e) => setFormData({ ...formData, Image_QC_MP: e.target.value })} required /><br />
-                  </div>
-                  <div className='col-3'>
-                    <span>Flagging MP: </span>
-                    <input type='text' name='Doc_MP' value={formData.Doc_MP}
-                     onChange={(e) => setFormData({ ...formData, Doc_MP: e.target.value })} required /><br />
-                  </div>
+                 
+                </div> */}
+                <div className='row'>
                   <div className='col-3'>
                     <span>Indexing MP: </span>
                     <input type='text' name='Index_MP' value={formData.Index_MP}
@@ -404,19 +401,23 @@ const MIS_Form = () => {
                     <input type='text' name='CBSL_QA_MP' value={formData.CBSL_QA_MP}
                      onChange={(e) => setFormData({ ...formData, CBSL_QA_MP: e.target.value })} required /><br />
                   </div>
-                </div> */}
+                  <div className='col-3'>
+                    <span>Customer QA Done MP: </span>
+                    <input type='text' name='Cust_QA_Done_MP' value={formData.Cust_QA_Done_MP}
+                     onChange={(e) => setFormData({ ...formData, Cust_QA_Done_MP: e.target.value })} required /><br />
+                  </div>
+                  <div className='col-3'>
+                    <span>DMS Upload MP: </span>
+                    <input type='text' name='PDF_Export_MP' value={formData.PDF_Export_MP}
+                     onChange={(e) => setFormData({ ...formData, PDF_Export_MP: e.target.value })} required /><br />
+                  </div>
+                </div>
                 <div className='row'>
                   {/* <div className='col-3'>
                     <span>Ready for Custom QA MP: </span>
                     <input type='text' name='Ready_Cust_QA_MP' value={formData.Ready_Cust_QA_MP}
                      onChange={(e) => setFormData({ ...formData, Ready_Cust_QA_MP: e.target.value })} required /><br />
-                  </div>
-                  <div className='col-3'>
-                    <span>Customer QA Done MP: </span>
-                    <input type='text' name='Cust_QA_Done_MP' value={formData.Cust_QA_Done_MP}
-                     onChange={(e) => setFormData({ ...formData, Cust_QA_Done_MP: e.target.value })} required /><br />
                   </div> */}
-                  
                   <div className='col-3'>
                     <span>Inventory Out MP: </span>
                     <input type='text' name='Inventory_MP' value={formData.Inventory_MP}
@@ -428,6 +429,16 @@ const MIS_Form = () => {
                      onChange={(e) => setFormData({ ...formData, Inv_Out_Files: e.target.value })} required /><br />
                   </div>
                   <div className='col-3'>
+                    <span>Target: </span>
+                    <input type='text' name='Scaning_Target_A3' value={formData.Scaning_Target_A3}
+                     onChange={(e) => setFormData({ ...formData, Scaning_Target_A3: e.target.value })} required /><br />
+                  </div>
+                  <div className='col-3'>
+                    <span>Scanner Availability: </span>
+                    <input type='text' name='Scaning_Capacity_A3' value={formData.Scaning_Capacity_A3}
+                     onChange={(e) => setFormData({ ...formData, Scaning_Capacity_A3: e.target.value })} required /><br />
+                  </div>
+                  {/* <div className='col-3'>
                     <span>Refilling MP: </span>
                     <input type='text' name='Refilling_Files_MP' value={formData.Refilling_Files_MP}
                      onChange={(e) => setFormData({ ...formData, Refilling_Files_MP: e.target.value })} required /><br />
@@ -436,34 +447,22 @@ const MIS_Form = () => {
                     <span>Refilling Files: </span>
                     <input type='text' name='Refilling_Files_TF' value={formData.Refilling_Files_TF}
                      onChange={(e) => setFormData({ ...formData, Refilling_Files_TF: e.target.value })} required />
-                  </div>
+                  </div> */}
                 </div>
                 <div className='row'>
                
-                  <div className='col-3'>
+                  {/* <div className='col-3'>
                     <span>Refilling Images: </span>
                     <input type='text' name='Refilling_Files_TI' value={formData.Refilling_Files_TI}
                      onChange={(e) => setFormData({ ...formData, Refilling_Files_TI: e.target.value })} required />
-                  </div>
+                  </div> */}
+                  
                   <div className='col-3'>
-                    <span>Scanning Target: </span>
-                    <input type='text' name='Scaning_Target_A3' value={formData.Scaning_Target_A3}
-                     onChange={(e) => setFormData({ ...formData, Scaning_Target_A3: e.target.value })} required /><br />
-                  </div>
-                  <div className='col-3'>
-                    <span>Scanner Count A3: </span>
-                    <input type='text' name='Scaning_Capacity_A3' value={formData.Scaning_Capacity_A3}
-                     onChange={(e) => setFormData({ ...formData, Scaning_Capacity_A3: e.target.value })} required /><br />
-                  </div>
-                  <div className='col-3'>
-                    <span>Scanner Count A4: </span>
+                    <span>System Availability: </span>
                     <input type='text' name='Scaning_Capacity_A4' value={formData.Scaning_Capacity_A4}
                      onChange={(e) => setFormData({ ...formData, Scaning_Capacity_A4: e.target.value })} required /><br />
                   </div>
-                </div>
-                <div className='row'>
-                
-                  <div className='col-3'>
+                  {/* <div className='col-3'>
                     <span>QC Target: </span>
                     <input type='text' name='QC_Target' value={formData.QC_Target}
                      onChange={(e) => setFormData({ ...formData, QC_Target: e.target.value })} required /><br />
@@ -472,7 +471,7 @@ const MIS_Form = () => {
                     <span>Post QC Target: </span>
                     <input type='text' name='Post_QC_Target' value={formData.Post_QC_Target}
                      onChange={(e) => setFormData({ ...formData, Post_QC_Target: e.target.value })} required /><br />
-                  </div>
+                  </div> */}
                   <div className='col-3'>
                     <span>Expected Volume: </span>
                     <input type='text' name='expected_volume' value={formData.expected_volume}
@@ -480,7 +479,9 @@ const MIS_Form = () => {
                   </div>
                 </div>
                 <div className='row'>
-                
+                  
+                </div>
+                <div className='row'>
                 </div>
               </div>
             </div>

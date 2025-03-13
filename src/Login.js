@@ -93,7 +93,7 @@ const Login = () => {
     } else if (user && user.user_roles && user.user_roles.includes("Client")) {
       navigate('/clientreport');
     } else {
-      navigate('/dashboard')
+      navigate('/report')
     }
   };
 

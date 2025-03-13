@@ -7,7 +7,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import { BsFillCloudArrowUpFill } from "react-icons/bs";
 import { BsCloudyFill } from "react-icons/bs";
-import { BrowserRouter, Routes, Route, Link, Router } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Router,useLocation } from "react-router-dom";
 import { FaUserAlt } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
 import { RiUserFill } from "react-icons/ri";
@@ -25,6 +25,12 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState(false);
   const [user, setUser] = useState();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isActive = (path) =>
+    location.pathname === path
+      ? { color: '#4BC0C0', fontWeight: 'bold' } // Green when active
+      : { color: 'black', textDecoration: 'none' }; // Black when not active
+
   // Retrieve user info from local storage
   const userLog = JSON.parse(localStorage.getItem('user'));
   // console.log("User's Info", userLog);
@@ -124,8 +130,6 @@ const Header = () => {
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <Link to='/uploadDatabase' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdUpload style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Upload Database</Link>
                     </div>
-
-
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <a className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />MIS Report <IoIosArrowDown style={{ marginLeft: '50px' }} onClick={handleReportDropdown} /></a>
                     </div>
@@ -165,7 +169,7 @@ const Header = () => {
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/MIS_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdAdd style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Manpower</Link>
                     </div>
-                    <div className='row mt-1' onClick={handleActiveTab}>
+                    {/* <div className='row mt-1' onClick={handleActiveTab}>
                       <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
                     </div>
                     <div className='row mt-1' onClick={handleActiveTab}>
@@ -176,7 +180,7 @@ const Header = () => {
                     </div>
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -239,7 +243,7 @@ const Header = () => {
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/MIS_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdReport style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Manpower</Link>
                 </div>
-                <div className='row' onClick={handleActiveTab}>
+                {/* <div className='row' onClick={handleActiveTab}>
                   <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
                 </div>
                 <div className='row' onClick={handleActiveTab}>
@@ -250,7 +254,7 @@ const Header = () => {
                 </div>
                 <div className='row mt-1' onClick={handleActiveTab}>
                   <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
-                </div>
+                </div> */}
               </div>
             </div>
           }
@@ -795,7 +799,7 @@ const Header = () => {
                     <div className='row' onClick={handleActiveTab}>
                       <Link to='/MIS_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdAdd style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Manpower</Link>
                     </div>
-                    <div className='row mt-1' onClick={handleActiveTab}>
+                    {/* <div className='row mt-1' onClick={handleActiveTab}>
                       <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
                     </div>
                     <div className='row mt-1' onClick={handleActiveTab}>
@@ -806,7 +810,7 @@ const Header = () => {
                     </div>
                     <div className='row mt-1' onClick={handleActiveTab}>
                       <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -860,7 +864,7 @@ const Header = () => {
                 <div className='row' onClick={handleActiveTab}>
                   <Link to='/MIS_Form' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdAdd style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Add Manpower</Link>
                 </div>
-                <div className='row mt-1' onClick={handleActiveTab}>
+                {/* <div className='row mt-1' onClick={handleActiveTab}>
                   <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
                 </div>
                 <div className='row mt-1' onClick={handleActiveTab}>
@@ -871,7 +875,7 @@ const Header = () => {
                 </div>
                 <div className='row mt-1' onClick={handleActiveTab}>
                   <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
-                </div>
+                </div> */}
               </div>
             </div>
           }

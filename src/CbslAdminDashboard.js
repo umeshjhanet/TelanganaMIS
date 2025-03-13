@@ -47,8 +47,16 @@ const CbslAdminDashboard = () => {
   const [districtUser, setDistrictUser] = useState();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showFormatDropdown, setShowFormatDropdown] = useState(false);
-  const [exportTableFormat,setExportTableFormat] = useState('csv');
+  const [exportTableFormat, setExportTableFormat] = useState('csv');
   const [chartData, setChartData] = useState(null);
+  const [cumulative, setCumulative] = useState();
+  const [target, setTarget] = useState();
+  const [selectedDate, setSelectedDate] = useState("");
+  const [yesterdayReport, setYesterdayReport] = useState([]);
+  const [vendorName, setVendorName] = useState();
+  const [showVendor, setShowVendor] = useState(false);
+  const [selectedVendors, setSelectedVendors] = useState([]);
+  const vendorDropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const userLog = JSON.parse(localStorage.getItem("user"));
@@ -96,7 +104,7 @@ const CbslAdminDashboard = () => {
   });
   const [weekImage, setWeekImage] = useState([]);
   const [weekFile, setWeekFile] = useState([]);
-  
+
   const [monthImage, setMonthImage] = useState({
     labels: [],
     datasets: [
@@ -167,12 +175,16 @@ const CbslAdminDashboard = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowLocation(false);
       }
+      if (vendorDropdownRef.current && !vendorDropdownRef.current.contains(event.target)) {
+        setShowVendor(false);
+      }
     };
+
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, []);
 
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
@@ -238,6 +250,92 @@ const CbslAdminDashboard = () => {
       totalFilesSum,
       totalImagesSum,
     };
+  };
+  const fetchYesterdayData = async () => {
+    try {
+      const params = {};
+
+      if (selectedDate) {
+        params.date = selectedDate;
+      }
+
+      if (selectedVendors) {  // Ensure vendor is included if selected
+        params.vendor = selectedVendors;
+      }
+
+      if (selectedLocations && selectedLocations.length > 0) {
+        params.locationName = selectedLocations; // Pass locations if selected
+      }
+
+      const response = await axios.get(`${API_URL}/vendorReport`, { params });
+      setYesterdayReport(response.data);
+    } catch (error) {
+      console.error("Error fetching report data:", error);
+      setError("Error fetching report data. Please try again.");
+    }
+  };
+
+  const fetchCumulative = async () => {
+    try {
+      const params = {};
+  
+      if (selectedDate) {
+        params.date = selectedDate;
+      }
+  
+      if (selectedVendors && selectedVendors.length > 0) {  
+        params.vendor = selectedVendors.join(","); // Convert array to comma-separated string
+      }
+  
+      if (selectedLocations && selectedLocations.length > 0) {
+        params.locationName = selectedLocations;
+      }
+  
+      const response = await axios.get(`${API_URL}/fetch-data-sequential`, { params });
+      setCumulative(response.data);
+    } catch {
+      console.log("Error fetching cumulative data");
+    }
+  };
+  useEffect(() => {
+    const fetchTarget = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/mptarget`);
+        setTarget(response.data);
+      } catch {
+        console.log("Error fetching target data");
+      }
+    };
+    const fetchVendor = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/vendorName`);
+        setVendorName(response.data);
+      } catch {
+        console.log("Error fetching target data");
+      }
+    };
+
+    const fetchData = async () => {
+      setIsLoading(true);  // ✅ Set loading before fetching
+      await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
+      setIsLoading(false); // ✅ Only set false after both complete
+    };
+
+    fetchData();
+    fetchVendor();
+  }, []);
+  const handleVendor = (vendorName) => {
+    if (!selectedVendors.includes(vendorName)) {
+      setSelectedVendors([...selectedVendors, vendorName]);
+
+      setSearchInput("");
+    }
+    // setShowVendor(false); // Close the dropdown when a Vendor is selected
+  };
+  const removeVendor = (vendorName) => {
+    setSelectedVendors(
+      selectedVendors.filter((loc) => loc !== vendorName)
+    );
   };
 
   useEffect(() => {
@@ -738,7 +836,7 @@ const CbslAdminDashboard = () => {
             },
             tooltip: {
               shared: true,
-              sharedOnSeries: [3,4,5],
+              sharedOnSeries: [3, 4, 5],
               intersect: false,
             },
             legend: {
@@ -746,12 +844,13 @@ const CbslAdminDashboard = () => {
             },
           },
         });
-        
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
+    fetchYesterdayData();
+    fetchCumulative(locationName);
     fetchData(locationName);
     fetchGraphFileData(locationName);
     fetchGraphImageData(locationName);
@@ -865,56 +964,56 @@ const CbslAdminDashboard = () => {
   function downloadCSVFromTable() {
     const table = document.querySelector(".data-table"); // Select the table by class
     let csvContent = "";
-  
+
     // Define the full header row
     const headerRow1 = [
-      "Sr. No.", 
-      "Location", 
-      `Scanned (${formattedPreviousDate})`, "", 
-      `Scanned (${formattedYesterdayDate})`, "", 
-      `Scanned (${formattedCurrentDate})`, "", 
+      "Sr. No.",
+      "Location",
+      `Scanned (${formattedPreviousDate})`, "",
+      `Scanned (${formattedYesterdayDate})`, "",
+      `Scanned (${formattedCurrentDate})`, "",
       "Cumulative till date", ""
     ];
-  
+
     // Define the second row of headers
     const headerRow2 = [
-      "", "", 
-      "Files", "Images", 
-      "Files", "Images", 
-      "Files", "Images", 
-      "Files", "Images", 
+      "", "",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
+      "Files", "Images",
       ""
     ];
-  
+
     // Join both header rows to create the full CSV header
     csvContent += headerRow1.join(",") + "\n";
     csvContent += headerRow2.join(",") + "\n";
-  
+
     // Extract the table body rows
     const rows = table.querySelectorAll("tbody tr");
     rows.forEach((row, index) => {
       const cells = row.querySelectorAll("td");
       const rowContent = [];
-      
+
       cells.forEach((cell) => {
         // Remove any commas from cell content to avoid CSV issues
         rowContent.push(cell.innerText.replace(/,/g, ""));
       });
-      
+
       // Ensure the row has the correct number of columns
       while (rowContent.length < headerRow1.length) {
         rowContent.push(""); // Add empty data if there are fewer columns
       }
-  
+
       // For the last row (Total row), handle the colspan=2 logic
       if (index === rows.length - 1) {
         // Insert an empty cell after "Total" to account for the colspan=2
         rowContent.splice(1, 0, "");
       }
-  
+
       csvContent += rowContent.join(",") + "\n";
     });
-    
+
     // Create a blob and trigger download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -926,7 +1025,7 @@ const CbslAdminDashboard = () => {
   }
   function exportTableToPDFTable() {
     const input = document.querySelector(".data-table"); // Target the table
-    
+
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
@@ -934,19 +1033,19 @@ const CbslAdminDashboard = () => {
         unit: 'pt',
         format: 'a4',
       });
-  
+
       // Add heading
       pdf.setFontSize(18);
       pdf.setTextColor(0, 0, 0); // Set text color to black
       pdf.text("PROJECT UPDATE OF SCANNING FOR DISTRICT COURT OF TELANGANA", 40, 30); // Add heading at position (40, 30)
-  
+
       // Adjusting image width and height to fit in the PDF
       const imgWidth = 825; // Fit landscape A4 width
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
+
       // Add the table image below the heading
       pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, imgHeight); // Adjust y-coordinate to fit below heading
-  
+
       pdf.save("Scannedreport.pdf");
     });
   }
@@ -972,6 +1071,29 @@ const CbslAdminDashboard = () => {
       return '';
     }
   }
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+  const handleDateFilter = () => {
+    if (!selectedVendors && !selectedDate) {
+      alert("Please select at least a vendor or a date");
+      return;
+    }
+  
+    if (selectedVendors && !selectedDate) {
+      // Only vendor is selected, call fetchYesterdayData
+      fetchYesterdayData();
+      fetchCumulative(selectedVendors);
+    } else if (selectedVendors && selectedDate) {
+      // Both vendor and date are selected, call both functions
+      fetchCumulative(selectedLocations);
+      fetchYesterdayData();
+    } else if (!selectedVendors && selectedDate) {
+      // Only date is selected, call fetchCumulative
+      fetchCumulative(selectedLocations);
+    }
+  };
+  
 
   return (
     <>
@@ -1071,7 +1193,7 @@ const CbslAdminDashboard = () => {
                   </CardBody>
                 </Card>
                 <div>
-                 
+
                 </div>
               </div>
             </div>
@@ -1086,27 +1208,27 @@ const CbslAdminDashboard = () => {
                   }}
                 >
                   <div className="col-10">
-                  <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
+                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
                       Export CSV
                     </h6>
-                    
+
                   </div>
                   {showFormatDropdown && (
-                       <div style={{height:'0px',overflow:'visible',display:'flex',justifyContent:'right'}}>
+                    <div style={{ height: '0px', overflow: 'visible', display: 'flex', justifyContent: 'right' }}>
                       <div className="export-dropdown-card">
                         <p onClick={() => handleTableDropdownChange('csv')}>CSV</p>
                         <p onClick={() => handleTableDropdownChange('excel')}>Excel</p>
                         <p onClick={() => handleTableDropdownChange('pdf')}>PDF</p>
                       </div>
-                      </div>
-                    )}
+                    </div>
+                  )}
                   {showConfirmation && (
                     <div className="confirmation-dialog">
                       <div className="confirmation-content">
                         <p className="fw-bold">Are you sure you want to export the {exportTableFormat.toUpperCase()} file?</p>
-                        <button className="btn btn-success mt-3 ms-5"  onClick={downloadAllFormatsSummary}>Yes</button>
+                        <button className="btn btn-success mt-3 ms-5" onClick={downloadAllFormatsSummary}>Yes</button>
                         <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
                       </div>
                     </div>
@@ -1116,18 +1238,18 @@ const CbslAdminDashboard = () => {
                   className="row mt-5 ms-2 me-2"
                   style={{ overflowX: "auto" }}
                 >
-                    <table class="table table-hover table-bordered table-responsive data-table">
+                  <table class="table table-hover table-bordered table-responsive data-table">
                     <thead style={{ color: "#4BC0C0" }}>
                       <tr>
-                        <th rowspan="2" style={{verticalAlign:'middle'}}>Sr. No.</th>
-                        <th rowspan="2" style={{verticalAlign:'middle'}}>Location</th>
+                        <th rowspan="2" style={{ verticalAlign: 'middle' }}>Sr. No.</th>
+                        <th rowspan="2" style={{ verticalAlign: 'middle' }}>Location</th>
                         <th colspan="2">Scanned ({formattedPreviousDate})</th>
                         <th colspan="2">
                           Scanned ({formattedYesterdayDate})
                         </th>
                         <th colspan="2">Scanned ({formattedCurrentDate})</th>
                         <th colspan="2">Cumulative till date</th>
-                        
+
                       </tr>
                       <tr>
                         <th>Files</th>
@@ -1151,7 +1273,7 @@ const CbslAdminDashboard = () => {
                             return (
                               <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td style={{textAlign:'left'}}>{elem.LocationName}</td>
+                                <td style={{ textAlign: 'left' }}>{elem.LocationName}</td>
                                 <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
@@ -1160,7 +1282,7 @@ const CbslAdminDashboard = () => {
                                 <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-                                
+
                               </tr>
                             );
                           }
@@ -1196,7 +1318,7 @@ const CbslAdminDashboard = () => {
                         <td>
                           <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
                         </td>
-                        
+
                       </tr>
                     </tbody>
 
@@ -1211,10 +1333,10 @@ const CbslAdminDashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Cumulative Files </CardTitle>
                     <Chart
-                     options={formatChartData(barFile, ["#508C9B"]).options}
-                     series={formatChartData(barFile, ["#508C9B"]).series}
-                     type="bar"
-                     height='350'
+                      options={formatChartData(barFile, ["#508C9B"]).options}
+                      series={formatChartData(barFile, ["#508C9B"]).series}
+                      type="bar"
+                      height='350'
                     />
                   </CardBody>
                 </Card>
@@ -1240,8 +1362,8 @@ const CbslAdminDashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Civil Cases (Files & Images) </CardTitle>
                     <Chart
-                      options={formatChartData(civilCase,['#50B498']).options}
-                      series={formatChartData(civilCase,['#50B498']).series}
+                      options={formatChartData(civilCase, ['#50B498']).options}
+                      series={formatChartData(civilCase, ['#50B498']).series}
                       type="bar"
                       height="350"
                     />
@@ -1254,8 +1376,8 @@ const CbslAdminDashboard = () => {
                   <CardBody>
                     <CardTitle tag="h5">Criminal Cases (Files & Images) </CardTitle>
                     <Chart
-                      options={formatChartData(criminalCase,['#50B498']).options}
-                      series={formatChartData(criminalCase,['#50B498']).series}
+                      options={formatChartData(criminalCase, ['#50B498']).options}
+                      series={formatChartData(criminalCase, ['#50B498']).series}
                       type="bar"
                       height="350"
                     />
@@ -1271,8 +1393,8 @@ const CbslAdminDashboard = () => {
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
                     <Chart
-                      options={formatChartData(todayFile,["#36C2CE"]).options}
-                      series={formatChartData(todayFile,["#36C2CE"]).series}
+                      options={formatChartData(todayFile, ["#36C2CE"]).options}
+                      series={formatChartData(todayFile, ["#36C2CE"]).series}
                       type="bar"
                       height="350"
                     />
@@ -1286,8 +1408,8 @@ const CbslAdminDashboard = () => {
                     <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(todayImage,["#36C2CE"]).options}
-                      series={formatChartData(todayImage,["#36C2CE"]).series}
+                      options={formatChartData(todayImage, ["#36C2CE"]).options}
+                      series={formatChartData(todayImage, ["#36C2CE"]).series}
                       type="bar"
                       height="350"
                     />
@@ -1307,7 +1429,7 @@ const CbslAdminDashboard = () => {
                       series={donutFileData.series}
                       type="donut"
                       height="350"
-                      
+
                     />
                   </CardBody>
                 </Card>
@@ -1335,8 +1457,8 @@ const CbslAdminDashboard = () => {
                     <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationYesImage,["#088395"]).options}
-                      series={formatChartData(allLocationYesImage,["#088395"]).series}
+                      options={formatChartData(allLocationYesImage, ["#088395"]).options}
+                      series={formatChartData(allLocationYesImage, ["#088395"]).series}
                       type="bar"
                       height="350"
                     />
@@ -1349,8 +1471,8 @@ const CbslAdminDashboard = () => {
                     <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                     <Chart
-                      options={formatChartData(allLocationImage,["#088395"]).options}
-                      series={formatChartData(allLocationImage,["#088395"]).series}
+                      options={formatChartData(allLocationImage, ["#088395"]).options}
+                      series={formatChartData(allLocationImage, ["#088395"]).series}
                       type="bar"
                       height="350"
                     />
@@ -1359,7 +1481,7 @@ const CbslAdminDashboard = () => {
               </div>
             </div>
             <div className="row mt-4">
-            <Card>
+              <Card>
                 <CardBody>
                   <CardTitle tag="h5">Images Processing Chart</CardTitle>
                   {chartData && (
@@ -1372,6 +1494,408 @@ const CbslAdminDashboard = () => {
                   )}
                 </CardBody>
               </Card>
+            </div>
+            <div className="row search-report-card mt-2">
+              <div className="col-2">
+                <input type="date" value={selectedDate} onChange={handleDateChange}
+                  style={{ height: '40px' }} />
+              </div>
+              <div className="col-md-4 col-sm-12">
+                <div
+                  ref={vendorDropdownRef}
+                  className="search-bar"
+                  style={{
+                    border: "1px solid #000",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    minHeight: "30px",
+                    width:'250px'
+                  }}
+
+                  contentEditable={true}
+                  onClick={() => setShowVendor(!showVendor)}
+                >
+                  {selectedVendors.length === 0 && !showVendor && (
+                    <span className="placeholder-text">Search Vendors...</span>
+                  )}
+                  {selectedVendors.map((vendor, index) => (
+                    <span key={index} className="selected-location">
+                      {vendor}
+                      <button
+                        onClick={() => removeVendor(vendor)}
+                        style={{
+                          backgroundColor: "black",
+                          color: "white",
+                          border: "none",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        x
+                      </button>
+                      &nbsp;
+                    </span>
+                  ))}
+                  <span style={{ minWidth: "5px", display: "inline-block" }}>
+                    &#8203;
+                  </span>
+                </div>
+                {showVendor && (
+                  <>
+                    <div className="location-card">
+                      {vendorName &&
+                        vendorName.map((item, index) => (
+                          <div key={index}>
+                            <p
+                              onClick={() => handleVendor(item.Vendor)}
+                            >
+                              {item.Vendor}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="col-3">
+                <button className="btn add-btn" onClick={handleDateFilter}>Submit</button>
+              </div>
+            </div>
+            <div className="row mt-3 me-1">
+              <div className="table-card">
+                <div
+                  className="row"
+                  style={{
+                    padding: "5px",
+                    backgroundColor: "#4bc0c0",
+                    paddingTop: "15px",
+                  }}
+                >
+                  <div className="col-10">
+                    <h6 className="" style={{ color: "white" }}>
+                      MANPOWER ANALYZE REPORT
+                    </h6>
+                  </div>
+                </div>
+                <div
+                  className="row mt-3 ms-2 me-2"
+                  style={{ overflowX: "auto", maxHeight: '500px' }}
+                >
+                  <table class="table table-hover table-bordered table-responsive date-table" style={{ zIndex: '0' }}>
+                    <thead>
+                      <tr>
+                        <th>Process Steps</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>Manpower Target</th>
+                        <th>Average</th>
+                        <th>Differences B/W Target & Achieved</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { name: "Received/ Collection of records", manpower: cumulative?.manpowerData?.CollectionMP, files: cumulative?.scannedData?.total_inventoryfiles, images: "-", processKey: "Collection" },
+                        { name: "Scanning (ADF)", manpower: cumulative?.manpowerData?.ScanningMP, files: cumulative?.scannedData?.total_scanfiles, images: cumulative?.scannedData?.total_scanimages, processKey: "Scanning" },
+                        { name: "Image QC", manpower: cumulative?.manpowerData?.QCMP, files: cumulative?.scannedData?.total_qcfiles, images: cumulative?.scannedData?.total_qcimages, processKey: "QC" },
+                        { name: "Document Classification (Flagging)", manpower: cumulative?.manpowerData?.FlaggingMP, files: cumulative?.scannedData?.total_flaggingfiles, images: cumulative?.scannedData?.total_flaggingimages, processKey: "Flagging" },
+                        { name: "Indexing (Data Entry)", manpower: cumulative?.manpowerData?.IndexingMP, files: cumulative?.scannedData?.total_indexfiles, images: cumulative?.scannedData?.total_indeximages, processKey: "Indexing" },
+                        { name: "CBSL QA", manpower: cumulative?.manpowerData?.CBSLQAMP, files: cumulative?.scannedData?.total_cbslqafiles, images: cumulative?.scannedData?.total_cbslqaimages, processKey: "CBSL QA" },
+                        { name: "Client QC", manpower: cumulative?.manpowerData?.ClientQAMP, files: cumulative?.scannedData?.total_clientqaacceptfiles, images: cumulative?.scannedData?.total_clientqaacceptimages, processKey: "Client QC" },
+                        { name: "DMS Upload", manpower: cumulative?.manpowerData?.DMSUploadMP, files: "-", images: "-", processKey: "DMS Upload" },
+                        { name: "Inventory In & Out", manpower: cumulative?.manpowerData?.InventoryMP, files: cumulative?.barcodingData?.invoutfiles, images: "-", processKey: "InvOut" }
+                      ].map((row, index) => {
+                        const targetValue = target?.find(targetItem => targetItem.process_name === row.processKey)?.target || "-";
+
+                        // ✅ Calculate Average (Files / Manpower)
+                        const average = row.manpower && row.images && row.manpower !== "-" && row.images !== "-"
+                          ? (parseInt(row.images) / parseInt(row.manpower)).toFixed(2)
+                          : "-";
+
+                        // ✅ Calculate Difference (Average / Target * 100)
+                        const difference = targetValue !== "-" && average !== "-"
+                          ? ((parseFloat(average) / parseFloat(targetValue) * 100)).toFixed(2)
+                          : "-";
+
+                        // ✅ Determine Cell Color for Difference Column
+                        let differenceStyle = {};
+                        if (difference === "-") {
+                          differenceStyle = { backgroundColor: "#fff" }; // Orange for empty
+                        } else if (parseFloat(difference) < 90) {
+                          differenceStyle = { backgroundColor: "red" }; // Red for below 90%
+                        } else {
+                          differenceStyle = { backgroundColor: "green" }; // Green for 90% and above
+                        }
+
+                        return (
+                          <tr key={index}>
+                            <td style={{ textAlign: 'left' }}>{row.name}</td>
+                            <td>{row.manpower}</td>
+                            <td>{row.files}</td>
+                            <td>{row.images}</td>
+                            <td>{targetValue}</td>
+                            <td>{average}</td>
+                            <td style={differenceStyle}>{difference !== "-" ? `${difference}%` : "-"}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div className="row mt-2 me-1">
+              <div className="table-card" style={{ marginBottom: "0px" }}>
+                <div className="row" style={{ padding: "5px", backgroundColor: "#4BC0C0", paddingTop: "15px" }}>
+                  <div className="col-10">
+                    <h6 className="" style={{ color: "white" }}>Production Report ({formattedYesterdayDate})</h6>
+                  </div>
+                  {/* <div className="col-2 text-end">
+                    <button onClick={handleExportYesterdayCSV} className="btn btn-light" style={{ marginTop: '-10px' }}>
+                      Export to CSV
+                    </button>
+                  </div> */}
+                </div>
+                <div className="row mt-3 ms-2 me-2" style={{ overflowX: "auto" }}>
+                  <table className="table table-hover table-bordered table-responsive data-table">
+                    <thead style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}>
+                      <tr>
+                        <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle', width: '150px' }}>
+                          Location
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle' }}>
+                          Vendor Deployment
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Scanner Deployment
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          System Deployment
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Target
+                        </th>
+                        <th rowSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Present ManPower
+                        </th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Collection Files
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Scanning
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Image QC
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Flagging
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Indexing
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          CBSL QA
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Customer QA
+                        </th>
+                        <th colSpan="3" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          DMS Uploaded
+                        </th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle', width: '150px' }}>
+                          Inventory Out
+                        </th>
+                      </tr>
+                      <tr style={{ color: "black", fontWeight: '300' }}>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                        <th>Images</th>
+                        <th>MP</th>
+                        <th>Files</th>
+                      </tr>
+                    </thead>
+                    <tbody className="scrollable" style={{ color: "#4bc0c0", height: "80px" }}>
+                      {yesterdayReport && yesterdayReport.map((elem, index) => {
+                        // Calculate total manpower for each row
+                        const totalManpower = [
+                          parseInt(elem.Scan_MP) || 0,
+                          parseInt(elem.Image_QC_MP) || 0,
+                          parseInt(elem.Flagging_MP) || 0,
+                          parseInt(elem.Index_MP) || 0,
+                          parseInt(elem.CBSL_QA_MP) || 0,
+                          parseInt(elem.Ready_Cust_QA_MP) || 0,
+                          parseInt(elem.Cust_QA_Done_MP) || 0,
+                          parseInt(elem.DMS_Upload_MP) || 0,
+                          parseInt(elem.Refilling_MP) || 0,
+                          parseInt(elem.Inventory_MP) || 0,
+                        ].reduce((sum, manpower) => sum + manpower, 0);
+
+                        return (
+                          <tr key={index} style={{ backgroundColor: "white" }}>
+                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationname}</td>
+                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.Vendor}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{elem.ScanningTarget}</td>
+                            <td>{totalManpower.toString()}</td>
+                            <td>{isNaN(parseInt(elem.Coll_Index_MP)) ? "0" : parseInt(elem.Coll_Index_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.ReceivedFiles)) ? "0" : parseInt(elem.ReceivedFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Scan_MP)) ? "0" : parseInt(elem.Scan_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Image_QC_MP)) ? "0" : parseInt(elem.Image_QC_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Flagging_MP)) ? "0" : parseInt(elem.Flagging_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Index_MP)) ? "0" : parseInt(elem.Index_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.IndexingFiles)) ? "0" : parseInt(elem.IndexingFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.IndexingImages)) ? "0" : parseInt(elem.IndexingImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CBSL_QA_MP)) ? "0" : parseInt(elem.CBSL_QA_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CBSL_QAFiles)) ? "0" : parseInt(elem.CBSL_QAFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Cust_QA_Done_MP)) ? "0" : parseInt(elem.Cust_QA_Done_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? "0" : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Client_QA_AcceptedImages)) ? "0" : parseInt(elem.Client_QA_AcceptedImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.DMS_Upload_MP)) ? "0" : parseInt(elem.DMS_Upload_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.DMS_UploadFiles)) ? "0" : parseInt(elem.DMS_UploadFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.DMS_UploadImages)) ? "0" : parseInt(elem.DMS_UploadImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Inventory_MP)) ? "0" : parseInt(elem.Inventory_MP).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Inv_Out_Files)) ? "0" : parseInt(elem.Inv_Out_Files).toLocaleString()}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                    <tfoot>
+                      <tr style={{ color: "#4BC0C0", fontWeight: "bold", textAlign: 'right' }}>
+                        <td style={{ textAlign: 'left' }}>Total</td>
+                        <td></td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScannerAvailability) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.SystemAvailability) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScanningTarget) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((total, elem) => {
+                            const manpower = [
+                              parseInt(elem.Scan_MP) || 0,
+                              parseInt(elem.Image_QC_MP) || 0,
+                              parseInt(elem.Flagging_MP) || 0,
+                              parseInt(elem.Index_MP) || 0,
+                              parseInt(elem.CBSL_QA_MP) || 0,
+                              parseInt(elem.Ready_Cust_QA_MP) || 0,
+                              parseInt(elem.Cust_QA_Done_MP) || 0,
+                              parseInt(elem.DMS_Upload_MP) || 0,
+                              parseInt(elem.Refilling_MP) || 0,
+                              parseInt(elem.Inventory_MP) || 0,
+                            ].reduce((sum, manpower) => sum + manpower, 0);
+                            return total + manpower;
+                          }, 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Coll_Index_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ReceivedFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Scan_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScannedFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScannedImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Image_QC_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.QCFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.QCImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Flagging_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.FlaggingFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.FlaggingImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Index_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.IndexingFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.IndexingImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.CBSL_QA_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.CBSL_QAFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.CBSL_QAImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Cust_QA_Done_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Client_QA_AcceptedFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Client_QA_AcceptedImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.DMS_Upload_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.DMS_UploadFiles) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.DMS_UploadImages) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Inventory_MP) || 0), 0).toLocaleString()}
+                        </td>
+                        <td>
+                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.Inv_Out_Files) || 0), 0).toLocaleString()}
+                        </td>
+                      </tr>
+                    </tfoot> 
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
