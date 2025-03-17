@@ -148,7 +148,7 @@ const SiteReports = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <button className='btn search-btn mb-1' style={{ color: 'white' }}>Search</button>
+                {/* <button className='btn search-btn mb-1' style={{ color: 'white' }}>Search</button> */}
               </div>
               <div className='row'>
                 <div className='col-11'></div>

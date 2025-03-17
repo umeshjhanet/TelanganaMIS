@@ -1,83 +1,82 @@
 // import React, { useState, useEffect, useRef } from 'react';
 // import Header from './Components/Header';
-// import Footer from './Footer';
+// import Footer from './Components/Footer';
 // import { API_URL } from './Api';
 // import axios from 'axios';
 
 // const File = () => {
-
 //     const [showLocation, setShowLocation] = useState(false);
 //     const [selectedLocations, setSelectedLocations] = useState([]);
-//     const [locations, setLocations] = useState();
-//     const [tableData, setTableData] = useState();
+//     const [selectedSearchLocations, setSelectedSearchLocations] = useState([]); // Only used for filtering
+//     const [locations, setLocations] = useState([]);
+//     const [filteredLocations, setFilteredLocations] = useState([]);
 //     const [searchInput, setSearchInput] = useState('');
+//     const [tableData, setTableData] = useState([]);
 //     const [isLoading, setIsLoading] = useState(true);
-//     const dropdownRef = useRef(null);
+
+//     useEffect(() => {
+//         const fetchData = async () => {
+//             setIsLoading(true);
+//             try {
+//                 const response = await axios.get(`${API_URL}/locations`);
+//                 setLocations(response.data);
+//                 setFilteredLocations(response.data);
+//             } catch (error) {
+//                 console.error(error);
+//             }
+//             setIsLoading(false);
+//         };
+
+//         const fetchTableData = async () => {
+//             setIsLoading(true);
+//             try {
+//                 const response = await axios.get(`${API_URL}/api/uploadlog`);
+//                 setTableData(response.data);
+//             } catch (error) {
+//                 console.error(error);
+//             }
+//             setIsLoading(false);
+//         };
+
+//         fetchData();
+//         fetchTableData();
+//     }, []);
 
 //     const handleLocation = (location) => {
 //         if (!selectedLocations.includes(location)) {
 //             setSelectedLocations([...selectedLocations, location]);
-//             setSearchInput('');
 //         }
-//         setShowLocation(false); // Close the dropdown when a location is selected
+//         setSearchInput('');
+//         setFilteredLocations(locations);
+//         setShowLocation(false);
 //     };
 
 //     const removeLocation = (location) => {
 //         setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
 //     };
 
-//     useEffect(() => {
-//         const fetchData = () => {
-//             setIsLoading(true);
-//             axios.get(`${API_URL}/locations`)
-//                 .then(response => {
-//                     setLocations(response.data)
-//                     setIsLoading(false);
-//                 })
-//                 .catch(error => {
-//                     console.error(error)
-//                     setIsLoading(false);
-//                 });
+//     const handleSearchChange = (e) => {
+//         const value = e.target.value;
+//         setSearchInput(value);
 
-//         };
-//         const fetchTableData = () => {
-//             setIsLoading(true);
-//             axios.get(`${API_URL}/api/uploadlog`)
-//                 .then(response => {
-//                     setTableData(response.data)
-//                     setIsLoading(false);
-//                 })
-//                 .catch(error => console.error(error));
-//             setIsLoading(false);
-//         };
+//         if (value === '') {
+//             setFilteredLocations(locations);
+//         } else {
+//             setFilteredLocations(
+//                 locations.filter((loc) =>
+//                     loc.LocationName.toLowerCase().includes(value.toLowerCase())
+//                 )
+//             );
+//         }
+//     };
 
-//         fetchData();
-//         fetchTableData();
-
-
-//     }, []);
-
-//     const formatDate = (dateTimeString) => {
-//         const dateTime = new Date(dateTimeString);
-//         const formattedDate = `${('0' + dateTime.getDate()).slice(-2)}-${('0' + (dateTime.getMonth() + 1)).slice(-2)}-${dateTime.getFullYear().toString().substr(-2)}`;
-//         return formattedDate;
-//     }
-
-//     function formatDateTime(dateTimeString) {
-//         const dateTime = new Date(dateTimeString);
-//         const formattedDate = `${('0' + dateTime.getDate()).slice(-2)}-${('0' + (dateTime.getMonth() + 1)).slice(-2)}-${dateTime.getFullYear()}`;
-//         const formattedTime = `${('0' + dateTime.getUTCHours()).slice(-2)}:${('0' + dateTime.getUTCMinutes()).slice(-2)}:${('0' + dateTime.getUTCSeconds()).slice(-2)}`;
-//         return `${formattedDate} ${formattedTime}`;
-//     }
-//     const Loader = () => (
-//         <div className="loader-overlay">
-//             <div className="loader"></div>
-//         </div>
-//     );
+//     const handleSearchClick = () => {
+//         setSelectedSearchLocations([...selectedLocations]); // Store selected locations for filtering
+//     };
 
 //     return (
 //         <>
-//             {isLoading && <Loader />}
+//             {isLoading && <div className="loader-overlay"><div className="loader"></div></div>}
 //             <Header />
 //             <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
 //                 <div className='row'>
@@ -90,39 +89,42 @@
 //                         </div>
 //                         <div className='row mt-2 me-1 search-file-card'>
 //                             <div className='col-md-4 col-sm-12'>
-//                                 <div
-//                                     ref={dropdownRef}
-//                                     className='search-bar mt-1'
-//                                     style={{ border: '1px solid #000', padding: '5px', borderRadius: '5px', minHeight: '30px' }}
-//                                     contentEditable={true}
-//                                     onClick={() => setShowLocation(!showLocation)}
-//                                 >
+//                                 <div className="search-container">
+//                                     <input
+//                                         type="text"
+//                                         className="search-bar mt-1"
+//                                         style={{ border: '1px solid #000', padding: '5px', borderRadius: '5px', minHeight: '30px', width: '100%' }}
+//                                         value={searchInput}
+//                                         onChange={handleSearchChange}
+//                                         onClick={() => setShowLocation(true)}
+//                                         placeholder="Search or select a location"
+//                                     />
+//                                     {showLocation && (
+//                                         <div className="location-card" style={{position:'absolute',top:'180px'}}>
+//                                             {filteredLocations.length > 0 ? (
+//                                                 filteredLocations.map((item, index) => (
+//                                                     <p key={index} onClick={() => handleLocation(item.LocationName)}>
+//                                                         {item.LocationName}
+//                                                     </p>
+//                                                 ))
+//                                             ) : (
+//                                                 <p>No locations found</p>
+//                                             )}
+//                                         </div>
+//                                     )}
+//                                 </div>
+//                                 <div className="selected-locations mt-2">
 //                                     {selectedLocations.map((location, index) => (
-//                                         <span key={index} className='selected-location'>
+//                                         <span key={index} className="selected-location">
 //                                             {location}
-//                                             <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', marginLeft: '5px', }}>x</button>
-//                                             &nbsp;
+//                                             <button onClick={() => removeLocation(location)} style={{ marginLeft: '5px', backgroundColor: 'black', color: 'white', border: 'none' }}>x</button>
 //                                         </span>
 //                                     ))}
-//                                     <span style={{ minWidth: '5px', display: 'inline-block' }}>&#8203;</span>
 //                                 </div>
-//                                 {showLocation && (
-//                                     <>
-//                                         <div className='location-card' >
-//                                             {locations && locations.map((item, index) => (
-//                                                 <div key={index}>
-//                                                     <p onClick={() => handleLocation(item.LocationName)}>{item.LocationName}</p>
-//                                                 </div>
-//                                             ))}
-//                                         </div>
-//                                     </>
-//                                 )}
 //                             </div>
-
 //                             <div className='col-md-2 col-sm-12'>
-//                                 <button className='btn search-btn'>Search</button>
+//                                 <button className='btn search-btn' onClick={handleSearchClick}>Search</button>
 //                             </div>
-
 //                             <table className='table-bordered table-hover user-tables mt-3'>
 //                                 <thead style={{ backgroundColor: '#4BC0C0', color: 'white' }}>
 //                                     <tr>
@@ -133,37 +135,35 @@
 //                                         <th style={{ fontWeight: '500' }}>App Version</th>
 //                                     </tr>
 //                                 </thead>
-
 //                                 <tbody>
 //                                     {tableData && tableData.map((elem, index) => {
-//                                         if (selectedLocations.length === 0 || selectedLocations.includes(elem.locationname)) {
+//                                         if (selectedSearchLocations.length === 0 || selectedSearchLocations.includes(elem.locationname)) {
 //                                             return (
 //                                                 <tr key={index}>
-//                                                     <td>{index + 1}</td>
-//                                                     <td>{elem.locationname}</td>
-//                                                     <td>{formatDate(elem.filedate)}</td>
-//                                                     <td>{formatDateTime(elem.uploaddate)}</td>
-//                                                     <td>{elem.appVersion}</td>
+//                                                     <td style={{ textAlign: 'left' }}>{index + 1}</td>
+//                                                     <td style={{ textAlign: 'left' }}>{elem.locationname}</td>
+//                                                     <td style={{ textAlign: 'left' }}>{elem.filedate}</td>
+//                                                     <td style={{ textAlign: 'left' }}>{elem.uploaddate}</td>
+//                                                     <td style={{ textAlign: 'left' }}>{elem.appVersion}</td>
 //                                                 </tr>
 //                                             );
 //                                         }
 //                                         return null;
 //                                     })}
 //                                 </tbody>
-
-
-
 //                             </table>
-
 //                         </div>
 //                     </div>
 //                 </div>
 //             </div>
 //             <Footer />
 //         </>
-//     )
-// }
+//     );
+// };
+
 // export default File;
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
@@ -173,45 +173,36 @@ import axios from 'axios';
 const File = () => {
     const [showLocation, setShowLocation] = useState(false);
     const [selectedLocations, setSelectedLocations] = useState([]);
-    const [locations, setLocations] = useState();
-    const [tableData, setTableData] = useState();
+    const [selectedSearchLocations, setSelectedSearchLocations] = useState([]);
+    const [locations, setLocations] = useState([]);
+    const [filteredLocations, setFilteredLocations] = useState([]);
     const [searchInput, setSearchInput] = useState('');
+    const [tableData, setTableData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    
     const dropdownRef = useRef(null);
 
-    const handleLocation = (location) => {
-        if (!selectedLocations.includes(location)) {
-            setSelectedLocations([...selectedLocations, location]);
-            setSearchInput('');
-        }
-        setShowLocation(false); // Close the dropdown when a location is selected
-    };
-
-    const removeLocation = (location) => {
-        setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
-    };
-
     useEffect(() => {
-        const fetchData = () => {
+        const fetchData = async () => {
             setIsLoading(true);
-            axios.get(`${API_URL}/locations`)
-                .then(response => {
-                    setLocations(response.data);
-                    setIsLoading(false);
-                })
-                .catch(error => {
-                    console.error(error);
-                    setIsLoading(false);
-                });
+            try {
+                const response = await axios.get(`${API_URL}/locations`);
+                setLocations(response.data);
+                setFilteredLocations(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+            setIsLoading(false);
         };
-        const fetchTableData = () => {
+
+        const fetchTableData = async () => {
             setIsLoading(true);
-            axios.get(`${API_URL}/api/uploadlog`)
-                .then(response => {
-                    setTableData(response.data);
-                    setIsLoading(false);
-                })
-                .catch(error => console.error(error));
+            try {
+                const response = await axios.get(`${API_URL}/api/uploadlog`);
+                setTableData(response.data);
+            } catch (error) {
+                console.error(error);
+            }
             setIsLoading(false);
         };
 
@@ -219,45 +210,54 @@ const File = () => {
         fetchTableData();
     }, []);
 
-    const formatDate = (dateTimeString) => {
-        const dateTime = new Date(dateTimeString);
-        const options = {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            timeZone: 'Asia/Kolkata'
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowLocation(false);
+            }
         };
-    
-        return new Intl.DateTimeFormat('en-GB', options).format(dateTime);
-    };
-    
-    const formatDateTime = (dateTimeString) => {
-        const dateTime = new Date(dateTimeString);
-        const options = {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-            timeZone: 'Asia/Kolkata'
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
         };
-    
-        return new Intl.DateTimeFormat('en-GB', options).format(dateTime);
+    }, []);
+
+    const handleLocation = (location) => {
+        if (!selectedLocations.includes(location)) {
+            setSelectedLocations([...selectedLocations, location]);
+        }
+        setSearchInput('');
+        setFilteredLocations(locations);
+        setShowLocation(false);
     };
-    
-    
-    
-    const Loader = () => (
-        <div className="loader-overlay">
-            <div className="loader"></div>
-        </div>
-    );
+
+    const removeLocation = (location) => {
+        setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
+    };
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchInput(value);
+
+        if (value === '') {
+            setFilteredLocations(locations);
+        } else {
+            setFilteredLocations(
+                locations.filter((loc) =>
+                    loc.LocationName.toLowerCase().includes(value.toLowerCase())
+                )
+            );
+        }
+    };
+
+    const handleSearchClick = () => {
+        setSelectedSearchLocations([...selectedLocations]);
+    };
 
     return (
         <>
-            {isLoading && <Loader />}
+            {isLoading && <div className="loader-overlay"><div className="loader"></div></div>}
             <Header />
             <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
                 <div className='row'>
@@ -270,39 +270,42 @@ const File = () => {
                         </div>
                         <div className='row mt-2 me-1 search-file-card'>
                             <div className='col-md-4 col-sm-12'>
-                                <div
-                                    ref={dropdownRef}
-                                    className='search-bar mt-1'
-                                    style={{ border: '1px solid #000', padding: '5px', borderRadius: '5px', minHeight: '30px' }}
-                                    contentEditable={true}
-                                    onClick={() => setShowLocation(!showLocation)}
-                                >
+                                <div className="search-container" ref={dropdownRef}>
+                                    <input
+                                        type="text"
+                                        className="search-bar mt-1"
+                                        style={{ border: '1px solid #000', padding: '5px', borderRadius: '5px', minHeight: '30px', width: '100%' }}
+                                        value={searchInput}
+                                        onChange={handleSearchChange}
+                                        onClick={() => setShowLocation((prev) => !prev)} // Toggle dropdown on click
+                                        placeholder="Search or select a location"
+                                    />
+                                    {showLocation && (
+                                        <div className="location-card" style={{ position: 'absolute', top: '180px', background: '#fff', border: '1px solid #ccc', zIndex: 10 }}>
+                                            {filteredLocations.length > 0 ? (
+                                                filteredLocations.map((item, index) => (
+                                                    <p key={index} onClick={() => handleLocation(item.LocationName)} style={{ cursor: 'pointer', padding: '5px' }}>
+                                                        {item.LocationName}
+                                                    </p>
+                                                ))
+                                            ) : (
+                                                <p>No locations found</p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="selected-locations mt-2">
                                     {selectedLocations.map((location, index) => (
-                                        <span key={index} className='selected-location'>
+                                        <span key={index} className="selected-location" style={{ padding: '5px', border: '1px solid #ccc', borderRadius: '5px', margin: '2px', display: 'inline-block' }}>
                                             {location}
-                                            <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', marginLeft: '5px', }}>x</button>
-                                            &nbsp;
+                                            <button onClick={() => removeLocation(location)} style={{ marginLeft: '5px', backgroundColor: 'black', color: 'white', border: 'none' }}>x</button>
                                         </span>
                                     ))}
-                                    <span style={{ minWidth: '5px', display: 'inline-block' }}>&#8203;</span>
                                 </div>
-                                {showLocation && (
-                                    <>
-                                        <div className='location-card'>
-                                            {locations && locations.map((item, index) => (
-                                                <div key={index}>
-                                                    <p onClick={() => handleLocation(item.LocationName)}>{item.LocationName}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
                             </div>
-    
                             <div className='col-md-2 col-sm-12'>
-                                <button className='btn search-btn'>Search</button>
+                                <button className='btn search-btn' onClick={handleSearchClick}>Search</button>
                             </div>
-    
                             <table className='table-bordered table-hover user-tables mt-3'>
                                 <thead style={{ backgroundColor: '#4BC0C0', color: 'white' }}>
                                     <tr>
@@ -313,17 +316,16 @@ const File = () => {
                                         <th style={{ fontWeight: '500' }}>App Version</th>
                                     </tr>
                                 </thead>
-    
                                 <tbody>
                                     {tableData && tableData.map((elem, index) => {
-                                        if (selectedLocations.length === 0 || selectedLocations.includes(elem.locationname)) {
+                                        if (selectedSearchLocations.length === 0 || selectedSearchLocations.includes(elem.locationname)) {
                                             return (
                                                 <tr key={index}>
-                                                    <td style={{textAlign:'left'}}>{index + 1}</td>
-                                                    <td style={{textAlign:'left'}}>{elem.locationname}</td>
-                                                    <td style={{textAlign:'left'}}>{formatDate(elem.filedate)}</td>
-                                                    <td style={{textAlign:'left'}}>{formatDateTime(elem.uploaddate)}</td>
-                                                    <td style={{textAlign:'left'}}>{elem.appVersion}</td>
+                                                    <td style={{ textAlign: 'left' }}>{index + 1}</td>
+                                                    <td style={{ textAlign: 'left' }}>{elem.locationname}</td>
+                                                    <td style={{ textAlign: 'left' }}>{elem.filedate}</td>
+                                                    <td style={{ textAlign: 'left' }}>{elem.uploaddate}</td>
+                                                    <td style={{ textAlign: 'left' }}>{elem.appVersion}</td>
                                                 </tr>
                                             );
                                         }
@@ -341,5 +343,3 @@ const File = () => {
 };
 
 export default File;
-
-

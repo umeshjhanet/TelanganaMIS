@@ -106,7 +106,7 @@ const Report = () => {
   const handleReportCsv = () => {
     setShowTableDropdown(!showTableDropdown);
   };
- 
+
 
   const handleReportCancelExport = () => {
     setShowConfirmationBox(false);
@@ -120,120 +120,120 @@ const Report = () => {
     setShowConfirmationBoxDate(false);
   };
 
+  const formatDate = (date) => {
+    // Format to YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
+  const summaryData = async () => {
+    try {
+      const queryParams = {};
+
+      // Optional: Fetch user info from localStorage
+      const userLog = JSON.parse(localStorage.getItem('user'));
+      if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
+        // Set locationName from userLog if it exists and conditions are met
+        queryParams.locationName = userLog.locations[0].name;
+      }
+      else if (selectedLocations) {
+        queryParams.locationName = selectedLocations;
+      }
+
+      if (startDate && endDate) {
+        queryParams.startDate = formatDate(startDate);
+        queryParams.endDate = formatDate(endDate);
+      }
+      if (fileType) {
+        queryParams.fileType = selectedFileTypes;
+      }
+
+      const response = await axios.get(`${API_URL}/summary`, { params: queryParams });
+      setSummary(response.data);
+    } catch (error) {
+      console.error("Error fetching summary data:", error);
+      // Handle error state or display error message to user
+    }
+  };
+  const fetchReportData = async () => {
+    try {
+      let apiUrl = `${API_URL}/reportTable`;
+      const queryParams = {};
+
+      const userLog = JSON.parse(localStorage.getItem('user'));
+
+      if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
+        // Set locationName from userLog if it exists and conditions are met
+        queryParams.locationName = userLog.locations[0].name;
+      }
+      else if (selectedLocations) {
+        queryParams.locationName = selectedLocations;
+      }
+
+      if (startDate && endDate) {
+        queryParams.startDate = formatDate(startDate);
+        queryParams.endDate = formatDate(endDate);
+      }
+      if (fileType) {
+        queryParams.fileType = selectedFileTypes;
+      }
+
+      console.log("API URL:", apiUrl); // Log the constructed API URL
+      console.log("Query Params:", queryParams); // Log query parameters
+
+      setIsLoading(true);
+      const response = await axios.get(apiUrl, { params: queryParams });
+      console.log("API Response:", response.data); // Log the API response
+      setReport(response.data);
+      setIsLoading(false);
+      updateTotalLocations(response.data);
+    } catch (error) {
+      console.error("Error fetching report data:", error);
+      setError("Error fetching report data. Please try again.");
+      setIsLoading(false);
+    }
+  };
+  const fetchDateReportData = async () => {
+    try {
+      let apiUrl = `${API_URL}/datewisereport`;
+      const queryParams = {};
+
+      const userLog = JSON.parse(localStorage.getItem('user'));
+
+      if (locationName) {
+        queryParams.locationName = selectedLocations;
+      }
+
+      if (startDate && endDate) {
+        queryParams.startDate = formatDate(startDate);
+        queryParams.endDate = formatDate(endDate);
+      }
+      if (fileType) {
+        queryParams.fileType = selectedFileTypes;
+      }
+
+      console.log("API URL:", apiUrl); // Log the constructed API URL
+      console.log("Query Params:", queryParams); // Log query parameters
+
+      setIsLoading(true);
+      const response = await axios.get(apiUrl, { params: queryParams });
+      console.log("API Response:", response.data); // Log the API response
+      setDateReport(response.data);
+      setIsLoading(false);
+      updateTotalLocations(response.data);
+    } catch (error) {
+      console.error("Error fetching report data:", error);
+      setError("Error fetching report data. Please try again.");
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
     const locationName = selectedLocations;
     const fileType = selectedFileTypes;
 
-    const formatDate = (date) => {
-      // Format to YYYY-MM-DD
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    const summaryData = async () => {
-      try {
-        const queryParams = {};
-
-        // Optional: Fetch user info from localStorage
-        const userLog = JSON.parse(localStorage.getItem('user'));
-        if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-          // Set locationName from userLog if it exists and conditions are met
-          queryParams.locationName = userLog.locations[0].name;
-        }
-        else if (selectedLocations) {
-          queryParams.locationName = selectedLocations;
-        }
-
-        if (startDate && endDate) {
-          queryParams.startDate = formatDate(startDate);
-          queryParams.endDate = formatDate(endDate);
-        }
-        if (fileType) {
-          queryParams.fileType = selectedFileTypes;
-        }
-
-        const response = await axios.get(`${API_URL}/summary`, { params: queryParams });
-        setSummary(response.data);
-      } catch (error) {
-        console.error("Error fetching summary data:", error);
-        // Handle error state or display error message to user
-      }
-    };
-    const fetchReportData = async () => {
-      try {
-        let apiUrl = `${API_URL}/reportTable`;
-        const queryParams = {};
-
-        const userLog = JSON.parse(localStorage.getItem('user'));
-
-        if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-          // Set locationName from userLog if it exists and conditions are met
-          queryParams.locationName = userLog.locations[0].name;
-        }
-        else if (selectedLocations) {
-          queryParams.locationName = selectedLocations;
-        }
-
-        if (startDate && endDate) {
-          queryParams.startDate = formatDate(startDate);
-          queryParams.endDate = formatDate(endDate);
-        }
-        if (fileType) {
-          queryParams.fileType = selectedFileTypes;
-        }
-
-        console.log("API URL:", apiUrl); // Log the constructed API URL
-        console.log("Query Params:", queryParams); // Log query parameters
-
-        setIsLoading(true);
-        const response = await axios.get(apiUrl, { params: queryParams });
-        console.log("API Response:", response.data); // Log the API response
-        setReport(response.data);
-        setIsLoading(false);
-        updateTotalLocations(response.data);
-      } catch (error) {
-        console.error("Error fetching report data:", error);
-        setError("Error fetching report data. Please try again.");
-        setIsLoading(false);
-      }
-    };
-    const fetchDateReportData = async () => {
-      try {
-        let apiUrl = `${API_URL}/datewisereport`;
-        const queryParams = {};
-
-        const userLog = JSON.parse(localStorage.getItem('user'));
-
-        if (locationName) {
-          queryParams.locationName = selectedLocations;
-        }
-
-        if (startDate && endDate) {
-          queryParams.startDate = formatDate(startDate);
-          queryParams.endDate = formatDate(endDate);
-        }
-        if (fileType) {
-          queryParams.fileType = selectedFileTypes;
-        }
-
-        console.log("API URL:", apiUrl); // Log the constructed API URL
-        console.log("Query Params:", queryParams); // Log query parameters
-
-        setIsLoading(true);
-        const response = await axios.get(apiUrl, { params: queryParams });
-        console.log("API Response:", response.data); // Log the API response
-        setDateReport(response.data);
-        setIsLoading(false);
-        updateTotalLocations(response.data);
-      } catch (error) {
-        console.error("Error fetching report data:", error);
-        setError("Error fetching report data. Please try again.");
-        setIsLoading(false);
-      }
-    };
+   
     const fetchFileTypes = () => {
       setIsLoading(true);
       axios.get(`${API_URL}/summaryfiletype`)
@@ -244,14 +244,14 @@ const Report = () => {
         .catch(error => console.error(error));
       setIsLoading(false);
     }
-   
+
     summaryData();
     fetchReportData();
     if (startDate && endDate) {
       fetchDateReportData();
     }
     fetchFileTypes();
-  }, [selectedLocations, selectedFileTypes, endDate]);
+  }, []);
 
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
@@ -534,7 +534,35 @@ const Report = () => {
     }
     setShowConfirmationBoxDate(false);
   }
- 
+  const handleClick = async () => {
+    setIsLoading(true); // ✅ Show loader before starting API calls
+  
+    const queryParams = {};
+    if (selectedLocations.length > 0) {
+      queryParams.locationName = selectedLocations.join(",");
+    }
+    if (selectedFileTypes.length > 0) {
+      queryParams.filetype = selectedFileTypes.join(",");
+    }
+    if (startDate && endDate) {
+      queryParams.startDate = formatDate(startDate);
+      queryParams.endDate = formatDate(endDate);
+    }
+  
+    console.log("Final API Params:", queryParams); // Debugging
+  
+    try {
+      await Promise.all([
+        summaryData(queryParams),
+        fetchReportData(queryParams),
+        fetchDateReportData(queryParams),
+      ]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false); // ✅ Hide loader after all API calls complete
+    }
+  };
 
   return (
     <>
@@ -666,7 +694,7 @@ const Report = () => {
                 )}
               </div>
 
-              <div className="col-lg-6 col-md-8 col-sm-12" >
+              <div className="col-lg-4 col-md-8 col-sm-12" >
                 <DatePicker
                   className="date-field"
                   selected={startDate}
@@ -692,6 +720,7 @@ const Report = () => {
                   placeholderText="End Date"
                 />
               </div>
+              <div className="col-md-2"><button className="btn add-btn" onClick={handleClick}>Search</button></div>
             </div>
             <div className="row mt-3 me-1">
               <div
@@ -1318,7 +1347,7 @@ const Report = () => {
                 </div>
               </div>
             </div>
-           
+
             {selectedLocations && startDate && endDate ? (
               <>
                 <div className="row mt-3 me-1">

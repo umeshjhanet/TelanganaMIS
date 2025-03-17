@@ -13,6 +13,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import Locationwiseclientreport from "./locationwiseclient";
+import Header2 from "./Components/Header2";
 const newData = [{ name: 'Page A', uv: 400, pv: 2400, amt: 2400 }, { name: 'Page B', uv: 450, pv: 2400, amt: 2400 },];
 
 const Locationwisereport = () => {
@@ -1152,7 +1153,7 @@ const Locationwisereport = () => {
 
     return (
         <>
-            <Header />
+            <Header2 />
             {isEmptyLocations ? (
                 <>
                     <div className="container-fluid">
