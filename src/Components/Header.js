@@ -877,6 +877,153 @@ const Header = () => {
       </>
     )
   }
+  const managementUser = () => {
+    return (
+      <>
+        <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px', marginLeft: '200px' }} /></span>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                </ul>
+                <form className="d-flex">
+                  {/* <Link to='/'> */}
+                  <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                  {/* </Link> */}
+                  <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p>
+                </form>
+              </div>
+            </div>
+          </nav>
+
+          {showSideBar ? (
+            <>
+              <div className='row'>
+                <div className='col-1'>
+                  <div className='shrink-sidebar'>
+                    <div className='row shrink-header-image' >
+                      <img src='logo.png' />
+                    </div>
+                    <div className='row'>
+                      <Link to='#' onClick={() => window.open("/Cbsl_Admin.pdf", '_blank')} className='ms-4 mt-5' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><PiFilePdfDuotone style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />User Manual</Link>
+                    </div>
+                    <Link to='/dashboard'><p className='ms-4 '><FaHome style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <div className='row' onClick={handleActiveTab}>
+                      <Link to='/locationwisereport' className='ms-1 ' style={{ color: 'black', textDecoration: 'none' }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#337ab7' }} />New Page</Link>
+                    </div>
+                    <Link to='/report'><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                    <Link to='/addRemarks' style={{ textDecoration: 'none', color: 'black' }}><p className='ms-4'><VscGraph style={{ marginRight: '10px', color: '#107393' }} /></p></Link>
+                  </div>
+                </div>
+                <div className='col-11'></div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className='row' style={{ marginLeft: '0' }}>
+                <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+                  <div className='sidebar'>
+                    <div className='row header-image'>
+                      <img src='logo.png' />
+                    </div>
+                    <div className='row mt-5'>
+                  <Link to='/dashboard' className='ms-1' style={{ ...isActive('/dashboard') }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/report' style={{ ...isActive('/report') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Man Power Report</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/customerQAReport' style={{ ...isActive('/customerQAReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Customer QA Report</Link>
+                </div>
+                <div className='row mt-1'>
+                  <a
+                    href='/clientreport'
+                    className='ms-1'
+                    style={{ ...isActive('/clientreport') }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MdReport style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client View
+                  </a>
+                </div>
+                  </div>
+                </div>
+                <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
+              </div>
+            </>
+          )}
+        </div>
+        <div className='d-block d-xl-none d-lg-none d-md-block d-sm-block'>
+          <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
+            <div className="container-fluid" >
+              <span className="btn" onClick={handleMobileSideBar}><IoMenuOutline style={{ color: 'white', fontSize: '30px' }} /></span>
+              <form className="d-flex">
+                {/* <Link to='/'> */}
+                <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
+                {/* </Link> */}
+                <p className='ms-2' style={{ color: 'white', marginTop: '10px' }}>Welcome: {userLog ? userLog.first_name : 'Guest'}</p>
+              </form>
+            </div>
+          </nav>
+          {showMobileSideBar &&
+            <div className='col-2' style={{ paddingRight: '0px', paddingLeft: '0px' }}>
+              <div className='mobile-sidebar'>
+                <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
+                  <img src='logo.png' />
+                </div>
+                <div className='row mt-5'>
+                  <Link to='/dashboard' className='ms-1' style={{ ...isActive('/dashboard') }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/report' style={{ ...isActive('/report') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Man Power Report</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/customerQAReport' style={{ ...isActive('/customerQAReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Customer QA Report</Link>
+                </div>
+                <div className='row mt-1'>
+                  <a
+                    href='/clientreport'
+                    className='ms-1'
+                    style={{ ...isActive('/clientreport') }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MdReport style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client View
+                  </a>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </>
+    )
+  }
+  
   // const externalClient = () => {
   //   return (
   //     <>
@@ -911,25 +1058,35 @@ const Header = () => {
   //     </>
   //   )
   // }
-
-  const isAdmin = userLog && userLog.user_roles.includes("Admin");
-  const isServerUser = userLog && userLog.user_roles.includes("Server Database Monitoring");
-  const isCbslUser = userLog && userLog.user_roles.includes("Cbsl User");
-  const isDistrictHeadUser = userLog && userLog.user_roles.includes("All District Head");
-  const iscbslAdmin = userLog && userLog.user_roles.includes("CBSL Admin");
-  // const isExternalClient = userLog && userLog.user_roles.includes("Client");
-
+  const roleComponents = {
+    Admin: adminUser,
+    "Server Database Monitoring": serverUser,
+    "Cbsl User": clientUser,
+    "All District Head": districtHeadUser,
+    "CBSL Admin": cbslAdminUser,
+  };
+  
+  // Check user roles
+  const userRoles = userLog?.user_roles || [];
+  const isManagement = userRoles.includes("CBSL Admin") && userLog?.user_id === 101;
+  
   return (
     <>
-      {isAdmin && adminUser()}
-      {/* {isExternalClient && externalClient()} */}
-      {isServerUser && serverUser()}
-      {isCbslUser && clientUser()}
-      {isDistrictHeadUser && districtHeadUser()}
-      {iscbslAdmin && cbslAdminUser()}
-      {!isAdmin && !isCbslUser && !isDistrictHeadUser && !iscbslAdmin && !isServerUser && normalUser()}
+      {/* Render Management User only once for user_id 101 */}
+      {isManagement ? managementUser() : (
+        <>
+          {userRoles.map((role) => {
+            const Component = roleComponents[role];
+            return Component ? <Component key={role} /> : null;
+          })}
+  
+          {/* Render Normal User if no role matches */}
+          {!userRoles.some((role) => roleComponents[role]) && normalUser()}
+        </>
+      )}
     </>
-  )
+  );
+ 
 }
 
 export default Header

@@ -233,7 +233,7 @@ const Report = () => {
     const locationName = selectedLocations;
     const fileType = selectedFileTypes;
 
-   
+
     const fetchFileTypes = () => {
       setIsLoading(true);
       axios.get(`${API_URL}/summaryfiletype`)
@@ -536,7 +536,7 @@ const Report = () => {
   }
   const handleClick = async () => {
     setIsLoading(true); // ✅ Show loader before starting API calls
-  
+
     const queryParams = {};
     if (selectedLocations.length > 0) {
       queryParams.locationName = selectedLocations.join(",");
@@ -548,9 +548,9 @@ const Report = () => {
       queryParams.startDate = formatDate(startDate);
       queryParams.endDate = formatDate(endDate);
     }
-  
+
     console.log("Final API Params:", queryParams); // Debugging
-  
+
     try {
       await Promise.all([
         summaryData(queryParams),
@@ -699,6 +699,7 @@ const Report = () => {
                   className="date-field"
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
+                  dateFormat="dd-MM-yyyy"
                   placeholderText="Start Date"
                 />
                 <button
@@ -717,6 +718,7 @@ const Report = () => {
                   className="date-field"
                   selected={endDate}
                   onChange={(date) => setEndDate(date)}
+                  dateFormat="dd-MM-yyyy"
                   placeholderText="End Date"
                 />
               </div>
@@ -1446,7 +1448,7 @@ const Report = () => {
                                 return (
                                   <tr key={index} style={{ backgroundColor: "white" }}>
                                     <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationName}</td>
-                                    <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.Date || "N/A"}</td>
+                                    <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.Date ? new Date(elem.Date).toLocaleDateString("en-GB") : "N/A"}</td>
                                     <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>

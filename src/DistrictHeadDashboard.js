@@ -39,6 +39,7 @@ const DistrictHeadDashboard = () => {
   const [showLocation, setShowLocation] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [locations, setLocations] = useState();
+  const [filteredLocations, setFilteredLocations] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [locationData, setLocationData] = useState(null);
   const [locationGraphData, setLocationGraphData] = useState(null);
@@ -105,24 +106,32 @@ const DistrictHeadDashboard = () => {
   }, [dropdownRef]);
 
 
-  const handleLocation = (locationName) => {
-    if (!selectedLocations.includes(locationName)) {
-      setSelectedLocations([...selectedLocations, locationName]);
-
-
-      setSearchInput("");
+  const handleLocation = (location) => {
+    if (!selectedLocations.includes(location)) {
+      setSelectedLocations([...selectedLocations, location]);
     }
-    setShowLocation(false); // Close the dropdown when a location is selected
+    setSearchInput('');
+    setFilteredLocations(locations);
+    setShowLocation(false);
   };
 
-
-  const removeLocation = (locationName) => {
-    setSelectedLocations(
-      selectedLocations.filter((loc) => loc !== locationName)
-    );
+  const removeLocation = (location) => {
+    setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
   };
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
 
-
+    if (value === '') {
+      setFilteredLocations(locations);
+    } else {
+      setFilteredLocations(
+        locations.filter((loc) =>
+          loc.LocationName.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+    }
+  };
   const handleExport = () => {
     setShowFormatDropdown(!showFormatDropdown);
   };
@@ -177,32 +186,17 @@ const DistrictHeadDashboard = () => {
   };
   useEffect(() => {
     const fetchLocationData = async () => {
-      if (selectedLocations.length > 0) {
-        try {
-          setIsLoading(true);
-          const locationDataResponses = await Promise.all(
-            selectedLocations.map((location) =>
-              axios.get(
-                `${API_URL}/api/locationwisetabularData?locationName=?`
-              )
-            )
-          );
-          const locationData = locationDataResponses.map(
-            (response) => response.data
-          );
-          setLocationData(locationData);
-          console.log("agra", locationData);
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching location data:", error);
-          setError("Error fetching location data. Please try again.");
-          setIsLoading(false);
-        }
+      setIsLoading(true);
+      try {
+        const response = await axios.get(`${API_URL}/locations`);
+        setLocations(response.data);
+        setFilteredLocations(response.data);
+      } catch (error) {
+        console.error(error);
       }
+      setIsLoading(false);
     };
     const locationName = selectedLocations;
-
-
     const fetchExportCsvFile = () => {
       // Construct the API URL with multiple location names
       const apiUrl = locationName
@@ -255,8 +249,6 @@ const DistrictHeadDashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
-
     const fetchTableData = () => {
       let apiUrl = `${API_URL}/tabularData`;
 
@@ -274,20 +266,14 @@ const DistrictHeadDashboard = () => {
         })
         .catch((error) => console.error(error));
     };
-
-
     const fetchAllGraphImageData = (selectedLocations) => {
       let apiUrl = `${API_URL}/graph10`;
-
-
       if (selectedLocations && selectedLocations.length > 0) {
         const locationQuery = selectedLocations
           .map((location) => `locationname=${encodeURIComponent(location)}`)
           .join("&");
         apiUrl += `?${locationQuery}`;
       }
-
-
       axios
         .get(apiUrl)
         .then((response) => {
@@ -315,24 +301,15 @@ const DistrictHeadDashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-
-
-
+    fetchLocationData();
     fetchMonthImageGraphData(locationName);
     fetchAllGraphImageData(locationName);
     fetchTableData();
     fetchExportCsvFile();
-
-
   }, [selectedLocations]);
-
-
-
   const columnSums = calculateColumnSum();
   const isDistrictHeadUser =
     userLog && userLog.user_roles.includes("All District Head");
-
-
   if (!userLog) {
     Navigate('/');
   }
@@ -522,68 +499,45 @@ const DistrictHeadDashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="row search-report-card">
-              <div className="col-md-4 col-sm-12">
-                <div
-                  ref={dropdownRef}
-                  className="search-bar "
-                  style={{
-                    border: "1px solid #000",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    minHeight: "30px",
-                  }}
-
-
-                  contentEditable={true}
-                  onClick={() => setShowLocation(!showLocation)}
-                >
-                  {selectedLocations.length === 0 && !showLocation && (
-                    <span className="placeholder-text">Search Locations...</span>
-                  )}
-                  {selectedLocations.map((location, index) => (
-                    <span key={index} className="selected-location">
-                      {location}
-                      <button
-                        onClick={() => removeLocation(location)}
-                        style={{
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                          marginLeft: "5px",
-                        }}
-                      >
-                        x
-                      </button>
-                      &nbsp;
-                    </span>
-                  ))}
-                  <span style={{ minWidth: "5px", display: "inline-block" }}>
-                    &#8203;
-                  </span>
-                </div>
-                {showLocation && (
-                  <>
-                    <div className="location-card">
-                      {tableData &&
-                        tableData.map((item, index) => (
-                          <div key={index}>
-                            <p
-                              onClick={() => handleLocation(item.LocationName)}
-                            >
+            <div className="row  mt-2  search-report-card">
+              <div className='col-md-6 col-sm-12'>
+                <div className="search-container" ref={dropdownRef} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    <input
+                      type="text"
+                      className="search-bar mt-1"
+                      style={{ border: '1px solid #000', padding: '5px', borderRadius: '5px', minHeight: '30px', width: '100%' }}
+                      value={searchInput}
+                      onChange={handleSearchChange}
+                      onClick={() => setShowLocation((prev) => !prev)} // Toggle dropdown on click
+                      placeholder="Search or select a location"
+                    />
+                    {showLocation && (
+                      <div className="location-card" style={{ position: 'absolute', top: '40px', background: '#fff', border: '1px solid #ccc', zIndex: 10, width: '100%' }}>
+                        {filteredLocations.length > 0 ? (
+                          filteredLocations.map((item, index) => (
+                            <p key={index} onClick={() => handleLocation(item.LocationName)} style={{ cursor: 'pointer', padding: '5px' }}>
                               {item.LocationName}
                             </p>
-                          </div>
-                        ))}
-                    </div>
-                  </>
-                )}
+                          ))
+                        ) : (
+                          <p style={{ padding: '5px' }}>No locations found</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Selected Locations on the Right */}
+                  <div className="selected-locations" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                    {selectedLocations.map((location, index) => (
+                      <span key={index} className="selected-location" style={{ padding: '5px', border: '1px solid #ccc', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        {location}
+                        <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', cursor: 'pointer' }}>x</button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-
-
-
-
-
               <div className="col-md-6"></div>
             </div>
             <div className="row mt-2">

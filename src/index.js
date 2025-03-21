@@ -34,6 +34,7 @@ import ClientDPR from './ClientDPR';
 import FollowUpReportForm from './follow_up_report';
 import CostingReport from './CostingReport';
 import CustomerQAReport from './customerQAReport';
+import DevelopmentPage from './developmentPage';
 
 const App = () => {
   return (
@@ -65,6 +66,7 @@ const App = () => {
         <Route path="/ClientDPR" element={<PrivateRoute element={<ClientDPR />} />} />
         <Route path="/CostingReport" element={<PrivateRoute element={<CostingReport />} />} />
         <Route path="/follow_up_report" element={<PrivateRoute element={<FollowUpReportForm />} />} />
+        <Route path="/developmentPage" element={<PrivateRoute element={<DevelopmentPage />} />} />
       </Routes>
     </Router>
     

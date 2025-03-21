@@ -1268,7 +1268,7 @@ const Locationwisereport = () => {
                             <div>
                                 <Card>
                                     <CardBody>
-                                        <CardTitle tag="h5">Comparative Workflow Trend of Last 10 Days (Figure in Lakhs)</CardTitle>
+                                        <CardTitle tag="h5">Comparative Workflow Trend of Last 7 Days (Figure in Lakhs)</CardTitle>
                                         <Chart
                                             options={chartData.options}
                                             series={chartData.series}

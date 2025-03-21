@@ -92,8 +92,8 @@ const CustomerQAReport = () => {
     };
     useEffect(() => {
         const locationName = selectedLocations;
-        
-       
+
+
         const fetchReportData = async () => {
             try {
                 let apiUrl = `${API_URL}/reportTable`;
@@ -185,7 +185,7 @@ const CustomerQAReport = () => {
         );
     };
     const handleClick = () => {
-        fetchData(selectedLocations,startDate,endDate);
+        fetchData(selectedLocations, startDate, endDate);
     };
     const Loader = () => (
         <div className="loader-overlay">
@@ -210,7 +210,7 @@ const CustomerQAReport = () => {
                                 </h6>
                             </div>
                         </div>
-                        <div className="row mt-2 me-1 search-report-card" style={{height:'100px',padding:'5px'}} >
+                        <div className="row mt-2 me-1 search-report-card" style={{ height: '100px', padding: '5px' }} >
                             <p>Select Location, Start Date and End Date to view data.</p>
                             <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                                 <div
@@ -267,11 +267,12 @@ const CustomerQAReport = () => {
                                     </>
                                 )}
                             </div>
-                            <div className="col-lg-5 col-md-8 col-sm-12" style={{marginTop:'-2px'}} >
+                            <div className="col-lg-5 col-md-8 col-sm-12" style={{ marginTop: '-2px' }}>
                                 <DatePicker
                                     className="date-field"
                                     selected={startDate}
                                     onChange={(date) => setStartDate(date)}
+                                    dateFormat="dd-MM-yyyy"  // Format date as dd-mm-yyyy
                                     placeholderText="Start Date"
                                 />
                                 <button
@@ -290,10 +291,12 @@ const CustomerQAReport = () => {
                                     className="date-field"
                                     selected={endDate}
                                     onChange={(date) => setEndDate(date)}
+                                    dateFormat="dd-MM-yyyy"  // Format date as dd-mm-yyyy
                                     placeholderText="End Date"
                                 />
                             </div>
-                            <div className="col-lg-4 col-md-2 col-sm-12" style={{marginTop:'1px',marginLeft:'-15px'}}>
+
+                            <div className="col-lg-4 col-md-2 col-sm-12" style={{ marginTop: '1px', marginLeft: '-15px' }}>
                                 <button className='btn add-btn' onClick={handleClick}>Submit</button>
                             </div>
                         </div>

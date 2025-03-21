@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Chart from 'react-apexcharts';
+import DatePicker from "react-datepicker";
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import Header from "./Components/Header";
 import axios, { all } from "axios";
@@ -33,6 +34,7 @@ const Dashboard = () => {
   const [showVendor, setShowVendor] = useState(false);
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [locations, setLocations] = useState();
+  const [filteredLocations, setFilteredLocations] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [locationData, setLocationData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,9 +45,10 @@ const Dashboard = () => {
   const [chartData, setChartData] = useState(null);
   const [cumulative, setCumulative] = useState();
   const [target, setTarget] = useState();
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [yesterdayReport, setYesterdayReport] = useState([]);
   const [vendorName, setVendorName] = useState();
+  const [selectedSearchLocations, setSelectedSearchLocations] = useState([]);
   const navigate = useNavigate();
 
   const userLog = JSON.parse(localStorage.getItem("user"));
@@ -163,31 +166,46 @@ const Dashboard = () => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowLocation(false);
-      } 
+      }
       if (vendorDropdownRef.current && !vendorDropdownRef.current.contains(event.target)) {
         setShowVendor(false);
       }
     };
-  
+
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-  
-  const handleLocation = (locationName) => {
-    if (!selectedLocations.includes(locationName)) {
-      setSelectedLocations([...selectedLocations, locationName]);
 
-      setSearchInput("");
+  const handleLocation = (location) => {
+    if (!selectedLocations.includes(location)) {
+      setSelectedLocations([...selectedLocations, location]);
     }
-    // setShowLocation(false); // Close the dropdown when a location is selected
+    setSearchInput('');
+    setFilteredLocations(locations);
+    setShowLocation(false);
   };
-  const removeLocation = (locationName) => {
-    setSelectedLocations(
-      selectedLocations.filter((loc) => loc !== locationName)
-    );
+
+  const removeLocation = (location) => {
+    setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
   };
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+
+    if (value === '') {
+      setFilteredLocations(locations);
+    } else {
+      setFilteredLocations(
+        locations.filter((loc) =>
+          loc.LocationName.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+    }
+  };
+
+  
   const handleVendor = (vendorName) => {
     if (!selectedVendors.includes(vendorName)) {
       setSelectedVendors([...selectedVendors, vendorName]);
@@ -251,28 +269,15 @@ const Dashboard = () => {
   };
   useEffect(() => {
     const fetchLocationData = async () => {
-      if (selectedLocations.length > 0) {
-        try {
-          setIsLoading(true);
-          const locationDataResponses = await Promise.all(
-            selectedLocations.map((location) =>
-              axios.get(
-                `${API_URL}/api/locationwisetabularData?locationName=?`
-              )
-            )
-          );
-          const locationData = locationDataResponses.map(
-            (response) => response.data
-          );
-          setLocationData(locationData);
-          console.log("agra", locationData);
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching location data:", error);
-          setError("Error fetching location data. Please try again.");
-          setIsLoading(false);
-        }
+      setIsLoading(true);
+      try {
+        const response = await axios.get(`${API_URL}/locations`);
+        setLocations(response.data);
+        setFilteredLocations(response.data);
+      } catch (error) {
+        console.error(error);
       }
+      setIsLoading(false);
     };
     const locationName = selectedLocations;
     const fetchGraphFileData = (selectedLocations) => {
@@ -821,23 +826,24 @@ const Dashboard = () => {
     fetchExportCsvFile();
     fetchAllWeekImageData(locationName);
     fetchCumulative(locationName);
+    fetchLocationData();
   }, [selectedLocations]);
   const fetchYesterdayData = async () => {
     try {
       const params = {};
-      
+
       if (selectedDate) {
         params.date = selectedDate;
       }
-      
+
       if (selectedVendors) {  // Ensure vendor is included if selected
         params.vendor = selectedVendors;
       }
-      
-      if (selectedLocations && selectedLocations.length > 0) { 
+
+      if (selectedLocations && selectedLocations.length > 0) {
         params.locationName = selectedLocations; // Pass locations if selected
       }
-  
+
       const response = await axios.get(`${API_URL}/vendorReport`, { params });
       setYesterdayReport(response.data);
     } catch (error) {
@@ -851,7 +857,7 @@ const Dashboard = () => {
       if (selectedDate) {
         params.date = selectedDate;
       }
-      if (selectedVendors && selectedVendors.length > 0) {  
+      if (selectedVendors && selectedVendors.length > 0) {
         params.vendor = selectedVendors.join(","); // Convert array to comma-separated string
       }
       if (selectedLocations && selectedLocations.length > 0) {
@@ -1336,15 +1342,19 @@ const Dashboard = () => {
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `Production_Report-${formattedYesterdayDate}.csv`);
   };
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-  };
+  const handleDateChange = (date) => {
+    if (date) {
+        // Format to YYYY-MM-DD (removing time)
+        const formattedDate = format(date, "yyyy-MM-dd");
+        setSelectedDate(formattedDate); // Store as a string to avoid timezone issues
+    }
+};
   const handleDateFilter = () => {
     if (!selectedVendors && !selectedDate) {
       alert("Please select at least a vendor or a date");
       return;
     }
-  
+
     if (selectedVendors && !selectedDate) {
       // Only vendor is selected, call fetchYesterdayData
       fetchYesterdayData();
@@ -1358,7 +1368,7 @@ const Dashboard = () => {
       fetchCumulative(selectedLocations);
     }
   };
-
+ 
   return (
     <>
       <div className="container-fluid">
@@ -1383,64 +1393,44 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="row  mt-2  search-report-card">
-              <div className="col-md-4 col-sm-12">
-                <div
-                  ref={dropdownRef}
-                  className="search-bar"
-                  style={{
-                    border: "1px solid #000",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    minHeight: "30px",
-                  }}
-
-                  contentEditable={true}
-                  onClick={() => setShowLocation(!showLocation)}
-                >
-                  {selectedLocations.length === 0 && !showLocation && (
-                    <span className="placeholder-text">Search Locations...</span>
-                  )}
-                  {selectedLocations.map((location, index) => (
-                    <span key={index} className="selected-location">
-                      {location}
-                      <button
-                        onClick={() => removeLocation(location)}
-                        style={{
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                          marginLeft: "5px",
-                        }}
-                      >
-                        x
-                      </button>
-                      &nbsp;
-                    </span>
-                  ))}
-                  <span style={{ minWidth: "5px", display: "inline-block" }}>
-                    &#8203;
-                  </span>
-                </div>
-                {showLocation && (
-                  <>
-                    <div className="location-card">
-                      {tableData &&
-                        tableData.map((item, index) => (
-                          <div key={index}>
-                            <p
-                              onClick={() => handleLocation(item.LocationName)}
-                            >
+              <div className='col-md-6 col-sm-12'>
+                <div className="search-container" ref={dropdownRef} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    <input
+                      type="text"
+                      className="search-bar mt-1"
+                      style={{ border: '1px solid #000', padding: '5px', borderRadius: '5px', minHeight: '30px', width: '100%' }}
+                      value={searchInput}
+                      onChange={handleSearchChange}
+                      onClick={() => setShowLocation((prev) => !prev)} // Toggle dropdown on click
+                      placeholder="Search or select a location"
+                    />
+                    {showLocation && (
+                      <div className="location-card" style={{ position: 'absolute', top: '40px', background: '#fff', border: '1px solid #ccc', zIndex: 10, width: '100%' }}>
+                        {filteredLocations.length > 0 ? (
+                          filteredLocations.map((item, index) => (
+                            <p key={index} onClick={() => handleLocation(item.LocationName)} style={{ cursor: 'pointer', padding: '5px' }}>
                               {item.LocationName}
                             </p>
-                          </div>
-                        ))}
-                    </div>
-                  </>
-                )}
+                          ))
+                        ) : (
+                          <p style={{ padding: '5px' }}>No locations found</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Selected Locations on the Right */}
+                  <div className="selected-locations" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                    {selectedLocations.map((location, index) => (
+                      <span key={index} className="selected-location" style={{ padding: '5px', border: '1px solid #ccc', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        {location}
+                        <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', cursor: 'pointer' }}>x</button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-
-
-
               <div className="col-md-6"></div>
             </div>
             <div className="row mt-2">
@@ -1763,8 +1753,15 @@ const Dashboard = () => {
             </div>
             <div className="row search-report-card mt-2">
               <div className="col-2">
-                <input type="date" value={selectedDate} onChange={handleDateChange} 
-                style={{height:'40px'}}/>
+                {/* <input type="date" value={selectedDate} onChange={handleDateChange}
+                  style={{ height: '40px' }} /> */}
+                  <DatePicker
+                  className="date-field"
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="Select Date"
+                />
               </div>
               <div className="col-md-4 col-sm-12">
                 <div
@@ -1775,7 +1772,7 @@ const Dashboard = () => {
                     padding: "5px",
                     borderRadius: "5px",
                     minHeight: "30px",
-                    width:'250px'
+                    width: '250px'
                   }}
 
                   contentEditable={true}
@@ -2020,11 +2017,11 @@ const Dashboard = () => {
                             <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationname}</td>
                             <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.Vendor}</td>
                             <td>
-                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScannerAvailability) || 0), 0).toLocaleString()}
-                        </td>
-                        <td>
-                          {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.SystemAvailability) || 0), 0).toLocaleString()}
-                        </td>
+                              {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.ScannerAvailability) || 0), 0).toLocaleString()}
+                            </td>
+                            <td>
+                              {yesterdayReport.reduce((sum, elem) => sum + (parseInt(elem.SystemAvailability) || 0), 0).toLocaleString()}
+                            </td>
                             <td>{elem.ScanningTarget}</td>
                             <td>{totalManpower.toString()}</td>
                             <td>{isNaN(parseInt(elem.Coll_Index_MP)) ? "0" : parseInt(elem.Coll_Index_MP).toLocaleString()}</td>

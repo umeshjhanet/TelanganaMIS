@@ -203,7 +203,7 @@ const SiteReports = () => {
                         <tr key={index}>
                           <td>{indexOfFirstServer + index + 1}</td>
                           <td style={{ textAlign: 'left' }}>{elem.location}</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{elem.csv_upload_dt}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{formatDateTo12Hour(elem.csv_upload_dt)}</td>
                           <td style={{ textAlign: 'center' }}>
                             <span
                               style={{
