@@ -1064,16 +1064,17 @@ const Header = () => {
     "Cbsl User": clientUser,
     "All District Head": districtHeadUser,
     "CBSL Admin": cbslAdminUser,
+    "Management": managementUser,
   };
   
   // Check user roles
   const userRoles = userLog?.user_roles || [];
-  const isManagement = userRoles.includes("CBSL Admin") && userLog?.user_id === 101;
+  // const isManagement = userRoles.includes("CBSL Admin") && userLog?.user_id === 101;
   
   return (
     <>
       {/* Render Management User only once for user_id 101 */}
-      {isManagement ? managementUser() : (
+      {/* {isManagement ? managementUser() : ( */}
         <>
           {userRoles.map((role) => {
             const Component = roleComponents[role];
@@ -1083,7 +1084,7 @@ const Header = () => {
           {/* Render Normal User if no role matches */}
           {!userRoles.some((role) => roleComponents[role]) && normalUser()}
         </>
-      )}
+      {/* )} */}
     </>
   );
  
