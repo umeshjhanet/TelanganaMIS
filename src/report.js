@@ -1100,13 +1100,13 @@ const Report = () => {
                               Total Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Client_QA_AcceptedFiles) || 0 : 0);
+                                return acc + (locationData ? parseInt(locationData.Client_QAFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
                               Total Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Client_QA_AcceptedImages) || 0 : 0);
+                                return acc + (locationData ? parseInt(locationData.Client_QAImages) || 0 : 0);
                               }, 0).toLocaleString()}
                             </p>
 
