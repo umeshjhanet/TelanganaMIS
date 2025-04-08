@@ -813,25 +813,40 @@ const ExclusiveDashboard = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${API_URL}/7daysimages`, {
-          params: { locationName, vendor }, // Add vendor filter
+          params: { locationName },
         });
-    
+
         const data = response.data;
-    
+
         // Process data for the chart
         const dates = data.map((item) => item.date);
         const scannedImages = data.map((item) => parseInt(item.ScannedImages, 10));
         const qcImages = data.map((item) => parseInt(item.QCImages, 10));
+        const flaggingImages = data.map((item) => parseInt(item.FlaggingImages, 10));
+        const indexImages = data.map((item) => parseInt(item.IndexImages, 10));
         const cbslQaImages = data.map((item) => parseInt(item.CBSL_QAImages, 10));
-    
+        const clientQaImages = data.map((item) => parseInt(item.Client_QAImages, 10));
+        const digiSignImages = data.map((item) => parseInt(item.DigiSignImages, 10));
+        // const dmsUploadImages = data.map((item) => parseInt(item.DMSUploadImages, 10));
+
         setChartData({
           series: [
             { name: "Scanned Images", type: "bar", data: scannedImages, color: "#1E90FF" },
             { name: "QC Images", type: "bar", data: qcImages, color: "#32CD32" },
+            { name: "Flagging Images", type: "bar", data: flaggingImages, color: "#AC1754" },
+            { name: "Indexing Images", type: "bar", data: indexImages, color: "#4DA1A9" },
             { name: "CBSL QA Images", type: "bar", data: cbslQaImages, color: "#FF4500" },
+            { name: "Client QA Images", type: "bar", data: clientQaImages, color: "#735557" },
+            { name: "Digi Sign Images", type: "bar", data: digiSignImages, color: "#006A71" },
+            // { name: "DMS Upload Images", type: "bar", data: dmsUploadImages, color: "#E69DB8" },
             { name: "Scanned Images (Line)", type: "line", data: scannedImages, color: "#1E90FF" },
             { name: "QC Images (Line)", type: "line", data: qcImages, color: "#32CD32" },
+            { name: "Flagging Images (Line)", type: "line", data: flaggingImages, color: "#AC1754" },
+            { name: "Indexing Images (Line)", type: "line", data: indexImages, color: "#4DA1A9" },
             { name: "CBSL QA Images (Line)", type: "line", data: cbslQaImages, color: "#FF4500" },
+            { name: "Client QA Images (Line)", type: "line", data: clientQaImages, color: "#735557" },
+            { name: "Digi Sign Images (Line)", type: "line", data: digiSignImages, color: "#006A71" },
+            // { name: "DMS Upload Images (Line)", type: "line", data: dmsUploadImages, color: "#E69DB8" },
           ],
           options: {
             chart: {
@@ -839,7 +854,7 @@ const ExclusiveDashboard = () => {
               toolbar: { show: true },
             },
             stroke: {
-              width: [0, 0, 0, 2, 2, 2], // Line series has width 2, bars have 0
+              width: [0, 0, 0, 0, 0,0,0,0, 2, 2, 2, 2, 2,2,2,2], // Line series has width 2, bars have 0
               curve: "smooth",
             },
             xaxis: {
@@ -857,14 +872,14 @@ const ExclusiveDashboard = () => {
             },
             dataLabels: {
               enabled: true,
-              enabledOnSeries: [0, 1, 2], // Only for bar series
+              enabledOnSeries: [0, 1, 2, 3, 4,5,6,7], // Only for bar series
               formatter: (val) => val,
               offsetY: -10,
               style: { fontSize: "12px", colors: ["#304758"] },
             },
             tooltip: {
               shared: true,
-              sharedOnSeries: [3, 4, 5],
+              sharedOnSeries: [ 8, 9,10,11,12,13,14,15],
               intersect: false,
             },
             legend: {
@@ -872,7 +887,7 @@ const ExclusiveDashboard = () => {
             },
           },
         });
-    
+        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -1261,7 +1276,7 @@ const ExclusiveDashboard = () => {
               <div
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                <h4>Telangana Dashboard Welcomes You</h4>
+                <h4>Telangana Dashboard</h4>
                 <p
                   style={{
                     fontSize: "12px",

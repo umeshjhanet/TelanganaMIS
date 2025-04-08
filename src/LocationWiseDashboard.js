@@ -645,7 +645,7 @@ const LocationWiseDashboard = () => {
         <div className="col-lg-10 col-md-12">
           <div className="row mt-2">
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <h4> Telangana Dashboard Welcomes You</h4>
+              <h4> Telangana Dashboard</h4>
               <p style={{ fontSize: "12px", color: 'maroon', textAlign: "right" }}>
                 Last Active Login: {userLog ? userLog.last_active_login : "Guest"}
               </p>

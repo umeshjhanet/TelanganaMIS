@@ -1066,7 +1066,7 @@ const Report = () => {
                       )}
                     </>
                   )}
-                   {summary && (
+                  {summary && (
                     <>
                       {selectedLocations.length === 0 ? (
                         summary.map((elem, index) => (
@@ -1166,7 +1166,7 @@ const Report = () => {
                       )}
                     </>
                   )}
-                 
+
 
                   {summary && (
                     <>
@@ -1345,6 +1345,109 @@ const Report = () => {
                           }
                           return null;
                         })}
+                      <tr style={{ backgroundColor: "#f1f1f1", fontWeight: "bold" }}>
+                        <td style={{ textAlign: "left" }}>Total</td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CollectionImages)) ? 0 : parseInt(elem.CollectionImages)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.IndexingImages)) ? 0 : parseInt(elem.IndexingImages)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CBSL_QAImages)) ? 0 : parseInt(elem.CBSL_QAImages)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Client_QAFiles)) ? 0 : parseInt(elem.Client_QAFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Client_QAImages)) ? 0 : parseInt(elem.Client_QAImages)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>

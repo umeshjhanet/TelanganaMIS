@@ -486,7 +486,7 @@ const DistrictHeadDashboard = () => {
               <div
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                <h4> Telangana Dashboard Welcomes You</h4>
+                <h4> Telangana Dashboard</h4>
                 <p
                   style={{
                     fontSize: "12px",

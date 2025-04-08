@@ -473,10 +473,10 @@ const DailyReport = () => {
                         { label: "QC Images", data: qcImages },
                         { label: "Flagging Images", data: flaggingImages },
                         { label: "Indexing Images", data: indexingImages },
-                        { label: "CBSL QA Images", data: cbslQAImages },
-                        { label: "Export PDF Images", data: exportPdfImages },
+                        { label: "CBSL QA Images", data: cbslQAImages },    
                         { label: "Client QA Accepted Images", data: clientQAAcceptedImages },
                         { label: "Client QA Rejected Images", data: clientQARejectedImages },
+                        { label: "Export PDF Images", data: exportPdfImages },
                         { label: "Digi Sign Images", data: digiSignImages }
                     ];
 
@@ -529,7 +529,7 @@ const DailyReport = () => {
         };
 
 
-        const fetchManPowerData = async() => {
+        const fetchManPowerData = async () => {
             try {
                 let apiUrl = `${API_URL}/user-counts`;
                 const queryParams = {};
@@ -567,23 +567,23 @@ const DailyReport = () => {
         const fetchExportCsvFile = () => {
             // Construct the API URL with multiple location names
             const apiUrl = locationName
-              ? `${API_URL}/csv?${locationName
-                .map((name) => `locationName=${name}`)
-                .join("&")}`
-              : `${API_URL}/csv`;
-      
+                ? `${API_URL}/csv?${locationName
+                    .map((name) => `locationName=${name}`)
+                    .join("&")}`
+                : `${API_URL}/csv`;
+
             axios
-              .get(apiUrl, { responseType: "blob" })
-              .then((response) => {
-                const blob = new Blob([response.data], { type: "text/csv" });
-                const url = window.URL.createObjectURL(blob);
-                setCsv(url);
-                console.log("CSV");
-              })
-              .catch((error) => {
-                console.error("Error in exporting data:", error);
-              });
-          };
+                .get(apiUrl, { responseType: "blob" })
+                .then((response) => {
+                    const blob = new Blob([response.data], { type: "text/csv" });
+                    const url = window.URL.createObjectURL(blob);
+                    setCsv(url);
+                    console.log("CSV");
+                })
+                .catch((error) => {
+                    console.error("Error in exporting data:", error);
+                });
+        };
         fetchExportCsvFile();
         fetchManPowerData();
         fetchTableData();
@@ -656,54 +656,54 @@ const DailyReport = () => {
     });
     const formatWeekChartData = (data, colors) => ({
         options: {
-          chart: {
-            toolbar: {
-              show: true,
-            },
-            stacked: false,
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          stroke: {
-            show: true,
-            width: -1,
-            colors: ["transparent"],
-          },
-          legend: {
-            show: true,
-          },
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              columnWidth: "80%",
-              borderRadius: 2,
-            },
-          },
-          colors: colors,
-          xaxis: {
-            categories: data.labels,
-          },
-          responsive: [
-            {
-              breakpoint: 1024,
-              options: {
-                plotOptions: {
-                  bar: {
-                    columnWidth: "30%",
-                    borderRadius: 7,
-                  },
+            chart: {
+                toolbar: {
+                    show: true,
                 },
-              },
+                stacked: false,
             },
-          ],
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                show: true,
+                width: -1,
+                colors: ["transparent"],
+            },
+            legend: {
+                show: true,
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: "80%",
+                    borderRadius: 2,
+                },
+            },
+            colors: colors,
+            xaxis: {
+                categories: data.labels,
+            },
+            responsive: [
+                {
+                    breakpoint: 1024,
+                    options: {
+                        plotOptions: {
+                            bar: {
+                                columnWidth: "30%",
+                                borderRadius: 7,
+                            },
+                        },
+                    },
+                },
+            ],
         },
         series: data.datasets.map((dataset, index) => ({
-          name: dataset.label,
-          data: dataset.data,
-          color: colors[index]
+            name: dataset.label,
+            data: dataset.data,
+            color: colors[index]
         }))
-      });
+    });
 
     const handleExport = () => {
         setShowConfirmation(true);
@@ -916,7 +916,7 @@ const DailyReport = () => {
                                                         return (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td style={{textAlign:'left'}}>{elem.LocationName}</td>
+                                                                <td style={{ textAlign: 'left' }}>{elem.LocationName}</td>
                                                                 <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
@@ -1013,7 +1013,7 @@ const DailyReport = () => {
                             </div>
                         </div>
                         <div className="row mt-2 me-1 search-report-card" >
-                            
+
                             <div className="col-lg-6 col-md-8 col-sm-12" >
                                 <DatePicker
                                     className="date-field"
@@ -1091,8 +1091,8 @@ const DailyReport = () => {
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
                                                 <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
                                                 <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
-                                                <th colSpan="2" style={{ verticalAlign: 'middle' }}>Export PDF</th>
                                                 <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
+                                                <th colSpan="2" style={{ verticalAlign: 'middle' }}>Export PDF</th>
                                                 <th colSpan="2" style={{ verticalAlign: 'middle' }}>CSV Generation</th>
                                                 <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                                             </tr>
@@ -1133,7 +1133,7 @@ const DailyReport = () => {
                                                     ) {
                                                         return (
                                                             <tr key={index} style={{ backgroundColor: "white" }}>
-                                                                <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.LocationName}</td>
+                                                                <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>
                                                                 <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
@@ -1146,10 +1146,10 @@ const DailyReport = () => {
                                                                 <td>{isNaN(parseInt(elem.IndexingImages)) ? "0" : parseInt(elem.IndexingImages).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.CBSL_QAFiles)) ? "0" : parseInt(elem.CBSL_QAFiles).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
+                                                                <td>{isNaN(parseInt(elem.Client_QAFiles)) ? "0" : parseInt(elem.Client_QAFiles).toLocaleString()}</td>
+                                                                <td>{isNaN(parseInt(elem.Client_QAImages)) ? "0" : parseInt(elem.Client_QAImages).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                                                 <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
-                                                                <td>{isNaN(parseInt(elem.Client_QA_AcceptedFiles)) ? "0" : parseInt(elem.Client_QA_AcceptedFiles).toLocaleString()}</td>
-                                                                <td>{isNaN(parseInt(elem.Client_QA_AcceptedImages)) ? "0" : parseInt(elem.Client_QA_AcceptedImages).toLocaleString()}</td>
                                                                 <td>0</td>
                                                                 <td>0</td>
                                                                 <td>0</td>
@@ -1159,6 +1159,109 @@ const DailyReport = () => {
                                                     }
                                                     return null;
                                                 })}
+                                            <tr style={{ backgroundColor: "#f1f1f1", fontWeight: "bold" }}>
+                                                <td style={{ textAlign: "left" }}>Total</td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CollectionImages)) ? 0 : parseInt(elem.CollectionImages)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.IndexingImages)) ? 0 : parseInt(elem.IndexingImages)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CBSL_QAImages)) ? 0 : parseInt(elem.CBSL_QAImages)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Client_QAFiles)) ? 0 : parseInt(elem.Client_QAFiles)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Client_QAImages)) ? 0 : parseInt(elem.Client_QAImages)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>
+                                                    {report && report
+                                                        .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                                                        .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0)
+                                                        .toLocaleString()}
+                                                </td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                            </tr>
                                         </tbody>
 
                                     </table>
@@ -1176,38 +1279,38 @@ const DailyReport = () => {
                             >
 
                                 <h6 className="" style={{ color: "white" }}>
-                                   Man Power
+                                    Man Power
                                 </h6>
                             </div>
                             <div className="row mt-2">
-                            <table class="table table-hover table-bordered table-responsive  data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Location Name</th>
-                                        <th>Scan User</th>
-                                        <th>QC User</th>
-                                        <th>Flagging User</th>
-                                        <th>Index User</th>
-                                        <th>CBSL QA User</th>
-                                        <th>Export pdf User</th>
-                                        <th>Client QA User</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {manPowerData && manPowerData.map((elem, index) => (
-                                        <tr key={index}>
-                                            <td style={{textAlign:'left'}}>{elem.LocationName}</td>
-                                            <td>{elem.ScannedUser}</td>
-                                            <td>{elem.QCUser}</td>
-                                            <td>{elem.FlaggingUser}</td>
-                                            <td>{elem.IndexingUser}</td>
-                                            <td>{elem.CBSL_QAUser}</td>
-                                            <td>{elem.Export_PdfUser}</td>
-                                            <td>{elem.Client_QA_AcceptedUser}</td>
+                                <table class="table table-hover table-bordered table-responsive  data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Location Name</th>
+                                            <th>Scan User</th>
+                                            <th>QC User</th>
+                                            <th>Flagging User</th>
+                                            <th>Index User</th>
+                                            <th>CBSL QA User</th>
+                                            <th>Export pdf User</th>
+                                            <th>Client QA User</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {manPowerData && manPowerData.map((elem, index) => (
+                                            <tr key={index}>
+                                                <td style={{ textAlign: 'left' }}>{elem.LocationName}</td>
+                                                <td>{elem.ScannedUser}</td>
+                                                <td>{elem.QCUser}</td>
+                                                <td>{elem.FlaggingUser}</td>
+                                                <td>{elem.IndexingUser}</td>
+                                                <td>{elem.CBSL_QAUser}</td>
+                                                <td>{elem.Export_PdfUser}</td>
+                                                <td>{elem.Client_QA_AcceptedUser}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

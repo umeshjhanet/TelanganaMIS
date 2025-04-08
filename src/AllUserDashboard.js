@@ -17,7 +17,6 @@ import html2canvas from 'html2canvas';
 import { saveAs } from "file-saver";
 
 const Dashboard = () => {
-  const [data2, setData2] = useState();
   const currentDate = new Date();
   const yesterdayDate = sub(currentDate, { days: 1 });
   const previousDate = sub(currentDate, { days: 2 });
@@ -26,7 +25,6 @@ const Dashboard = () => {
   const formattedPreviousDate = format(previousDate, "dd-MM-yyyy");
   const [tableData, setTableData] = useState([]);
   const [csv, setCsv] = useState(null);
-  const [locationWiseCsv, setLocationWiseCsv] = useState();
   const dropdownRef = useRef(null);
   const vendorDropdownRef = useRef(null);
   const [showLocation, setShowLocation] = useState(false);
@@ -36,7 +34,6 @@ const Dashboard = () => {
   const [locations, setLocations] = useState();
   const [filteredLocations, setFilteredLocations] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-  const [locationData, setLocationData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -48,11 +45,8 @@ const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [yesterdayReport, setYesterdayReport] = useState([]);
   const [vendorName, setVendorName] = useState();
-  const [selectedSearchLocations, setSelectedSearchLocations] = useState([]);
-  const navigate = useNavigate();
-
-  const userLog = JSON.parse(localStorage.getItem("user"));
-  console.log("User's Info", userLog);
+  // const userLog = JSON.parse(localStorage.getItem("user"));
+  // console.log("User's Info", userLog);
 
   const [barFile, setBarFile] = useState({
     labels: [],
@@ -147,21 +141,6 @@ const Dashboard = () => {
       },
     ],
   });
-  const [scannedData, setScannedData] = useState(null);
-  const [locationReportData, setLocationReportData] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "Scanning",
-        backgroundColor: "#02B2AF",
-        data: [],
-      },
-    ],
-  });
-
-
-  const random = () => Math.round(Math.random() * 100);
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -171,13 +150,11 @@ const Dashboard = () => {
         setShowVendor(false);
       }
     };
-
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-
   const handleLocation = (location) => {
     if (!selectedLocations.includes(location)) {
       setSelectedLocations([...selectedLocations, location]);
@@ -186,14 +163,12 @@ const Dashboard = () => {
     setFilteredLocations(locations);
     setShowLocation(false);
   };
-
   const removeLocation = (location) => {
     setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
   };
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchInput(value);
-
     if (value === '') {
       setFilteredLocations(locations);
     } else {
@@ -204,8 +179,6 @@ const Dashboard = () => {
       );
     }
   };
-
-  
   const handleVendor = (vendorName) => {
     if (!selectedVendors.includes(vendorName)) {
       setSelectedVendors([...selectedVendors, vendorName]);
@@ -753,16 +726,31 @@ const Dashboard = () => {
         const dates = data.map((item) => item.date);
         const scannedImages = data.map((item) => parseInt(item.ScannedImages, 10));
         const qcImages = data.map((item) => parseInt(item.QCImages, 10));
+        const flaggingImages = data.map((item) => parseInt(item.FlaggingImages, 10));
+        const indexImages = data.map((item) => parseInt(item.IndexImages, 10));
         const cbslQaImages = data.map((item) => parseInt(item.CBSL_QAImages, 10));
+        const clientQaImages = data.map((item) => parseInt(item.Client_QAImages, 10));
+        const digiSignImages = data.map((item) => parseInt(item.DigiSignImages, 10));
+        // const dmsUploadImages = data.map((item) => parseInt(item.DMSUploadImages, 10));
 
         setChartData({
           series: [
             { name: "Scanned Images", type: "bar", data: scannedImages, color: "#1E90FF" },
             { name: "QC Images", type: "bar", data: qcImages, color: "#32CD32" },
+            { name: "Flagging Images", type: "bar", data: flaggingImages, color: "#AC1754" },
+            { name: "Indexing Images", type: "bar", data: indexImages, color: "#4DA1A9" },
             { name: "CBSL QA Images", type: "bar", data: cbslQaImages, color: "#FF4500" },
+            { name: "Client QA Images", type: "bar", data: clientQaImages, color: "#735557" },
+            { name: "Digi Sign Images", type: "bar", data: digiSignImages, color: "#006A71" },
+            // { name: "DMS Upload Images", type: "bar", data: dmsUploadImages, color: "#E69DB8" },
             { name: "Scanned Images (Line)", type: "line", data: scannedImages, color: "#1E90FF" },
             { name: "QC Images (Line)", type: "line", data: qcImages, color: "#32CD32" },
+            { name: "Flagging Images (Line)", type: "line", data: flaggingImages, color: "#AC1754" },
+            { name: "Indexing Images (Line)", type: "line", data: indexImages, color: "#4DA1A9" },
             { name: "CBSL QA Images (Line)", type: "line", data: cbslQaImages, color: "#FF4500" },
+            { name: "Client QA Images (Line)", type: "line", data: clientQaImages, color: "#735557" },
+            { name: "Digi Sign Images (Line)", type: "line", data: digiSignImages, color: "#006A71" },
+            // { name: "DMS Upload Images (Line)", type: "line", data: dmsUploadImages, color: "#E69DB8" },
           ],
           options: {
             chart: {
@@ -770,7 +758,7 @@ const Dashboard = () => {
               toolbar: { show: true },
             },
             stroke: {
-              width: [0, 0, 0, 2, 2, 2], // Line series has width 2, bars have 0
+              width: [0, 0, 0, 0, 0,0,0,0, 2, 2, 2, 2, 2,2,2,2], // Line series has width 2, bars have 0
               curve: "smooth",
             },
             xaxis: {
@@ -788,14 +776,14 @@ const Dashboard = () => {
             },
             dataLabels: {
               enabled: true,
-              enabledOnSeries: [0, 1, 2], // Only for bar series
+              enabledOnSeries: [0, 1, 2, 3, 4,5,6,7], // Only for bar series
               formatter: (val) => val,
               offsetY: -10,
               style: { fontSize: "12px", colors: ["#304758"] },
             },
             tooltip: {
               shared: true,
-              sharedOnSeries: [3, 4, 5],
+              sharedOnSeries: [ 8, 9,10,11,12,13,14,15],
               intersect: false,
             },
             legend: {
@@ -803,7 +791,7 @@ const Dashboard = () => {
             },
           },
         });
-
+        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -896,9 +884,6 @@ const Dashboard = () => {
   }, []);
   const columnSums = calculateColumnSum();
   console.log("WEEK", weekFile);
-  if (!userLog) {
-    navigate('/');
-  }
   const formatChartData = (data, colors) => ({
     options: {
       chart: {
@@ -1182,166 +1167,6 @@ const Dashboard = () => {
     const target = targetValues[index];
     return target > 0 ? ((achieved / target) * 100).toFixed(2) : 0;
   });
-  const targetData = {
-    series: [
-      {
-        name: "Target",
-        data: targetValues
-      },
-      {
-        name: "Achieved",
-        data: achievedValues
-      },
-      {
-        name: "Difference (%)",
-        data: differenceValues
-      }
-    ],
-    options: {
-      chart: {
-        type: "bar",
-        height: 400
-      },
-      xaxis: {
-        categories: processNames,
-        labels: {
-          style: { fontSize: "12px" }
-        }
-      },
-      yaxis: [
-        {
-          title: { text: "Files per MP" }
-        },
-        {
-          opposite: true,
-          title: { text: "Difference (%)" }
-        }
-      ],
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: "55%",
-          endingShape: "rounded"
-        }
-      },
-      colors: ["#FF5733", "#33FF57", "#337ab7"],
-      markers: {
-        size: 5
-      },
-      dataLabels: {
-        enabled: false
-      },
-      legend: {
-        position: "bottom"
-      }
-    }
-  };
-  const handleExportYesterdayCSV = () => {
-    if (!yesterdayReport || yesterdayReport.length === 0) {
-      alert("No data to export");
-      return;
-    }
-
-    // Define the header row
-    const headers = [
-      "Location Name",
-      "Total ManPower",
-      "Scaning Target A3",
-      "QC Target",
-      "Post QC Target",
-      "Scanner Count A3",
-      "Scanner Count A4",
-      "Collection Files",
-      "Collection MP",
-      "Scanning Files",
-      "Scanning Images",
-      "Scanning MP",
-      "QC Files",
-      "QC Images",
-      "QC MP",
-      "Flagging Files",
-      "Flagging Images",
-      "Flagging MP",
-      "Indexing Files",
-      "Indexing Images",
-      "Indexing MP",
-      "CBSL QA Files",
-      "CBSL QA Images",
-      "CBSL QA MP",
-      "Ready For Customer QA Files",
-      "Ready For Customer QA Images",
-      "Ready For Customer QA MP",
-      "Customer QA Done Files",
-      "Customer QA Done Images",
-      "Customer QA Done MP",
-      "DMS Uploaded Files",
-      "DMS Uploaded Images",
-      "DMS Uploaded MP",
-      "Re-Filing Binding Files",
-      "Re-Filing Binding MP",
-      "Inventory Out Files",
-      "Inventory Out MP",
-    ];
-
-    // Generate rows
-    const rows = yesterdayReport.map((elem) => [
-      elem.LocationName,
-      parseFloat(elem.TotalManPower) || 0,
-      parseFloat(elem.Scaning_Target_A3) || 0,
-      parseFloat(elem.QC_Target) || 0,
-      parseFloat(elem.Post_QC_Target) || 0,
-      parseFloat(elem.Scaning_Capacity_A3) || 0,
-      parseFloat(elem.Scaning_Capacity_A4) || 0,
-      parseFloat(elem.ReceivedFiles) || 0,
-      parseFloat(elem.Coll__Index_MP) || 0,
-      parseFloat(elem.ScannedFiles) || 0,
-      parseFloat(elem.ScannedImages) || 0,
-      parseFloat(elem.Scan_MP) || 0,
-      parseFloat(elem.QCFiles) || 0,
-      parseFloat(elem.QCImages) || 0,
-      parseFloat(elem.Image_QC_MP) || 0,
-      parseFloat(elem.FlaggingFiles) || 0,
-      parseFloat(elem.FlaggingImages) || 0,
-      parseFloat(elem.Flagging_MP) || 0,
-      parseFloat(elem.IndexingFiles) || 0,
-      parseFloat(elem.IndexingImages) || 0,
-      parseFloat(elem.Index_MP) || 0,
-      parseFloat(elem.CBSL_QAFiles) || 0,
-      parseFloat(elem.CBSL_QAImages) || 0,
-      parseFloat(elem.CBSL_QA_MP) || 0,
-      parseFloat(elem.SubmittedForFiles) || 0,
-      parseFloat(elem.SubmittedForImages) || 0,
-      parseFloat(elem.Submitted_For_MP) || 0,
-      parseFloat(elem.Client_QA_AcceptedFiles) || 0,
-      parseFloat(elem.Client_QA_AcceptedImages) || 0,
-      parseFloat(elem.Cust_QA_Done_MP) || 0,
-      parseFloat(elem.DMS_UploadFiles) || 0,
-      parseFloat(elem.DMS_UploadImages) || 0,
-      parseFloat(elem.DMS_Upload_MP) || 0,
-      parseFloat(elem.Refilling_Files_TF) || 0,
-      parseFloat(elem.Refilling_MP) || 0,
-      parseFloat(elem.Inv_Out_Files) || 0,
-      parseFloat(elem.InventoryOut_MP) || 0,
-    ]);
-
-    // Calculate totals
-    const totalRow = [
-      "Total", // Label for the total row
-      ...headers.slice(1).map((_, index) => {
-        // Sum up all the values in each column, ensuring each value is parsed as a float
-        return rows.reduce((sum, row) => sum + (parseFloat(row[index + 1]) || 0), 0);
-      }),
-    ];
-
-    // Convert to CSV string
-    const csvContent = [headers, ...rows, totalRow]
-      .map((row) => row.map((cell) => `"${cell}"`).join(","))
-      .join("\n");
-
-    // Create a Blob and trigger download
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, `Production_Report-${formattedYesterdayDate}.csv`);
-  };
   const handleDateChange = (date) => {
     if (date) {
         // Format to YYYY-MM-DD (removing time)
@@ -1368,7 +1193,7 @@ const Dashboard = () => {
       fetchCumulative(selectedLocations);
     }
   };
- 
+
   return (
     <>
       <div className="container-fluid">
@@ -1379,7 +1204,7 @@ const Dashboard = () => {
               <div
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                <h4> Telangana Dashboard Welcomes You</h4>
+                <h4> Telangana Dashboard</h4>
                 <p
                   style={{
                     fontSize: "12px",
@@ -1388,7 +1213,7 @@ const Dashboard = () => {
                   }}
                 >
                   Last Active Login:{" "}
-                  {userLog ? userLog.last_active_login : "Guest"}
+                  {/* {userLog ? userLog.last_active_login : "Guest"} */}
                 </p>
               </div>
             </div>

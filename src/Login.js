@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon } from 'react-icons-kit';
 import { eyeOff } from 'react-icons-kit/feather/eyeOff';
 import { eye } from 'react-icons-kit/feather/eye';
@@ -20,6 +20,52 @@ const Login = () => {
   const [isChangePasswordRequired, setIsChangePasswordRequired] = useState(false);
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const params = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    console.log("Full URL:", window.location.href); // Check the full URL
+    console.log("Query Params:", window.location.search); // Check query string 
+    const token = searchParams.get('token'); // Get token from the URL
+    // const token = localStorage.getItem('authToken');
+    console.log("Retrieved token", token);
+    if (token) {
+      // If a token is present, validate it
+      validateToken(token);
+    }
+  }, [searchParams, navigate]);
+
+  const validateToken = async (token) => {
+    try {
+      console.log('Sending token to backend:', token); // Log the token before sending
+
+      // Send the token to the backend for validation
+      const response = await axios.post(`${API_URL}/validate-token`, { token });
+
+      if (response.data.valid) {
+        // If token is valid, store it in localStorage
+        console.log('Token validated, navigating to dashboard...');
+        localStorage.setItem('authToken', token);
+        navigate('/dashboard');  // Redirect to dashboard
+      } else {
+        console.log('Invalid token, redirecting to login...');
+        navigate('/');  // Redirect to  if token is invalid
+      }
+    } catch (error) {
+      console.error('Error validating token:', error);
+      navigate('/');  // Navigate to login on error
+    }
+  };
+
+  const isTokenValid = (token) => {
+    try {
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      return decoded.exp > Date.now() / 1000; // Check expiration
+    } catch {
+      return false;
+    }
+  };
+
   // Error messages
   const errors = {
     username: "Invalid user",
@@ -32,7 +78,6 @@ const Login = () => {
     errorMessages[name] && (
       <div className="error mt-1" style={{ marginLeft: '35px' }}>{errorMessages[name]}</div>
     );
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -55,13 +100,13 @@ const Login = () => {
 
         // Set the userId and changePasswordRequired flag for the password modal
         setUserId(data.user_id);
-        setIsChangePasswordRequired(data.isChangePasswordRequired);
+        // setIsChangePasswordRequired(data.isChangePasswordRequired);
 
-        if (data.isChangePasswordRequired) {
-          setIsModalOpen(true); // Show password modal after login
-        } else {
-          navigateToDestination();
-        }
+        // if (data.isChangePasswordRequired) {
+        //   setIsModalOpen(true); // Show password modal after login
+        // } else {
+        navigateToDestination();
+        // }
       }
     } catch (error) {
       if (error.response) {
@@ -87,13 +132,21 @@ const Login = () => {
   };
 
   const navigateToDestination = () => {
+    const token = localStorage.getItem('authToken');
     const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.user_roles && user.user_roles.includes("Cbsl User")) {
-      navigate('/uploadDatabase');
-    } else if (user && user.user_roles && user.user_roles.includes("Client")) {
-      navigate('/clientreport');
+
+    if (token && isTokenValid(token)) {
+      navigate('/dashboard');
+    } else if (user && user.user_roles) {
+      if (user.user_roles.includes("Cbsl User")) {
+        navigate('/uploadDatabase');
+      } else if (user.user_roles.includes("Client")) {
+        navigate('/clientreport');
+      } else {
+        navigate('/report');
+      }
     } else {
-      navigate('/report')
+      navigate('/');
     }
   };
 
