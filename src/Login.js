@@ -24,39 +24,40 @@ const Login = () => {
   const params = new URLSearchParams(window.location.search);
 
   useEffect(() => {
-    console.log("Full URL:", window.location.href); // Check the full URL
-    console.log("Query Params:", window.location.search); // Check query string 
-    const token = searchParams.get('token'); // Get token from the URL
-    // const token = localStorage.getItem('authToken');
-    console.log("Retrieved token", token);
-    if (token) {
-      // If a token is present, validate it
-      validateToken(token);
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token') || localStorage.getItem('authToken');
+  
+    if (token && isTokenValid(token)) {
+      validateToken(token); // Valid token path
+    } else {
+      navigateToDestination(); // fallback to role-based or guest flow
     }
-  }, [searchParams, navigate]);
+  }, []);
+  
 
   const validateToken = async (token) => {
     try {
-      console.log('Sending token to backend:', token); // Log the token before sending
-
-      // Send the token to the backend for validation
+      console.log('Sending token to backend:', token);
+  
       const response = await axios.post(`${API_URL}/validate-token`, { token });
-
+  
       if (response.data.valid) {
-        // If token is valid, store it in localStorage
         console.log('Token validated, navigating to dashboard...');
+  
         localStorage.setItem('authToken', token);
-        navigate('/dashboard');  // Redirect to dashboard
+        localStorage.setItem('user', JSON.stringify(response.data)); // ✅ Save user data
+  
+        navigateToDestination(); // ✅ Use this instead of hardcoding /report
       } else {
         console.log('Invalid token, redirecting to login...');
-        navigate('/');  // Redirect to  if token is invalid
+        navigate('/');
       }
     } catch (error) {
       console.error('Error validating token:', error);
-      navigate('/');  // Navigate to login on error
+      navigate('/');
     }
   };
-
+  
   const isTokenValid = (token) => {
     try {
       const decoded = JSON.parse(atob(token.split('.')[1]));
@@ -80,13 +81,11 @@ const Login = () => {
     );
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     // Check for empty fields
     if (!username || !password) {
       setErrorMessages({ blank: errors.blank });
       return;
     }
-
     // Send login request to backend
     try {
       const response = await axios.post(`${API_URL}/login`, {
@@ -132,16 +131,17 @@ const Login = () => {
   };
 
   const navigateToDestination = () => {
-    const token = localStorage.getItem('authToken');
     const user = JSON.parse(localStorage.getItem('user'));
-
-    if (token && isTokenValid(token)) {
-      navigate('/dashboard');
-    } else if (user && user.user_roles) {
+  
+    if (user && user.user_roles) {
       if (user.user_roles.includes("Cbsl User")) {
         navigate('/uploadDatabase');
       } else if (user.user_roles.includes("Client")) {
         navigate('/clientreport');
+      } else if (user.user_roles.includes("CBSL Admin")) {
+        navigate('/admin');
+      } else if (user.user_roles.includes("All District Head")) {
+        navigate('/districthead');
       } else {
         navigate('/report');
       }
@@ -149,6 +149,7 @@ const Login = () => {
       navigate('/');
     }
   };
+  
 
   // Toggle password visibility
   const handleToggle = () => {

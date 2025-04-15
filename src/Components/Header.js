@@ -54,9 +54,11 @@ const Header = () => {
   }
 
   const handleLogout = () => {
+    localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     navigate('/');
   };
+  
 
   useEffect(() => {
     const fetchUser = async () => {
