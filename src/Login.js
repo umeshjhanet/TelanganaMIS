@@ -139,9 +139,9 @@ const Login = () => {
       } else if (user.user_roles.includes("Client")) {
         navigate('/clientreport');
       } else if (user.user_roles.includes("CBSL Admin")) {
-        navigate('/admin');
+        navigate('/report');
       } else if (user.user_roles.includes("All District Head")) {
-        navigate('/districthead');
+        navigate('/report');
       } else {
         navigate('/report');
       }
