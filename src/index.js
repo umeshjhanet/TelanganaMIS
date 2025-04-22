@@ -35,6 +35,7 @@ import FollowUpReportForm from './follow_up_report';
 import CostingReport from './CostingReport';
 import CustomerQAReport from './customerQAReport';
 import DevelopmentPage from './developmentPage';
+import CumulativeReport from './cumulativeReport';
 
 const App = () => {
   return (
@@ -67,6 +68,7 @@ const App = () => {
         <Route path="/CostingReport" element={<PrivateRoute element={<CostingReport />} />} />
         <Route path="/follow_up_report" element={<PrivateRoute element={<FollowUpReportForm />} />} />
         <Route path="/developmentPage" element={<PrivateRoute element={<DevelopmentPage />} />} />
+        <Route path="/cumulativeReport" element={<PrivateRoute element={<CumulativeReport />} />} />
       </Routes>
     </Router>
     

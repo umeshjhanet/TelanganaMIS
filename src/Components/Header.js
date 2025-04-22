@@ -58,7 +58,7 @@ const Header = () => {
     localStorage.removeItem('user');
     navigate('/');
   };
-  
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -140,6 +140,9 @@ const Header = () => {
                     </div>
                     <div className='row'>
                       <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                    </div>
+                    <div className='row'>
+                      <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
                     </div>
                     <div className='row'>
                       <Link to='/customerQAReport' style={{ ...isActive('/customerQAReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Customer QA Report</Link>
@@ -232,6 +235,9 @@ const Header = () => {
                 </div>
                 <div className='row'>
                   <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                </div>
+                <div className='row'>
+                  <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
                 </div>
                 <div className='row mt-1'>
                   <Link to='/dbSiteReports' className='ms-1' style={{ ...isActive('/dbSiteReports') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Server/DB Site Reports</Link>
@@ -769,6 +775,9 @@ const Header = () => {
                       <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
                     </div>
                     <div className='row'>
+                      <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
+                    </div>
+                    <div className='row'>
                       <Link to='/customerQAReport' style={{ ...isActive('/customerQAReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Customer QA Report</Link>
                     </div>
                     <div className='row mt-1'>
@@ -840,6 +849,9 @@ const Header = () => {
                 <div className='row'>
                   <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
                 </div>
+                <div className='row'>
+                      <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
+                    </div>
                 <div className='row'>
                   <Link to='/customerQAReport' style={{ ...isActive('/customerQAReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Customer QA Report</Link>
                 </div>
@@ -930,37 +942,37 @@ const Header = () => {
                       <img src='logo.png' />
                     </div>
                     <div className='row mt-5'>
-                  <Link to='/dashboard' className='ms-1' style={{ ...isActive('/dashboard') }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
-                </div>
-                <div className='row'>
-                  <Link to='/report' style={{ ...isActive('/report') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
-                </div>
-                <div className='row'>
-                  <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
-                </div>
-                <div className='row'>
-                  <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
-                </div>
-                <div className='row'>
-                  <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Man Power Report</Link>
-                </div>
-                <div className='row'>
-                  <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
-                </div>
-                <div className='row'>
-                  <Link to='/customerQAReport' style={{ ...isActive('/customerQAReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Customer QA Report</Link>
-                </div>
-                <div className='row mt-1'>
-                  <a
-                    href='/clientreport'
-                    className='ms-1'
-                    style={{ ...isActive('/clientreport') }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MdReport style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client View
-                  </a>
-                </div>
+                      <Link to='/dashboard' className='ms-1' style={{ ...isActive('/dashboard') }}><FaHome style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Dashboard</Link>
+                    </div>
+                    <div className='row'>
+                      <Link to='/report' style={{ ...isActive('/report') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Location Wise Report</Link>
+                    </div>
+                    <div className='row'>
+                      <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
+                    </div>
+                    <div className='row'>
+                      <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
+                    </div>
+                    <div className='row'>
+                      <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Man Power Report</Link>
+                    </div>
+                    <div className='row'>
+                      <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
+                    </div>
+                    <div className='row'>
+                      <Link to='/customerQAReport' style={{ ...isActive('/customerQAReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Customer QA Report</Link>
+                    </div>
+                    <div className='row mt-1'>
+                      <a
+                        href='/clientreport'
+                        className='ms-1'
+                        style={{ ...isActive('/clientreport') }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <MdReport style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client View
+                      </a>
+                    </div>
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -1002,7 +1014,7 @@ const Header = () => {
                   <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Man Power Report</Link>
                 </div>
                 <div className='row'>
-                  <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
+                  <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
                 </div>
                 <div className='row'>
                   <Link to='/customerQAReport' style={{ ...isActive('/customerQAReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Customer QA Report</Link>
@@ -1025,7 +1037,7 @@ const Header = () => {
       </>
     )
   }
-  
+
   // const externalClient = () => {
   //   return (
   //     <>
@@ -1068,28 +1080,28 @@ const Header = () => {
     "CBSL Admin": cbslAdminUser,
     "Management": managementUser,
   };
-  
+
   // Check user roles
   const userRoles = userLog?.user_roles || [];
   // const isManagement = userRoles.includes("CBSL Admin") && userLog?.user_id === 101;
-  
+
   return (
     <>
       {/* Render Management User only once for user_id 101 */}
       {/* {isManagement ? managementUser() : ( */}
-        <>
-          {userRoles.map((role) => {
-            const Component = roleComponents[role];
-            return Component ? <Component key={role} /> : null;
-          })}
-  
-          {/* Render Normal User if no role matches */}
-          {!userRoles.some((role) => roleComponents[role]) && normalUser()}
-        </>
+      <>
+        {userRoles.map((role) => {
+          const Component = roleComponents[role];
+          return Component ? <Component key={role} /> : null;
+        })}
+
+        {/* Render Normal User if no role matches */}
+        {!userRoles.some((role) => roleComponents[role]) && normalUser()}
+      </>
       {/* )} */}
     </>
   );
- 
+
 }
 
 export default Header
