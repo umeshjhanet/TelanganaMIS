@@ -138,9 +138,7 @@ const Header = () => {
                     <div className='row'>
                       <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
                     </div>
-                    <div className='row'>
-                      <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
-                    </div>
+                    
                     <div className='row'>
                       <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
                     </div>
@@ -233,9 +231,7 @@ const Header = () => {
                 <div className='row'>
                   <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
                 </div>
-                <div className='row'>
-                  <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
-                </div>
+                
                 <div className='row'>
                   <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
                 </div>
@@ -771,9 +767,7 @@ const Header = () => {
                     <div className='row'>
                       <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
                     </div>
-                    <div className='row'>
-                      <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
-                    </div>
+                    
                     <div className='row'>
                       <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
                     </div>
@@ -846,9 +840,7 @@ const Header = () => {
                 <div className='row'>
                   <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
                 </div>
-                <div className='row'>
-                  <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
-                </div>
+                
                 <div className='row'>
                       <Link to='/cumulativeReport' style={{ ...isActive('/cumulativeReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Process-Wise</Link>
                     </div>
@@ -950,9 +942,7 @@ const Header = () => {
                     <div className='row'>
                       <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
                     </div>
-                    <div className='row'>
-                      <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
-                    </div>
+                    
                     <div className='row'>
                       <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Man Power Report</Link>
                     </div>
@@ -1007,9 +997,7 @@ const Header = () => {
                 <div className='row'>
                   <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
                 </div>
-                <div className='row'>
-                  <Link to='/dailyReport' style={{ ...isActive('/dailyReport') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Daily Report</Link>
-                </div>
+                
                 <div className='row'>
                   <Link to='/developmentPage' style={{ ...isActive('/developmentPage') }}><VscGraph style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Man Power Report</Link>
                 </div>
