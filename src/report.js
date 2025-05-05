@@ -782,9 +782,9 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles).toLocaleString()}
+                                Files: {isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles).toLocaleString()}
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.CollectionImages)) ? 0 : parseInt(elem.CollectionImages).toLocaleString()}
+                                Images: {isNaN(parseInt(elem.CollectionImages)) ? 0 : parseInt(elem.CollectionImages).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -798,13 +798,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.CollectionFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.CollectionImages) || 0 : 0);
@@ -831,10 +831,10 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles).toLocaleString()}
+                                Files: {isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles).toLocaleString()}
 
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages).toLocaleString()}
+                                Images: {isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -848,13 +848,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.ScannedFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.ScannedImages) || 0 : 0);
@@ -881,10 +881,10 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles).toLocaleString()}
+                                Files: {isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles).toLocaleString()}
 
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages).toLocaleString()}
+                                Images: {isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -898,13 +898,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.QCFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.QCImages) || 0 : 0);
@@ -931,10 +931,10 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles).toLocaleString()}
+                                Files: {isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles).toLocaleString()}
 
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages).toLocaleString()}
+                                Images: {isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -948,13 +948,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.FlaggingFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.FlaggingImages) || 0 : 0);
@@ -981,10 +981,10 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles).toLocaleString()}
+                                Files: {isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles).toLocaleString()}
 
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.IndexingImages)) ? 0 : parseInt(elem.IndexingImages).toLocaleString()}
+                                Images: {isNaN(parseInt(elem.IndexingImages)) ? 0 : parseInt(elem.IndexingImages).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -998,13 +998,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.IndexingFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.IndexingImages) || 0 : 0);
@@ -1031,10 +1031,10 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles).toLocaleString()}
+                                Files: {isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles).toLocaleString()}
 
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.CBSL_QAImages)) ? 0 : parseInt(elem.CBSL_QAImages).toLocaleString()}
+                                Images: {isNaN(parseInt(elem.CBSL_QAImages)) ? 0 : parseInt(elem.CBSL_QAImages).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -1048,13 +1048,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.CBSL_QAFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.CBSL_QAImages) || 0 : 0);
@@ -1081,9 +1081,9 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.Client_QAFiles)) ? 0 : parseInt(elem.Client_QAFiles).toLocaleString()}
+                                Files: {isNaN(parseInt(elem.Client_QAFiles)) ? 0 : parseInt(elem.Client_QAFiles).toLocaleString()}
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.Client_QAImages)) ? 0 : parseInt(elem.Client_QAImages).toLocaleString()}
+                                Images: {isNaN(parseInt(elem.Client_QAImages)) ? 0 : parseInt(elem.Client_QAImages).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -1097,13 +1097,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.Client_QAFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.Client_QAImages) || 0 : 0);
@@ -1131,10 +1131,10 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles).toLocaleString()}
+                                Files: {isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles).toLocaleString()}
 
                                 <br />
-                                Total Images: {isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages).toLocaleString()}
+                                Images: {isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -1148,13 +1148,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.Export_PdfFiles) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.Export_PdfImages) || 0 : 0);
@@ -1183,8 +1183,8 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Total Files: {elem.Inv_Out_Files} <br />
-                                Total Images:{elem.Inv_Out_Images}
+                                Files: {elem.Inv_Out_Files} <br />
+                                Images: {elem.Inv_Out_Images}
                               </p>
                             </div>
                           </div>
@@ -1198,13 +1198,13 @@ const Report = () => {
                               </h6>
                             </div>
                             <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Total Files:{" "}
+                              Files:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.Inv_Out_Files) || 0 : 0);
                               }, 0).toLocaleString()}
                               <br />
-                              Total Images:{" "}
+                              Images:{" "}
                               {selectedLocations.reduce((acc, location) => {
                                 const locationData = report.find((elem) => elem.LocationName === location);
                                 return acc + (locationData ? parseInt(locationData.Inv_Out_Images) || 0 : 0);
