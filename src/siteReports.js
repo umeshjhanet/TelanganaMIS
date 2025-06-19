@@ -99,8 +99,8 @@ const SiteReports = () => {
     // Map data to CSV rows
     const rows = data.map((elem, index) => ([
       index + 1, elem.location, elem.csv_upload_dt, `${elem.cpustatus}%`, `${((elem.freeram / elem.totalram) * 100).toFixed(2)}%`,
-      elem.systemLogs || '', elem.innoDBStatus || '', elem.bind_add, elem.filesystems, convertToGB(elem.sizes), 
-      convertToGB(elem.used), convertToGB(elem.avail), elem.use_percentage, elem.mounted_on, elem.latencyFromNAS
+      elem.systemLogs || '', elem.innoDBStatus || '', elem.bind_add, elem.filesystems, elem.sizes, 
+      elem.used, elem.avail, elem.use_percentage, elem.mounted_on, elem.latencyFromNAS
     ]));
 
     // Combine headers and rows
@@ -253,9 +253,9 @@ const SiteReports = () => {
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.innoDBStatus}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.bind_add}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.filesystems}</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.sizes)} GB</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.used)} GB</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.avail)} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.sizes} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.used} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.avail} GB</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.use_percentage}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.mounted_on}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.latencyFromNAS}</td>
