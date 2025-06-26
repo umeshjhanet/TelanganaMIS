@@ -420,11 +420,12 @@ input[type="submit"]:hover {
   border-radius: 4px;
 }
 .search-report-card {
-  height: 80px;
+  min-height: 80px;
   background-color: white;
   padding: 20px;
   border-top: 4px solid #4BC0C0;
   border-radius: 4px;
+  position: relative;
 }
 .search-file-card {
   height: 100%;
@@ -491,12 +492,18 @@ input[type="submit"]:hover {
 .location-card {
   background-color: white;
   border: 1px solid gray;
-  width: 243px;
-  height: 200px;
+  width: 225px;
+  /* height: 200px;
   overflow-y: auto;
   position: relative;
   top: 0px;
-  z-index: 999;
+  z-index: 999; */
+  position: absolute;
+  /* background: white;
+  border: 1px solid #ccc; */
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
 }
 .data-table tbody.scrollable{
   height:80px !important;
@@ -551,6 +558,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
   height: 40px !important;
   margin-top: 1px;
   width:125px;
+  flex-wrap: nowrap !important;
 }
 
 .data-table {
@@ -782,10 +790,10 @@ input[type="submit"] {
     border-radius: 4px;
   }
 
-  .search-report-card {
+  /* .search-report-card {
     height: 200px;
 
-  }
+  } */
 
   .search-bar {
     width: 242px;
@@ -830,10 +838,10 @@ input[type="submit"] {
     border-radius: 4px;
   }
 
-  .search-report-card {
+  /* .search-report-card {
     height: 200px;
 
-  }
+  } */
 
   .search-bar {
     width: 242px;

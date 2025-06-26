@@ -10,6 +10,8 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Report = () => {
@@ -40,6 +42,9 @@ const Report = () => {
   const [exportFormat, setExportFormat] = useState('csv');
   const [showTableDropdown, setShowTableDropdown] = useState(false);
   const [exportTableFormat, setExportTableFormat] = useState('csv');
+  const [inputText, setInputText] = useState("");
+  const [locationSearchInput, setLocationSearchInput] = useState("");
+  const [fileTypeSearchInput, setFileTypeSearchInput] = useState("");
 
 
   useEffect(() => {
@@ -534,22 +539,56 @@ const Report = () => {
     }
     setShowConfirmationBoxDate(false);
   }
+  // const handleClick = async () => {
+  //   setIsLoading(true); // ✅ Show loader before starting API calls
+
+  //   const queryParams = {};
+  //   if (selectedLocations.length > 0) {
+  //     queryParams.locationName = selectedLocations.join(",");
+  //   }
+  //   if (selectedFileTypes.length > 0) {
+  //     queryParams.filetype = selectedFileTypes.join(",");
+  //   }
+  //   if (startDate && endDate) {
+  //     queryParams.startDate = formatDate(startDate);
+  //     queryParams.endDate = formatDate(endDate);
+  //   }
+
+  //   console.log("Final API Params:", queryParams); // Debugging
+
+  //   try {
+  //     await Promise.all([
+  //       summaryData(queryParams),
+  //       fetchReportData(queryParams),
+  //       fetchDateReportData(queryParams),
+  //     ]);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   } finally {
+  //     setIsLoading(false); // ✅ Hide loader after all API calls complete
+  //   }
+  // };
+
   const handleClick = async () => {
-    setIsLoading(true); // ✅ Show loader before starting API calls
+
+    if (!startDate || !endDate) {
+      toast.error("Please select both StartDate and EndDate before searching.");
+      return;
+    }
+
+    setIsLoading(true); // show loader
 
     const queryParams = {};
-    if (selectedLocations.length > 0) {
-      queryParams.locationName = selectedLocations.join(",");
-    }
-    if (selectedFileTypes.length > 0) {
-      queryParams.filetype = selectedFileTypes.join(",");
-    }
+
+    queryParams.locationName = selectedLocations.join(",");
+    queryParams.filetype = selectedFileTypes.join(",");
+
     if (startDate && endDate) {
       queryParams.startDate = formatDate(startDate);
       queryParams.endDate = formatDate(endDate);
     }
 
-    console.log("Final API Params:", queryParams); // Debugging
+    console.log("Final API Params:", queryParams); // Debug
 
     try {
       await Promise.all([
@@ -560,12 +599,15 @@ const Report = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      setIsLoading(false); // ✅ Hide loader after all API calls complete
+      setIsLoading(false); // hide loader
     }
   };
 
+
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+
       {isLoading && <Loader />}
       <Header />
       <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
@@ -583,7 +625,7 @@ const Report = () => {
               </div>
             </div>
             <div className="row mt-2 me-1 search-report-card" >
-              <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
+              {/* <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
 
                   ref={dropdownRef}
@@ -597,6 +639,16 @@ const Report = () => {
 
                   contentEditable={true}
                   onClick={() => setShowLocation(!showLocation)}
+                  onInput={(e) => {
+                  const text = e.currentTarget.textContent;
+                  setInputText(text);
+                  setShowLocation(true); // show dropdown while typing
+              }}
+                  onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                  e.preventDefault();
+                  }
+                }}
                 >
                   {selectedLocations.length === 0 && !showLocation && (
                     <span className="placeholder-text">Search Locations...</span>
@@ -638,8 +690,73 @@ const Report = () => {
                     </div>
                   </>
                 )}
-              </div>
+              </div> */}
+
               <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
+                <div
+                  ref={dropdownRef}
+                  className="search-bar"
+                  style={{
+                    border: "1px solid #000",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    minHeight: "30px",
+                  }}
+                  onClick={() => setShowLocation(true)}
+                >
+                  {selectedLocations.length === 0 && (
+                    <input
+                      type="text"
+                      placeholder="Search Locations..."
+                      value={locationSearchInput}
+                      onChange={(e) => {
+                        setLocationSearchInput(e.target.value);
+                        setShowLocation(true);
+                      }}
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        width: "100%",
+                        backgroundColor: "transparent",
+                      }}
+                    />
+                  )}
+                  {selectedLocations.map((location, index) => (
+                    <span key={index} className="selected-location">
+                      {location}
+                      <button
+                        onClick={() => removeLocation(location)}
+                        style={{
+                          backgroundColor: "black",
+                          color: "white",
+                          border: "none",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        x
+                      </button>
+                      &nbsp;
+                    </span>
+                  ))}
+                </div>
+                {showLocation && (
+                  <div className="location-card">
+                    {report
+                      ?.filter(item =>
+                        item.LocationName.toLowerCase().includes(locationSearchInput.toLowerCase())
+                      )
+                      .map((item, index) => (
+                        <div key={index}>
+                          <p onClick={() => handleLocation(item.LocationName)}>
+                            {item.LocationName}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+
+              {/* <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
                   ref={filedropdownRef}
                   className="search-bar"
@@ -652,6 +769,16 @@ const Report = () => {
 
                   contentEditable={true}
                   onClick={() => setShowFileType(!showFileType)}
+                  onInput={(e) => {
+                  const text = e.currentTarget.textContent;
+                  setInputText(text);
+                  setShowFileType(true); // show dropdown while typing
+              }}
+                   onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                  e.preventDefault();
+                  }
+                }}
                 >
                   {selectedFileTypes.length === 0 && !showFileType && (
                     <span className="placeholder-text">Search File Type...</span>
@@ -692,9 +819,77 @@ const Report = () => {
                     )}
                   </div>
                 )}
+              </div> */}
+
+              <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
+                <div
+                  ref={filedropdownRef}
+                  className="search-bar"
+                  style={{
+                    border: "1px solid #000",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    minHeight: "30px",
+                  }}
+                  onClick={() => setShowFileType(true)}
+                >
+                  {selectedFileTypes.length === 0 && (
+                    <input
+                      type="text"
+                      placeholder="Search File Type..."
+                      value={fileTypeSearchInput}
+                      onChange={(e) => {
+                        setFileTypeSearchInput(e.target.value);
+                        setShowFileType(true);
+                      }}
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        width: "100%",
+                        backgroundColor: "transparent",
+                      }}
+                    />
+                  )}
+                  {selectedFileTypes.map((fileType, index) => (
+                    <span key={index} className="selected-location">
+                      {fileType}
+                      <button
+                        onClick={() => removeFileType(fileType)}
+                        style={{
+                          backgroundColor: "black",
+                          color: "white",
+                          border: "none",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        x
+                      </button>
+                      &nbsp;
+                    </span>
+                  ))}
+                </div>
+                {showFileType && (
+                  <div className="location-card">
+                    {Array.isArray(fileType) && fileType.length > 0 ? (
+                      fileType
+                        .filter(item =>
+                          item.filetype.toLowerCase().includes(fileTypeSearchInput.toLowerCase())
+                        )
+                        .map((item, index) => (
+                          <div key={index}>
+                            <p onClick={() => handleFileType(item.filetype)}>
+                              {item.filetype}
+                            </p>
+                          </div>
+                        ))
+                    ) : (
+                      <p>No file types available</p>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div className="col-lg-4 col-md-8 col-sm-12" >
+              {/* <div className="col-lg-4 col-md-8 col-sm-12" >
                 <DatePicker
                   className="date-field"
                   selected={startDate}
@@ -721,7 +916,37 @@ const Report = () => {
                   dateFormat="dd-MM-yyyy"
                   placeholderText="End Date"
                 />
+              </div> */}
+              <div className="col-lg-4 col-md-8 col-sm-12 d-flex flex-wrap ">
+                <DatePicker
+                  className="date-field"
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="Start Date"
+                />
+                <button
+                  className="btn ms-1 me-1"
+                  style={{
+                    height: "40px",
+                    backgroundColor: "#4BC0C0",
+                    marginBottom: "3px",
+                    marginTop:"1px",
+                    borderRadius: "0px",
+                    color: 'white',
+                  }}
+                >
+                  To
+                </button>
+                <DatePicker
+                  className="date-field"
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="End Date"
+                />
               </div>
+
               <div className="col-md-2"><button className="btn add-btn" onClick={handleClick}>Search</button></div>
             </div>
             <div className="row mt-3 me-1">
