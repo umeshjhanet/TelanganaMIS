@@ -115,7 +115,7 @@ const DBSiteReports = () => {
       elem.backuptime, `${elem.cpustatus}%`, `${((elem.freeram / elem.totalram) * 100).toFixed(2)}%`,
       elem.errorlogs || '', elem.systemLogs || '', elem.innoDBStatus, elem.max_con, elem.bind_add,
       elem.general_log, elem.slowQuery, elem.ftpFilePath, elem.ftpFileSizeInGB, elem.FTPBackupCreateTime,
-      elem.filesystems, convertToGB(elem.sizes), convertToGB(elem.used), convertToGB(elem.avail), elem.use_percentage, elem.mounted_on,
+      elem.filesystems, elem.sizes, elem.used, elem.avail, elem.use_percentage, elem.mounted_on,
       elem.latencyFromNAS
     ]));
 
@@ -155,7 +155,7 @@ const DBSiteReports = () => {
                 </h6>
               </div>
             </div>
-            <div className="user-list-card mt-3 ms-0 mb-5">
+            <div className="user-list-card mt-3 ms-0 mb-2">
               <div className="row">
                 <input
                   type='text'
@@ -185,7 +185,7 @@ const DBSiteReports = () => {
                 </div>
               </div>
               <div className='server-report mt-1'>
-                <table className='server-reports table-bordered mb-4'>
+                <table className='server-reports table-bordered '>
                   <thead>
                     <tr>
                       <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Sr.No</th>
@@ -295,9 +295,9 @@ const DBSiteReports = () => {
                           <td style={{ whiteSpace: 'nowrap' }}>{formatSize(elem.ftpFileSizeInGB)}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{formatDateTo12Hour(elem.FTPBackupCreateTime)}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.filesystems}</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.sizes)} GB</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.used)} GB</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{convertToGB(elem.avail)} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.sizes}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.used}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.avail}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.use_percentage}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.mounted_on}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.latencyFromNAS}</td>
@@ -308,26 +308,7 @@ const DBSiteReports = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="row">
-                <ul className="pagination justify-content-center">
-                  {filteredServers.length > serversPerPage &&
-                    Array(Math.ceil(filteredServers.length / serversPerPage))
-                      .fill()
-                      .map((_, index) => (
-                        <li
-                          key={index}
-                          className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-                        >
-                          <button
-                            className="page-link"
-                            onClick={() => paginate(index + 1)}
-                          >
-                            {index + 1}
-                          </button>
-                        </li>
-                      ))}
-                </ul>
-              </div>
+             
             </div>
           </div>
         </div>

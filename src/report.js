@@ -953,9 +953,9 @@ const Report = () => {
               <div
                 className="row"
                 style={{
-                  padding: "5px",
+                  padding: "0px",
                   backgroundColor: "#4BC0C0",
-                  paddingTop: "15px",
+                  paddingTop: "6px",
                   marginLeft: "0",
                 }}
               >
@@ -1392,7 +1392,56 @@ const Report = () => {
                     </>
                   )}
 
+                  {summary && (
+                    <>
+                      {selectedLocations.length === 0 ? (
+                        summary.map((elem, index) => (
+                          <div
+                            className="col-lg-2 col-md-4 col-sm-6"
+                            key={index}
+                          >
+                            <div className="summary-card mt-3">
+                              <div className="summary-title">
+                                <h6 style={{ textTransform: "capitalize" }}>
+                                  Digi Sign
+                                </h6>
+                              </div>
+                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
+                                Files: {isNaN(parseInt(elem.Digi_SignFiles)) ? 0 : parseInt(elem.Digi_SignFiles).toLocaleString()}
 
+                                <br />
+                                Images: {isNaN(parseInt(elem.Digi_SignImages)) ? 0 : parseInt(elem.Digi_SignImages).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="col-lg-2 col-md-4 col-sm-6">
+                          <div className="summary-card mt-3">
+                            <div className="summary-title">
+                              <h6 style={{ textTransform: "capitalize" }}>
+                                Digi Sign
+                              </h6>
+                            </div>
+                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
+                              Files:{" "}
+                              {selectedLocations.reduce((acc, location) => {
+                                const locationData = report.find((elem) => elem.LocationName === location);
+                                return acc + (locationData ? parseInt(locationData.Digi_SignFiles) || 0 : 0);
+                              }, 0).toLocaleString()}
+                              <br />
+                              Images:{" "}
+                              {selectedLocations.reduce((acc, location) => {
+                                const locationData = report.find((elem) => elem.LocationName === location);
+                                return acc + (locationData ? parseInt(locationData.Digi_SignImages) || 0 : 0);
+                              }, 0).toLocaleString()}
+                            </p>
+
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
                   {summary && (
                     <>
                       {selectedLocations.length === 0 ? (
@@ -1448,9 +1497,9 @@ const Report = () => {
                 <div
                   className="row"
                   style={{
-                    padding: "5px",
+                    padding: "0px",
                     backgroundColor: "#4BC0C0",
-                    paddingTop: "15px",
+                    paddingTop: "6px",
                   }}
                 >
                   <div className="col-10">
@@ -1504,7 +1553,7 @@ const Report = () => {
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>Export PDF</th>
-                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>CSV Generation</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Digi Sign</th>
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                       </tr>
                       <tr
@@ -1561,8 +1610,8 @@ const Report = () => {
                                 <td>{isNaN(parseInt(elem.Client_QAImages)) ? "0" : parseInt(elem.Client_QAImages).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                 <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
-                                <td>0</td>
-                                <td>0</td>
+                                <td>{isNaN(parseInt(elem.Digi_SignFiles)) ? "0" : parseInt(elem.Digi_SignFiles).toLocaleString()}</td>
+                                <td>{isNaN(parseInt(elem.Digi_SignImages)) ? "0" : parseInt(elem.Digi_SignImages).toLocaleString()}</td>
                                 <td>0</td>
                                 <td>0</td>
                               </tr>
@@ -1668,8 +1717,18 @@ const Report = () => {
                             .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0)
                             .toLocaleString()}
                         </td>
-                        <td>0</td>
-                        <td>0</td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Digi_SignFiles)) ? 0 : parseInt(elem.Digi_SignFiles)), 0)
+                            .toLocaleString()}
+                        </td>
+                        <td>
+                          {report && report
+                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
+                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Digi_SignImages)) ? 0 : parseInt(elem.Digi_SignImages)), 0)
+                            .toLocaleString()}
+                        </td>
                         <td>0</td>
                         <td>0</td>
                       </tr>
@@ -1686,9 +1745,9 @@ const Report = () => {
                     <div
                       className="row"
                       style={{
-                        padding: "5px",
+                        padding: "0px",
                         backgroundColor: "#4BC0C0",
-                        paddingTop: "15px",
+                        paddingTop: "6px",
                       }}
                     >
                       <div className="col-10">
@@ -1736,7 +1795,7 @@ const Report = () => {
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>Export PDF</th>
-                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>CSV Generation</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Digi Sign</th>
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>Inventory Out</th>
                           </tr>
                           <tr
@@ -1794,8 +1853,8 @@ const Report = () => {
                                     <td>{isNaN(parseInt(elem.Client_QCImages)) ? "0" : parseInt(elem.Client_QCImages).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
-                                    <td>0</td>
-                                    <td>0</td>
+                                    <td>{isNaN(parseInt(elem.Digi_SignFiles)) ? "0" : parseInt(elem.Digi_SignFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Digi_SignImages)) ? "0" : parseInt(elem.Digi_SignImages).toLocaleString()}</td>
                                     <td>0</td>
                                     <td>0</td>
                                   </tr>
