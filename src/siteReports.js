@@ -253,9 +253,9 @@ const SiteReports = () => {
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.innoDBStatus}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.bind_add}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.filesystems}</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{elem.sizes} GB</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{elem.used} GB</td>
-                          <td style={{ whiteSpace: 'nowrap' }}>{elem.avail} GB</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.sizes}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.used}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>{elem.avail}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.use_percentage}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.mounted_on}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{elem.latencyFromNAS}</td>
