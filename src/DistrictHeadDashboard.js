@@ -576,7 +576,7 @@ const DistrictHeadDashboard = () => {
                     <h6 style={{ color: "white" ,cursor:"pointer"  }} onClick={handleExport}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
-                      Export CSV
+                      Export
                     </h6>
                   </div>
                   {showFormatDropdown && (

@@ -691,7 +691,6 @@ const Report = () => {
                   </>
                 )}
               </div> */}
-
               <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
                   ref={dropdownRef}
@@ -755,7 +754,6 @@ const Report = () => {
                   </div>
                 )}
               </div>
-
               {/* <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
                   ref={filedropdownRef}
@@ -967,7 +965,7 @@ const Report = () => {
                 <div className="col-2">
                   <h6 style={{ color: "white", cursor: "pointer" }} onClick={() => setShowDropdown(!showDropdown)}>
                     <MdFileDownload style={{ fontSize: "20px" }} />
-                    Export CSV
+                    Export
                   </h6>
 
                 </div>
@@ -1511,7 +1509,7 @@ const Report = () => {
                     <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleReportCsv}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
-                      Export CSV
+                      Export
                     </h6>
 
                   </div>
@@ -1759,7 +1757,7 @@ const Report = () => {
                         <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleDateReportCsv}>
                           {" "}
                           <MdFileDownload style={{ fontSize: "20px" }} />
-                          Export CSV
+                          Export
                         </h6>
                       </div>
 

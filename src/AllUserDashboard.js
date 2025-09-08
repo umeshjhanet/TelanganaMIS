@@ -45,6 +45,7 @@ const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [yesterdayReport, setYesterdayReport] = useState([]);
   const [vendorName, setVendorName] = useState();
+  const [locationSearchInput, setLocationSearchInput] = useState("");
   // const userLog = JSON.parse(localStorage.getItem("user"));
   // console.log("User's Info", userLog);
 
@@ -1218,7 +1219,7 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="row  mt-2  search-report-card">
-              <div className='col-md-6 col-sm-12'>
+              {/* <div className='col-md-6 col-sm-12'>
                 <div className="search-container" ref={dropdownRef} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{ flex: 1, position: 'relative' }}>
                     <input
@@ -1245,7 +1246,6 @@ const Dashboard = () => {
                     )}
                   </div>
 
-                  {/* Selected Locations on the Right */}
                   <div className="selected-locations" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                     {selectedLocations.map((location, index) => (
                       <span key={index} className="selected-location" style={{ padding: '5px', border: '1px solid #ccc', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -1255,6 +1255,69 @@ const Dashboard = () => {
                     ))}
                   </div>
                 </div>
+              </div> */}
+              <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
+                <div
+                  ref={dropdownRef}
+                  className="search-bar"
+                  style={{
+                    border: "1px solid #000",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    minHeight: "30px",
+                  }}
+                  onClick={() => setShowLocation(true)}
+                >
+                  {selectedLocations.length === 0 && (
+                    <input
+                      type="text"
+                      placeholder="Search Locations..."
+                      value={locationSearchInput}
+                      onChange={(e) => {
+                        setLocationSearchInput(e.target.value);
+                        setShowLocation(true);
+                      }}
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        width: "100%",
+                        backgroundColor: "transparent",
+                      }}
+                    />
+                  )}
+                  {selectedLocations.map((location, index) => (
+                    <span key={index} className="selected-location">
+                      {location}
+                      <button
+                        onClick={() => removeLocation(location)}
+                        style={{
+                          backgroundColor: "black",
+                          color: "white",
+                          border: "none",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        x
+                      </button>
+                      &nbsp;
+                    </span>
+                  ))}
+                </div>
+                {showLocation && (
+                  <div className="location-card">
+                    {filteredLocations
+                      ?.filter(item =>
+                        item.LocationName.toLowerCase().includes(locationSearchInput.toLowerCase())
+                      )
+                      .map((item, index) => (
+                        <div key={index}>
+                          <p onClick={() => handleLocation(item.LocationName)}>
+                            {item.LocationName}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
               <div className="col-md-6"></div>
             </div>
@@ -1294,7 +1357,7 @@ const Dashboard = () => {
                     <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
-                      Export CSV
+                      Export
                     </h6>
 
                   </div>

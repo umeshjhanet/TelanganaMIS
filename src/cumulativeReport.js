@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState , useRef} from 'react'
 import Header from './Components/Header'
 import { MdFileDownload } from 'react-icons/md'
 import axios from 'axios';
@@ -15,9 +15,30 @@ const CumulativeReport = () => {
     const formattedYesterdayDate = format(yesterdayDate, "dd-MM-yyyy");
     const formattedPreviousDate = format(previousDate, "dd-MM-yyyy");
     const [cumulative, setCumulative] = useState([]);
+    const [detailedReport, setDetailedReport] = useState([]);
+    const [selectedLocations, setSelectedLocations] = useState([]);
+    const [selectedProcesses, setSelectedProcesses] = useState([]);
+    const [showLocation, setShowLocation] = useState(false);
+    const [showProcess, setShowProcess] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
     const [target, setTarget] = useState();
+    const [showTable, setShowTable] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
+    const dropdownRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowLocation(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [dropdownRef]);
     const fetchCumulative = async () => {
         try {
             const params = {};
@@ -28,6 +49,16 @@ const CumulativeReport = () => {
             setCumulative(response.data.result); // Only set the array
         } catch {
             console.log("Error fetching cumulative data");
+        }
+    };
+    const fetchDetailed = async (params = {}) => {
+        try {
+           
+            const response = await axios.get(`${API_URL}/api/daily-summary`, { params });
+            console.log("API response:", response.data);
+            setDetailedReport(response.data);
+        } catch (error) {
+            console.error("Error fetching detailed report", error);
         }
     };
     useEffect(() => {
@@ -45,8 +76,11 @@ const CumulativeReport = () => {
             setIsLoading(false); // ✅ Only set false after both complete
         };
         fetchData();
+        fetchDetailed();
     }, []);
-
+    const handleTable = () => {
+        setShowTable(!showTable);
+    }
     const Loader = () => (
         <div className="loader-overlay">
             <div className="loader"></div>
@@ -68,6 +102,7 @@ const CumulativeReport = () => {
         setIsLoading(true);
         try {
             await fetchCumulative(); // assuming this returns a Promise
+            await fetchDetailed({ date: selectedDate });
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
@@ -151,14 +186,12 @@ const CumulativeReport = () => {
         link.click();
         document.body.removeChild(link);
     };
-    
     // ✅ Function to calculate total manpower
     const getTotalManpower = () => {
         return cumulative?.manpowerData
             ? Object.values(cumulative.manpowerData).reduce((sum, val) => sum + (parseInt(val) || 0), 0)
             : "-";
     };
-
     // ✅ Function to calculate total files
     const getTotalFiles = () => {
         const scannedFiles = cumulative?.scannedData
@@ -184,7 +217,6 @@ const CumulativeReport = () => {
         return [...scannedFiles, ...barcodingFiles]
             .reduce((sum, val) => sum + (parseInt(val) || 0), 0) || "-";
     };
-
     // ✅ Function to calculate total images
     const getTotalImages = () => {
         const scannedImages = cumulative?.scannedData
@@ -207,6 +239,284 @@ const CumulativeReport = () => {
         return [...scannedImages, ...barcodingImages]
             .reduce((sum, val) => sum + (parseInt(val) || 0), 0) || "-";
     };
+    const processOptions = ['Inventory', 'Scanning', 'QC', 'Flagging', 'Indexing', 'CBSL QA', 'Support Personnel', 'Unidentified'];
+    const processStructure = {
+        Inventory: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
+        Scanning: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
+        QC: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
+        Flagging: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
+        Indexing: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
+        CBSL_QA: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
+        SupportPersonnel: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
+        Unidentified: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
+    };
+    const allProcesses = Object.keys(processStructure);
+    const processesToRender = selectedProcesses.length === 0 ? allProcesses : selectedProcesses;
+    const processConfig = {
+        Inventory: {
+            present: 'Inventory_Present',
+            files: 'Inventory_Files',
+            images: null,
+            target: 200,
+        },
+        Scanning: {
+            present: 'Scanning_Present',
+            files: 'Scanning_Files',
+            images: 'Scanning_Images',
+            target: 10500,
+        },
+        QC: {
+            present: 'QC_Present',
+            files: 'QC_Files',
+            images: 'QC_Images',
+            target: 9000,
+        },
+        Flagging: {
+            present: 'Flagging_Present',
+            files: 'Flagging_Files',
+            images: 'Flagging_Images',
+            target: 8000,
+        },
+        Indexing: {
+            present: 'Indexing_Present',
+            files: 'Indexing_Files',
+            images: 'Indexing_Images',
+            target: 7000,
+        },
+        CBSL_QA: {
+            present: 'CBSLQA_Present',
+            files: 'CBSLQA_Files',
+            images: 'CBSLQA_Images',
+            target: 15000,
+        },
+        SupportPersonnel: {
+            present: 'SupportPersonnel_Present',
+            files: null,
+            images: null,
+            target: null,
+        },
+        Unidentified: {
+            present: 'Unidentified_Present',
+            files: null,
+            images: null,
+            target: null,
+        }
+    };
+    const exportLocationToCSV = () => {
+        if (!Array.isArray(detailedReport) || detailedReport.length === 0) {
+            alert("No data available to export.");
+            return;
+        }
+
+        const headers = [
+            "Sr.No", "Location", "Inv MP", "Inv Files", "-", "Target",
+            "Average", "Differences B/W Target & Average", "Scan MP", "Scan Files", "Scan Images", "Target",
+            "Average", "Differences B/W Target & Achieved", "QC MP", "QC Files", "QC Images", "Target",
+            "Achieved", "Differences B/W Target & Achieved", "Flag MP", "Flag Files", "Flag Images", "Target",
+            "Achieved", "Differences B/W Target & Achieved", "Index MP", "Index Files", "Index Images", "Target",
+            "Achieved", "Differences B/W Target & Achieved", "CBSLQA MP", "CBSLQA Files", "CBSLQA Images", "Target",
+            "Achieved", "Differences B/W Target & Achieved", "Support Personnel MP", "-", "-", "-", "-", "-",
+            "Unidentified MP", "-", "-", "-", "-", "-"
+        ];
+
+        const standardValues = {
+            Inventory: 200,
+            Scanning: 10500,
+            QC: 9000,
+            Flagging: 8000,
+            Indexing: 7000,
+            CBSLQA: 15000
+        };
+
+        let csvRows = [];
+        csvRows.push(headers.join(','));
+
+        // Totals
+        let totals = {
+            Inventory_Present: 0,
+            Inventory_Files: 0,
+            Scanning_Present: 0,
+            Scanning_Files: 0,
+            Scanning_Images: 0,
+            QC_Present: 0,
+            QC_Files: 0,
+            QC_Images: 0,
+            Flagging_Present: 0,
+            Flagging_Files: 0,
+            Flagging_Images: 0,
+            Indexing_Present: 0,
+            Indexing_Files: 0,
+            Indexing_Images: 0,
+            CBSLQA_Present: 0,
+            CBSLQA_Files: 0,
+            CBSLQA_Images: 0,
+            SupportPersonnel_Present: 0,
+            Unidentified_Present: 0
+        };
+
+        detailedReport.forEach((elem, index) => {
+            // Update totals
+            Object.keys(totals).forEach(key => {
+                totals[key] += Number(elem[key] || 0);
+            });
+
+            const row = [
+                index + 1,
+                elem.locationname,
+                elem.Inventory_Present,
+                elem.Inventory_Files,
+                "-",
+                standardValues.Inventory,
+                elem.Inventory_Present ? (elem.Inventory_Files / elem.Inventory_Present).toFixed(2) : "-",
+                elem.Inventory_Present ? ((elem.Inventory_Files / elem.Inventory_Present) / standardValues.Inventory * 100).toFixed(2) : "-",
+
+                elem.Scanning_Present,
+                elem.Scanning_Files,
+                elem.Scanning_Images,
+                standardValues.Scanning,
+                elem.Scanning_Present ? (elem.Scanning_Images / elem.Scanning_Present).toFixed(2) : "-",
+                elem.Scanning_Present ? ((elem.Scanning_Images / elem.Scanning_Present) / standardValues.Scanning * 100).toFixed(2) : "-",
+
+                elem.QC_Present,
+                elem.QC_Files,
+                elem.QC_Images,
+                standardValues.QC,
+                elem.QC_Present ? (elem.QC_Images / elem.QC_Present).toFixed(2) : "-",
+                elem.QC_Present ? ((elem.QC_Images / elem.QC_Present) / standardValues.QC * 100).toFixed(2) : "-",
+
+                elem.Flagging_Present,
+                elem.Flagging_Files,
+                elem.Flagging_Images,
+                standardValues.Flagging,
+                elem.Flagging_Present ? (elem.Flagging_Images / elem.Flagging_Present).toFixed(2) : "-",
+                elem.Flagging_Present ? ((elem.Flagging_Images / elem.Flagging_Present) / standardValues.Flagging * 100).toFixed(2) : "-",
+
+                elem.Indexing_Present,
+                elem.Indexing_Files,
+                elem.Indexing_Images,
+                standardValues.Indexing,
+                elem.Indexing_Present ? (elem.Indexing_Images / elem.Indexing_Present).toFixed(2) : "-",
+                elem.Indexing_Present ? ((elem.Indexing_Images / elem.Indexing_Present) / standardValues.Indexing * 100).toFixed(2) : "-",
+
+                elem.CBSLQA_Present,
+                elem.CBSLQA_Files,
+                elem.CBSLQA_Images,
+                standardValues.CBSLQA,
+                elem.CBSLQA_Present ? (elem.CBSLQA_Images / elem.CBSLQA_Present).toFixed(2) : "-",
+                elem.CBSLQA_Present ? ((elem.CBSLQA_Images / elem.CBSLQA_Present) / standardValues.CBSLQA * 100).toFixed(2) : "-",
+
+                elem.SupportPersonnel_Present,
+                "-", "-", "-", "-", "-",
+                elem.Unidentified_Present,
+                "-", "-", "-", "-", "-"
+            ];
+
+            csvRows.push(row.join(','));
+        });
+
+        // Add Total row
+        const totalRow = [
+            "Total",
+            "-",
+            totals.Inventory_Present,
+            totals.Inventory_Files,
+            "-",
+            standardValues.Inventory,
+            totals.Inventory_Present ? (totals.Inventory_Files / totals.Inventory_Present).toFixed(2) : "-",
+            totals.Inventory_Present ? ((totals.Inventory_Files / totals.Inventory_Present) / standardValues.Inventory * 100).toFixed(2) : "-",
+
+            totals.Scanning_Present,
+            totals.Scanning_Files,
+            totals.Scanning_Images,
+            standardValues.Scanning,
+            totals.Scanning_Present ? (totals.Scanning_Images / totals.Scanning_Present).toFixed(2) : "-",
+            totals.Scanning_Present ? ((totals.Scanning_Images / totals.Scanning_Present) / standardValues.Scanning * 100).toFixed(2) : "-",
+
+            totals.QC_Present,
+            totals.QC_Files,
+            totals.QC_Images,
+            standardValues.QC,
+            totals.QC_Present ? (totals.QC_Images / totals.QC_Present).toFixed(2) : "-",
+            totals.QC_Present ? ((totals.QC_Images / totals.QC_Present) / standardValues.QC * 100).toFixed(2) : "-",
+
+            totals.Flagging_Present,
+            totals.Flagging_Files,
+            totals.Flagging_Images,
+            standardValues.Flagging,
+            totals.Flagging_Present ? (totals.Flagging_Images / totals.Flagging_Present).toFixed(2) : "-",
+            totals.Flagging_Present ? ((totals.Flagging_Images / totals.Flagging_Present) / standardValues.Flagging * 100).toFixed(2) : "-",
+
+            totals.Indexing_Present,
+            totals.Indexing_Files,
+            totals.Indexing_Images,
+            standardValues.Indexing,
+            totals.Indexing_Present ? (totals.Indexing_Images / totals.Indexing_Present).toFixed(2) : "-",
+            totals.Indexing_Present ? ((totals.Indexing_Images / totals.Indexing_Present) / standardValues.Indexing * 100).toFixed(2) : "-",
+
+            totals.CBSLQA_Present,
+            totals.CBSLQA_Files,
+            totals.CBSLQA_Images,
+            standardValues.CBSLQA,
+            totals.CBSLQA_Present ? (totals.CBSLQA_Images / totals.CBSLQA_Present).toFixed(2) : "-",
+            totals.CBSLQA_Present ? ((totals.CBSLQA_Images / totals.CBSLQA_Present) / standardValues.CBSLQA * 100).toFixed(2) : "-",
+
+            totals.SupportPersonnel_Present,
+            "-", "-", "-", "-", "-",
+            totals.Unidentified_Present,
+            "-", "-", "-", "-", "-"
+        ];
+        csvRows.push(totalRow.join(','));
+
+        // Create CSV and trigger download
+        const csvContent = "data:text/csv;charset=utf-8," + csvRows.join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Detailed_report.csv");
+        document.body.appendChild(link); // Required for Firefox
+        link.click();
+        document.body.removeChild(link);
+    };
+    const handleLocation = (locationName) => {
+        if (!selectedLocations.includes(locationName)) {
+            setSelectedLocations([...selectedLocations, locationName]);
+            setSearchInput("");
+        }
+        setShowLocation(false); // Close the dropdown when a location is selected
+    };
+    const removeLocation = (locationName) => {
+        setSelectedLocations(
+            selectedLocations.filter((loc) => loc !== locationName)
+        );
+    };
+    const handleLocationFilter = async () => {
+        setIsLoading(true);
+        try {
+            if (selectedLocations.length > 0 || selectedProcesses.length > 0) {
+                await fetchDetailed({
+                    date: selectedDate,
+                    locations: selectedLocations.length > 0 ? selectedLocations.join(",") : undefined,
+                    processes: selectedProcesses.length > 0 ? selectedProcesses.join(",") : undefined,
+                });
+            } else {
+
+                await fetchDetailed();
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    const handleProcess = (processName) => {
+        if (!selectedProcesses.includes(processName)) {
+            setSelectedProcesses([...selectedProcesses, processName]);
+        }
+        setShowProcess(false);
+    };
+    const removeProcess = (processName) => {
+        setSelectedProcesses(selectedProcesses.filter(p => p !== processName));
+    };
     return (
         <>
             {isLoading && <Loader />}
@@ -228,19 +538,27 @@ const CumulativeReport = () => {
                                         />
                                     </div>
                                     <div className="col-3 mt-1">
-                                        <button className="btn add-btn" onClick={handleDateFilter}>Submit</button>
+                                        <button className="btn add-btn" style={{marginTop:'-5px'}} onClick={handleDateFilter}>Submit</button>
                                     </div>
                                 </div>
-                                <div className='row ms-1'>
-                                    <div className='col-10'>
-                                        <h5 className="mt-2">
+                                <div className='row '>
+                                        <div className='col-md-8 d-md-block d-none col-11'>
+                                            <h5 className="mt-2">
+                                                Telangana - Process & Manpower Detailed Summary: <span style={{ color: '#AC1754' }}>{!selectedDate ? formattedYesterdayDate : new Date(selectedDate).toLocaleDateString('en-GB')}</span>
+                                            </h5>
+                                        </div>
+                                        <div className='col-md-2 col-5'>
+                                            <button className='btn add-btn p-2 w-100' style={{marginLeft:'0px', fontSize: '12px', backgroundColor: "#4bc0c0", color: "#000" }} onClick={handleTable}>{showTable ? 'Hide Detailed Report' : 'Show Detailed Report'}</button>
+                                        </div>
+                                        <div className='col-md-2 col-5'>
+                                            <button className='p-2 btn add-btn w-100' onClick={exportToCSV} style={{marginLeft:'0px', fontSize: '12px', backgroundColor: "#4bc0c0", color: "#000", border: "0px" }}><MdFileDownload /> Export CSV</button>
+                                        </div>
+                                        <div className='col-md-8 d-md-none d-block col-12'>
+                                            <h5 className="mt-2">
                                             Telangana - Process & Manpower Detailed Summary: <span style={{ color: '#AC1754' }}>{!selectedDate ? formattedYesterdayDate : new Date(selectedDate).toLocaleDateString('en-GB')}</span>
-                                        </h5>
+                                            </h5>
+                                        </div>
                                     </div>
-                                    <div className='col-2'>
-                                        <button className='btn add-btn' onClick={exportToCSV} style={{ marginLeft: '0px' }}><MdFileDownload /> Export CSV</button>
-                                    </div>
-                                </div>
                                 <div
                                     className="row mt-3 ms-2 me-2"
                                     style={{ overflowX: "auto", maxHeight: '500px' }}
@@ -287,7 +605,7 @@ const CumulativeReport = () => {
 
                                                 return (
                                                     <tr key={index}>
-                                                        <td>{elem.process}</td>
+                                                        <td style={{textAlign:"left"}}>{elem.process}</td>
                                                         <td>{present}</td>
                                                         <td>{files}</td>
                                                         <td>{images}</td>
@@ -327,6 +645,289 @@ const CumulativeReport = () => {
                                     </table>
                                 </div>
                             </div>
+                            {showTable && (
+                                <div className="row  me-1">
+                                    <div className="table-card" style={{ marginBottom: '0px' }}>
+                                        <div className='row ms-1 mt-1'>
+                                            <div className='col-10'>
+                                                <h5 className="mt-2">
+                                                    Telangana - Process & Manpower Location Wise Report: <span style={{ color: '#AC1754' }}>{!selectedDate ? formattedYesterdayDate : new Date(selectedDate).toLocaleDateString('en-GB')}</span>
+                                                </h5>
+                                            </div>
+                                            <div className='col-2'>
+                                                <button className='btn add-btn' onClick={exportLocationToCSV} style={{ marginLeft: '0px' }}><MdFileDownload /> Export CSV</button>
+                                            </div>
+                                        </div>
+                                        <div className='row mt-3 ms-2 me-2'>
+                                            <div className="col-lg-4 col-md-2 col-sm-12">
+                                                <div
+                                                    ref={dropdownRef}
+                                                    className="search-bar"
+                                                    style={{
+                                                        border: "1px solid #000",
+                                                        padding: "5px",
+                                                        borderRadius: "5px",
+                                                        minHeight: "30px",
+                                                    }}
+
+                                                    contentEditable={true}
+                                                    onClick={() => setShowLocation(!showLocation)}
+                                                >
+                                                    {selectedLocations.length === 0 && !showLocation && (
+                                                        <span className="placeholder-text">Search Locations...</span>
+                                                    )}
+                                                    {selectedLocations.map((location, index) => (
+                                                        <span key={index} className="selected-location">
+                                                            {location}
+                                                            <button
+                                                                onClick={() => removeLocation(location)}
+                                                                style={{
+                                                                    backgroundColor: "black",
+                                                                    color: "white",
+                                                                    border: "none",
+                                                                    marginLeft: "5px",
+                                                                }}
+                                                            >
+                                                                x
+                                                            </button>
+                                                            &nbsp;
+                                                        </span>
+                                                    ))}
+                                                    <span style={{ minWidth: "5px", display: "inline-block" }}>
+                                                        &#8203;
+                                                    </span>
+                                                </div>
+                                                {showLocation && (
+                                                    <>
+                                                        <div className="location-card">
+                                                            {detailedReport &&
+                                                                detailedReport.map((item, index) => (
+                                                                    <div key={index}>
+                                                                        <p
+                                                                            onClick={() => handleLocation(item.locationname)}
+                                                                        >
+                                                                            {item.locationname}
+                                                                        </p>
+                                                                    </div>
+                                                                ))}
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                            <div className="col-lg-4 col-md-2 col-sm-12" style={{ position: 'relative' }}>
+                                                <div
+                                                    className="search-bar"
+                                                    style={{
+                                                        border: "1px solid #000",
+                                                        padding: "5px",
+                                                        borderRadius: "5px",
+                                                        minHeight: "30px",
+                                                        cursor: "pointer",
+                                                        display: "flex",
+                                                        flexWrap: "wrap",
+                                                        gap: "5px"
+                                                    }}
+                                                    onClick={() => setShowProcess(!showProcess)}
+                                                >
+                                                    {selectedProcesses.length === 0 && (
+                                                        <span className="placeholder-text" style={{ color: "#aaa" }}>
+                                                            Select Processes...
+                                                        </span>
+                                                    )}
+                                                    {selectedProcesses.map((process, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="selected-process"
+                                                            style={{
+                                                                backgroundColor: "#007bff",
+                                                                color: "white",
+                                                                borderRadius: "15px",
+                                                                padding: "2px 8px",
+                                                                display: "inline-flex",
+                                                                alignItems: "center",
+                                                                userSelect: "none"
+                                                            }}
+                                                        >
+                                                            {process}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    removeProcess(process);
+                                                                }}
+                                                                style={{
+                                                                    backgroundColor: "transparent",
+                                                                    color: "white",
+                                                                    border: "none",
+                                                                    marginLeft: "5px",
+                                                                    cursor: "pointer",
+                                                                    fontWeight: "bold"
+                                                                }}
+                                                            >
+                                                                &times;
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                </div>
+
+                                                {showProcess && (
+                                                    <div
+                                                        className="process-dropdown"
+                                                        style={{
+                                                            position: "absolute",
+                                                            top: "100%",
+                                                            left: 0,
+                                                            right: 0,
+                                                            maxHeight: "150px",
+                                                            overflowY: "auto",
+                                                            border: "1px solid #ccc",
+                                                            backgroundColor: "white",
+                                                            zIndex: 1000,
+                                                            borderRadius: "4px",
+                                                            marginTop: "5px",
+                                                        }}
+                                                    >
+                                                        {processOptions.map((item, index) => (
+                                                            <div
+                                                                key={index}
+                                                                style={{
+                                                                    padding: "8px",
+                                                                    cursor: selectedProcesses.includes(item) ? "not-allowed" : "pointer",
+                                                                    backgroundColor: selectedProcesses.includes(item) ? "#e9ecef" : "white"
+                                                                }}
+                                                                onClick={() => {
+                                                                    if (!selectedProcesses.includes(item)) {
+                                                                        handleProcess(item);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {item}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className='col-lg-4 col-md-2 col-sm-12'>
+                                                <button className='btn add-btn' onClick={handleLocationFilter}>Submit</button>
+                                            </div>
+                                        </div>
+                                        <div className="row mt-3 ms-2 me-2"
+                                            style={{ overflowX: "auto", maxHeight: '500px' }}>
+                                            <table className="table table-hover table-bordered table-responsive date-table">
+                                                <thead style={{ backgroundColor: '#4bc0c0', color: 'white' }}>
+                                                    <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                                        <th rowSpan={3} style={{ textAlign: 'center', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>Sr. No.</th>
+                                                        <th rowSpan={3} style={{ textAlign: 'center', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>Location Name</th>
+                                                        <th colSpan={processesToRender.length * 6}>Processes</th>
+                                                    </tr>
+                                                    <tr style={{ textAlign: 'center', verticalAlign: 'middle', backgroundColor: '#4bc0c0', color: 'white' }}>
+                                                        {processesToRender.map((process, index) => (
+                                                            <th key={index} colSpan={6}>{process}</th>
+                                                        ))}
+                                                    </tr>
+                                                    <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                                        {processesToRender.map((process) =>
+                                                            processStructure[process]?.map((subHeader, i) => (
+                                                                <th key={`${process}-${i}`}>{subHeader}</th>
+                                                            ))
+                                                        )}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {Array.isArray(detailedReport) && detailedReport.length > 0 ? (
+                                                        <>
+                                                            {detailedReport.map((elem, index) => (
+                                                                <tr key={index}>
+                                                                    <td>{index + 1}</td>
+                                                                    <td style={{textAlign:'left'}}>{elem.locationname}</td>
+                                                                    {processesToRender.map((processKey, pIndex) => {
+                                                                        const config = processConfig[processKey];
+                                                                        if (!config) return null;
+
+                                                                        const present = Number(elem?.[config.present] || 0);
+                                                                        const files = config.files ? Number(elem?.[config.files] || 0) : '-';
+                                                                        const images = config.images ? Number(elem?.[config.images] || 0) : '-';
+                                                                        const target = config.target;
+
+                                                                        let avg = null;
+                                                                        if (processKey === 'Inventory') {
+                                                                            // For Inventory, average = files / present
+                                                                            avg = (files !== '-' && present !== 0) ? (files / present) : null;
+                                                                        } else {
+                                                                            // For others, average = images / present
+                                                                            avg = (images !== '-' && present !== 0) ? (images / present) : null;
+                                                                        }
+
+                                                                        const diffPercent = (avg !== null && target)
+                                                                            ? (avg / target) * 100
+                                                                            : null;
+
+                                                                        // Determine color based on diffPercent
+                                                                        let bgColor = '';
+                                                                        if (diffPercent !== null) {
+                                                                            if (diffPercent < 90) bgColor = '#ffcccc'; // light red
+                                                                            else if (diffPercent < 100) bgColor = '#fff3cd'; // light yellow
+                                                                            else bgColor = '#d4edda'; // light green
+                                                                        }
+
+                                                                        return (
+                                                                            <React.Fragment key={pIndex}>
+                                                                                <td style={{ backgroundColor: bgColor }}>{present || '-'}</td>
+                                                                                <td style={{ backgroundColor: bgColor }}>{files !== '-' ? files : '-'}</td>
+                                                                                <td style={{ backgroundColor: bgColor }}>{images !== '-' ? images : '-'}</td>
+                                                                                <td style={{ backgroundColor: bgColor }}>{target || '-'}</td>
+                                                                                <td style={{ backgroundColor: bgColor }}>
+                                                                                    {avg !== null ? avg.toFixed(2) : '-'}
+                                                                                </td>
+                                                                                <td style={{ backgroundColor: bgColor }}>
+                                                                                    {diffPercent !== null ? diffPercent.toFixed(2) : '-'}
+                                                                                </td>
+                                                                            </React.Fragment>
+                                                                        );
+                                                                    })}
+
+                                                                </tr>
+                                                            ))}
+
+                                                            {/* TOTAL ROW */}
+                                                            <tr style={{ fontWeight: 'bold', backgroundColor: '#f0f0f0' }}>
+                                                                <td colSpan={2}>Total</td>
+                                                                {processesToRender.map((processKey, pIndex) => {
+                                                                    const config = processConfig[processKey];
+                                                                    if (!config) return null;
+
+                                                                    const totalPresent = detailedReport.reduce(
+                                                                        (a, b) => a + Number(b[config.present] || 0),
+                                                                        0
+                                                                    );
+                                                                    const totalFiles = config.files
+                                                                        ? detailedReport.reduce((a, b) => a + Number(b[config.files] || 0), 0)
+                                                                        : '-';
+                                                                    const totalImages = config.images
+                                                                        ? detailedReport.reduce((a, b) => a + Number(b[config.images] || 0), 0)
+                                                                        : '-';
+
+                                                                    return (
+                                                                        <React.Fragment key={pIndex}>
+                                                                            <td>{totalPresent || '-'}</td>
+                                                                            <td>{totalFiles !== '-' ? totalFiles : '-'}</td>
+                                                                            <td>{totalImages !== '-' ? totalImages : '-'}</td>
+                                                                            <td colSpan={3}></td>
+                                                                        </React.Fragment>
+                                                                    );
+                                                                })}
+                                                            </tr>
+                                                        </>
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan="50">No data available</td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
