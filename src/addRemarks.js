@@ -178,7 +178,7 @@ const AddRemarks = () => {
                                             <tbody
                                                 style={{ color: "gray" }}
                                             >
-                                                {yesterdayReport &&
+                                                {Array.isArray(yesterdayReport) &&
                                                     yesterdayReport.map((elem, index) => (
                                                         <tr key={index} style={{ backgroundColor: "white" }}>
                                                             <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.locationname}</td>
@@ -197,7 +197,7 @@ const AddRemarks = () => {
                                                         </tr>
                                                     ))
                                                 }
-                                                {yesterdayReport && (
+                                                {Array.isArray(yesterdayReport) && (
                                                     <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
                                                         <td>Total: </td>
                                                         <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0).toLocaleString()}</td>
