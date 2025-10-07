@@ -1089,7 +1089,7 @@ const Locationwisereport = () => {
         ];
 
         // Map the data rows for the CSV
-        const rows = yesterdayReport.map(user => [
+        const rows = yesterdayReport && yesterdayReport.map(user => [
             user.locationname || '',
             user.ScannedFiles || '',
             user.ScannedImages || '',
@@ -1236,7 +1236,7 @@ const Locationwisereport = () => {
                         <div className="row mt-4">
                             <Card>
                                 <CardBody>
-                                    <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
+                                    <CardTitle tag="h5">PRODUCTION REPORT FOR ({allLocationYesImage?.[0]?.target_date || 'N/A'})</CardTitle>
                                     <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
                                     <Chart
                                         options={formatProcessChartData(allLocationYesImage).options}
@@ -1345,11 +1345,10 @@ const Locationwisereport = () => {
                                             <tbody
                                                 style={{ color: "gray" }}
                                             >
-                                                {yesterdayReport &&
+                                                {Array.isArray(yesterdayReport) &&
                                                     yesterdayReport.map((elem, index) => (
                                                         <tr key={index} style={{ backgroundColor: "white" }}>
                                                             <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationname}</td>
-                                                            {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
@@ -1362,21 +1361,18 @@ const Locationwisereport = () => {
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
-                                                            {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td> */}
-                                                            {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
-                                                            <td className="text-center"><button
-                                                                className="btn client-view-btn"
-                                                                onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}
-                                                            >
-                                                                View
-                                                            </button>
+                                                            <td className="text-center">
+                                                                <button
+                                                                    className="btn client-view-btn"
+                                                                    onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}
+                                                                >
+                                                                    View
+                                                                </button>
                                                             </td>
                                                         </tr>
-                                                    ))
-                                                }
-                                                {yesterdayReport && (
+                                                    ))}
+
+                                                {Array.isArray(yesterdayReport) && (
                                                     <tr style={{ backgroundColor: "#f0f0f0", fontWeight: "bold", textAlign: 'end' }}>
                                                         <td>Total: </td>
                                                         {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.InputFiles)) ? 0 : parseInt(elem.InputFiles)), 0).toLocaleString()}</td> */}

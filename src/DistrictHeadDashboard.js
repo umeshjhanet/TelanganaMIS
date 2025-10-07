@@ -910,7 +910,7 @@ const DistrictHeadDashboard = () => {
                     >
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
-                      Export CSV
+                      Export
                     </h6>
                   </div>
                   {showFormatDropdown && (
