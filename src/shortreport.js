@@ -87,34 +87,7 @@ const ShortReport = () => {
         }
     };
 
-    // const fetchSummaryReportCsvFile = (locationName, startDate, endDate) => {
-    //     const formattedStartDate = startDate ? new Date(startDate) : null;
-    //     const formattedEndDate = endDate ? new Date(endDate) : null;
-    //     const formatDate = (date) => {
-    //       return date.toISOString().split('T')[0];
-    //     };
-  
-  
-    //     let apiUrl = `${API_URL}/summarycsv`;
-    //     if (locationName && formattedStartDate && formattedEndDate) {
-    //       apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}&startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    //     } else if (locationName) {
-    //       apiUrl += `?${locationName.map(name => `locationName=${name}`).join("&")}`;
-    //     } else if (formattedStartDate && formattedEndDate) {
-    //       apiUrl += `?startDate=${formatDate(formattedStartDate)}&endDate=${formatDate(formattedEndDate)}`;
-    //     }
-  
-    //     axios.get(apiUrl, { responseType: "blob" })
-    //       .then((response) => {
-    //         const blob = new Blob([response.data], { type: "text/csv" });
-    //         const url = window.URL.createObjectURL(blob);
-    //         setCsv(url);
-    //       })
-    //       .catch((error) => {
-    //         console.error("Error in exporting data:", error);
-    //       });
-    //   };
-
+    
 
     const fetchSummaryReportCsvFile = (locationName, startDate, endDate) => {
         // Format the dates as ISO strings without time component

@@ -10,7 +10,7 @@ const UpdateGroupModal = ({onClose,groupId}) => {
   const handleUpdate = async () => {
     try {
       const response = await axios.put(`${API_URL}/updategroup/${groupId}`, { group_name: groupName });
-      console.log(response.data);
+    
       toast.success("Group updated successfully");
         onClose();
     } catch (error) {

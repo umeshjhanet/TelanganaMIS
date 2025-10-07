@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useRef } from 'react';
 import Header from './Components/Header';
 import axios from 'axios';
 import { API_URL } from './Api';
@@ -14,6 +14,36 @@ const DBSiteReports = () => {
   const [selectedServerErrorLogs, setSelectedServerErrorLogs] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [serversPerPage] = useState(10);
+  const [locations, setLocations] = useState([]);
+  const dropdownRef = useRef(null);
+  const dropdownMenuRef = useRef(null);
+ 
+  const [locationSearchInput, setLocationSearchInput] = useState("");
+  const [selectedLocations, setSelectedLocations] = useState([]);
+  const [showLocation, setShowLocation] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+  // Filtered locations based on search input
+  const filteredLocations =
+    locations?.filter((item) =>
+      item.toLowerCase().includes(locationSearchInput.toLowerCase())
+    ) || [];
+  // Handle location selection (both from click and keyboard)
+  const handleLocation = (location) => {
+    if (!selectedLocations.includes(location)) {
+      setSelectedLocations([...selectedLocations, location]);
+    }
+    setLocationSearchInput("");
+    setShowLocation(false);
+    setHighlightedIndex(-1);
+  };
+
+  // Remove a location from selected locations
+  const removeLocation = (location) => {
+    setSelectedLocations(
+      selectedLocations.filter((loc) => loc !== location)
+    );
+  };
 
   useEffect(() => {
     const fetchServerStatus = () => {
@@ -21,6 +51,8 @@ const DBSiteReports = () => {
       axios
         .get(`${API_URL}/server_status`)
         .then((response) => {
+          const locations = response.data.map(item => item.location);
+          setLocations(locations);
           setDBServer(response.data);
           setFilteredServers(response.data);
           setIsLoading(false);
@@ -137,6 +169,107 @@ const DBSiteReports = () => {
     document.body.removeChild(link);
   };
 
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setShowLocation(false);
+          setHighlightedIndex(-1);
+        }
+  
+      };
+  
+      document.addEventListener("click", handleClickOutside);
+  
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
+    }, []);
+  
+  
+    const handleClick = () => {
+      if (selectedLocations.length === 0) {
+        // If no location selected, show all servers
+        setFilteredServers(dbServer);
+      } else {
+        const filteredData = dbServer.filter(server =>
+          selectedLocations.includes(server.location)
+        );
+        setFilteredServers(filteredData);
+        setCurrentPage(1); // Reset to first page
+      }
+    };
+    const handleLocationKeyDown = (e) => {
+      if (!showLocation) {
+        setShowLocation(true);
+        return;
+      }
+  
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setHighlightedIndex(prev => {
+            const newIndex = prev < filteredLocations.length - 1 ? prev + 1 : prev;
+  
+            // Scroll to ensure the highlighted item is visible
+            if (dropdownMenuRef.current && newIndex !== prev) {
+              const highlightedElement = dropdownMenuRef.current.children[newIndex];
+              if (highlightedElement) {
+                highlightedElement.scrollIntoView({
+                  block: 'nearest',
+                  behavior: 'smooth'
+                });
+              }
+            }
+  
+            return newIndex;
+          });
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setHighlightedIndex(prev => {
+            const newIndex = prev > 0 ? prev - 1 : -1;
+  
+            // Scroll to ensure the highlighted item is visible
+            if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
+              const highlightedElement = dropdownMenuRef.current.children[newIndex];
+              if (highlightedElement) {
+                highlightedElement.scrollIntoView({
+                  block: 'nearest',
+                  behavior: 'smooth'
+                });
+              }
+            }
+  
+            return newIndex;
+          });
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (filteredLocations.length === 1) {
+            handleLocation(filteredLocations[0]);
+            setHighlightedIndex(-1);
+            return;
+          }
+          if (highlightedIndex >= 0 && filteredLocations[highlightedIndex]) {
+            handleLocation(filteredLocations[highlightedIndex]);
+            setHighlightedIndex(-1);
+          }
+          break;
+        case 'Backspace':
+          if (locationSearchInput === '' && selectedLocations.length > 0) {
+            removeLocation(selectedLocations[selectedLocations.length - 1]);
+          }
+          break;
+        case 'Escape':
+          setShowLocation(false);
+          setHighlightedIndex(-1);
+          break;
+        default:
+          break;
+      }
+    };
+  
+
   return (
     <>
       {isLoading && <Loader />}
@@ -155,20 +288,137 @@ const DBSiteReports = () => {
                 </h6>
               </div>
             </div>
-            <div className="user-list-card mt-3 ms-0 mb-2">
-              <div className="row">
+            <div className="row mt-2 me-1 search-report-card " style={{minHeight:"92px"}}>
+              <div className="col-lg-4 col-md-2 col-sm-12 mt-1">
+              <div
+                      ref={dropdownRef}
+                      className="site_search-bar"
+                      style={{
+                        border: "1px solid #000",
+                        padding: "5px",
+                        borderRadius: "5px",
+                        minHeight: "30px",
+                        backgroundColor:  "transparent", // Dull background
+                        cursor:  "pointer" // Disabled cursor
+                      }}
+                      onClick={() => {
+                       
+                          setShowLocation(true);
+                        }
+                      }
+                    >
+                { selectedLocations.map((location, index) => (
+                        <span key={index} className="selected-location">
+                          {location}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeLocation(location);
+                            }}
+                            style={{
+                              backgroundColor: "black",
+                              color: "white",
+                              border: "none",
+                              marginLeft: "5px",
+                              borderRadius: "50%",
+                              width: "18px",
+                              height: "18px",
+                              fontSize: "12px",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
+                          >
+                            ×
+                          </button>
+                          &nbsp;
+                        </span>
+                      ))}
+                
                 <input
                   type='text'
-                  style={{ width: '300px', height: '40px' }}
-                  placeholder='Search by location name...'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  
+                  value={locationSearchInput}
+                  onChange={(e) => {
+                          
+                            setLocationSearchInput(e.target.value);
+                            setShowLocation(true);
+                         
+                        }}
+                        onKeyDown={handleLocationKeyDown}
+                        placeholder={
+                          selectedLocations.length === 0
+                            ? "Search Locations..."
+                            : ""
+                        }
+                        
+                        style={{ 
+                          // height: '35px',
+                          border: "none",
+                          outline: "none",
+                          width: selectedLocations.length > 0 ? "70px" : "100%",
+                          backgroundColor: "transparent",
+                          minWidth: "60px"
+                        }}
+                        
+                  
                 />
-                {/* <button className='btn search-btn mb-1' style={{ color: 'white' }}>Search</button> */}
+
+                </div>
+                {showLocation && (
+                  <div
+                     ref={dropdownMenuRef} // Add ref to the dropdown menu
+                    className="location-card"
+                    style={{
+                      position: "absolute",
+                      width: "100%",
+                      maxWidth: "300px",
+                      backgroundColor: "white",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      minHeight: "200px",
+                      overflowY: "auto",
+                      zIndex: 1000,
+                      marginTop: "2px",
+                      boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+                    }}
+                  >
+                    {filteredLocations.map((location, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: "8px 12px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #eee",
+                          backgroundColor:
+                            index === highlightedIndex
+                              ? "#f0f0f0"
+                              : "transparent",
+                        }}
+                        onClick={() => 
+                          handleLocation(location)
+                        }
+                       
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                      >
+                        {location}
+                      </div>
+                    ))}
+
+                    {filteredLocations.length === 0 && (
+                      <div style={{ padding: "8px 12px", color: "#999" }}>
+                        No locations found
+                      </div>
+                    )}
+                  </div>
+                )}
+                </div>
+                <button className='btn search-btn mb-1' style={{ color: 'white' }} onClick={handleClick}>Search</button>
+              
               </div>
-              <div className='row'>
-                <div className='col-11'></div>
-                <div className='col-1'>
+              <div className='row ' style={{backgroundColor:'white' ,marginTop:'10px' ,width:"101%"}}>
+                <div className='lg-4 sm-2'  style={{display:"flex" , justifyContent:"flex-end" ,marginTop:"10px"}}>
+                <div className='col-1 mt-2 mb-2'>
                   <button
                     onClick={() => exportToCSV(currentServers, 'server/db_reports')}
                     style={{
@@ -308,11 +558,12 @@ const DBSiteReports = () => {
                   </tbody>
                 </table>
               </div>
-             
+
             </div>
           </div>
         </div>
-      </div>
+         </div>
+      
       {showError && (
         <div className="modal">
           <div className="modal-content">
@@ -327,6 +578,7 @@ const DBSiteReports = () => {
             </div>
           </div>
         </div>
+       
       )}
       {showServerError && (
         <div className="modal">

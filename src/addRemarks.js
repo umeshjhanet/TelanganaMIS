@@ -32,7 +32,7 @@ const AddRemarks = () => {
                 .get(`${API_URL}/Table`)
                 .then((response) => {
                     setReport(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                   
                 })
                 .catch((error) => console.error(error));
         };
@@ -41,7 +41,7 @@ const AddRemarks = () => {
                 .get(`${API_URL}/tabularData`)
                 .then((response) => {
                     setTableData(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                  
                 })
                 .catch((error) => console.error(error));
         };
@@ -59,7 +59,7 @@ const AddRemarks = () => {
                 .get(`${API_URL}/yesterday-table`, { params })
                 .then((response) => {
                     setYesterdayReport(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                  
                 })
                 .catch((error) => console.error(error));
         };
@@ -121,7 +121,7 @@ const AddRemarks = () => {
         }
     };
 
-    console.log("Location name", selectedLocation);
+
     return (
         <>
             <Header />

@@ -1,6 +1,5 @@
 import React from 'react'
-// import { IoCallOutline } from "react-icons/io5";
-// import { IoIosMailUnread } from "react-icons/io";
+
 const Footer = () => {
     return (
         <>

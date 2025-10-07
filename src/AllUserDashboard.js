@@ -15,6 +15,9 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { saveAs } from "file-saver";
+import { toast } from 'react-toastify';
+import { FaChevronDown } from "react-icons/fa";
+import { SearchHeader } from './Components/SearchHeader';
 
 const Dashboard = () => {
   const currentDate = new Date();
@@ -32,7 +35,7 @@ const Dashboard = () => {
   const [showVendor, setShowVendor] = useState(false);
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [locations, setLocations] = useState();
-  const [filteredLocations, setFilteredLocations] = useState([]);
+  //const [filteredLocations, setFilteredLocations] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -45,8 +48,111 @@ const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [yesterdayReport, setYesterdayReport] = useState([]);
   const [vendorName, setVendorName] = useState();
-  // const userLog = JSON.parse(localStorage.getItem("user"));
-  // console.log("User's Info", userLog);
+  const [locationSearchInput, setLocationSearchInput] = useState("");
+
+  const screenWidth = window.innerWidth;
+
+
+
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+
+  const filteredLocations =
+    locations?.filter(
+      (locationName) =>
+        locationName &&
+        locationName.toLowerCase().includes(locationSearchInput.toLowerCase())
+    ) || [];
+
+
+
+  const dropdownMenuRef = useRef(null); // Add this ref for the dropdown menu
+
+  const handleLocationKeyDown = (e) => {
+    if (!showLocation) {
+      setShowLocation(true);
+      return;
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex(prev => {
+          const newIndex = prev < filteredLocations.length - 1 ? prev + 1 : prev;
+
+          // Scroll to ensure the highlighted item is visible
+          if (dropdownMenuRef.current && newIndex !== prev) {
+            const highlightedElement = dropdownMenuRef.current.children[newIndex];
+            if (highlightedElement) {
+              highlightedElement.scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth'
+              });
+            }
+          }
+
+          return newIndex;
+        });
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex(prev => {
+          const newIndex = prev > 0 ? prev - 1 : -1;
+
+          // Scroll to ensure the highlighted item is visible
+          if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
+            const highlightedElement = dropdownMenuRef.current.children[newIndex];
+            if (highlightedElement) {
+              highlightedElement.scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth'
+              });
+            }
+          }
+
+          return newIndex;
+        });
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (filteredLocations.length === 1) {
+          handleLocation(filteredLocations[0]);
+          setHighlightedIndex(-1);
+          setShowLocation(false);
+          return;
+        }
+        if (highlightedIndex >= 0 && filteredLocations[highlightedIndex]) {
+          handleLocation(filteredLocations[highlightedIndex]);
+          setHighlightedIndex(-1);
+        }
+        break;
+      case 'Backspace':
+        if (locationSearchInput === '' && selectedLocations.length > 0) {
+          removeLocation(selectedLocations[selectedLocations.length - 1]);
+        }
+        break;
+      case 'Escape':
+        setShowLocation(false);
+        setHighlightedIndex(-1);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Update your handleLocation function
+  const handleLocation = (locationName) => {
+    if (!selectedLocations.includes(locationName)) {
+      setSelectedLocations([...selectedLocations, locationName]);
+      setShowLocation(false);
+    }
+    setLocationSearchInput("");
+    setShowLocation(false);
+    setHighlightedIndex(-1);
+  };
+  const removeLocation = (locationToRemove) => {
+    setSelectedLocations(selectedLocations.filter(location => location !== locationToRemove));
+  };
 
   const [barFile, setBarFile] = useState({
     labels: [],
@@ -155,30 +261,7 @@ const Dashboard = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-  const handleLocation = (location) => {
-    if (!selectedLocations.includes(location)) {
-      setSelectedLocations([...selectedLocations, location]);
-    }
-    setSearchInput('');
-    setFilteredLocations(locations);
-    setShowLocation(false);
-  };
-  const removeLocation = (location) => {
-    setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
-  };
-  const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchInput(value);
-    if (value === '') {
-      setFilteredLocations(locations);
-    } else {
-      setFilteredLocations(
-        locations.filter((loc) =>
-          loc.LocationName.toLowerCase().includes(value.toLowerCase())
-        )
-      );
-    }
-  };
+
   const handleVendor = (vendorName) => {
     if (!selectedVendors.includes(vendorName)) {
       setSelectedVendors([...selectedVendors, vendorName]);
@@ -240,564 +323,619 @@ const Dashboard = () => {
       totalImagesSum,
     };
   };
-  useEffect(() => {
-    const fetchLocationData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(`${API_URL}/locations`);
-        setLocations(response.data);
-        setFilteredLocations(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-      setIsLoading(false);
-    };
-    const locationName = selectedLocations;
-    const fetchGraphFileData = (selectedLocations) => {
+  const fetchLocationData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API_URL}/locations`);
+      //setLocations(response.data);
+      const locationNames = response.data.map((item) => item.LocationName);
+      setLocations(locationNames);
+      //setFilteredLocations(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
+  const locationName = selectedLocations;
+
+  const fetchGraphFileData = async (queryParams) => {
+    try {
       let apiUrl = `${API_URL}/graph1LocationWise`;
 
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationname=${encodeURIComponent(location)}`)
-          .join("&");
+      // Extract locations from queryParams if they exist
+      const locations = queryParams?.locationNames
+        ? queryParams.locationNames.split(',')
+        : [];
+
+      if (locations.length > 0) {
+        const locationQuery = locations
+          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+          .join('&');
         apiUrl += `?${locationQuery}`;
       }
 
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
+    
 
-          const labels = Object.keys(apiData[0]).filter(
-            (label) => label !== "locationid" && label !== "LocationName"
-          );
-          const datasets = apiData.map((locationData) => {
-            return {
-              label: "Files", // Use location name as label for each dataset
-              data: labels.map((label) => locationData[label]),
-              backgroundColor: "#ad33ff", // Change the background color here
-            };
-          });
+      const response = await axios.get(apiUrl);
+      const apiData = response.data;
 
-          setBarFile({
-            labels: labels,
-            datasets: datasets,
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    const fetchAllWeekImageData = (selectedLocations) => {
+     
 
-      let apiUrl = `${API_URL}/weekimages`;
-
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationName = selectedLocations
-          .map((location) => `locationName=${encodeURIComponent(location)}`)
-          .join("&");
-        apiUrl += `?${locationName}`;
+      if (!apiData || apiData.length === 0) {
+        console.error("No data received from the API");
+        return;
       }
 
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
+      const labels = Object.keys(apiData[0]).filter(
+        label => label !== "locationid" && label !== "LocationName"
+      );
 
-          // Extract dates and image data
-          const labels = apiData.map((entry) => entry.date);
-          const scannedImages = apiData.map((entry) => entry.ScannedImages);
-          const qcImages = apiData.map((entry) => entry.QCImages);
-          const flaggingImages = apiData.map((entry) => entry.FlaggingImages);
-          const indexingImages = apiData.map((entry) => entry.IndexingImages);
-          const cbslQAImages = apiData.map((entry) => entry.CBSL_QAImages);
-          const exportPdfImages = apiData.map((entry) => entry.Export_PdfImages);
-          const clientQAAcceptedImages = apiData.map((entry) => entry.Client_QA_AcceptedImages);
-          const clientQARejectedImages = apiData.map((entry) => entry.Client_QA_RejectedImages);
-          const digiSignImages = apiData.map((entry) => entry.Digi_SignImages);
+      const datasets = apiData.map(locationData => ({
+        label: locationData.LocationName || "Files",
+        data: labels.map(label => locationData[label]),
+        backgroundColor: "#ad33ff",
+      }));
 
-          // Construct datasets
-          const datasets = [
-            { label: "Scanned Images", data: scannedImages },
-            { label: "QC Images", data: qcImages },
-            { label: "Flagging Images", data: flaggingImages },
-            { label: "Indexing Images", data: indexingImages },
-            { label: "CBSL QA Images", data: cbslQAImages },
-            { label: "Export PDF Images", data: exportPdfImages },
-            { label: "Client QA Accepted Images", data: clientQAAcceptedImages },
-            { label: "Client QA Rejected Images", data: clientQARejectedImages },
-            { label: "Digi Sign Images", data: digiSignImages }
-          ];
+      setBarFile({
+        labels: labels,
+        datasets: datasets,
+      });
 
-          setAllWeekImage({
-            labels: labels,
-            datasets: datasets,
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
+    } catch (error) {
+      console.error("Error in fetchGraphFileData:", {
+        message: error.message,
+        response: error.response?.data,
+        config: error.config
+      });
+    }
+  };
+  const fetchAllWeekImageData = (selectedLocations) => {
+
+    let apiUrl = `${API_URL}/weekimages`;
+
+    if (selectedLocations && selectedLocations.length > 0) {
+      const locationName = selectedLocations
+        .map((location) => `locationName=${encodeURIComponent(location)}`)
+        .join("&");
+      apiUrl += `?${locationName}`;
+    }
+
+    axios
+      .get(apiUrl)
+      .then((response) => {
+        const apiData = response.data;
+        if (!apiData || apiData.length === 0) {
+          console.error("No data received from the API");
+          return;
+        }
+
+        // Extract dates and image data
+        const labels = apiData.map((entry) => entry.date);
+        const scannedImages = apiData.map((entry) => entry.ScannedImages);
+        const qcImages = apiData.map((entry) => entry.QCImages);
+        const flaggingImages = apiData.map((entry) => entry.FlaggingImages);
+        const indexingImages = apiData.map((entry) => entry.IndexingImages);
+        const cbslQAImages = apiData.map((entry) => entry.CBSL_QAImages);
+        const exportPdfImages = apiData.map((entry) => entry.Export_PdfImages);
+        const clientQAAcceptedImages = apiData.map((entry) => entry.Client_QA_AcceptedImages);
+        const clientQARejectedImages = apiData.map((entry) => entry.Client_QA_RejectedImages);
+        const digiSignImages = apiData.map((entry) => entry.Digi_SignImages);
+
+        // Construct datasets
+        const datasets = [
+          { label: "Scanned Images", data: scannedImages },
+          { label: "QC Images", data: qcImages },
+          { label: "Flagging Images", data: flaggingImages },
+          { label: "Indexing Images", data: indexingImages },
+          { label: "CBSL QA Images", data: cbslQAImages },
+          { label: "Export PDF Images", data: exportPdfImages },
+          { label: "Client QA Accepted Images", data: clientQAAcceptedImages },
+          { label: "Client QA Rejected Images", data: clientQARejectedImages },
+          { label: "Digi Sign Images", data: digiSignImages }
+        ];
+
+        setAllWeekImage({
+          labels: labels,
+          datasets: datasets,
         });
-    };
-    const fetchExportCsvFile = () => {
-      // Construct the API URL with multiple location names
-      const apiUrl = locationName
-        ? `${API_URL}/csv?${locationName
-          .map((name) => `locationName=${name}`)
-          .join("&")}`
-        : `${API_URL}/csv`;
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+  const fetchExportCsvFile = () => {
+    // Construct the API URL with multiple location names
+    const apiUrl = locationName
+      ? `${API_URL}/csv?${locationName
+        .map((name) => `locationName=${name}`)
+        .join("&")}`
+      : `${API_URL}/csv`;
 
-      axios
-        .get(apiUrl, { responseType: "blob" })
-        .then((response) => {
-          const blob = new Blob([response.data], { type: "text/csv" });
-          const url = window.URL.createObjectURL(blob);
-          setCsv(url);
-          console.log("CSV");
-        })
-        .catch((error) => {
-          console.error("Error in exporting data:", error);
-        });
-    };
-    const fetchGraphImageData = (selectedLocations) => {
+    axios
+      .get(apiUrl, { responseType: "blob" })
+      .then((response) => {
+        const blob = new Blob([response.data], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        setCsv(url);
+       
+      })
+      .catch((error) => {
+        console.error("Error in exporting data:", error);
+      });
+  };
+ 
+
+
+  const fetchGraphImageData = async (queryParams) => {
+    try {
       let apiUrl = `${API_URL}/graph2`;
 
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationname=${encodeURIComponent(location)}`)
-          .join("&");
+      // Extract locations from queryParams if they exist
+      const locations = queryParams?.locationNames
+        ? queryParams.locationNames.split(',')
+        : [];
+
+      if (locations.length > 0) {
+        const locationQuery = locations
+          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+          .join('&');
         apiUrl += `?${locationQuery}`;
       }
 
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
-          console.log("Api Data", apiData);
-          const labels = Object.keys(apiData[0]).filter(
-            (label) => label !== "locationid" && label !== "LocationName"
-          );
-          const datasets = apiData.map((locationData) => {
-            return {
-              label: "Images",
-              data: labels.map((label) => locationData[label]),
-              backgroundColor: "#ad33ff", // Change the background color here
-            };
-          });
-          setBarImage({
-            labels: labels,
-            datasets: datasets,
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    const fetchTodayGraphFileData = () => {
-      let apiUrl = `${API_URL}/graph7`;
+    
 
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationname=${encodeURIComponent(location)}`)
-          .join("&");
-        apiUrl += `?${locationQuery}`;
+      const response = await axios.get(apiUrl);
+      const apiData = response.data;
+
+    
+      if (!apiData || apiData.length === 0) {
+        console.error("No image data received from the API");
+        return;
       }
 
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
+      const labels = Object.keys(apiData[0]).filter(
+        label => label !== "locationid" && label !== "LocationName"
+      );
 
-          const labels = Object.keys(apiData[0]).filter(
-            (label) => label !== "locationid" && label !== "LocationName"
-          );
-          const datasets = apiData.map((locationData) => {
-            return {
-              label: "Files",
-              data: labels.map((label) => locationData[label]),
-              backgroundColor: "#ad33ff", // Change the background color here
-            };
-          });
+      const datasets = apiData.map(locationData => ({
+        label: locationData.LocationName || "Images",
+        data: labels.map(label => locationData[label]),
+        backgroundColor: "#ad33ff",
+      }));
 
-          setTodayFile({
-            labels: labels,
-            datasets: datasets,
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    const fetchTodayGraphImageData = () => {
-      let apiUrl = `${API_URL}/graph8`;
+      setBarImage({
+        labels: labels,
+        datasets: datasets,
+      });
 
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationname=${encodeURIComponent(location)}`)
-          .join("&");
-        apiUrl += `?${locationQuery}`;
-      }
+    } catch (error) {
+      console.error("Error in fetchGraphImageData:", {
+        message: error.message,
+        response: error.response?.data,
+        config: error.config
+      });
+    }
+  };
+  const fetchTodayGraphFileData = () => {
+    let apiUrl = `${API_URL}/graph7`;
 
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
+    if (selectedLocations && selectedLocations.length > 0) {
+      const locationQuery = selectedLocations
+        .map((location) => `locationname=${encodeURIComponent(location)}`)
+        .join("&");
+      apiUrl += `?${locationQuery}`;
+    }
 
-          const labels = Object.keys(apiData[0]).filter(
-            (label) => label !== "locationid" && label !== "LocationName"
-          );
-          const datasets = apiData.map((locationData) => {
-            return {
-              label: "Images",
-              data: labels.map((label) => locationData[label]),
-              backgroundColor: "#ad33ff", // Change the background color here
-            };
-          });
-
-          setTodayImage({
-            labels: labels,
-            datasets: datasets,
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    const fetchWeekImageGraphData = async () => {
-      try {
-        const params = {
-          params: {
-            locationNames: selectedLocations,
-          },
-        };
-        const response = await axios.get(`${API_URL}/graph6`, params);
+    axios
+      .get(apiUrl)
+      .then((response) => {
         const apiData = response.data;
+        if (!apiData || apiData.length === 0) {
+          console.error("No data received from the API");
+          return;
+        }
 
-        if (Array.isArray(apiData)) {
-          setWeekImage(apiData);
-        } else {
-          console.error("Unexpected data format for weekImage:", apiData);
-        }
-      } catch (error) {
-        console.error("Error fetching weekImage data:", error);
-      }
-    };
-    const fetchWeekFileGraphData = async () => {
-      try {
-        const params = { params: { locationNames: selectedLocations } };
-        const response = await axios.get(`${API_URL}/graph5`, params);
+        const labels = Object.keys(apiData[0]).filter(
+          (label) => label !== "locationid" && label !== "LocationName"
+        );
+        const datasets = apiData.map((locationData) => {
+          return {
+            label: "Files",
+            data: labels.map((label) => locationData[label]),
+            backgroundColor: "#ad33ff", // Change the background color here
+          };
+        });
+
+        setTodayFile({
+          labels: labels,
+          datasets: datasets,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+  const fetchTodayGraphImageData = () => {
+    let apiUrl = `${API_URL}/graph8`;
+
+    if (selectedLocations && selectedLocations.length > 0) {
+      const locationQuery = selectedLocations
+        .map((location) => `locationname=${encodeURIComponent(location)}`)
+        .join("&");
+      apiUrl += `?${locationQuery}`;
+    }
+
+    axios
+      .get(apiUrl)
+      .then((response) => {
         const apiData = response.data;
-        if (Array.isArray(apiData)) {
-          setWeekFile(apiData);
-        } else {
-          console.error("Unexpected data format for weekFile:", apiData);
+        if (!apiData || apiData.length === 0) {
+          console.error("No data received from the API");
+          return;
         }
-      } catch (error) {
-        console.error("Error fetching weekFile data:", error);
-      }
-    };
-    const fetchMonthImageGraphData = () => {
+
+        const labels = Object.keys(apiData[0]).filter(
+          (label) => label !== "locationid" && label !== "LocationName"
+        );
+        const datasets = apiData.map((locationData) => {
+          return {
+            label: "Images",
+            data: labels.map((label) => locationData[label]),
+            backgroundColor: "#ad33ff", // Change the background color here
+          };
+        });
+
+        setTodayImage({
+          labels: labels,
+          datasets: datasets,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+  const fetchWeekImageGraphData = async () => {
+    try {
       const params = {
         params: {
-          locationNames: selectedLocations, // Assuming selectedLocations is an array of location names
+          locationNames: selectedLocations,
         },
       };
-      axios
-        .get(`${API_URL}/graphmonth`, params)
-        .then((response) => {
-          const apiData = response.data;
-          const labels = apiData.map((item) => item["scandate"]);
-          const data = apiData.map((item) => item["Scanned No Of Images"]);
-          console.log("lables", labels);
-          console.log("images", data);
-          setMonthImage({
-            labels: labels.filter((label) => label !== "id"),
-            datasets: [
-              {
-                ...monthImage.datasets[0],
-                data: data,
-              },
-            ],
-          });
-          console.log("Monthly  data fetch", monthImage);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    const fetchCivilCaseGraphData = () => {
-      let apiUrl = `${API_URL}/civil`;
+      const response = await axios.get(`${API_URL}/graph6`, params);
+      const apiData = response.data;
 
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationname=${encodeURIComponent(location)}`)
-          .join("&");
-        apiUrl += `?${locationQuery}`;
+      if (Array.isArray(apiData)) {
+        setWeekImage(apiData);
+      } else {
+        console.error("Unexpected data format for weekImage:", apiData);
       }
-
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          console.log("Civil case", apiData);
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
-
-          const labels = Object.keys(apiData[0]);
-          const data = Object.values(apiData[0]);
-          console.log("Labels:", labels);
-          console.log("Data:", data);
-          setCivilCase({
-            labels: labels.filter((label) => label !== "id"),
-            datasets: [
-              {
-                ...civilCase.datasets[0],
-                data: data,
-              },
-            ],
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    const fetchCriminalCaseGraphData = () => {
-      let apiUrl = `${API_URL}/criminal`;
-
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationname=${encodeURIComponent(location)}`)
-          .join("&");
-        apiUrl += `?${locationQuery}`;
+    } catch (error) {
+      console.error("Error fetching weekImage data:", error);
+    }
+  };
+  const fetchWeekFileGraphData = async () => {
+    try {
+      const params = { params: { locationNames: selectedLocations } };
+      const response = await axios.get(`${API_URL}/graph5`, params);
+      const apiData = response.data;
+      if (Array.isArray(apiData)) {
+        setWeekFile(apiData);
+      } else {
+        console.error("Unexpected data format for weekFile:", apiData);
       }
-
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          console.log("Civil case", apiData);
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
-
-          const labels = Object.keys(apiData[0]);
-          const data = Object.values(apiData[0]);
-          console.log("Labels:", labels);
-          console.log("Data:", data);
-          setCriminalCase({
-            labels: labels.filter((label) => label !== "id"),
-            datasets: [
-              {
-                ...criminalCase.datasets[0],
-                data: data,
-              },
-            ],
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+    } catch (error) {
+      console.error("Error fetching weekFile data:", error);
+    }
+  };
+  const fetchMonthImageGraphData = () => {
+    const params = {
+      params: {
+        locationNames: selectedLocations, // Assuming selectedLocations is an array of location names
+      },
     };
-    const fetchAllYesGraphImageData = (selectedLocations) => {
+    axios
+      .get(`${API_URL}/graphmonth`, params)
+      .then((response) => {
+        const apiData = response.data;
+        const labels = apiData.map((item) => item["scandate"]);
+        const data = apiData.map((item) => item["Scanned No Of Images"]);
+      
+        setMonthImage({
+          labels: labels.filter((label) => label !== "id"),
+          datasets: [
+            {
+              ...monthImage.datasets[0],
+              data: data,
+            },
+          ],
+        });
+      
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+  const fetchCivilCaseGraphData = () => {
+    let apiUrl = `${API_URL}/civil`;
+
+    if (selectedLocations && selectedLocations.length > 0) {
+      const locationQuery = selectedLocations
+        .map((location) => `locationname=${encodeURIComponent(location)}`)
+        .join("&");
+      apiUrl += `?${locationQuery}`;
+    }
+
+    axios
+      .get(apiUrl)
+      .then((response) => {
+        const apiData = response.data;
+       
+        if (!apiData || apiData.length === 0) {
+          console.error("No data received from the API");
+          return;
+        }
+
+        const labels = Object.keys(apiData[0]);
+        const data = Object.values(apiData[0]);
+     
+        setCivilCase({
+          labels: labels.filter((label) => label !== "id"),
+          datasets: [
+            {
+              ...civilCase.datasets[0],
+              data: data,
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+  const fetchCriminalCaseGraphData = () => {
+    let apiUrl = `${API_URL}/criminal`;
+
+    if (selectedLocations && selectedLocations.length > 0) {
+      const locationQuery = selectedLocations
+        .map((location) => `locationname=${encodeURIComponent(location)}`)
+        .join("&");
+      apiUrl += `?${locationQuery}`;
+    }
+
+    axios
+      .get(apiUrl)
+      .then((response) => {
+        const apiData = response.data;
+       
+        if (!apiData || apiData.length === 0) {
+          console.error("No data received from the API");
+          return;
+        }
+
+        const labels = Object.keys(apiData[0]);
+        const data = Object.values(apiData[0]);
+      
+        setCriminalCase({
+          labels: labels.filter((label) => label !== "id"),
+          datasets: [
+            {
+              ...criminalCase.datasets[0],
+              data: data,
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  const fetchAllYesGraphImageData = async (queryParams) => {
+    try {
       let apiUrl = `${API_URL}/graph9`;
 
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationname=${encodeURIComponent(location)}`)
-          .join("&");
+      // Extract locations from queryParams if they exist
+      const locations = queryParams?.locationNames
+        ? queryParams.locationNames.split(',')
+        : [];
+
+      if (locations.length > 0) {
+        const locationQuery = locations
+          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+          .join('&');
         apiUrl += `?${locationQuery}`;
       }
 
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
+      const response = await axios.get(apiUrl);
+      const apiData = response.data;
 
-          const labels = apiData.map((item) => item["Location Name"]);
-          const data = apiData.map((item) => item["Images"]);
+     
 
-          console.log("TodayLabels:", labels);
-          console.log("TodayData:", data);
+      if (!apiData || apiData.length === 0) {
+        console.error("No data received from the API");
+        return;
+      }
 
-          setAllLocationYesImage({
-            labels: labels,
-            datasets: [
-              {
-                label: "Images",
-                data: data,
-                backgroundColor: "#02B2AF", // Set the background color
-              },
-            ],
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    const fetchAllGraphImageData = (selectedLocations) => {
+      const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
+      const data = apiData.map(item => item["Images"] || 0);
+
+
+      setAllLocationYesImage({
+        labels: labels,
+        datasets: [{
+          label: "Images",
+          data: data,
+          backgroundColor: "#02B2AF",
+        }],
+      });
+
+    } catch (error) {
+      console.error("Error in fetchAllYesGraphImageData:", {
+        message: error.message,
+        response: error.response?.data,
+        config: error.config
+      });
+    }
+  };
+
+  const fetchAllGraphImageData = async (queryParams) => {
+    try {
       let apiUrl = `${API_URL}/graph10`;
 
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationname=${encodeURIComponent(location)}`)
-          .join("&");
+      // Extract locations from queryParams if they exist
+      const locations = queryParams?.locationNames
+        ? queryParams.locationNames.split(',')
+        : [];
+
+      if (locations.length > 0) {
+        const locationQuery = locations
+          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+          .join('&');
         apiUrl += `?${locationQuery}`;
       }
 
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          const apiData = response.data;
-          if (!apiData || apiData.length === 0) {
-            console.error("No data received from the API");
-            return;
-          }
-          const labels = apiData.map((item) => item["Location Name"]);
-          const data = apiData.map((item) => item["Images"]);
-          console.log("TodayLabels:", labels);
-          console.log("TodayData:", data);
-          setAllLocationImage({
-            labels: labels,
-            datasets: [
-              {
-                label: "Images",
-                data: data,
-                backgroundColor: "#02B2AF",
-              },
-            ],
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    const fetchTableData = () => {
-      let apiUrl = `${API_URL}/tabularData`;
+     
 
-      if (selectedLocations && selectedLocations.length > 0) {
-        const locationQuery = selectedLocations
-          .map((location) => `locationName=${encodeURIComponent(location)}`)
-          .join("&");
-        apiUrl += `?${locationQuery}`;
+      const response = await axios.get(apiUrl);
+      const apiData = response.data;
+
+  
+
+      if (!apiData || apiData.length === 0) {
+        console.error("No data received from the API");
+        return;
       }
-      axios
-        .get(apiUrl)
-        .then((response) => {
+
+      const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
+      const data = apiData.map(item => item["Images"] || 0);
+
+ 
+
+      setAllLocationImage({
+        labels: labels,
+        datasets: [{
+          label: "Images",
+          data: data,
+          backgroundColor: "#02B2AF",
+        }],
+      });
+
+    } catch (error) {
+      console.error("Error in fetchAllGraphImageData:", {
+        message: error.message,
+        response: error.response?.data,
+        config: error.config
+      });
+    }
+  };
+
+ 
+  const fetchTableData = () => {
+    axios
+      .get(`${API_URL}/tabularData`)
+      .then((response) => {
+        // console.log(response.data);
+        let data = response.data;
+        if (selectedLocations.length > 0) {
+         
+          data = data.filter(item =>
+            selectedLocations.includes(item.LocationName)
+          );
+          // console.log(data);
+          setTableData(data);
+        }else{
           setTableData(response.data);
-          console.log("Table Data", response.data); // Log inside the then block
-        })
-        .catch((error) => console.error(error));
-    };
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/7daysimages`, {
-          params: { locationName },
-        });
+        }
+        
+      })
+      .catch((error) => console.error(error));
+  };
+  
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/7daysimages`, {
+        params: { locationName },
+      });
 
-        const data = response.data;
+      const data = response.data;
 
-        // Process data for the chart
-        const dates = data.map((item) => item.date);
-        const scannedImages = data.map((item) => parseInt(item.ScannedImages, 10));
-        const qcImages = data.map((item) => parseInt(item.QCImages, 10));
-        const flaggingImages = data.map((item) => parseInt(item.FlaggingImages, 10));
-        const indexImages = data.map((item) => parseInt(item.IndexImages, 10));
-        const cbslQaImages = data.map((item) => parseInt(item.CBSL_QAImages, 10));
-        const clientQaImages = data.map((item) => parseInt(item.Client_QAImages, 10));
-        const digiSignImages = data.map((item) => parseInt(item.DigiSignImages, 10));
-        // const dmsUploadImages = data.map((item) => parseInt(item.DMSUploadImages, 10));
+      // Process data for the chart
+      const dates = data.map((item) => item.date);
+      const scannedImages = data.map((item) => parseInt(item.ScannedImages, 10));
+      const qcImages = data.map((item) => parseInt(item.QCImages, 10));
+      const flaggingImages = data.map((item) => parseInt(item.FlaggingImages, 10));
+      const indexImages = data.map((item) => parseInt(item.IndexImages, 10));
+      const cbslQaImages = data.map((item) => parseInt(item.CBSL_QAImages, 10));
+      const clientQaImages = data.map((item) => parseInt(item.Client_QAImages, 10));
+      const digiSignImages = data.map((item) => parseInt(item.DigiSignImages, 10));
+      // const dmsUploadImages = data.map((item) => parseInt(item.DMSUploadImages, 10));
 
-        setChartData({
-          series: [
-            { name: "Scanned Images", type: "bar", data: scannedImages, color: "#1E90FF" },
-            { name: "QC Images", type: "bar", data: qcImages, color: "#32CD32" },
-            { name: "Flagging Images", type: "bar", data: flaggingImages, color: "#AC1754" },
-            { name: "Indexing Images", type: "bar", data: indexImages, color: "#4DA1A9" },
-            { name: "CBSL QA Images", type: "bar", data: cbslQaImages, color: "#FF4500" },
-            { name: "Client QA Images", type: "bar", data: clientQaImages, color: "#735557" },
-            { name: "Digi Sign Images", type: "bar", data: digiSignImages, color: "#006A71" },
-            // { name: "DMS Upload Images", type: "bar", data: dmsUploadImages, color: "#E69DB8" },
-            { name: "Scanned Images (Line)", type: "line", data: scannedImages, color: "#1E90FF" },
-            { name: "QC Images (Line)", type: "line", data: qcImages, color: "#32CD32" },
-            { name: "Flagging Images (Line)", type: "line", data: flaggingImages, color: "#AC1754" },
-            { name: "Indexing Images (Line)", type: "line", data: indexImages, color: "#4DA1A9" },
-            { name: "CBSL QA Images (Line)", type: "line", data: cbslQaImages, color: "#FF4500" },
-            { name: "Client QA Images (Line)", type: "line", data: clientQaImages, color: "#735557" },
-            { name: "Digi Sign Images (Line)", type: "line", data: digiSignImages, color: "#006A71" },
-            // { name: "DMS Upload Images (Line)", type: "line", data: dmsUploadImages, color: "#E69DB8" },
-          ],
-          options: {
-            chart: {
-              type: "line",
-              toolbar: { show: true },
-            },
-            stroke: {
-              width: [0, 0, 0, 0, 0,0,0,0, 2, 2, 2, 2, 2,2,2,2], // Line series has width 2, bars have 0
-              curve: "smooth",
-            },
-            xaxis: {
-              categories: dates,
-              title: { text: "Date" },
-            },
-            yaxis: {
-              title: { text: "Images Count" },
-            },
-            plotOptions: {
-              bar: {
-                columnWidth: "50%",
-                dataLabels: { position: "top" },
-              },
-            },
-            dataLabels: {
-              enabled: true,
-              enabledOnSeries: [0, 1, 2, 3, 4,5,6,7], // Only for bar series
-              formatter: (val) => val,
-              offsetY: -10,
-              style: { fontSize: "12px", colors: ["#304758"] },
-            },
-            tooltip: {
-              shared: true,
-              sharedOnSeries: [ 8, 9,10,11,12,13,14,15],
-              intersect: false,
-            },
-            legend: {
-              position: "top",
+      setChartData({
+        series: [
+          { name: "Scanned Images", type: "bar", data: scannedImages, color: "#1E90FF" },
+          { name: "QC Images", type: "bar", data: qcImages, color: "#32CD32" },
+          { name: "Flagging Images", type: "bar", data: flaggingImages, color: "#AC1754" },
+          { name: "Indexing Images", type: "bar", data: indexImages, color: "#4DA1A9" },
+          { name: "CBSL QA Images", type: "bar", data: cbslQaImages, color: "#FF4500" },
+          { name: "Client QA Images", type: "bar", data: clientQaImages, color: "#735557" },
+          { name: "Digi Sign Images", type: "bar", data: digiSignImages, color: "#006A71" },
+          // { name: "DMS Upload Images", type: "bar", data: dmsUploadImages, color: "#E69DB8" },
+          { name: "Scanned Images (Line)", type: "line", data: scannedImages, color: "#1E90FF" },
+          { name: "QC Images (Line)", type: "line", data: qcImages, color: "#32CD32" },
+          { name: "Flagging Images (Line)", type: "line", data: flaggingImages, color: "#AC1754" },
+          { name: "Indexing Images (Line)", type: "line", data: indexImages, color: "#4DA1A9" },
+          { name: "CBSL QA Images (Line)", type: "line", data: cbslQaImages, color: "#FF4500" },
+          { name: "Client QA Images (Line)", type: "line", data: clientQaImages, color: "#735557" },
+          { name: "Digi Sign Images (Line)", type: "line", data: digiSignImages, color: "#006A71" },
+          // { name: "DMS Upload Images (Line)", type: "line", data: dmsUploadImages, color: "#E69DB8" },
+        ],
+        options: {
+          chart: {
+            type: "line",
+            toolbar: { show: true },
+          },
+          stroke: {
+            width: [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2], // Line series has width 2, bars have 0
+            curve: "smooth",
+          },
+          xaxis: {
+            categories: dates,
+            title: { text: "Date" },
+          },
+          yaxis: {
+            title: { text: "Images Count" },
+          },
+          plotOptions: {
+            bar: {
+              columnWidth: "50%",
+              dataLabels: { position: "top" },
             },
           },
-        });
-        
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+          dataLabels: {
+            enabled: true,
+            enabledOnSeries: [0, 1, 2, 3, 4, 5, 6, 7], // Only for bar series
+            formatter: (val) => val,
+            offsetY: -10,
+            style: { fontSize: "12px", colors: ["#304758"] },
+          },
+          tooltip: {
+            shared: true,
+            sharedOnSeries: [8, 9, 10, 11, 12, 13, 14, 15],
+            intersect: false,
+          },
+          legend: {
+            position: "top",
+          },
+        },
+      });
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+
     fetchYesterdayData();
-    fetchData();
     fetchData();
     fetchGraphFileData(locationName);
     fetchGraphImageData(locationName);
@@ -815,7 +953,7 @@ const Dashboard = () => {
     fetchAllWeekImageData(locationName);
     fetchCumulative(locationName);
     fetchLocationData();
-  }, [selectedLocations]);
+  }, []);
   const fetchYesterdayData = async () => {
     try {
       const params = {};
@@ -854,7 +992,7 @@ const Dashboard = () => {
       const response = await axios.get(`${API_URL}/fetch-data-sequential`, { params });
       setCumulative(response.data);
     } catch {
-      console.log("Error fetching cumulative data");
+      console.error("Error fetching cumulative data");
     }
   };
   useEffect(() => {
@@ -863,7 +1001,7 @@ const Dashboard = () => {
         const response = await axios.get(`${API_URL}/mptarget`);
         setTarget(response.data);
       } catch {
-        console.log("Error fetching target data");
+        console.error("Error fetching target data");
       }
     };
     const fetchVendor = async () => {
@@ -871,7 +1009,7 @@ const Dashboard = () => {
         const response = await axios.get(`${API_URL}/vendorName`);
         setVendorName(response.data);
       } catch {
-        console.log("Error fetching target data");
+        console.error("Error fetching target data");
       }
     };
     const fetchData = async () => {
@@ -883,7 +1021,7 @@ const Dashboard = () => {
     fetchVendor();
   }, []);
   const columnSums = calculateColumnSum();
-  console.log("WEEK", weekFile);
+
   const formatChartData = (data, colors) => ({
     options: {
       chart: {
@@ -989,8 +1127,7 @@ const Dashboard = () => {
     const labels = data.map(item => item.scandate);
     const series = data.map(item => parseInt(item.scannedfiles || item.scannedimages, 10));
 
-    console.log('Labels:', labels);
-    console.log('Series:', series);
+   
 
     return {
       options: {
@@ -1169,11 +1306,11 @@ const Dashboard = () => {
   });
   const handleDateChange = (date) => {
     if (date) {
-        // Format to YYYY-MM-DD (removing time)
-        const formattedDate = format(date, "yyyy-MM-dd");
-        setSelectedDate(formattedDate); // Store as a string to avoid timezone issues
+      // Format to YYYY-MM-DD (removing time)
+      const formattedDate = format(date, "yyyy-MM-dd");
+      setSelectedDate(formattedDate); // Store as a string to avoid timezone issues
     }
-};
+  };
   const handleDateFilter = () => {
     if (!selectedVendors && !selectedDate) {
       alert("Please select at least a vendor or a date");
@@ -1193,6 +1330,80 @@ const Dashboard = () => {
       fetchCumulative(selectedLocations);
     }
   };
+
+  const handleReset = async () => {
+
+    setSelectedLocations([]);
+
+  }
+
+  const [lastSearchTime, setLastSearchTime] = useState(null);
+  const [lastSearchParams, setLastSearchParams] = useState(null);
+
+  const handleClick = async () => {
+
+
+    // Prepare current search parameters
+    const currentParams = {
+      locations: selectedLocations.join(","),
+
+    };
+
+    // Check if this is the same as last search
+    if (lastSearchParams && JSON.stringify(lastSearchParams) === JSON.stringify(currentParams)) {
+      toast.info("Same search parameters detected. Please wait before searching again.");
+      return;
+    }
+
+    // Check cooldown period (5 seconds)
+    const now = Date.now();
+
+
+
+    setLastSearchTime(now);
+    setLastSearchParams(currentParams);
+
+    const queryParams = {
+      locationNames: currentParams.locations
+    };
+
+  
+
+
+    try {
+      await Promise.all([
+     
+        fetchYesterdayData(),
+        fetchData(),
+        fetchData(),
+        fetchGraphFileData(queryParams),
+        fetchGraphImageData(queryParams),
+        fetchWeekFileGraphData(queryParams),
+        fetchWeekImageGraphData(queryParams),
+        fetchMonthImageGraphData(queryParams),
+        fetchTodayGraphFileData(queryParams),
+        fetchTodayGraphImageData(queryParams),
+        fetchCivilCaseGraphData(queryParams),
+        fetchCriminalCaseGraphData(queryParams),
+        fetchAllYesGraphImageData(queryParams),
+        fetchAllGraphImageData(queryParams),
+        fetchTableData(),
+        fetchExportCsvFile(),
+        fetchAllWeekImageData(queryParams),
+        fetchCumulative(queryParams),
+      ]);
+      // toast.success("Data loaded successfully");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Error fetching data. Please try again.");
+      // Reset search tracking on error
+      setLastSearchTime(null);
+      setLastSearchParams(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   return (
     <>
@@ -1217,46 +1428,161 @@ const Dashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="row  mt-2  search-report-card">
-              <div className='col-md-6 col-sm-12'>
-                <div className="search-container" ref={dropdownRef} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ flex: 1, position: 'relative' }}>
-                    <input
-                      type="text"
-                      className="search-bar mt-1"
-                      style={{ border: '1px solid #000', padding: '5px', borderRadius: '5px', minHeight: '30px', width: '100%' }}
-                      value={searchInput}
-                      onChange={handleSearchChange}
-                      onClick={() => setShowLocation((prev) => !prev)} // Toggle dropdown on click
-                      placeholder="Search or select a location"
-                    />
-                    {showLocation && (
-                      <div className="location-card" style={{ position: 'absolute', top: '40px', background: '#fff', border: '1px solid #ccc', zIndex: 10, width: '100%' }}>
-                        {filteredLocations.length > 0 ? (
-                          filteredLocations.map((item, index) => (
-                            <p key={index} onClick={() => handleLocation(item.LocationName)} style={{ cursor: 'pointer', padding: '5px' }}>
-                              {item.LocationName}
-                            </p>
-                          ))
-                        ) : (
-                          <p style={{ padding: '5px' }}>No locations found</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
 
-                  {/* Selected Locations on the Right */}
-                  <div className="selected-locations" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+
+         
+            <div
+              className="row mt-2 search-report-card d-flex gap-4 flex-wrap align-items-center"
+              style={{ gap: '24px' }}
+            >
+              <div
+                className="col-sm-3 col-lg-3 d-flex align-items-center gap-3"
+                style={{ position: 'relative', minWidth: '250px' }}
+              >
+                <div
+                  ref={dropdownRef}
+                  className="search-bar"
+                  onClick={() => setShowLocation(true)}
+                  style={{
+                    border: '1px solid #000',
+                    padding: '5px',
+                    borderRadius: '5px',
+                    // minHeight: '30px',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '5px',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    width: '250px',
+                    minWidth: '250px',
+                    maxWidth: '250px',
+                    height: selectedLocations.length >= 2 ? '60px' : 'auto',
+                    overflowY: selectedLocations.length >= 2 ? 'auto' : 'hidden',
+                    overflowX: 'hidden',
+                  }}
+                >
+                  <div>
                     {selectedLocations.map((location, index) => (
-                      <span key={index} className="selected-location" style={{ padding: '5px', border: '1px solid #ccc', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span key={index} className="selected-location">
                         {location}
-                        <button onClick={() => removeLocation(location)} style={{ backgroundColor: 'black', color: 'white', border: 'none', cursor: 'pointer' }}>x</button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeLocation(location);
+                          }}
+                          style={{
+                            backgroundColor: 'black',
+                            color: 'white',
+                            border: 'none',
+                            marginLeft: '5px',
+                            borderRadius: '50%',
+                            width: '18px',
+                            height: '18px',
+                            fontSize: '12px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          ×
+                        </button>
+                        &nbsp;
                       </span>
                     ))}
+                    <input
+                      type="text"
+                      placeholder={selectedLocations.length === 0 ? 'Select Locations...' : ''}
+                      value={locationSearchInput}
+                      onChange={(e) => {
+                        setLocationSearchInput(e.target.value);
+                        setShowLocation(true);
+                      }}
+                      onKeyDown={handleLocationKeyDown}
+                      style={{
+                        border: 'none',
+                        outline: 'none',
+                        width: selectedLocations.length > 0 ? '70px' : '100%',
+                        backgroundColor: 'transparent',
+                        minWidth: '60px',
+                      }}
+                    />
                   </div>
+                  {selectedLocations.length < 1 ? <FaChevronDown style={{ color: 'grey' }} /> : ''}
                 </div>
+
+                {showLocation && (
+                  <div
+                    ref={dropdownMenuRef}
+                    className="location-card"
+                    style={{
+                      position: 'absolute',
+                      zIndex: 1000,
+                      backgroundColor: 'white',
+                      border: '1px solid #ddd',
+                      borderRadius: '4px',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      width: '230px',
+                      maxHeight: '300px',
+                      overflowY: 'auto',
+                      top: '100%',
+                      marginLeft: '1px',
+                      marginTop: '3px',
+                    }}
+                  >
+                    {filteredLocations.map((locationName, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: '8px 12px',
+                          cursor: 'pointer',
+                          borderBottom: '1px solid #eee',
+                          backgroundColor: index === highlightedIndex ? '#f0f0f0' : 'transparent',
+                        }}
+                        onClick={() => {
+                          handleLocation(locationName);
+                          setShowLocation(false);
+                        }}
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                      >
+                        {locationName}
+                      </div>
+                    ))}
+                    {filteredLocations.length === 0 && (
+                      <div style={{ padding: '8px 12px', color: '#999' }}>No locations found</div>
+                    )}
+                  </div>
+                )}
               </div>
-              <div className="col-md-6"></div>
+
+              <div className="col-12 col-md-6 d-flex align-items-center gap-3 flex-nowrap">
+                <button
+                  style={{
+                    backgroundColor: '#4BC0C0',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '5px',
+                    whiteSpace: 'nowrap',
+                  }}
+                  onClick={handleClick}
+                  className="me-2"
+                >
+                  Search
+                </button>
+                <button
+                  style={{
+                    backgroundColor: '#4BC0C0',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '5px',
+                    whiteSpace: 'nowrap',
+                  }}
+                  onClick={handleReset}
+                >
+                  Reset
+                </button>
+              </div>
             </div>
             <div className="row mt-2">
               <div className="card">
@@ -1348,10 +1674,7 @@ const Dashboard = () => {
                     <tbody style={{ color: "gray" }}>
                       {tableData &&
                         tableData.map((elem, index) => {
-                          if (
-                            selectedLocations.length === 0 ||
-                            selectedLocations.includes(elem.LocationName)
-                          ) {
+                        
                             return (
                               <tr key={index}>
                                 <td>{index + 1}</td>
@@ -1367,7 +1690,7 @@ const Dashboard = () => {
 
                               </tr>
                             );
-                          }
+                          
                           return null;
                         })}
 
@@ -1580,7 +1903,7 @@ const Dashboard = () => {
               <div className="col-2">
                 {/* <input type="date" value={selectedDate} onChange={handleDateChange}
                   style={{ height: '40px' }} /> */}
-                  <DatePicker
+                <DatePicker
                   className="date-field"
                   selected={selectedDate}
                   onChange={handleDateChange}

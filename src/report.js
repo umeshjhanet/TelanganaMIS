@@ -12,6 +12,7 @@ import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaChevronDown } from "react-icons/fa";
 
 
 const Report = () => {
@@ -33,7 +34,7 @@ const Report = () => {
   const [reportCsv, setReportCsv] = useState(null);
   const [dateReportCsv, setDateReportCsv] = useState(null);
   const dropdownRef = useRef(null);
-  const filedropdownRef = useRef(null);
+  //  const filedropdownRef = useRef(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showConfirmationBox, setShowConfirmationBox] = useState(false);
   const [showConfirmationBoxDate, setShowConfirmationBoxDate] = useState(false);
@@ -45,6 +46,7 @@ const Report = () => {
   const [inputText, setInputText] = useState("");
   const [locationSearchInput, setLocationSearchInput] = useState("");
   const [fileTypeSearchInput, setFileTypeSearchInput] = useState("");
+  const [locations, setLocations] = useState();
 
 
   useEffect(() => {
@@ -63,31 +65,209 @@ const Report = () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+  // Add a new state for tracking highlighted index in dropdown
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+  // Filtered locations based on search input
+  const filteredLocations = locations?.filter(item =>
+    item.toLowerCase().includes(locationSearchInput.toLowerCase())
+  ) || [];
+
+  // Add this ref for the dropdown menu
+
+  const handleLocationKeyDown = (e) => {
+    if (!showLocation) {
+      setShowLocation(true);
+      return;
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex(prev => {
+          const newIndex = prev < filteredLocations.length - 1 ? prev + 1 : prev;
+
+          // Scroll to ensure the highlighted item is visible
+          if (dropdownMenuRef.current && newIndex !== prev) {
+            const highlightedElement = dropdownMenuRef.current.children[newIndex];
+            if (highlightedElement) {
+              highlightedElement.scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth'
+              });
+            }
+          }
+
+          return newIndex;
+        });
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex(prev => {
+          const newIndex = prev > 0 ? prev - 1 : -1;
+
+          // Scroll to ensure the highlighted item is visible
+          if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
+            const highlightedElement = dropdownMenuRef.current.children[newIndex];
+            if (highlightedElement) {
+              highlightedElement.scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth'
+              });
+            }
+          }
+
+          return newIndex;
+        });
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (filteredLocations.length === 1) {
+          handleLocation(filteredLocations[0]);
+          setHighlightedIndex(-1);
+          return;
+        }
+        if (highlightedIndex >= 0 && filteredLocations[highlightedIndex]) {
+          handleLocation(filteredLocations[highlightedIndex]);
+          setHighlightedIndex(-1);
+        }
+        break;
+      case 'Backspace':
+        if (locationSearchInput === '' && selectedLocations.length > 0) {
+          removeLocation(selectedLocations[selectedLocations.length - 1]);
+        }
+        break;
+      case 'Escape':
+        setShowLocation(false);
+        setHighlightedIndex(-1);
+        break;
+      default:
+        break;
+    }
+  };
+
+
+  // const handleFileKeyDown = (e) => {
+
+  // }
+
 
   const handleLocation = (locationName) => {
     if (!selectedLocations.includes(locationName)) {
       setSelectedLocations([...selectedLocations, locationName]);
       setSearchInput("");
     }
-    setShowLocation(false); // Close the dropdown when a location is selected
+    setLocationSearchInput("");
+    setShowLocation(false);
+    setHighlightedIndex(-1);
   };
   const removeLocation = (locationName) => {
     setSelectedLocations(
       selectedLocations.filter((loc) => loc !== locationName)
     );
   };
+
+
+  const filedropdownRef = useRef(null);
+  const dropdownMenuRef = useRef(null);
+
+  const filteredFileTypes =
+    fileType && Array.isArray(fileType)
+      ? fileType.filter(item =>
+        item.filetype.toLowerCase().includes(fileTypeSearchInput.toLowerCase())
+      )
+      : [];
+
+
   const handleFileType = (fileType) => {
     if (!selectedFileTypes.includes(fileType)) {
       setSelectedFileTypes([...selectedFileTypes, fileType]);
-      setSearchInput("");
+      setFileTypeSearchInput("");
     }
-    setShowFileType(false); // Close the dropdown when a FileType is selected
+    setShowFileType(false);
+    setHighlightedIndex(-1);
   };
+
   const removeFileType = (fileType) => {
     setSelectedFileTypes(
-      selectedFileTypes.filter((loc) => loc !== fileType)
+      selectedFileTypes.filter((ft) => ft !== fileType)
     );
   };
+
+  const handleFileKeyDown = (e) => {
+    if (!showFileType) {
+      setShowFileType(true);
+      return;
+    }
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setHighlightedIndex((prev) => {
+          const newIndex = prev < filteredFileTypes.length - 1 ? prev + 1 : prev;
+
+          if (dropdownMenuRef.current && newIndex !== prev) {
+            const highlightedElement =
+              dropdownMenuRef.current.children[newIndex];
+            if (highlightedElement) {
+              highlightedElement.scrollIntoView({
+                block: "nearest",
+                behavior: "smooth",
+              });
+            }
+          }
+
+          return newIndex;
+        });
+        break;
+
+      case "ArrowUp":
+        e.preventDefault();
+        setHighlightedIndex((prev) => {
+          const newIndex = prev > 0 ? prev - 1 : -1;
+
+          if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
+            const highlightedElement =
+              dropdownMenuRef.current.children[newIndex];
+            if (highlightedElement) {
+              highlightedElement.scrollIntoView({
+                block: "nearest",
+                behavior: "smooth",
+              });
+            }
+          }
+
+          return newIndex;
+        });
+        break;
+
+      case "Enter":
+        e.preventDefault();
+        if (filteredFileTypes.length === 1) {
+          handleFileType(filteredFileTypes[0].filetype);
+          return;
+        }
+        if (highlightedIndex >= 0 && filteredFileTypes[highlightedIndex]) {
+          handleFileType(filteredFileTypes[highlightedIndex].filetype);
+        }
+        break;
+
+      case "Backspace":
+        if (fileTypeSearchInput === "" && selectedFileTypes.length > 0) {
+          removeFileType(selectedFileTypes[selectedFileTypes.length - 1]);
+        }
+        break;
+
+      case "Escape":
+        setShowFileType(false);
+        setHighlightedIndex(-1);
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const handleExport = () => {
     setShowDropdown(!showDropdown);
   };
@@ -133,35 +313,6 @@ const Report = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const summaryData = async () => {
-    try {
-      const queryParams = {};
-
-      // Optional: Fetch user info from localStorage
-      const userLog = JSON.parse(localStorage.getItem('user'));
-      if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-        // Set locationName from userLog if it exists and conditions are met
-        queryParams.locationName = userLog.locations[0].name;
-      }
-      else if (selectedLocations) {
-        queryParams.locationName = selectedLocations;
-      }
-
-      if (startDate && endDate) {
-        queryParams.startDate = formatDate(startDate);
-        queryParams.endDate = formatDate(endDate);
-      }
-      if (fileType) {
-        queryParams.fileType = selectedFileTypes;
-      }
-
-      const response = await axios.get(`${API_URL}/summary`, { params: queryParams });
-      setSummary(response.data);
-    } catch (error) {
-      console.error("Error fetching summary data:", error);
-      // Handle error state or display error message to user
-    }
-  };
   const fetchReportData = async () => {
     try {
       let apiUrl = `${API_URL}/reportTable`;
@@ -170,7 +321,7 @@ const Report = () => {
       const userLog = JSON.parse(localStorage.getItem('user'));
 
       if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-        // Set locationName from userLog if it exists and conditions are met
+
         queryParams.locationName = userLog.locations[0].name;
       }
       else if (selectedLocations) {
@@ -185,12 +336,11 @@ const Report = () => {
         queryParams.fileType = selectedFileTypes;
       }
 
-      console.log("API URL:", apiUrl); // Log the constructed API URL
-      console.log("Query Params:", queryParams); // Log query parameters
+
 
       setIsLoading(true);
       const response = await axios.get(apiUrl, { params: queryParams });
-      console.log("API Response:", response.data); // Log the API response
+
       setReport(response.data);
       setIsLoading(false);
       updateTotalLocations(response.data);
@@ -219,18 +369,35 @@ const Report = () => {
         queryParams.fileType = selectedFileTypes;
       }
 
-      console.log("API URL:", apiUrl); // Log the constructed API URL
-      console.log("Query Params:", queryParams); // Log query parameters
+
 
       setIsLoading(true);
       const response = await axios.get(apiUrl, { params: queryParams });
-      console.log("API Response:", response.data); // Log the API response
+
       setDateReport(response.data);
       setIsLoading(false);
       updateTotalLocations(response.data);
     } catch (error) {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
+      setIsLoading(false);
+    }
+  };
+  const fetchLocation = async () => {
+    try {
+      let apiUrl = `${API_URL}/locations`;
+      setIsLoading(true);
+      const response = await axios.get(apiUrl);
+
+      // Extract just the LocationName values
+      const locationNames = response.data.map(item => item.LocationName);
+
+      setLocations(locationNames);
+      setIsLoading(false);
+      updateTotalLocations(locationNames);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+      setError("Error fetching locations. Please try again.");
       setIsLoading(false);
     }
   };
@@ -249,8 +416,8 @@ const Report = () => {
         .catch(error => console.error(error));
       setIsLoading(false);
     }
-
-    summaryData();
+    fetchLocation();
+    // summaryData();
     fetchReportData();
     if (startDate && endDate) {
       fetchDateReportData();
@@ -261,7 +428,7 @@ const Report = () => {
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
     setTotalLocations(uniqueLocations.length);
-    console.log("Total locations number", totalLocations);
+
   };
   const Loader = () => (
     <div className="loader-overlay">
@@ -276,8 +443,8 @@ const Report = () => {
     'ScannedImages',
     'QCFiles',
     'QCImages',
-    'FlaggingFiles',
-    'FlaggingImages',
+    // 'FlaggingFiles',
+    // 'FlaggingImages',
     'IndexingFiles',
     'IndexingImages',
     'CBSL_QAFiles',
@@ -286,6 +453,8 @@ const Report = () => {
     'Export_PdfImages',
     'Client_QAFiles',
     'Client_QAImages',
+    'Digi_SignFiles',
+    'Digi_SignImages',
     'InventoryFiles',
     'InventoryImages'
   ];
@@ -492,6 +661,30 @@ const Report = () => {
       return '';
     }
   }
+
+  const summaryRow = {
+    TotalLocation: report ? report.length : 0,
+    CollectionFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.CollectionFiles) || 0, 0) : 0,
+    CollectionImages: report ? report.reduce((sum, elem) => sum + Number(elem?.CollectionImages) || 0, 0) : 0,
+    ScannedFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.ScannedFiles) || 0, 0) : 0,
+    ScannedImages: report ? report.reduce((sum, elem) => sum + Number(elem?.ScannedImages) || 0, 0) : 0,
+    QCFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.QCFiles) || 0, 0) : 0,
+    QCImages: report ? report.reduce((sum, elem) => sum + Number(elem?.QCImages) || 0, 0) : 0,
+    IndexingFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.IndexingFiles) || 0, 0) : 0,
+    IndexingImages: report ? report.reduce((sum, elem) => sum + Number(elem?.IndexingImages) || 0, 0) : 0,
+    CBSL_QAFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.CBSL_QAFiles) || 0, 0) : 0,
+    CBSL_QAImages: report ? report.reduce((sum, elem) => sum + Number(elem?.CBSL_QAImages) || 0, 0) : 0,
+    Client_QAFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.Client_QAFiles) || 0, 0) : 0,
+    Client_QAImages: report ? report.reduce((sum, elem) => sum + Number(elem?.Client_QAImages) || 0, 0) : 0,
+    Export_PdfFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.Export_PdfFiles) || 0, 0) : 0,
+    Export_PdfImages: report ? report.reduce((sum, elem) => sum + Number(elem?.Export_PdfImages) || 0, 0) : 0,
+    Digi_SignFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.Digi_SignFiles) || 0, 0) : 0,
+    Digi_SignImages: report ? report.reduce((sum, elem) => sum + Number(elem?.Digi_SignImages) || 0, 0) : 0,
+    InventoryFiles: report ? report.reduce((sum, elem) => sum + Number(elem?.InventoryFiles) || 0, 0) : 0,
+    InventoryImages: report ? report.reduce((sum, elem) => sum + Number(elem?.InventoryImages) || 0, 0) : 0,
+
+  };
+
   const fileDateTableHeaders = [
     'locationName',
     'Date',
@@ -539,46 +732,51 @@ const Report = () => {
     }
     setShowConfirmationBoxDate(false);
   }
-  // const handleClick = async () => {
-  //   setIsLoading(true); // ✅ Show loader before starting API calls
-
-  //   const queryParams = {};
-  //   if (selectedLocations.length > 0) {
-  //     queryParams.locationName = selectedLocations.join(",");
-  //   }
-  //   if (selectedFileTypes.length > 0) {
-  //     queryParams.filetype = selectedFileTypes.join(",");
-  //   }
-  //   if (startDate && endDate) {
-  //     queryParams.startDate = formatDate(startDate);
-  //     queryParams.endDate = formatDate(endDate);
-  //   }
-
-  //   console.log("Final API Params:", queryParams); // Debugging
-
-  //   try {
-  //     await Promise.all([
-  //       summaryData(queryParams),
-  //       fetchReportData(queryParams),
-  //       fetchDateReportData(queryParams),
-  //     ]);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   } finally {
-  //     setIsLoading(false); // ✅ Hide loader after all API calls complete
-  //   }
-  // };
+  const [lastSearchTime, setLastSearchTime] = useState(null);
+  const [lastSearchParams, setLastSearchParams] = useState(null);
 
   const handleClick = async () => {
 
-    if (!startDate || !endDate) {
-      toast.error("Please select both StartDate and EndDate before searching.");
+
+    // Validate date selection (if either start or end date is selected)
+    if (startDate || endDate) {
+      if (!startDate) {
+        toast.error("Please select Start Date");
+        return;
+      }
+      if (!endDate) {
+        toast.error("Please select End Date");
+        return;
+      }
+      if (startDate > endDate) {
+        toast.error("End Date cannot be before Start Date");
+        return;
+      }
+    }
+
+    // setIsLoading(true); // show loader
+
+    const queryParams = {};
+
+    const currentParams = {
+      locations: selectedLocations.join(","),
+      fileType: selectedFileTypes.join(","),
+      startDate: startDate ? formatDate(startDate) : null,
+      endDate: endDate ? formatDate(endDate) : null
+    };
+    //Check if this is the same as last search
+    if (lastSearchParams && JSON.stringify(lastSearchParams) === JSON.stringify(currentParams)) {
+      toast.info("Same search parameters detected. Please wait before searching again.");
       return;
     }
 
-    setIsLoading(true); // show loader
+    // Check cooldown period (5 seconds)
+    const now = Date.now();
 
-    const queryParams = {};
+
+
+    setLastSearchTime(now);
+    setLastSearchParams(currentParams);
 
     queryParams.locationName = selectedLocations.join(",");
     queryParams.filetype = selectedFileTypes.join(",");
@@ -588,16 +786,20 @@ const Report = () => {
       queryParams.endDate = formatDate(endDate);
     }
 
-    console.log("Final API Params:", queryParams); // Debug
+
 
     try {
       await Promise.all([
-        summaryData(queryParams),
+        // summaryData(queryParams),
         fetchReportData(queryParams),
         fetchDateReportData(queryParams),
       ]);
     } catch (error) {
       console.error("Error fetching data:", error);
+      toast.error("Error fetching data. Please try again.");
+      // Reset search tracking on error
+      setLastSearchTime(null);
+      setLastSearchParams(null);
     } finally {
       setIsLoading(false); // hide loader
     }
@@ -625,74 +827,7 @@ const Report = () => {
               </div>
             </div>
             <div className="row mt-2 me-1 search-report-card" >
-              {/* <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
-                <div
-
-                  ref={dropdownRef}
-                  className="search-bar"
-                  style={{
-                    border: "1px solid #000",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    minHeight: "30px",
-                  }}
-
-                  contentEditable={true}
-                  onClick={() => setShowLocation(!showLocation)}
-                  onInput={(e) => {
-                  const text = e.currentTarget.textContent;
-                  setInputText(text);
-                  setShowLocation(true); // show dropdown while typing
-              }}
-                  onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                  e.preventDefault();
-                  }
-                }}
-                >
-                  {selectedLocations.length === 0 && !showLocation && (
-                    <span className="placeholder-text">Search Locations...</span>
-                  )}
-                  {selectedLocations.map((location, index) => (
-                    <span key={index} className="selected-location">
-                      {location}
-                      <button
-                        onClick={() => removeLocation(location)}
-                        style={{
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                          marginLeft: "5px",
-                        }}
-                      >
-                        x
-                      </button>
-                      &nbsp;
-                    </span>
-                  ))}
-                  <span style={{ minWidth: "5px", display: "inline-block" }}>
-                    &#8203;
-                  </span>
-                </div>
-                {showLocation && (
-                  <>
-                    <div className="location-card">
-                      {report &&
-                        report.map((item, index) => (
-                          <div key={index}>
-                            <p
-                              onClick={() => handleLocation(item.LocationName)}
-                            >
-                              {item.LocationName}
-                            </p>
-                          </div>
-                        ))}
-                    </div>
-                  </>
-                )}
-              </div> */}
-
-              <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
+              <div className="col-lg-3 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
                 <div
                   ref={dropdownRef}
                   className="search-bar"
@@ -701,125 +836,123 @@ const Report = () => {
                     padding: "5px",
                     borderRadius: "5px",
                     minHeight: "30px",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    position: "relative",
+                    width: "242px"
                   }}
                   onClick={() => setShowLocation(true)}
                 >
-                  {selectedLocations.length === 0 && (
-                    <input
-                      type="text"
-                      placeholder="Search Locations..."
-                      value={locationSearchInput}
-                      onChange={(e) => {
-                        setLocationSearchInput(e.target.value);
-                        setShowLocation(true);
-                      }}
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        width: "100%",
-                        backgroundColor: "transparent",
-                      }}
-                    />
-                  )}
                   {selectedLocations.map((location, index) => (
-                    <span key={index} className="selected-location">
+                    <span key={index} className="selected-location" style={{ backgroundColor: "#f1ececff", padding: "5px", borderRadius: "5px", margin: "2px", display: "inline-block" }}>
                       {location}
                       <button
-                        onClick={() => removeLocation(location)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeLocation(location);
+                        }}
                         style={{
                           backgroundColor: "black",
                           color: "white",
                           border: "none",
                           marginLeft: "5px",
+                          borderRadius: "50%",
+
+                          width: "18px",
+                          height: "18px",
+                          fontSize: "12px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center"
                         }}
                       >
-                        x
+                        ×
                       </button>
                       &nbsp;
                     </span>
                   ))}
+
+                  <input
+                    type="text"
+                    placeholder={selectedLocations.length === 0 ? "Search Locations..." : ""}
+                    value={locationSearchInput}
+                    onChange={(e) => {
+                      setLocationSearchInput(e.target.value);
+                      setShowLocation(true);
+                    }}
+                    onKeyDown={handleLocationKeyDown}
+                    style={{
+                      border: "none",
+                      outline: "none",
+                      width: "100%",
+                      backgroundColor: "transparent",
+                      minWidth: "60px",
+                      flex: 1,
+                      paddingRight: "25px" // Add padding to prevent text overlapping the icon
+                    }}
+                  />
+
+                  {/* FaChevronDown icon with fixed position */}
+                  <FaChevronDown
+                    style={{
+                      color: 'grey',
+                      position: 'absolute',
+                      right: '8px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      pointerEvents: 'none' // Makes the icon non-interactive
+                    }}
+                  />
                 </div>
+
                 {showLocation && (
-                  <div className="location-card">
-                    {report
-                      ?.filter(item =>
-                        item.LocationName.toLowerCase().includes(locationSearchInput.toLowerCase())
-                      )
-                      .map((item, index) => (
-                        <div key={index}>
-                          <p onClick={() => handleLocation(item.LocationName)}>
-                            {item.LocationName}
-                          </p>
-                        </div>
-                      ))}
+
+                  <div
+                    ref={dropdownMenuRef}
+                    className="location-card"
+                    style={{
+                      position: 'absolute',
+                      zIndex: 1000,
+                      backgroundColor: 'white',
+                      border: '1px solid #ddd',
+                      borderRadius: '4px',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      width: '230px',
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      top: '100%',
+                      marginLeft: '1px',
+                      marginTop: '3px',
+
+                    }}
+                  >
+
+                    {filteredLocations.map((location, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: '8px 12px',
+                          cursor: 'pointer',
+                          borderBottom: '1px solid #eee',
+                          backgroundColor: index === highlightedIndex ? '#f0f0f0' : 'transparent',
+                        }}
+                        onClick={() => handleLocation(location)}
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                      >
+                        {location}
+                      </div>
+                    ))}
+                    {filteredLocations.length === 0 && (
+                      <div style={{ padding: '8px 12px', color: '#999' }}>
+                        No locations found
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
 
-              {/* <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
-                <div
-                  ref={filedropdownRef}
-                  className="search-bar"
-                  style={{
-                    border: "1px solid #000",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    minHeight: "30px",
-                  }}
 
-                  contentEditable={true}
-                  onClick={() => setShowFileType(!showFileType)}
-                  onInput={(e) => {
-                  const text = e.currentTarget.textContent;
-                  setInputText(text);
-                  setShowFileType(true); // show dropdown while typing
-              }}
-                   onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                  e.preventDefault();
-                  }
-                }}
-                >
-                  {selectedFileTypes.length === 0 && !showFileType && (
-                    <span className="placeholder-text">Search File Type...</span>
-                  )}
-                  {selectedFileTypes.map((FileType, index) => (
-                    <span key={index} className="selected-location">
-                      {FileType}
-                      <button
-                        onClick={() => removeFileType(FileType)}
-                        style={{
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                          marginLeft: "5px",
-                        }}
-                      >
-                        x
-                      </button>
-                      &nbsp;
-                    </span>
-                  ))}
-                  <span style={{ minWidth: "5px", display: "inline-block" }}>
-                    &#8203;
-                  </span>
-                </div>
-                {showFileType && (
-                  <div className="location-card">
-                    {Array.isArray(fileType) && fileType.length > 0 ? (
-                      fileType.map((item, index) => (
-                        <div key={index}>
-                          <p onClick={() => handleFileType(item.filetype)}>
-                            {item.filetype}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p>No file types available</p>
-                    )}
-                  </div>
-                )}
-              </div> */}
 
               <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
                 <div
@@ -830,93 +963,123 @@ const Report = () => {
                     padding: "5px",
                     borderRadius: "5px",
                     minHeight: "30px",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    position: "relative"
                   }}
                   onClick={() => setShowFileType(true)}
                 >
-                  {selectedFileTypes.length === 0 && (
-                    <input
-                      type="text"
-                      placeholder="Search File Type..."
-                      value={fileTypeSearchInput}
-                      onChange={(e) => {
-                        setFileTypeSearchInput(e.target.value);
-                        setShowFileType(true);
-                      }}
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        width: "100%",
-                        backgroundColor: "transparent",
-                      }}
-                    />
-                  )}
+
+
                   {selectedFileTypes.map((fileType, index) => (
-                    <span key={index} className="selected-location">
+                    <span
+                      key={index}
+                      className="selected-location"
+                      style={{
+                        backgroundColor: '#f1ececff',
+                        padding: '5px',
+                        borderRadius: '5px',
+                        margin: '2px',
+                        display: 'inline-block',
+
+                      }}
+                    >
                       {fileType}
                       <button
-                        onClick={() => removeFileType(fileType)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFileType(fileType);
+                        }}
                         style={{
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                          marginLeft: "5px",
+                          backgroundColor: 'black',
+                          color: 'white',
+                          border: 'none',
+                          marginLeft: '5px',
+                          borderRadius: '50%',
+                          width: '18px',
+                          height: '18px',
+                          fontSize: '12px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
                         }}
                       >
-                        x
+                        ×
                       </button>
                       &nbsp;
                     </span>
                   ))}
+
+                  <input
+                    type="text"
+                    placeholder={selectedFileTypes.length === 0 ? "Search File Type..." : ""}
+                    value={fileTypeSearchInput}
+                    onChange={(e) => {
+                      setFileTypeSearchInput(e.target.value);
+                      setShowFileType(true);
+                    }}
+                    onKeyDown={handleFileKeyDown}
+                    style={{
+                      border: "none",
+                      outline: "none",
+                      width: "100%",
+                      backgroundColor: "transparent",
+                      minWidth: "60px",
+                      flex: 1,
+                      paddingRight: "25px"
+                    }}
+                  />
                 </div>
+
+
+
                 {showFileType && (
-                  <div className="location-card">
-                    {Array.isArray(fileType) && fileType.length > 0 ? (
-                      fileType
-                        .filter(item =>
-                          item.filetype.toLowerCase().includes(fileTypeSearchInput.toLowerCase())
-                        )
-                        .map((item, index) => (
-                          <div key={index}>
-                            <p onClick={() => handleFileType(item.filetype)}>
-                              {item.filetype}
-                            </p>
-                          </div>
-                        ))
+                  <div
+                    className="location-card"
+                    ref={dropdownMenuRef}
+                    style={{
+                      position: "absolute",
+                      width: "242px",
+                      backgroundColor: "white",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      minHeight: "170px",
+                      overflowY: "auto",
+                      zIndex: 1000,
+                      marginTop: "2px",
+                      boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+                      maxHeight: "200px"
+
+                    }}
+                  >
+                    {filteredFileTypes.length > 0 ? (
+                      filteredFileTypes.map((item, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            padding: "8px 12px",
+                            cursor: "pointer",
+                            borderBottom: "1px solid #eee",
+                            backgroundColor:
+                              index === highlightedIndex ? "#f0f0f0" : "transparent",
+                          }}
+                          onClick={() => handleFileType(item.filetype)}
+                          onMouseEnter={() => setHighlightedIndex(index)}
+                        >
+                          {item.filetype}
+                        </div>
+                      ))
                     ) : (
-                      <p>No file types available</p>
+                      <div style={{ padding: "8px 12px", color: "#999" }}>
+                        No file types available
+                      </div>
                     )}
                   </div>
                 )}
               </div>
 
-              {/* <div className="col-lg-4 col-md-8 col-sm-12" >
-                <DatePicker
-                  className="date-field"
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="Start Date"
-                />
-                <button
-                  className="btn ms-1 me-1"
-                  style={{
-                    height: "40px",
-                    backgroundColor: "#4BC0C0",
-                    marginBottom: "5px",
-                    borderRadius: "0px",
-                    color: 'white',
-                  }}
-                >
-                  To
-                </button>
-                <DatePicker
-                  className="date-field"
-                  selected={endDate}
-                  onChange={(date) => setEndDate(date)}
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="End Date"
-                />
-              </div> */}
               <div className="col-lg-4 col-md-8 col-sm-12 d-flex flex-wrap ">
                 <DatePicker
                   className="date-field"
@@ -924,6 +1087,24 @@ const Report = () => {
                   onChange={(date) => setStartDate(date)}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="Start Date"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+
+
+                  popperProps={{
+                    modifiers: [
+                      {
+                        name: 'preventOverflow',
+                        options: {
+                          rootBoundary: 'viewport',
+                          tether: false,
+                          altAxis: true,
+                        },
+                      },
+                    ],
+                  }}
+                  popperClassName="compact-picker"
                 />
                 <button
                   className="btn ms-1 me-1"
@@ -931,7 +1112,7 @@ const Report = () => {
                     height: "40px",
                     backgroundColor: "#4BC0C0",
                     marginBottom: "3px",
-                    marginTop:"1px",
+                    marginTop: "1px",
                     borderRadius: "0px",
                     color: 'white',
                   }}
@@ -944,6 +1125,24 @@ const Report = () => {
                   onChange={(date) => setEndDate(date)}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="End Date"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+
+
+                  popperProps={{
+                    modifiers: [
+                      {
+                        name: 'preventOverflow',
+                        options: {
+                          rootBoundary: 'viewport',
+                          tether: false,
+                          altAxis: true,
+                        },
+                      },
+                    ],
+                  }}
+                  popperClassName="compact-picker"
                 />
               </div>
 
@@ -967,7 +1166,7 @@ const Report = () => {
                 <div className="col-2">
                   <h6 style={{ color: "white", cursor: "pointer" }} onClick={() => setShowDropdown(!showDropdown)}>
                     <MdFileDownload style={{ fontSize: "20px" }} />
-                    Export CSV
+                    Export
                   </h6>
 
                 </div>
@@ -985,7 +1184,7 @@ const Report = () => {
                     <div className="confirmation-content">
                       <p className="fw-bold">Are you sure you want to export the {exportFormat.toUpperCase()} file?</p>
                       <button className="btn btn-success mt-3 ms-5" onClick={() => {
-                        downloadAllFormatsSummary(summary, fileSummaryHeaders);
+                        downloadAllFormatsSummary([summaryRow], fileSummaryHeaders);
                       }}>Yes</button>
                       <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
                     </div>
@@ -995,461 +1194,218 @@ const Report = () => {
 
               <div className="main-summary-card ">
                 <div className="row">
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div className="col-lg-2 col-md-4 col-sm-6" key={index}>
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                                  Coll. of Records
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles).toLocaleString()}
-                                <br />
-                                Images: {isNaN(parseInt(elem.CollectionImages)) ? 0 : parseInt(elem.CollectionImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                                Coll. of Records
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.CollectionFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.CollectionImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
-                          </div>
+                  {
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
+                            Coll. of Records
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
 
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  Scanning ADF
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles).toLocaleString()}
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.CollectionFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
 
-                                <br />
-                                Images: {isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Scanning ADF
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.ScannedFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.ScannedImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.CollectionImages) || 0, 0)).toLocaleString('en-IN')}
+                        </p>
+                      </div>
+                    </div>
 
-                          </div>
+                  }
+
+                  {
+
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 style={{ textTransform: "capitalize" }}>
+                            Scanning ADF
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  Image QC
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles).toLocaleString()}
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
 
-                                <br />
-                                Images: {isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Image QC
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.QCFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.QCImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
 
-                          </div>
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.ScannedFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
+
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.ScannedImages) || 0, 0)).toLocaleString('en-IN')}
+                        </p>
+
+                      </div>
+                    </div>
+
+                  }
+                  {
+
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 style={{ textTransform: "capitalize" }}>
+                            Image QC
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                                  Doc Classification
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles).toLocaleString()}
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
 
-                                <br />
-                                Images: {isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                                Doc Classification
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.FlaggingFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.FlaggingImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.QCFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.QCImages) || 0, 0)).toLocaleString('en-IN')}
+                        </p>
 
-                          </div>
+                      </div>
+                    </div>
+
+                  }
+                  {
+
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
+                            Doc Classification
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  Indexing
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles).toLocaleString()}
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
 
-                                <br />
-                                Images: {isNaN(parseInt(elem.IndexingImages)) ? 0 : parseInt(elem.IndexingImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Indexing
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.IndexingFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.IndexingImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
 
-                          </div>
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.FlaggingFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.FlaggingImages) || 0, 0)).toLocaleString('en-IN')}
+                        </p>
+
+                      </div>
+                    </div>
+
+                  }
+                  {
+
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 style={{ textTransform: "capitalize" }}>
+                            Indexing
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  CBSL QA
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles).toLocaleString()}
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
 
-                                <br />
-                                Images: {isNaN(parseInt(elem.CBSL_QAImages)) ? 0 : parseInt(elem.CBSL_QAImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                CBSL QA
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.CBSL_QAFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.CBSL_QAImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.IndexingFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.IndexingImages) || 0, 0)).toLocaleString('en-IN')}
 
-                          </div>
+                        </p>
+
+                      </div>
+                    </div>
+
+                  }
+                  {
+
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 style={{ textTransform: "capitalize" }}>
+                            CBSL QA
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  Client QA
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.Client_QAFiles)) ? 0 : parseInt(elem.Client_QAFiles).toLocaleString()}
-                                <br />
-                                Images: {isNaN(parseInt(elem.Client_QAImages)) ? 0 : parseInt(elem.Client_QAImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Client QA
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Client_QAFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Client_QAImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
 
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.CBSL_QAFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.CBSL_QAImages) || 0, 0)).toLocaleString('en-IN')}
 
-                          </div>
+                        </p>
+
+                      </div>
+                    </div>
+
+                  }
+                  {
+
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 style={{ textTransform: "capitalize" }}>
+                            Client QA
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  Export PDF
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles).toLocaleString()}
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
 
-                                <br />
-                                Images: {isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Export PDF
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Export_PdfFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Export_PdfImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Client_QAFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Client_QAImages) || 0, 0)).toLocaleString('en-IN')}
 
-                          </div>
+                        </p>
+
+
+                      </div>
+                    </div>
+
+                  }
+                  {
+
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 style={{ textTransform: "capitalize" }}>
+                            Export PDF
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
 
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  Digi Sign
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {isNaN(parseInt(elem.Digi_SignFiles)) ? 0 : parseInt(elem.Digi_SignFiles).toLocaleString()}
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Export_PdfFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Export_PdfImages) || 0, 0)).toLocaleString('en-IN')}
+                        </p>
 
-                                <br />
-                                Images: {isNaN(parseInt(elem.Digi_SignImages)) ? 0 : parseInt(elem.Digi_SignImages).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Digi Sign
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Digi_SignFiles) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Digi_SignImages) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
+                      </div>
+                    </div>
 
-                          </div>
+                  }
+
+                  {
+
+                    <div className="col-lg-2 col-md-4 col-sm-6">
+                      <div className="summary-card mt-3">
+                        <div className="summary-title">
+                          <h6 style={{ textTransform: "capitalize" }}>
+                            Digi Sign
+                          </h6>
                         </div>
-                      )}
-                    </>
-                  )}
-                  {summary && (
-                    <>
-                      {selectedLocations.length === 0 ? (
-                        summary.map((elem, index) => (
-                          <div
-                            className="col-lg-2 col-md-4 col-sm-6"
-                            key={index}
-                          >
+                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
+
+                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Digi_SignFiles) || 0, 0)).toLocaleString('en-IN')}
+                          <br />
+                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Digi_SignImages) || 0, 0)).toLocaleString('en-IN')}
+                        </p>
+
+                      </div>
+                    </div>
+
+                  }
+                  {
+                    summary && (
+                      <>
+                        {selectedLocations.length === 0 ? (
+                          summary.map((elem, index) => (
+                            <div
+                              className="col-lg-2 col-md-4 col-sm-6"
+                              key={index}
+                            >
+                              <div className="summary-card mt-3">
+                                <div className="summary-title">
+                                  <h6 style={{ textTransform: "capitalize" }}>
+                                    Inventory Out
+                                  </h6>
+                                </div>
+                                <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
+                                  Files: {elem.Inv_Out_Files} <br />
+                                  Images: {elem.Inv_Out_Images}
+                                </p>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-lg-2 col-md-4 col-sm-6">
                             <div className="summary-card mt-3">
                               <div className="summary-title">
                                 <h6 style={{ textTransform: "capitalize" }}>
@@ -1457,38 +1413,23 @@ const Report = () => {
                                 </h6>
                               </div>
                               <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files: {elem.Inv_Out_Files} <br />
-                                Images: {elem.Inv_Out_Images}
+                                Files:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find((elem) => elem.LocationName === location);
+                                  return acc + (locationData ? parseInt(locationData.Inv_Out_Files) || 0 : 0);
+                                }, 0).toLocaleString()}
+                                <br />
+                                Images:{" "}
+                                {selectedLocations.reduce((acc, location) => {
+                                  const locationData = report.find((elem) => elem.LocationName === location);
+                                  return acc + (locationData ? parseInt(locationData.Inv_Out_Images) || 0 : 0);
+                                }, 0).toLocaleString()}
                               </p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-lg-2 col-md-4 col-sm-6">
-                          <div className="summary-card mt-3">
-                            <div className="summary-title">
-                              <h6 style={{ textTransform: "capitalize" }}>
-                                Inventory Out
-                              </h6>
-                            </div>
-                            <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                              Files:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Inv_Out_Files) || 0 : 0);
-                              }, 0).toLocaleString()}
-                              <br />
-                              Images:{" "}
-                              {selectedLocations.reduce((acc, location) => {
-                                const locationData = report.find((elem) => elem.LocationName === location);
-                                return acc + (locationData ? parseInt(locationData.Inv_Out_Images) || 0 : 0);
-                              }, 0).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+                        )}
+                      </>
+                    )}
                 </div>
               </div>
             </div>
@@ -1511,7 +1452,7 @@ const Report = () => {
                     <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleReportCsv}>
                       {" "}
                       <MdFileDownload style={{ fontSize: "20px" }} />
-                      Export CSV
+                      Export
                     </h6>
 
                   </div>
@@ -1586,149 +1527,63 @@ const Report = () => {
                       style={{ color: "#4bc0c0", height: "80px" }}
                     >
                       {report &&
-                        report.map((elem, index) => {
-                          if (
-                            selectedLocations.length === 0 ||
-                            selectedLocations.includes(elem.LocationName)
-                          ) {
-                            return (
-                              <tr key={index} style={{ backgroundColor: "white" }}>
-                                <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>
-                                <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.IndexingFiles)) ? "0" : parseInt(elem.IndexingFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.IndexingImages)) ? "0" : parseInt(elem.IndexingImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.CBSL_QAFiles)) ? "0" : parseInt(elem.CBSL_QAFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Client_QAFiles)) ? "0" : parseInt(elem.Client_QAFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Client_QAImages)) ? "0" : parseInt(elem.Client_QAImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Digi_SignFiles)) ? "0" : parseInt(elem.Digi_SignFiles).toLocaleString()}</td>
-                                <td>{isNaN(parseInt(elem.Digi_SignImages)) ? "0" : parseInt(elem.Digi_SignImages).toLocaleString()}</td>
-                                <td>0</td>
-                                <td>0</td>
-                              </tr>
-                            );
-                          }
-                          return null;
-                        })}
+                        report.map((elem, index) =>
+                        // {
+                        // if (
+                        //   selectedLocations.length === 0 ||
+                        //   selectedLocations.includes(elem.LocationName)
+                        // ) {
+                        //   return 
+                        (
+                          <tr key={index} style={{ backgroundColor: "white" }}>
+                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>
+                            <td>{isNaN(parseInt(elem.CollectionFiles)) ? "0" : parseInt(elem.CollectionFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CollectionImages)) ? "0" : parseInt(elem.CollectionImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.QCImages)) ? "0" : parseInt(elem.QCImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.FlaggingFiles)) ? "0" : parseInt(elem.FlaggingFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.FlaggingImages)) ? "0" : parseInt(elem.FlaggingImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.IndexingFiles)) ? "0" : parseInt(elem.IndexingFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.IndexingImages)) ? "0" : parseInt(elem.IndexingImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CBSL_QAFiles)) ? "0" : parseInt(elem.CBSL_QAFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.CBSL_QAImages)) ? "0" : parseInt(elem.CBSL_QAImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Client_QAFiles)) ? "0" : parseInt(elem.Client_QAFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Client_QAImages)) ? "0" : parseInt(elem.Client_QAImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Digi_SignFiles)) ? "0" : parseInt(elem.Digi_SignFiles).toLocaleString()}</td>
+                            <td>{isNaN(parseInt(elem.Digi_SignImages)) ? "0" : parseInt(elem.Digi_SignImages).toLocaleString()}</td>
+                            <td>0</td>
+                            <td>0</td>
+                          </tr>
+                        ))
+                      }
+                      {/* //   return null;
+                        // })} */}
                       <tr style={{ backgroundColor: "#f1f1f1", fontWeight: "bold" }}>
                         <td style={{ textAlign: "left" }}>Total</td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CollectionFiles)) ? 0 : parseInt(elem.CollectionFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CollectionImages)) ? 0 : parseInt(elem.CollectionImages)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.ScannedFiles)) ? 0 : parseInt(elem.ScannedFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.ScannedImages)) ? 0 : parseInt(elem.ScannedImages)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.QCFiles)) ? 0 : parseInt(elem.QCFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.QCImages)) ? 0 : parseInt(elem.QCImages)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.FlaggingFiles)) ? 0 : parseInt(elem.FlaggingFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.FlaggingImages)) ? 0 : parseInt(elem.FlaggingImages)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.IndexingFiles)) ? 0 : parseInt(elem.IndexingFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.IndexingImages)) ? 0 : parseInt(elem.IndexingImages)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CBSL_QAFiles)) ? 0 : parseInt(elem.CBSL_QAFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.CBSL_QAImages)) ? 0 : parseInt(elem.CBSL_QAImages)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Client_QAFiles)) ? 0 : parseInt(elem.Client_QAFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Client_QAImages)) ? 0 : parseInt(elem.Client_QAImages)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Digi_SignFiles)) ? 0 : parseInt(elem.Digi_SignFiles)), 0)
-                            .toLocaleString()}
-                        </td>
-                        <td>
-                          {report && report
-                            .filter(elem => selectedLocations.length === 0 || selectedLocations.includes(elem.LocationName))
-                            .reduce((sum, elem) => sum + (isNaN(parseInt(elem.Digi_SignImages)) ? 0 : parseInt(elem.Digi_SignImages)), 0)
-                            .toLocaleString()}
-                        </td>
+
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.CollectionFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.CollectionImages) || 0, 0)).toLocaleString('en-IN')}</td>
+
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.ScannedFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.ScannedImages) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.QCFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.QCImages) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.FlaggingFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.FlaggingImages) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.IndexingFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.IndexingImages) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.CBSL_QAFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.CBSL_QAImages) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.Client_QAFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.Client_QAImages) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.Export_PdfFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.Export_PdfImages) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.Digi_SignFiles) || 0, 0)).toLocaleString('en-IN')}</td>
+                        <td>{Number(report?.reduce((sum, elem) => sum + Number(elem?.Digi_SignImages) || 0, 0)).toLocaleString('en-IN')}</td>
                         <td>0</td>
                         <td>0</td>
                       </tr>
@@ -1759,7 +1614,7 @@ const Report = () => {
                         <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleDateReportCsv}>
                           {" "}
                           <MdFileDownload style={{ fontSize: "20px" }} />
-                          Export CSV
+                          Export
                         </h6>
                       </div>
 
@@ -1853,8 +1708,10 @@ const Report = () => {
                                     <td>{isNaN(parseInt(elem.Client_QCImages)) ? "0" : parseInt(elem.Client_QCImages).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
-                                    <td>{isNaN(parseInt(elem.Digi_SignFiles)) ? "0" : parseInt(elem.Digi_SignFiles).toLocaleString()}</td>
-                                    <td>{isNaN(parseInt(elem.Digi_SignImages)) ? "0" : parseInt(elem.Digi_SignImages).toLocaleString()}</td>
+                                    {/* <td>{isNaN(parseInt(elem.Digi_SignFiles)) ? "0" : parseInt(elem.Digi_SignFiles).toLocaleString()}</td>
+                                    <td>{isNaN(parseInt(elem.Digi_SignImages)) ? "0" : parseInt(elem.Digi_SignImages).toLocaleString()}</td> */}
+                                    <td>{Number(elem?.Digi_SignFiles) ? Number(elem.Digi_SignFiles).toLocaleString('en-IN') : '0'}</td>
+                                    <td>{Number(elem?.Digi_SignImages) ? Number(elem.Digi_SignImages).toLocaleString('en-IN') : '0'}</td>
                                     <td>0</td>
                                     <td>0</td>
                                   </tr>

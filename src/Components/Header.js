@@ -33,7 +33,7 @@ const Header = () => {
 
   // Retrieve user info from local storage
   const userLog = JSON.parse(localStorage.getItem('user'));
-  // console.log("User's Info", userLog);
+
 
   const handleReportDropdown = () => {
     setShowReportDropdown(!showReportDropdown);
@@ -60,21 +60,7 @@ const Header = () => {
   };
 
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/user_master`);
-        setUser(response.data);
-
-        // Log the entire response data to inspect its structure
-        console.log('Response Data:', response.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUser();
-  }, []);
+  
 
   const adminUser = () => {
     return (
@@ -271,18 +257,7 @@ const Header = () => {
                     <hr />
                   </>
                 )}
-                {/* <div className='row' onClick={handleActiveTab}>
-                  <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
-                </div>
-                <div className='row' onClick={handleActiveTab}>
-                  <Link to='/ClientDPR' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client DPR</Link>
-                </div>
-                <div className='row' onClick={handleActiveTab}>
-                  <Link to='/follow_up_report' className='ms-1' style={{ color: 'black', textDecoration: 'none' }}><MdNote style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Follow Ups</Link>
-                </div>
-                <div className='row mt-1' onClick={handleActiveTab}>
-                  <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
-                </div> */}
+                
               </div>
             </div>
           }
@@ -380,14 +355,7 @@ const Header = () => {
                 <div className='row'>
                   <Link to='/file' style={{ ...isActive('/file') }}><BsCloudyFill style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Last Upload File</Link>
                 </div>
-                {/* {showMasterDropdown && (
-                <>
-                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Group Manager<br /></Link><br />
-                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />User Role<br /></Link><br />
-                  <Link to='/User_Form' className='ms-4' style={{ color: 'black', textDecoration: 'none', marginTop: '20px' }}><BsFillCloudArrowUpFill style={{ marginRight: '10px' }} />Add User<br /></Link><br />
-                  <Link to='/User_List' className='ms-4' style={{ color: 'black', textDecoration: 'none' }}><BsCloudyFill style={{ marginRight: '10px' }} />User List<br /></Link><br />
-                </>
-              )} */}
+                
               </div>
             </div>
           }
@@ -791,18 +759,7 @@ const Header = () => {
                         <MdReport style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client View
                       </a>
                     </div>
-                    {/* <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
-                    </div>
-                    <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/ClientDPR' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client DPR</Link>
-                    </div>
-                    <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/follow_up_report' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdMessage style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Follow Ups</Link>
-                    </div>
-                    <div className='row mt-1' onClick={handleActiveTab}>
-                      <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
-                    </div> */}
+                   
                   </div>
                 </div>
                 <div className='col-10' style={{ paddingRight: '0px', paddingLeft: '0px' }}></div>
@@ -864,18 +821,7 @@ const Header = () => {
                     <MdReport style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client View
                   </a>
                 </div>
-                {/* <div className='row mt-1' onClick={handleActiveTab}>
-                  <Link to='/DPRReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />DPR Report</Link>
-                </div>
-                <div className='row mt-1' onClick={handleActiveTab}>
-                  <Link to='/ClientDPR' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Client DPR</Link>
-                </div>
-                <div className='row mt-1' onClick={handleActiveTab}>
-                  <Link to='/follow_up_report' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdMessage style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Follow Ups</Link>
-                </div>
-                <div className='row mt-1' onClick={handleActiveTab}>
-                  <Link to='/CostingReport' className='ms-1' style={{ color: 'black', textDecoration: 'none', cursor: 'pointer' }}><MdBarChart style={{ marginRight: '10px', fontSize: '20px', color: '#107393' }} />Costing Report</Link>
-                </div> */}
+              
               </div>
             </div>
           }
@@ -1026,40 +972,7 @@ const Header = () => {
     )
   }
 
-  // const externalClient = () => {
-  //   return (
-  //     <>
-  //       <div className='d-none d-xl-block d-lg-block d-md-none d-sm-none'>
-  //         <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-  //           <div className="container-fluid" >
-  //             <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-  //               <img src='logo.png' />
-  //             </div>
-  //             <div className="collapse navbar-collapse" id="navbarSupportedContent">
-  //               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-  //               </ul>
-  //               <form className="d-flex">
-  //                 <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-  //               </form>
-  //             </div>
-  //           </div>
-  //         </nav>
-  //       </div>
-  //       <div className='d-block d-xl-none d-lg-none d-md-block d-sm-block'>
-  //         <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#4BC0C0' }}>
-  //           <div className="container-fluid" >
-  //             <div className='row header-image' style={{ boxShadow: '0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02)', width: '200px' }}>
-  //               <img src='logo.png' />
-  //             </div>
-  //             <form className="d-flex">
-  //               <button onClick={handleLogout} className="btn logout-btn" style={{ color: 'white', marginTop: '4px' }}><IoLogOut style={{ color: 'white', fontSize: '30px', marginRight: '10px' }} />LOGOUT</button>
-  //             </form>
-  //           </div>
-  //         </nav>
-  //       </div>
-  //     </>
-  //   )
-  // }
+
   const roleComponents = {
     Admin: adminUser,
     "Server Database Monitoring": serverUser,

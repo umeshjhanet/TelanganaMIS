@@ -57,14 +57,14 @@ const MIS_Form = () => {
         .then(respsone => respsone.json())
         .then(data => setLocation(data))
         .catch(error => console.error(error))
-      console.log("Locations", location);
+      
     }
     const ManagerData = () => {
       fetch(`${API_URL}/getmanager`)
         .then(respsone => respsone.json())
         .then(data => setManager(data))
         .catch(error => console.error(error))
-      console.log("Manager", manager);
+      
     }
     const designationData = () => {
       fetch(`${API_URL}/designations`)
@@ -77,7 +77,7 @@ const MIS_Form = () => {
         .then(respsone => respsone.json())
         .then(data => setUsermaster(data))
         .catch(error => console.error(error))
-      console.log("Designations", usermaster);
+      
     }
    
     const fetchManpowerData = async () => {
@@ -165,7 +165,7 @@ const MIS_Form = () => {
   }
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value); // Log the name and value to verify
+  
     setFormData({ ...formData, [name]: value });
     setNewData({ ...newData, [name]: value });
   };
@@ -225,7 +225,7 @@ const MIS_Form = () => {
   const handleFileUpload = (e) => {
     setExcelData(e.target.files[0]);
   };
-  console.log("IDs",selectedPHId,selectedPMId,selectedLocationId );
+  
   return (
     <>
       <Header />

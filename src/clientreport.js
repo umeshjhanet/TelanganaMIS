@@ -64,8 +64,7 @@ const Locationwisereport = () => {
         locations.length === 1 &&
         locations[0].id === null &&
         locations[0].name === null;
-    console.log('locations:', locations); // Debugging to confirm structure
-    console.log('isEmptyLocations:', isEmptyLocations);
+   
     const [barImage, setBarImage] = useState({
         labels: [],
         datasets: [
@@ -284,7 +283,7 @@ const Locationwisereport = () => {
                         (response) => response.data
                     );
                     setLocationData(locationData);
-                    console.log("agra", locationData);
+                 
                     setIsLoading(false);
                 } catch (error) {
                     console.error("Error fetching location data:", error);
@@ -309,7 +308,7 @@ const Locationwisereport = () => {
                     const blob = new Blob([response.data], { type: "text/csv" });
                     const url = window.URL.createObjectURL(blob);
                     setCsv(url);
-                    console.log("CSV");
+                  
                 })
                 .catch((error) => {
                     console.error("Error in exporting data:", error);
@@ -334,8 +333,7 @@ const Locationwisereport = () => {
                         console.error("No data received from the API");
                         return;
                     }
-                    console.log("Api Data", apiData);
-
+                  
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
@@ -391,7 +389,7 @@ const Locationwisereport = () => {
                         return;
                     }
 
-                    console.log("API Data:", apiData);
+               
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -444,8 +442,7 @@ const Locationwisereport = () => {
                         console.error("No data received from the API");
                         return;
                     }
-                    console.log("Api Data", apiData);
-
+                  
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
 
@@ -501,7 +498,7 @@ const Locationwisereport = () => {
                         return;
                     }
 
-                    console.log("API Data:", apiData);
+                   
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -540,7 +537,7 @@ const Locationwisereport = () => {
                 .get(`${API_URL}/tabularData`)
                 .then((response) => {
                     setTableData(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                  
                 })
                 .catch((error) => console.error(error));
         };
@@ -557,7 +554,7 @@ const Locationwisereport = () => {
                 .get(`${API_URL}/statusDetails`, { params }) // Include params in the request
                 .then((response) => {
                     setStatusDetails(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+
                 })
                 .catch((error) => console.error(error));
         };
@@ -573,7 +570,7 @@ const Locationwisereport = () => {
                     params.locationname = selectedLocations.join(","); // Convert array to comma-separated values
                 }
 
-                console.log("Fetching data with params:", params);
+              
 
                 const response = await axios.get(`${API_URL}/cumulative-status-images`, { params });
 
@@ -618,7 +615,7 @@ const Locationwisereport = () => {
                 const cbslqaData = last30Days.map(item => item.offeredForQA);
                 const clientData = last30Days.map(item => item.clientQADone);
 
-                console.log("Processed Chart Data:", { dates, scannedData, qcData, flaggingData, indexData, cbslqaData, clientData });
+               
 
                 // Update chart data
                 setChartData(prevData => ({
@@ -660,7 +657,7 @@ const Locationwisereport = () => {
                 .get(`${API_URL}/Table`, { params })
                 .then((response) => {
                     setReport(response.data);
-                    console.log("Table Data", response.data);
+                 
                 })
                 .catch((error) => console.error(error));
         };
@@ -678,7 +675,7 @@ const Locationwisereport = () => {
                 .get(`${API_URL}/yesterday-table`, { params })
                 .then((response) => {
                     setYesterdayReport(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                  
                 })
                 .catch((error) => console.error(error));
         };
@@ -709,13 +706,7 @@ const Locationwisereport = () => {
                     const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
                     const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
 
-                    console.log("Yesterday Labels:", labels);
-                    console.log("Scanned Images:", imagesData);
-                    console.log("QC Images:", qcImagesData);
-                    console.log("Flagging Images:", flaggingImagesData);
-                    console.log("Indexing Images:", indexingImagesData);
-                    console.log("CBSL QA Images:", cbslQaImagesData);
-                    console.log("Client QA Images:", clientQaImagesData);
+                 
 
                     setAllLocationYesImage({
                         labels: labels,
@@ -784,14 +775,7 @@ const Locationwisereport = () => {
                     const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
                     const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
 
-                    console.log("Labels:", labels);
-                    console.log("Images Data:", imagesData);
-                    console.log("QC Images Data:", qcImagesData);
-                    console.log("Flagging Images Data:", flaggingImagesData);
-                    console.log("Indexing Images Data:", indexingImagesData);
-                    console.log("CBSL QA Images Data:", cbslQaImagesData);
-                    console.log("Client QA Images Data:", clientQaImagesData);
-
+                  
                     setAllLocationImage({
                         labels: labels,
                         datasets: [
@@ -841,7 +825,7 @@ const Locationwisereport = () => {
                 .get(`${API_URL}/getcumulativeremarks`, { params })
                 .then((response) => {
                     setCardCumulative(response.data);
-                    console.log("cumulativeRemarks Data", response.data);
+                   
                 })
                 .catch((error) => console.error(error));
         };
@@ -855,7 +839,7 @@ const Locationwisereport = () => {
                 .get(`${API_URL}/getdailyremarks`, { params })
                 .then((response) => {
                     setCardCumulative(response.data);
-                    console.log("dailyRemarks Data", response.data);
+                  
                 })
                 .catch((error) => console.error(error));
         };
@@ -884,7 +868,7 @@ const Locationwisereport = () => {
         navigate('/');
     }
     // Log the content of allLocationImage before passing it to the BarChart component
-    console.log("allLocationImage content:", allLocationImage);
+   
     const formatProcessChartData = (data, colors = ["#02B2AF", "#02B2AF", "#FF6384", "#FF6384", "#4335A7",
         "#4335A7", "#FF9D23", "#FF9D23", "#5CB338", "#5CB338", "#9966FF", "#9966FF",]) => ({
             options: {

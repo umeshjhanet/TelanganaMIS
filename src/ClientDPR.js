@@ -32,7 +32,7 @@ const ClientDPR = () => {
                 let apiUrl = `${API_URL}/clientreporttable`;
                 setIsLoading(true);
                 const response = await axios.get(apiUrl);
-                console.log("API Response:", response.data); // Log the API response
+             
                 setTableData(response.data);
                 setIsLoading(false);
             } catch (error) {
@@ -53,8 +53,7 @@ const ClientDPR = () => {
                     );
                     const data = apiData.map((item) => item["ScannedImages"]);
 
-                    console.log("Labels (dates only):", labels);
-                    console.log("Images:", data);
+                  
 
                     setMonthImage({
                         labels: labels.filter((label) => label !== "id"),

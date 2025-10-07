@@ -20,6 +20,7 @@ const User_List = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const [userIdToEdit, setUserIdToEdit] = useState(null);
+  const [filteredUsers, setFilteredUsers] = useState([]); // State for filtered users
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -48,7 +49,7 @@ const User_List = () => {
         `${API_URL}/createuserdelete/${user_id}`
       );
       setUser(user.filter((elem) => elem.user_id !== user_id));
-      console.log("User Deleted:", response.data);
+    
       setShowConfirmation(false);
     } catch (error) {
       console.error("There was an error in deleting data!", error);
@@ -81,10 +82,12 @@ const User_List = () => {
       axios
         .get(`${API_URL}/user_master`)
         .then((response) => {setUser(response.data)
+          setFilteredUsers(response.data); 
           setIsLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
+
           setIsLoading(false);
         });
     };
@@ -99,8 +102,7 @@ const User_List = () => {
             map[location.LocationID] = location.LocationName;
           });
 
-          console.log("Locations map:", map);
-          console.log(response.data);
+         
           setLocationsMap(map);
           setIsLoading(false);
         })
@@ -115,11 +117,11 @@ const User_List = () => {
   }, []);
 
 
-  const filteredUsers = user.filter(
-    (elem) =>
-      elem.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      elem.user_email_id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredUsers = user.filter(
+  //   (elem) =>
+  //     elem.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     elem.user_email_id.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
   const getLocationNameById = (locations) => {
     const locationArray = locations.split(",");
     let result = "";
@@ -134,10 +136,42 @@ const User_List = () => {
     }
     return result;
   };
+    const handleKey = (e) => {
+  switch (e.key) {
+    case 'Enter':
+      handleSearch();
+      break;
+    // You can add more cases as needed
+    default:
+      // Optional: handle other keys
+      break;
+  }
+}
+  const handleSearch = () => {
+    if (searchQuery.trim() === "") {
+      
+      setFilteredUsers(user);
+    } else {
+      
+      const filtered = user.filter(
+        (elem) =>
+          elem.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          elem.user_email_id.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
   const renderUsers = () => {
     if (searchQuery) {
       // If there's a search query, render filtered users and hide pagination
@@ -189,12 +223,6 @@ const User_List = () => {
       );
     }
   };
-  const Loader = () => (
-    <div className="loader-overlay">
-      <div className="loader"></div>
-    </div>
-  );
-
   return (
     <>
     {isLoading && <Loader/>}
@@ -221,8 +249,9 @@ const User_List = () => {
                   placeholder='Search by name or email...'
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKey}
                 />
-                <button className='btn search-btn mb-1' style={{color:'white'}}>Search</button>
+                <button className='btn search-btn mb-1' style={{color:'white'}} onClick={handleSearch}>Search</button>
               </div>
               
                   <table className='user-tables table-bordered mt-1 mb-4'>

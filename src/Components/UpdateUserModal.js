@@ -62,7 +62,6 @@ const [formData,setFormData]=useState({
       try {
         const response = await axios.get(`${API_URL}/user/${userId}`);
         const userData = response.data;
-        console.log('Fetched user data:', userData); // Log the fetched user data
       
        setFormData({
           ...userData,
@@ -139,8 +138,7 @@ const [formData,setFormData]=useState({
  
   const handleEditSubmitUser = async (e) => {
     e.preventDefault();
-    console.log("click outside");
-    try {
+        try {
       const response = await axios.put(
         `${API_URL}/createuserupdate/${userId}`,
         {
@@ -164,7 +162,7 @@ const [formData,setFormData]=useState({
        
       );
       onClose(); 
-      console.log("User updated:", response.data);
+      
       toast.success("User Updated successfully");
     } catch (error) {
       console.error("Error updating user:", error);
@@ -222,12 +220,12 @@ const [formData,setFormData]=useState({
     setReportingDropdown(false)
   };
 
-  console.log(formData)
+ 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value, group_id: selectedGroupId, locations:selectedLocationId,role_id: selectedPrivilegeId, sl_id: selectedStorageId, user_id: selectedReportingId});
-    // setNewData({ ...newData, [name]: value, group_id: selectedGroupId, locations:selectedLocationId,role_id: selectedPrivilegeId, sl_id: selectedStorageId, user_id: selectedReportingId});  
+   
 }
   return (
     <div className="modal">

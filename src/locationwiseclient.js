@@ -51,7 +51,7 @@ const Locationwiseclientreport = () => {
     const navigate = useNavigate();
 
     const userLog = JSON.parse(localStorage.getItem("user"));
-    console.log("User's Info", userLog);
+   
     const [barImage, setBarImage] = useState({
         labels: [],
         datasets: [
@@ -277,7 +277,7 @@ const Locationwiseclientreport = () => {
                         (response) => response.data
                     );
                     setLocationData(locationData);
-                    console.log("agra", locationData);
+                   
                     setIsLoading(false);
                 } catch (error) {
                     console.error("Error fetching location data:", error);
@@ -302,7 +302,7 @@ const Locationwiseclientreport = () => {
                     const blob = new Blob([response.data], { type: "text/csv" });
                     const url = window.URL.createObjectURL(blob);
                     setCsv(url);
-                    console.log("CSV");
+                   
                 })
                 .catch((error) => {
                     console.error("Error in exporting data:", error);
@@ -321,7 +321,7 @@ const Locationwiseclientreport = () => {
                         console.error("No data received from the API");
                         return;
                     }
-                    console.log("Api Data", apiData);
+                    
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -370,7 +370,7 @@ const Locationwiseclientreport = () => {
                         return;
                     }
 
-                    console.log("API Data:", apiData);
+                  
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -417,7 +417,7 @@ const Locationwiseclientreport = () => {
                         console.error("No data received from the API");
                         return;
                     }
-                    console.log("Api Data", apiData);
+                   
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -466,7 +466,7 @@ const Locationwiseclientreport = () => {
                         return;
                     }
 
-                    console.log("API Data:", apiData);
+                  
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -509,7 +509,7 @@ const Locationwiseclientreport = () => {
                 }) // Include params in the request
                 .then((response) => {
                     setStatusDetails(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                   
                 })
                 .catch((error) => console.error(error));
         };
@@ -520,10 +520,10 @@ const Locationwiseclientreport = () => {
                 const response = await axios.get(`${API_URL}/cumulative-status-images`, {
                     params: { locationname: locationNames }
                 });
-                console.log("API Response Data:", response.data); // Log the API response
+               
 
                 if (!response.data || response.data.length === 0) {
-                    console.log("No data returned from the API");
+                 
                     return;
                 }
 
@@ -550,11 +550,7 @@ const Locationwiseclientreport = () => {
                 const clientData = last30Days.map(item => item.clientQADone);
 
                 // Log the data that will be passed to the chart
-                console.log("Dates:", dates);
-                console.log("Scanned Data:", scannedData);
-                console.log("QC Data:", qcData);
-                console.log("Offered for QA Data:", cbslqaData);
-                console.log("Customer QA Done Data:", clientData);
+               
 
                 // Set chart data
                 setChartData(prevData => ({
@@ -597,7 +593,7 @@ const Locationwiseclientreport = () => {
                 })
                 .then((response) => {
                     setReport(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                   
                 })
                 .catch((error) => console.error(error));
         };
@@ -609,7 +605,7 @@ const Locationwiseclientreport = () => {
                 })
                 .then((response) => {
                     setYesterdayReport(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+
                 })
                 .catch((error) => console.error(error));
         };
@@ -633,14 +629,7 @@ const Locationwiseclientreport = () => {
                     const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
                     const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
 
-                    console.log("Yesterday Labels:", labels);
-                    console.log("Scanned Images:", imagesData);
-                    console.log("QC Images:", qcImagesData);
-                    console.log("Flagging Images:", flaggingImagesData);
-                    console.log("Indexing Images:", indexingImagesData);
-                    console.log("CBSL QA Images:", cbslQaImagesData);
-                    console.log("Client QA Images:", clientQaImagesData);
-
+                 
                     setAllLocationYesImage({
                         labels: labels,
                         datasets: [
@@ -701,14 +690,7 @@ const Locationwiseclientreport = () => {
                     const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
                     const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
 
-                    console.log("Labels:", labels);
-                    console.log("Images Data:", imagesData);
-                    console.log("QC Images Data:", qcImagesData);
-                    console.log("Flagging Images Data:", flaggingImagesData);
-                    console.log("Indexing Images Data:", indexingImagesData);
-                    console.log("CBSL QA Images Data:", cbslQaImagesData);
-                    console.log("Client QA Images Data:", clientQaImagesData);
-
+                  
                     setAllLocationImage({
                         labels: labels,
                         datasets: [
@@ -769,8 +751,7 @@ const Locationwiseclientreport = () => {
     if (!userLog) {
         navigate('/');
     }
-    // Log the content of allLocationImage before passing it to the BarChart component
-    console.log("allLocationImage content:", allLocationImage);
+  
     const formatChartData = (data, colors) => ({
         options: {
             chart: {

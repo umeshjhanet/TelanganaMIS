@@ -12,7 +12,7 @@ const AddRoleModal = ({onClose}) => {
 
     try {
       const response = await axios.post(`${API_URL}/add-role`, { user_role: roleName });
-      console.log("Role name created:", response.data);
+      
       toast.success("Group updated successfully");
       onClose(); 
      

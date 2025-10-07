@@ -22,6 +22,7 @@ const Login = () => {
 
   const [searchParams] = useSearchParams();
   const params = new URLSearchParams(window.location.search);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -37,19 +38,19 @@ const Login = () => {
 
   const validateToken = async (token) => {
     try {
-      console.log('Sending token to backend:', token);
+
   
       const response = await axios.post(`${API_URL}/validate-token`, { token });
   
       if (response.data.valid) {
-        console.log('Token validated, navigating to dashboard...');
+       
   
         localStorage.setItem('authToken', token);
         localStorage.setItem('user', JSON.stringify(response.data)); // ✅ Save user data
   
         navigateToDestination(); // ✅ Use this instead of hardcoding /report
       } else {
-        console.log('Invalid token, redirecting to login...');
+       
         navigate('/');
       }
     } catch (error) {
@@ -80,12 +81,14 @@ const Login = () => {
       <div className="error mt-1" style={{ marginLeft: '35px' }}>{errorMessages[name]}</div>
     );
   const handleSubmit = async (event) => {
+  
     event.preventDefault();
     // Check for empty fields
     if (!username || !password) {
       setErrorMessages({ blank: errors.blank });
       return;
     }
+    setIsSubmitting(true);
     // Send login request to backend
     try {
       const response = await axios.post(`${API_URL}/login`, {
@@ -122,6 +125,7 @@ const Login = () => {
       } else {
         setErrorMessages({ unexpected: "An unexpected error occurred. Please try again later." });
       }
+      setIsSubmitting(false);
     }
   };
 
@@ -213,7 +217,9 @@ const Login = () => {
                       {renderErrorMessage('password')}
                       {renderErrorMessage('blank')}
                       <p className="text-end mt-2 me-3" style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>Forgot Password?</p>
-                      <input type='submit' className='btn login-btn' placeholder="Log In" />
+                       <button className='btn login-btn mt-3' style={{ backgroundColor: '#2b757f', position: 'relative', left: '45px', width: '295px' }}  >
+                        {isSubmitting ? 'Logging in...' : 'Submit'}
+                      </button>
                     </div>
                   </form>
                 </div>

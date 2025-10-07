@@ -250,7 +250,7 @@ const User_Form = () => {
     toast.info("Creating user, please wait...");
     try {
       const response = await axios.post(`${API_URL}/createuser`, updatedFormData);
-      console.log("Post created:", response.data);
+      
       toast.success("User created successfully");
     } catch (error) {
       if (error.response && error.response.status === 409) {
@@ -432,7 +432,7 @@ const User_Form = () => {
                       onChange={handleInputChange}
                       onKeyDown={handleKeyDown}
                     />
-                    {/* <input ref={locationDropdownRef} type='text' placeholder='Select Location' className='form-control' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} value={selectedLocation || ''} onClick={handleLocationDropdown} onChange={handleInputChange} onKeyDown={handleKeyDown} /> */}
+                    
                     {locationDropdown && (
                       <div className='group-dropdown'>
                         {location && location.map((elem, index) => (

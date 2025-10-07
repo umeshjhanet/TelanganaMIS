@@ -63,7 +63,7 @@ const UserRole = () => {
       try{
         const response = await axios.delete(`${API_URL}/deleterole/${role_id}`);
         setRole(role.filter((elem) => elem.id !== role_id));
-        console.log("Role Deleted:", response.data);
+        
         setShowConfirmation(false); 
         } catch (error) {
         console.error("There was an error in deleting data!", error);
@@ -73,16 +73,35 @@ const UserRole = () => {
     }
 
 
-    const filteredRoles = role && role.filter(elem =>
-        elem.user_role.toLowerCase().includes(searchQuery.toLowerCase()) 
-      );
+    // const filteredRoles = role && role.filter(elem =>
+    //     elem.user_role.toLowerCase().includes(searchQuery.toLowerCase()) 
+    //   );
       const Loader = () => (
         <div className="loader-overlay">
           <div className="loader"></div>
         </div>
       );
       
+      const [filteredRoles,setFilteredRoles] = useState(null);
+      const handleClick=()=>{
+         setFilteredRoles( role && role.filter(elem =>
+         elem.user_role.toLowerCase().includes(searchQuery.toLowerCase()) 
+     ))
+      }
 
+
+      
+const handleKey = (e) => {
+  switch (e.key) {
+    case 'Enter':
+      handleClick();
+      break;
+    // You can add more cases as needed
+    default:
+      // Optional: handle other keys
+      break;
+  }
+}
   return (
     <>
     {isLoading && <Loader/>}
@@ -113,8 +132,9 @@ const UserRole = () => {
                   placeholder='Search by Role name... '
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKey}
                 />
-                        <button className='btn search-btn mb-1'>Search</button>
+                        <button className='btn search-btn mb-1' onClick={handleClick}>Search</button>
                     </div>
                 </div>
                 <div className='row mt-5'>
@@ -127,14 +147,24 @@ const UserRole = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredRoles && filteredRoles.map((elem,index) => (
+                            {filteredRoles && filteredRoles.length>0?( 
+                            filteredRoles.map((elem,index) => (
                                 <tr key={index}>
                                     <td style={{textAlign:'left'}}>{index + 1}</td>
                                     <td style={{textAlign:'left'}}>{elem.user_role}</td>
                                     <td style={{textAlign:'left'}}><BiEdit onClick={() => handleOpenModal(elem.role_id)}   style={{color:'blue',fontSize:'20px'}}/> 
                                     / <RiDeleteBin5Line onClick={() => handleDeleteRoleId(elem.role_id)} style={{color:'red',fontSize:'20px'}}/></td>
                                 </tr>
-                            ))}
+                            ))):(
+                              role && role.map((elem,index)=>(
+                                 <tr key={index}>
+                                    <td style={{textAlign:'left'}}>{index + 1}</td>
+                                    <td style={{textAlign:'left'}}>{elem.user_role}</td>
+                                    <td style={{textAlign:'left'}}><BiEdit onClick={() => handleOpenModal(elem.role_id)}   style={{color:'blue',fontSize:'20px'}}/> 
+                                    / <RiDeleteBin5Line onClick={() => handleDeleteRoleId(elem.role_id)} style={{color:'red',fontSize:'20px'}}/></td>
+                                </tr>
+                              ))
+                            )}
                         </tbody>
                     </table>
                     {showConfirmation && (

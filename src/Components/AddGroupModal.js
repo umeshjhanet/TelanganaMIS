@@ -11,7 +11,7 @@ const AddGroupModal = ({onClose}) => {
 
     try {
       const response = await axios.post(`${API_URL}/add-group`, { group_name: groupName });
-      console.log("Group name created:", response.data);
+    
       onClose(); 
     } catch (error) {
       console.error("Error creating :", error);

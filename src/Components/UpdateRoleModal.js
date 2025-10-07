@@ -10,7 +10,7 @@ const AddGroupModal = ({onClose,roleId}) => {
   const handleUpdate = async () => {
     try {
       const response = await axios.put(`${API_URL}/updaterole/${roleId}`, { user_role: roleName });
-      console.log(response.data);
+    
       toast.success("Role updated successfully");
         onClose();
     } catch (error) {

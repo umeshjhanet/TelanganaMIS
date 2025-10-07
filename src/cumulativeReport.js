@@ -8,6 +8,8 @@ import { format, sub } from "date-fns";
 import Papa from "papaparse";
 
 const CumulativeReport = () => {
+    const [startDate,setStartDate] = useState("");
+    const [endDate,setEndDate] = useState("");
     const currentDate = new Date();
     const yesterdayDate = sub(currentDate, { days: 1 });
     const previousDate = sub(currentDate, { days: 2 });
@@ -27,7 +29,7 @@ const CumulativeReport = () => {
             const response = await axios.get(`${API_URL}/manpowerData`, { params });
             setCumulative(response.data.result); // Only set the array
         } catch {
-            console.log("Error fetching cumulative data");
+          
         }
     };
     useEffect(() => {
@@ -36,7 +38,7 @@ const CumulativeReport = () => {
                 const response = await axios.get(`${API_URL}/mptarget`);
                 setTarget(response.data);
             } catch {
-                console.log("Error fetching target data");
+                console.error("Error fetching target data");
             }
         };
         const fetchData = async () => {
@@ -84,32 +86,32 @@ const CumulativeReport = () => {
             "Average",
             "Differences B/W Target & Achieved"
         ];
-    
+
         const data = [];
-    
+
         if (Array.isArray(cumulative)) {
             cumulative.forEach(elem => {
                 const process = elem.process;
                 const present = parseFloat(elem.Present) || 0;
                 const files = parseFloat(elem.files) || 0;
                 const images = parseFloat(elem.images) || 0;
-    
+
                 const targetObj = target.find(t => t.process_name === process);
                 const targetValue = targetObj ? parseFloat(targetObj.target) : "-";
-    
+
                 // Calculate average
                 let average = "-";
                 if (present > 0) {
                     average = images > 0 ? (images / present).toFixed(2) : (files / present).toFixed(2);
                 }
-    
+
                 // Calculate difference
                 let difference = "-";
                 if (targetValue !== "-" && average !== "-") {
                     const diff = (parseFloat(average) / parseFloat(targetValue)) * 100;
                     difference = isNaN(diff) ? "-" : `${diff.toFixed(2)}%`;
                 }
-    
+
                 data.push([
                     process,
                     present || 0,
@@ -120,7 +122,7 @@ const CumulativeReport = () => {
                     difference
                 ]);
             });
-    
+
             // Total Row
             const totalManpower = cumulative.reduce((sum, elem) => sum + (parseFloat(elem.Present) || 0), 0);
             const totalFiles = cumulative.reduce((sum, elem) => sum + (parseFloat(elem.files) || 0), 0);
@@ -129,7 +131,7 @@ const CumulativeReport = () => {
                 const t = target.find(x => x.process_name === elem.process);
                 return sum + (t ? parseFloat(t.target) || 0 : 0);
             }, 0);
-    
+
             data.push([
                 "Total",
                 totalManpower,
@@ -140,7 +142,7 @@ const CumulativeReport = () => {
                 "-"
             ]);
         }
-    
+
         // 🔹 Convert to CSV and trigger download
         const csvData = Papa.unparse([headers, ...data]);
         const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
@@ -151,7 +153,7 @@ const CumulativeReport = () => {
         link.click();
         document.body.removeChild(link);
     };
-    
+
     // ✅ Function to calculate total manpower
     const getTotalManpower = () => {
         return cumulative?.manpowerData
@@ -221,10 +223,28 @@ const CumulativeReport = () => {
                                     <div className="col-2">
                                         <DatePicker
                                             className="date-field"
-                                            selected={selectedDate}
-                                            onChange={handleDateChange}
+                                            selected={startDate}
+                                            onChange={(date) => setStartDate(date)}
                                             dateFormat="dd-MM-yyyy"
-                                            placeholderText="Select Date"
+                                            placeholderText="Start Date"
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dropdownMode="select"
+
+
+                                            popperProps={{
+                                                modifiers: [
+                                                    {
+                                                        name: 'preventOverflow',
+                                                        options: {
+                                                            rootBoundary: 'viewport',
+                                                            tether: false,
+                                                            altAxis: true,
+                                                        },
+                                                    },
+                                                ],
+                                            }}
+                                            popperClassName="compact-picker"
                                         />
                                     </div>
                                     <div className="col-3 mt-1">

@@ -489,7 +489,7 @@ input[type="submit"]:hover {
   overflow-y: auto;
 }
 
-.location-card {
+/* .location-card {
   background-color: white;
   border: 1px solid gray;
   width: 225px;
@@ -498,13 +498,13 @@ input[type="submit"]:hover {
   position: relative;
   top: 0px;
   z-index: 999; */
-  position: absolute;
+  /* position: absolute; */
   /* background: white;
-  border: 1px solid #ccc; */
+  border: 1px solid #ccc; 
   z-index: 1000;
   max-height: 200px;
   overflow-y: auto;
-}
+} */
 .data-table tbody.scrollable{
   height:80px !important;
   overflow-y:auto !important;
@@ -814,7 +814,7 @@ input[type="submit"] {
     width: 100px;
     height: 40px;
   }
-  .location-card {
+  /* .location-card {
     background-color: white;
     border: 1px solid gray;
     width: 300px;
@@ -823,7 +823,7 @@ input[type="submit"] {
     position: relative;
     top: 0px;
     z-index: 999;
-  }
+  } */
 }
 
 @media only screen and (max-width: 768px) {
@@ -851,7 +851,7 @@ input[type="submit"] {
 
   .search-btn {
     width: 300px;
-    height: 40px;
+    height: 35px;
     background-color: #4BC0C0;
     margin-left: 0;
     margin-top: 20px;
@@ -864,7 +864,7 @@ input[type="submit"] {
   }
 }
 
-@media only screen and (max-width: 1024px) {
+/* @media only screen and (max-width: 1024px) {
   .search-bar {
     width: 242px;
     overflow-x: auto;
@@ -886,4 +886,21 @@ input[type="submit"] {
   height: 40px;
   }
 }
+*/
+.react-datepicker__current-month {
+  display: none;
+}
 
+.react-datepicker__month-container{
+  width: 320px;
+}
+
+.react-datepicker__month-select{
+  width: 85px;
+}
+
+.react-datepicker__year-select{
+  width: 85px;
+  
+}
+ 

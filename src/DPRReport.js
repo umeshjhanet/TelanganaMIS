@@ -29,7 +29,7 @@ const DPRReport = () => {
         let apiUrl = `${API_URL}/dprreportTable`;
         setIsLoading(true);
         const response = await axios.get(apiUrl);
-        console.log("API Response:", response.data); // Log the API response
+    
         setReport(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -43,7 +43,7 @@ const DPRReport = () => {
         let apiUrl = `${API_URL}/yesterdaypr`;
         setIsLoading(true);
         const response = await axios.get(apiUrl);
-        console.log("API Response:", response.data); // Log the API response
+       
         setYesterdayReport(response.data);
         setIsLoading(false);
       } catch (error) {

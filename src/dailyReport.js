@@ -271,7 +271,7 @@ const DailyReport = () => {
                 apiUrl += `?${queryParams.join("&")}`;
             }
 
-            console.log("Report Table CSV API URL:", apiUrl); // Log the constructed API URL
+          
 
             const response = await axios.get(apiUrl, { responseType: "blob" });
             const blob = new Blob([response.data], { type: "text/csv" });
@@ -315,12 +315,11 @@ const DailyReport = () => {
                     queryParams.fileType = selectedFileTypes;
                 }
 
-                console.log("API URL:", apiUrl); // Log the constructed API URL
-                console.log("Query Params:", queryParams); // Log query parameters
+             
 
                 setIsLoading(true);
                 const response = await axios.get(apiUrl, { params: queryParams });
-                console.log("API Response:", response.data); // Log the API response
+              
                 setReport(response.data);
                 setIsLoading(false);
                 updateTotalLocations(response.data);
@@ -349,12 +348,11 @@ const DailyReport = () => {
                     queryParams.fileType = selectedFileTypes;
                 }
 
-                console.log("API URL:", apiUrl); // Log the constructed API URL
-                console.log("Query Params:", queryParams); // Log query parameters
+              
 
                 setIsLoading(true);
                 const response = await axios.get(apiUrl, { params: queryParams });
-                console.log("API Response:", response.data); // Log the API response
+               
                 setDateReport(response.data);
                 setIsLoading(false);
                 updateTotalLocations(response.data);
@@ -415,7 +413,7 @@ const DailyReport = () => {
                         console.error("No data received from the API");
                         return;
                     }
-                    console.log("Api Data", apiData);
+                 
                     const labels = Object.keys(apiData[0]).filter(
                         (label) => label !== "locationid" && label !== "LocationName"
                     );
@@ -501,8 +499,7 @@ const DailyReport = () => {
                     const apiData = response.data;
                     const labels = apiData.map((item) => item["scandate"]);
                     const data = apiData.map((item) => item["Scanned No Of Images"]);
-                    console.log("lables", labels);
-                    console.log("images", data);
+                  
                     setMonthImage({
                         labels: labels.filter((label) => label !== "id"),
                         datasets: [
@@ -512,7 +509,7 @@ const DailyReport = () => {
                             },
                         ],
                     });
-                    console.log("Monthly  data fetch", monthImage);
+                 
                 })
                 .catch((error) => {
                     console.error("Error fetching data:", error);
@@ -523,7 +520,7 @@ const DailyReport = () => {
                 .get(`${API_URL}/tabularData`)
                 .then((response) => {
                     setTableData(response.data);
-                    console.log("Table Data", response.data); // Log inside the then block
+                
                 })
                 .catch((error) => console.error(error));
         };
@@ -548,12 +545,11 @@ const DailyReport = () => {
                     queryParams.fileType = selectedFileTypes;
                 }
 
-                console.log("API URL:", apiUrl); // Log the constructed API URL
-                console.log("Query Params:", queryParams); // Log query parameters
+              
 
                 setIsLoading(true);
                 const response = await axios.get(apiUrl, { params: queryParams });
-                console.log("API Response:", response.data); // Log the API response
+               
                 setManPowerData(response.data);
                 setIsLoading(false);
                 updateTotalLocations(response.data);
@@ -578,7 +574,7 @@ const DailyReport = () => {
                     const blob = new Blob([response.data], { type: "text/csv" });
                     const url = window.URL.createObjectURL(blob);
                     setCsv(url);
-                    console.log("CSV");
+                  
                 })
                 .catch((error) => {
                     console.error("Error in exporting data:", error);
