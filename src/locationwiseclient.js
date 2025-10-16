@@ -14,7 +14,7 @@ import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 const newData = [{ name: 'Page A', uv: 400, pv: 2400, amt: 2400 }, { name: 'Page B', uv: 450, pv: 2400, amt: 2400 },];
 
-const Locationwiseclientreport = () => {
+const Locationwiseclientreport = ({ showSideBar }) => {
     const currentDate = new Date();
     const yesterdayDate = sub(currentDate, { days: 1 });
     const previousDate = sub(currentDate, { days: 2 });
@@ -51,7 +51,7 @@ const Locationwiseclientreport = () => {
     const navigate = useNavigate();
 
     const userLog = JSON.parse(localStorage.getItem("user"));
-   
+
     const [barImage, setBarImage] = useState({
         labels: [],
         datasets: [
@@ -122,56 +122,56 @@ const Locationwiseclientreport = () => {
             },
         ],
     });
-     const [chartData, setChartData] = useState({
-            options: {
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    toolbar: { show: false },
-                    events: {
-                        legendClick: function (chartContext, seriesIndex, config) {
-                            // Find the corresponding line/bar index
-                            const pairedIndex = seriesIndex % 2 === 0 ? seriesIndex + 1 : seriesIndex - 1;
-        
-                            // Toggle both the clicked series and its pair
-                            chartContext.toggleSeries(config.config.series[seriesIndex].name);
-                            chartContext.toggleSeries(config.config.series[pairedIndex].name);
-                        }
+    const [chartData, setChartData] = useState({
+        options: {
+            chart: {
+                type: 'bar',
+                height: 350,
+                toolbar: { show: false },
+                events: {
+                    legendClick: function (chartContext, seriesIndex, config) {
+                        // Find the corresponding line/bar index
+                        const pairedIndex = seriesIndex % 2 === 0 ? seriesIndex + 1 : seriesIndex - 1;
+
+                        // Toggle both the clicked series and its pair
+                        chartContext.toggleSeries(config.config.series[seriesIndex].name);
+                        chartContext.toggleSeries(config.config.series[pairedIndex].name);
                     }
-                },
-                xaxis: { categories: [] },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '60%',
-                        grouped: true
-                    }
-                },
-                dataLabels: { enabled: false },
-                tooltip: {
-                    enabled: true,
-                    shared: false, // Ensures tooltip shows values for all series
-                    intersect: false, // Prevents conflicting tooltip behavior
-                    y: {
-                        formatter: function (val) {
-                            return val >= 100000 ? (val / 100000).toFixed(2) + " L" : val.toLocaleString();
-                        }
-                    }
-                },
-                stroke: { width: [0, 2], curve: 'smooth' },
-                colors: [
-                    '#FF5733', '#FF5733', // Scanned (Bar & Line)
-                    '#4BC0C0', '#4BC0C0', // QC
-                    '#FFBD33', '#FFBD33', // Flagging
-                    '#335700', '#335700', // Indexing
-                    '#FF33A1', '#FF33A1', // Offered for QA
-                    '#3674B5', '#3674B5'  // Customer QA Done
-                ],
-                grid: { padding: { left: 20, right: 20 } },
-                legend: { show: true }
+                }
             },
-            series: [] // Dynamically updated
-        });
+            xaxis: { categories: [] },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '60%',
+                    grouped: true
+                }
+            },
+            dataLabels: { enabled: false },
+            tooltip: {
+                enabled: true,
+                shared: false, // Ensures tooltip shows values for all series
+                intersect: false, // Prevents conflicting tooltip behavior
+                y: {
+                    formatter: function (val) {
+                        return val >= 100000 ? (val / 100000).toFixed(2) + " L" : val.toLocaleString();
+                    }
+                }
+            },
+            stroke: { width: [0, 2], curve: 'smooth' },
+            colors: [
+                '#FF5733', '#FF5733', // Scanned (Bar & Line)
+                '#4BC0C0', '#4BC0C0', // QC
+                '#FFBD33', '#FFBD33', // Flagging
+                '#335700', '#335700', // Indexing
+                '#FF33A1', '#FF33A1', // Offered for QA
+                '#3674B5', '#3674B5'  // Customer QA Done
+            ],
+            grid: { padding: { left: 20, right: 20 } },
+            legend: { show: true }
+        },
+        series: [] // Dynamically updated
+    });
     const random = () => Math.round(Math.random() * 100);
 
     useEffect(() => {
@@ -277,7 +277,7 @@ const Locationwiseclientreport = () => {
                         (response) => response.data
                     );
                     setLocationData(locationData);
-                   
+
                     setIsLoading(false);
                 } catch (error) {
                     console.error("Error fetching location data:", error);
@@ -302,7 +302,7 @@ const Locationwiseclientreport = () => {
                     const blob = new Blob([response.data], { type: "text/csv" });
                     const url = window.URL.createObjectURL(blob);
                     setCsv(url);
-                   
+
                 })
                 .catch((error) => {
                     console.error("Error in exporting data:", error);
@@ -321,7 +321,7 @@ const Locationwiseclientreport = () => {
                         console.error("No data received from the API");
                         return;
                     }
-                    
+
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -370,7 +370,7 @@ const Locationwiseclientreport = () => {
                         return;
                     }
 
-                  
+
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -417,7 +417,7 @@ const Locationwiseclientreport = () => {
                         console.error("No data received from the API");
                         return;
                     }
-                   
+
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -466,7 +466,7 @@ const Locationwiseclientreport = () => {
                         return;
                     }
 
-                  
+
 
                     // Labels representing the different processes
                     const labels = ["Scanned", "QC", "Flagging", "Indexing", "Offered for QA", "Client QA Done"];
@@ -509,7 +509,7 @@ const Locationwiseclientreport = () => {
                 }) // Include params in the request
                 .then((response) => {
                     setStatusDetails(response.data);
-                   
+
                 })
                 .catch((error) => console.error(error));
         };
@@ -520,10 +520,10 @@ const Locationwiseclientreport = () => {
                 const response = await axios.get(`${API_URL}/cumulative-status-images`, {
                     params: { locationname: locationNames }
                 });
-               
+
 
                 if (!response.data || response.data.length === 0) {
-                 
+
                     return;
                 }
 
@@ -550,7 +550,7 @@ const Locationwiseclientreport = () => {
                 const clientData = last30Days.map(item => item.clientQADone);
 
                 // Log the data that will be passed to the chart
-               
+
 
                 // Set chart data
                 setChartData(prevData => ({
@@ -562,19 +562,19 @@ const Locationwiseclientreport = () => {
                     series: [
                         { name: 'Scanned', type: "bar", data: scannedData },
                         { name: 'Scanned (Trend)', type: "line", data: scannedData },
-        
+
                         { name: 'QC', type: "bar", data: qcData },
                         { name: 'QC (Trend)', type: "line", data: qcData },
-        
+
                         { name: 'Flagging', type: "bar", data: flaggingData },
                         { name: 'Flagging (Trend)', type: "line", data: flaggingData },
-        
+
                         { name: 'Indexing', type: "bar", data: indexData },
                         { name: 'Indexing (Trend)', type: "line", data: indexData },
-        
+
                         { name: 'Offered for QA', type: "bar", data: cbslqaData },
                         { name: 'Offered for QA (Trend)', type: "line", data: cbslqaData },
-        
+
                         { name: 'Customer QA Done', type: "bar", data: clientData },
                         { name: 'Customer QA Done (Trend)', type: "line", data: clientData }
                     ]
@@ -593,7 +593,7 @@ const Locationwiseclientreport = () => {
                 })
                 .then((response) => {
                     setReport(response.data);
-                   
+
                 })
                 .catch((error) => console.error(error));
         };
@@ -612,9 +612,9 @@ const Locationwiseclientreport = () => {
         const fetchAllYesGraphImageData = () => {
             const locationNames = userLog.locations.map(location => location.name).join(',');
             axios
-            .get(`${API_URL}/today-location-process-graph`, {
-                params: { locationname: locationNames }
-            }).then((response) => {
+                .get(`${API_URL}/today-location-process-graph`, {
+                    params: { locationname: locationNames }
+                }).then((response) => {
                     const apiData = response.data;
                     if (!apiData || apiData.length === 0) {
                         console.error("No data received from the API");
@@ -629,7 +629,7 @@ const Locationwiseclientreport = () => {
                     const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
                     const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
 
-                 
+
                     setAllLocationYesImage({
                         labels: labels,
                         datasets: [
@@ -673,9 +673,9 @@ const Locationwiseclientreport = () => {
         const fetchAllGraphImageData = () => {
             const locationNames = userLog.locations.map(location => location.name).join(',');
             axios
-            .get(`${API_URL}/cumulative-location-process-graph`, {
-                params: { locationname: locationNames }
-            }).then((response) => {
+                .get(`${API_URL}/cumulative-location-process-graph`, {
+                    params: { locationname: locationNames }
+                }).then((response) => {
                     const apiData = response.data;
                     if (!apiData || apiData.length === 0) {
                         console.error("No data received from the API");
@@ -690,7 +690,7 @@ const Locationwiseclientreport = () => {
                     const cbslQaImagesData = apiData.map((item) => item["Offered for QA"]);
                     const clientQaImagesData = apiData.map((item) => item["Customer QA Done"]);
 
-                  
+
                     setAllLocationImage({
                         labels: labels,
                         datasets: [
@@ -751,7 +751,7 @@ const Locationwiseclientreport = () => {
     if (!userLog) {
         navigate('/');
     }
-  
+
     const formatChartData = (data, colors) => ({
         options: {
             chart: {
@@ -939,67 +939,67 @@ const Locationwiseclientreport = () => {
         setCumulativeSpecialRequests(cumulativeSpecialRequests)
         setIsViewCumulativeModalOpen(!isViewCumulativeModalOpen);
     };
-    const formatProcessChartData = (data, colors = ["#02B2AF", "#02B2AF", "#FF6384", "#FF6384","#4335A7",
-        "#4335A7",  "#FF9D23","#FF9D23","#5CB338","#5CB338","#9966FF", "#9966FF",]) => ({
-        options: {
-            chart: {
-                type: 'bar',  // Mixed chart type
-                toolbar: { show: false },
-                events: {
-                    legendClick: function (chartContext, seriesIndex, config) {
-                        // Find the corresponding bar/line index
-                        const pairedIndex = seriesIndex % 2 === 0 ? seriesIndex + 1 : seriesIndex - 1;
-                        
-                        // Toggle both the clicked series and its pair
-                        chartContext.toggleSeries(config.config.series[seriesIndex].name);
-                        chartContext.toggleSeries(config.config.series[pairedIndex].name);
+    const formatProcessChartData = (data, colors = ["#02B2AF", "#02B2AF", "#FF6384", "#FF6384", "#4335A7",
+        "#4335A7", "#FF9D23", "#FF9D23", "#5CB338", "#5CB338", "#9966FF", "#9966FF",]) => ({
+            options: {
+                chart: {
+                    type: 'bar',  // Mixed chart type
+                    toolbar: { show: false },
+                    events: {
+                        legendClick: function (chartContext, seriesIndex, config) {
+                            // Find the corresponding bar/line index
+                            const pairedIndex = seriesIndex % 2 === 0 ? seriesIndex + 1 : seriesIndex - 1;
+
+                            // Toggle both the clicked series and its pair
+                            chartContext.toggleSeries(config.config.series[seriesIndex].name);
+                            chartContext.toggleSeries(config.config.series[pairedIndex].name);
+                        }
                     }
-                }
-            },
-            dataLabels: { enabled: false },
-            tooltip: {
-                enabled: true,
-                shared: false,  // Ensures tooltips show all values together
-                intersect: false,
-                y: {
-                    formatter: function (val) {
-                        return val >= 100000 ? (val / 100000).toFixed(2) + " L" : val.toLocaleString();
+                },
+                dataLabels: { enabled: false },
+                tooltip: {
+                    enabled: true,
+                    shared: false,  // Ensures tooltips show all values together
+                    intersect: false,
+                    y: {
+                        formatter: function (val) {
+                            return val >= 100000 ? (val / 100000).toFixed(2) + " L" : val.toLocaleString();
+                        }
                     }
-                }
+                },
+                stroke: { width: [2, 2, 2, 2, 2, 2], curve: 'smooth' },
+                legend: { show: true },
+                colors: [...colors, ...colors], // Ensures bars & lines have the same colors
+                xaxis: { categories: data.labels || [] },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '50%'
+                    }
+                },
+                responsive: [{ breakpoint: 1024, options: { chart: { type: 'bar' } } }]
             },
-            stroke: { width: [2, 2, 2, 2, 2, 2], curve: 'smooth' },
-            legend: { show: true },
-            colors: [...colors, ...colors], // Ensures bars & lines have the same colors
-            xaxis: { categories: data.labels || [] },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '50%'
-                }
-            },
-            responsive: [{ breakpoint: 1024, options: { chart: { type: 'bar' } } }]
-        },
-        series: [
-            // Bars
-            { name: "Scanned", type: "bar", data: data.datasets[0]?.data || [] },
-            { name: "Scanned (Trend)", type: "line", data: data.datasets[0]?.data || [] },
-    
-            { name: "QC", type: "bar", data: data.datasets[1]?.data || [] },
-            { name: "QC (Trend)", type: "line", data: data.datasets[1]?.data || [] },
-    
-            { name: "Flagging", type: "bar", data: data.datasets[2]?.data || [] },
-            { name: "Flagging (Trend)", type: "line", data: data.datasets[2]?.data || [] },
-    
-            { name: "Indexing", type: "bar", data: data.datasets[3]?.data || [] },
-            { name: "Indexing (Trend)", type: "line", data: data.datasets[3]?.data || [] },
-    
-            { name: "Offered for QA", type: "bar", data: data.datasets[4]?.data || [] },
-            { name: "Offered for QA (Trend)", type: "line", data: data.datasets[4]?.data || [] },
-    
-            { name: "Customer QA Done", type: "bar", data: data.datasets[5]?.data || [] },
-            { name: "Customer QA Done (Trend)", type: "line", data: data.datasets[5]?.data || [] }
-        ]
-    });
+            series: [
+                // Bars
+                { name: "Scanned", type: "bar", data: data.datasets[0]?.data || [] },
+                { name: "Scanned (Trend)", type: "line", data: data.datasets[0]?.data || [] },
+
+                { name: "QC", type: "bar", data: data.datasets[1]?.data || [] },
+                { name: "QC (Trend)", type: "line", data: data.datasets[1]?.data || [] },
+
+                { name: "Flagging", type: "bar", data: data.datasets[2]?.data || [] },
+                { name: "Flagging (Trend)", type: "line", data: data.datasets[2]?.data || [] },
+
+                { name: "Indexing", type: "bar", data: data.datasets[3]?.data || [] },
+                { name: "Indexing (Trend)", type: "line", data: data.datasets[3]?.data || [] },
+
+                { name: "Offered for QA", type: "bar", data: data.datasets[4]?.data || [] },
+                { name: "Offered for QA (Trend)", type: "line", data: data.datasets[4]?.data || [] },
+
+                { name: "Customer QA Done", type: "bar", data: data.datasets[5]?.data || [] },
+                { name: "Customer QA Done (Trend)", type: "line", data: data.datasets[5]?.data || [] }
+            ]
+        });
 
     return (
         <>
@@ -1112,21 +1112,21 @@ const Locationwiseclientreport = () => {
                                 className="row mt-2 ms-2 me-2"
                                 style={{ overflowX: "auto", overflowY: 'auto' }}
                             >
-                                <table class="table table-hover table-bordered table-responsive data-table">
+                                <table className="table table-hover table-bordered table-responsive data-table">
                                     <thead
                                         style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
                                     >
                                         <tr>
-                                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                                            {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
-                                            {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
-                                            {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
+                                            <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                            {/* <th rowSpan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
+                                            {/* <th colSpan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
+                                            {/* <th colSpan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
                                             <th>Remarks</th>
                                         </tr>
                                         <tr
@@ -1246,21 +1246,21 @@ const Locationwiseclientreport = () => {
                                 className="row mt-2 ms-2 me-2"
                                 style={{ overflowX: "auto", overflowY: 'auto' }}
                             >
-                                <table class="table table-hover table-bordered table-responsive data-table">
+                                <table className="table table-hover table-bordered table-responsive data-table">
                                     <thead
                                         style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
                                     >
                                         <tr>
-                                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                                            {/* <th rowspan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
-                                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
-                                            {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
-                                            {/* <th colspan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
+                                            <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                            {/* <th rowSpan="2" style={{ verticalAlign: 'middle' }}>Files Received</th> */}
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Flagging</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
+                                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
+                                            {/* <th colSpan="2" style={{ verticalAlign: 'middle' }}>Rectified by CBSL</th> */}
+                                            {/* <th colSpan="2" style={{ verticalAlign: 'middle' }}>Delivered</th> */}
                                             <th>Remarks</th>
                                         </tr>
                                         <tr

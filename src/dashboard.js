@@ -10,9 +10,9 @@ import CbslAdminDashboard from "./CbslAdminDashboard";
 import ExclusiveDashboard from "./exclusiveDashboard";
 import "./App.css";
 
-const Dashboard = () => {
+const Dashboard = ({ showSideBar }) => {
   const userLog = JSON.parse(localStorage.getItem("user"));
-  const [showSideBar, setShowSideBar] = useState(false);
+  //const [showSideBar, setShowSideBar] = useState(false);
 
   // Role checks
   const isDistrictHeadUser = userLog?.user_roles?.includes("All District Head");
@@ -41,9 +41,9 @@ const Dashboard = () => {
 
   return (
     <>
-      <Header showSideBar={showSideBar} setShowSideBar={setShowSideBar} />
+
       {renderDashboard()}
-      <Footer />
+
     </>
   );
 };

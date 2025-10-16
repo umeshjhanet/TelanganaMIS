@@ -5,8 +5,12 @@ import { format, sub } from "date-fns";
 import { API_URL } from "./Api";
 import Chart from "react-apexcharts";
 import { Card, CardBody, CardTitle, CardSubtitle } from "reactstrap";
+import SearchBar from "./Components/SearchBar";
+import SearchButton from "./Components/Button";
+import BarGraph from "./Components/BarGraph";
+import DonutGraph from "./Components/DonutGraph";
 
-const LocationWiseDashboard = () => {
+const LocationWiseDashboard = ({ showSideBar }) => {
   const currentDate = new Date();
   const yesterdayDate = sub(currentDate, { days: 1 });
   const previousDate = sub(currentDate, { days: 2 });
@@ -76,19 +80,19 @@ const LocationWiseDashboard = () => {
     const fetchAllYesGraphImageData = () => {
       const locationNames = userLog.locations.map(location => `${location.name}`);
       const apiUrl = `${API_URL}/graph9`;
-    
+
       axios.get(apiUrl, { params: { locationname: locationNames } })
         .then((response) => {
           const apiData = response.data;
-    
+
           if (!apiData || apiData.length === 0) {
             console.error("No data received from the API");
             return;
           }
-    
+
           const labels = apiData.map(item => item["Location Name"]);
           const data = apiData.map(item => parseInt(item["Images"], 10)); // Convert images to integer
-    
+
           setAllLocationYesImage({
             labels: labels,
             datasets: [{
@@ -102,24 +106,24 @@ const LocationWiseDashboard = () => {
           console.error("Error fetching data:", error);
         });
     };
-    
+
 
     const fetchAllGraphImageData = () => {
       const locationNames = userLog.locations.map(location => `${location.name}`);
       const apiUrl = `${API_URL}/graph10`;
-    
+
       axios.get(apiUrl, { params: { locationname: locationNames } })
         .then((response) => {
           const apiData = response.data;
-    
+
           if (!apiData || apiData.length === 0) {
             console.error("No data received from the API");
             return;
           }
-    
+
           const labels = apiData.map(item => item["Location Name"]);
           const data = apiData.map(item => parseInt(item["Images"], 10)); // Convert images to integer
-    
+
           setAllLocationImage({
             labels: labels,
             datasets: [{
@@ -190,63 +194,13 @@ const LocationWiseDashboard = () => {
 
   const columnSums = calculateColumnSum();
 
-  const formatChartData = (data, colors) => ({
-    options: {
-      chart: {
-        toolbar: {
-          show: false,
-        },
-        stacked: false,
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
-        show: true,
-        width: -15,
-        colors: ["transparent"],
-      },
-      legend: {
-        show: true,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: "30%",
-          borderRadius: 2,
-        },
-      },
-      colors: colors,
-      xaxis: {
-        categories: data.labels,
-      },
-      responsive: [
-        {
-          breakpoint: 1024,
-          options: {
-            plotOptions: {
-              bar: {
-                columnWidth: "30%",
-                borderRadius: 7,
-              },
-            },
-          },
-        },
-      ],
-    },
-    series: [
-      {
-        name: data.datasets[0].label,
-        data: data.datasets[0].data,
-      },
-    ],
-  });
+
 
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-lg-2 col-md-0 "></div>
-        <div className="col-lg-10 col-md-12">
+        <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+        <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
           <div className="row mt-2">
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <h4> Telangana Dashboard</h4>
@@ -257,67 +211,56 @@ const LocationWiseDashboard = () => {
           </div>
           <div className="row">
             <div className="col-md-6 col-sm-12">
-            <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                    <Chart
-                      options={formatChartData(allLocationYesImage,["#088395"]).options}
-                      series={formatChartData(allLocationYesImage,["#088395"]).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
+              <BarGraph
+                Heading={`SCANNED REPORT FOR (${formattedYesterdayDate})`}
+                subTitle="All Location: Images"
+                barFile={allLocationYesImage}
+                color={["#088395"]}
+                bar="bar"
+                height={350}
+
+              />
             </div>
             <div className="col-md-6 col-sm-12">
-            <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                    <Chart
-                      options={formatChartData(allLocationImage,["#088395"]).options}
-                      series={formatChartData(allLocationImage,["#088395"]).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
+              <BarGraph
+                Heading="Cumulative Scanned Till Date"
+                subTitle="All Location: Images"
+                barFile={allLocationImage}
+                color={["#088395"]}
+                bar="bar"
+                height={350}
+              />
             </div>
           </div>
           <div className="row mt-4">
             <div className="col-md-12 col-sm-12">
-            <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">SCANNED REPORT OF LAST 30 DAYS </CardTitle>
-                    <Chart
-                      options={formatChartData(monthImage, ["#4BC0C0"]).options}
-                      series={formatChartData(monthImage, ["#4BC0C0"]).series}
-                      type="bar"
-                      height="379"
-                    />
-                  </CardBody>
-                </Card>
+              <BarGraph
+                Heading="SCANNED REPORT OF LAST 30 DAYS"
+                barFile={monthImage}
+                color={["#4BC0C0"]}
+                bar="bar"
+                height={390}
+              />
             </div>
           </div>
 
-             
-              <div
+
+          <div
             className="row mt-5 ms-2 me-2"
             style={{ overflowX: "auto" }}
           >
-            <table class="table table-hover table-bordered table-responsive data-table">
+            <table className="table table-hover table-bordered table-responsive data-table">
               <thead style={{ color: "#4BC0C0" }}>
                 <tr>
-                  <th rowspan="2" style={{verticalAlign:'middle'}}>Sr. No.</th>
-                  <th rowspan="2" style={{verticalAlign:'middle'}}>Location</th>
-                  <th colspan="2">Scanned ({formattedPreviousDate})</th>
-                  <th colspan="2">
+                  <th rowSpan="2" style={{ verticalAlign: 'middle' }}>Sr. No.</th>
+                  <th rowSpan="2" style={{ verticalAlign: 'middle' }}>Location</th>
+                  <th colSpan="2">Scanned ({formattedPreviousDate})</th>
+                  <th colSpan="2">
                     Scanned ({formattedYesterdayDate})
                   </th>
-                  <th colspan="2">Scanned ({formattedCurrentDate})</th>
-                  <th colspan="2">Cumulative till date</th>
-                  
+                  <th colSpan="2">Scanned ({formattedCurrentDate})</th>
+                  <th colSpan="2">Cumulative till date</th>
+
                 </tr>
                 <tr>
                   <th>Files</th>
@@ -334,14 +277,10 @@ const LocationWiseDashboard = () => {
               <tbody style={{ color: "gray" }}>
                 {tableData &&
                   tableData.map((elem, index) => {
-                    //   if (
-                    //     selectedLocations.length === 0 ||
-                    //     selectedLocations.includes(elem.LocationName)
-                    //   ) {
                     return (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td style={{textAlign:'left'}}>{elem.LocationName}</td>
+                        <td style={{ textAlign: 'left' }}>{elem.LocationName}</td>
                         <td>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
@@ -350,7 +289,7 @@ const LocationWiseDashboard = () => {
                         <td>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
                         <td>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-                        
+
                       </tr>
                     );
                     //   }
@@ -358,7 +297,7 @@ const LocationWiseDashboard = () => {
                   })}
 
                 <tr style={{ color: "black" }}>
-                  <td colspan="2">
+                  <td colSpan="2">
                     <strong>Total</strong>
                   </td>
 
@@ -386,16 +325,16 @@ const LocationWiseDashboard = () => {
                   <td>
                     <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
                   </td>
-                  
+
                 </tr>
               </tbody>
 
             </table>
           </div>
-            </div>
-            <div className="col-md-2"></div>
-          </div>
         </div>
+        <div className="col-md-2"></div>
+      </div>
+    </div>
   );
 };
 

@@ -13,9 +13,13 @@ import html2canvas from 'html2canvas';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaChevronDown } from "react-icons/fa";
+import SearchBar from "./Components/SearchBar";
+import Search from "./Components/Button";
+import ReportCard from "./Components/ReportCard";
+import SearchButton from "./Components/Button";
 
 
-const Report = () => {
+const Report = ({ showSideBar }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showLocation, setShowLocation] = useState(false);
@@ -34,7 +38,6 @@ const Report = () => {
   const [reportCsv, setReportCsv] = useState(null);
   const [dateReportCsv, setDateReportCsv] = useState(null);
   const dropdownRef = useRef(null);
-  //  const filedropdownRef = useRef(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showConfirmationBox, setShowConfirmationBox] = useState(false);
   const [showConfirmationBoxDate, setShowConfirmationBoxDate] = useState(false);
@@ -47,136 +50,11 @@ const Report = () => {
   const [locationSearchInput, setLocationSearchInput] = useState("");
   const [fileTypeSearchInput, setFileTypeSearchInput] = useState("");
   const [locations, setLocations] = useState();
-
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowLocation(false);
-      }
-      if (filedropdownRef.current && !filedropdownRef.current.contains(event.target)) {
-        setShowFileType(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-  // Add a new state for tracking highlighted index in dropdown
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-
-  // Filtered locations based on search input
-  const filteredLocations = locations?.filter(item =>
-    item.toLowerCase().includes(locationSearchInput.toLowerCase())
-  ) || [];
-
-  // Add this ref for the dropdown menu
-
-  const handleLocationKeyDown = (e) => {
-    if (!showLocation) {
-      setShowLocation(true);
-      return;
-    }
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setHighlightedIndex(prev => {
-          const newIndex = prev < filteredLocations.length - 1 ? prev + 1 : prev;
-
-          // Scroll to ensure the highlighted item is visible
-          if (dropdownMenuRef.current && newIndex !== prev) {
-            const highlightedElement = dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth'
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setHighlightedIndex(prev => {
-          const newIndex = prev > 0 ? prev - 1 : -1;
-
-          // Scroll to ensure the highlighted item is visible
-          if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
-            const highlightedElement = dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth'
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (filteredLocations.length === 1) {
-          handleLocation(filteredLocations[0]);
-          setHighlightedIndex(-1);
-          return;
-        }
-        if (highlightedIndex >= 0 && filteredLocations[highlightedIndex]) {
-          handleLocation(filteredLocations[highlightedIndex]);
-          setHighlightedIndex(-1);
-        }
-        break;
-      case 'Backspace':
-        if (locationSearchInput === '' && selectedLocations.length > 0) {
-          removeLocation(selectedLocations[selectedLocations.length - 1]);
-        }
-        break;
-      case 'Escape':
-        setShowLocation(false);
-        setHighlightedIndex(-1);
-        break;
-      default:
-        break;
-    }
-  };
-
-
-  // const handleFileKeyDown = (e) => {
-
-  // }
-
-
-  const handleLocation = (locationName) => {
-    if (!selectedLocations.includes(locationName)) {
-      setSelectedLocations([...selectedLocations, locationName]);
-      setSearchInput("");
-    }
-    setLocationSearchInput("");
-    setShowLocation(false);
-    setHighlightedIndex(-1);
-  };
-  const removeLocation = (locationName) => {
-    setSelectedLocations(
-      selectedLocations.filter((loc) => loc !== locationName)
-    );
-  };
-
-
-  const filedropdownRef = useRef(null);
+  const userLog = JSON.parse(localStorage.getItem("user"));
+  const userRoles = userLog?.user_roles || [];
   const dropdownMenuRef = useRef(null);
 
-  const filteredFileTypes =
-    fileType && Array.isArray(fileType)
-      ? fileType.filter(item =>
-        item.filetype.toLowerCase().includes(fileTypeSearchInput.toLowerCase())
-      )
-      : [];
 
 
   const handleFileType = (fileType) => {
@@ -192,80 +70,6 @@ const Report = () => {
     setSelectedFileTypes(
       selectedFileTypes.filter((ft) => ft !== fileType)
     );
-  };
-
-  const handleFileKeyDown = (e) => {
-    if (!showFileType) {
-      setShowFileType(true);
-      return;
-    }
-
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        setHighlightedIndex((prev) => {
-          const newIndex = prev < filteredFileTypes.length - 1 ? prev + 1 : prev;
-
-          if (dropdownMenuRef.current && newIndex !== prev) {
-            const highlightedElement =
-              dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: "nearest",
-                behavior: "smooth",
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-
-      case "ArrowUp":
-        e.preventDefault();
-        setHighlightedIndex((prev) => {
-          const newIndex = prev > 0 ? prev - 1 : -1;
-
-          if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
-            const highlightedElement =
-              dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: "nearest",
-                behavior: "smooth",
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-
-      case "Enter":
-        e.preventDefault();
-        if (filteredFileTypes.length === 1) {
-          handleFileType(filteredFileTypes[0].filetype);
-          return;
-        }
-        if (highlightedIndex >= 0 && filteredFileTypes[highlightedIndex]) {
-          handleFileType(filteredFileTypes[highlightedIndex].filetype);
-        }
-        break;
-
-      case "Backspace":
-        if (fileTypeSearchInput === "" && selectedFileTypes.length > 0) {
-          removeFileType(selectedFileTypes[selectedFileTypes.length - 1]);
-        }
-        break;
-
-      case "Escape":
-        setShowFileType(false);
-        setHighlightedIndex(-1);
-        break;
-
-      default:
-        break;
-    }
   };
 
   const handleExport = () => {
@@ -549,7 +353,7 @@ const Report = () => {
   }
 
   function downloadCSVFromTable() {
-    const table = document.querySelector(".data-table"); // Select the table by class
+    const table = document.querySelector(".data-table"); // Select the table by className
     let csvContent = "";
 
     // Define the full header row
@@ -811,11 +615,11 @@ const Report = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
       {isLoading && <Loader />}
-      <Header />
+
       <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
         <div className="row">
-          <div className="col-lg-2 col-md-0 "></div>
-          <div className="col-lg-10 col-md-12 col-sm-12">
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div className="row mt-2 me-1">
               <div
                 className="card"
@@ -827,257 +631,28 @@ const Report = () => {
               </div>
             </div>
             <div className="row mt-2 me-1 search-report-card" >
-              <div className="col-lg-3 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
-                <div
-                  ref={dropdownRef}
-                  className="search-bar"
-                  style={{
-                    border: "1px solid #000",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    minHeight: "30px",
-                    display: "flex",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                    position: "relative",
-                    width: "242px"
-                  }}
-                  onClick={() => setShowLocation(true)}
-                >
-                  {selectedLocations.map((location, index) => (
-                    <span key={index} className="selected-location" style={{ backgroundColor: "#f1ececff", padding: "5px", borderRadius: "5px", margin: "2px", display: "inline-block" }}>
-                      {location}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeLocation(location);
-                        }}
-                        style={{
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                          marginLeft: "5px",
-                          borderRadius: "50%",
-
-                          width: "18px",
-                          height: "18px",
-                          fontSize: "12px",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center"
-                        }}
-                      >
-                        ×
-                      </button>
-                      &nbsp;
-                    </span>
-                  ))}
-
-                  <input
-                    type="text"
-                    placeholder={selectedLocations.length === 0 ? "Search Locations..." : ""}
-                    value={locationSearchInput}
-                    onChange={(e) => {
-                      setLocationSearchInput(e.target.value);
-                      setShowLocation(true);
-                    }}
-                    onKeyDown={handleLocationKeyDown}
-                    style={{
-                      border: "none",
-                      outline: "none",
-                      width: "100%",
-                      backgroundColor: "transparent",
-                      minWidth: "60px",
-                      flex: 1,
-                      paddingRight: "25px" // Add padding to prevent text overlapping the icon
-                    }}
-                  />
-
-                  {/* FaChevronDown icon with fixed position */}
-                  <FaChevronDown
-                    style={{
-                      color: 'grey',
-                      position: 'absolute',
-                      right: '8px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      pointerEvents: 'none' // Makes the icon non-interactive
-                    }}
+              {!userRoles.includes("Cbsl User") && (
+                <div className="col-lg-3 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
+                  <SearchBar
+                    items={locations}
+                    selectedItems={selectedLocations}
+                    onChange={newSelected => setSelectedLocations(newSelected)}
+                    placeholder="Search locations..."
+                    showSelectAll={true}
                   />
                 </div>
-
-                {showLocation && (
-
-                  <div
-                    ref={dropdownMenuRef}
-                    className="location-card"
-                    style={{
-                      position: 'absolute',
-                      zIndex: 1000,
-                      backgroundColor: 'white',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      width: '230px',
-                      maxHeight: '200px',
-                      overflowY: 'auto',
-                      top: '100%',
-                      marginLeft: '1px',
-                      marginTop: '3px',
-
-                    }}
-                  >
-
-                    {filteredLocations.map((location, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          padding: '8px 12px',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #eee',
-                          backgroundColor: index === highlightedIndex ? '#f0f0f0' : 'transparent',
-                        }}
-                        onClick={() => handleLocation(location)}
-                        onMouseEnter={() => setHighlightedIndex(index)}
-                      >
-                        {location}
-                      </div>
-                    ))}
-                    {filteredLocations.length === 0 && (
-                      <div style={{ padding: '8px 12px', color: '#999' }}>
-                        No locations found
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-
+              )}
 
               <div className="col-lg-3 col-md-2 col-sm-12 mt-1">
-                <div
-                  ref={filedropdownRef}
-                  className="search-bar"
-                  style={{
-                    border: "1px solid #000",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    minHeight: "30px",
-                    display: "flex",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                    position: "relative"
-                  }}
-                  onClick={() => setShowFileType(true)}
-                >
-
-
-                  {selectedFileTypes.map((fileType, index) => (
-                    <span
-                      key={index}
-                      className="selected-location"
-                      style={{
-                        backgroundColor: '#f1ececff',
-                        padding: '5px',
-                        borderRadius: '5px',
-                        margin: '2px',
-                        display: 'inline-block',
-
-                      }}
-                    >
-                      {fileType}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFileType(fileType);
-                        }}
-                        style={{
-                          backgroundColor: 'black',
-                          color: 'white',
-                          border: 'none',
-                          marginLeft: '5px',
-                          borderRadius: '50%',
-                          width: '18px',
-                          height: '18px',
-                          fontSize: '12px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        ×
-                      </button>
-                      &nbsp;
-                    </span>
-                  ))}
-
-                  <input
-                    type="text"
-                    placeholder={selectedFileTypes.length === 0 ? "Search File Type..." : ""}
-                    value={fileTypeSearchInput}
-                    onChange={(e) => {
-                      setFileTypeSearchInput(e.target.value);
-                      setShowFileType(true);
-                    }}
-                    onKeyDown={handleFileKeyDown}
-                    style={{
-                      border: "none",
-                      outline: "none",
-                      width: "100%",
-                      backgroundColor: "transparent",
-                      minWidth: "60px",
-                      flex: 1,
-                      paddingRight: "25px"
-                    }}
-                  />
-                </div>
-
-
-
-                {showFileType && (
-                  <div
-                    className="location-card"
-                    ref={dropdownMenuRef}
-                    style={{
-                      position: "absolute",
-                      width: "242px",
-                      backgroundColor: "white",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      minHeight: "170px",
-                      overflowY: "auto",
-                      zIndex: 1000,
-                      marginTop: "2px",
-                      boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-                      maxHeight: "200px"
-
-                    }}
-                  >
-                    {filteredFileTypes.length > 0 ? (
-                      filteredFileTypes.map((item, index) => (
-                        <div
-                          key={index}
-                          style={{
-                            padding: "8px 12px",
-                            cursor: "pointer",
-                            borderBottom: "1px solid #eee",
-                            backgroundColor:
-                              index === highlightedIndex ? "#f0f0f0" : "transparent",
-                          }}
-                          onClick={() => handleFileType(item.filetype)}
-                          onMouseEnter={() => setHighlightedIndex(index)}
-                        >
-                          {item.filetype}
-                        </div>
-                      ))
-                    ) : (
-                      <div style={{ padding: "8px 12px", color: "#999" }}>
-                        No file types available
-                      </div>
-                    )}
-                  </div>
-                )}
+                <SearchBar
+                  items={fileType ? fileType.map((ft) => ft.filetype) : []}
+                  selectedItems={selectedFileTypes}
+                  onChange={(newSelected) =>
+                    setSelectedFileTypes(newSelected)
+                  }
+                  placeholder="Search File Types..."
+                  showSelectAll={true}
+                />
               </div>
 
               <div className="col-lg-4 col-md-8 col-sm-12 d-flex flex-wrap ">
@@ -1106,7 +681,7 @@ const Report = () => {
                   }}
                   popperClassName="compact-picker"
                 />
-                <button
+                <p
                   className="btn ms-1 me-1"
                   style={{
                     height: "40px",
@@ -1115,10 +690,11 @@ const Report = () => {
                     marginTop: "1px",
                     borderRadius: "0px",
                     color: 'white',
+
                   }}
                 >
                   To
-                </button>
+                </p>
                 <DatePicker
                   className="date-field"
                   selected={endDate}
@@ -1146,7 +722,7 @@ const Report = () => {
                 />
               </div>
 
-              <div className="col-md-2"><button className="btn add-btn" onClick={handleClick}>Search</button></div>
+              <div className="col-md-2"><SearchButton onClick={handleClick} Name="Search" /></div>
             </div>
             <div className="row mt-3 me-1">
               <div
@@ -1195,241 +771,88 @@ const Report = () => {
               <div className="main-summary-card ">
                 <div className="row">
                   {
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                            Coll. of Records
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.CollectionFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.CollectionImages) || 0, 0)).toLocaleString('en-IN')}
-                        </p>
-                      </div>
-                    </div>
-
+                    <ReportCard
+                      name="Coll. of Records"
+                      nameFilesData="CollectionFiles"
+                      nameImagesData="CollectionImages"
+                      repo={report}
+                    />
                   }
 
                   {
-
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 style={{ textTransform: "capitalize" }}>
-                            Scanning ADF
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.ScannedFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.ScannedImages) || 0, 0)).toLocaleString('en-IN')}
-                        </p>
-
-                      </div>
-                    </div>
-
+                    <ReportCard
+                      name="Scanning ADF"
+                      nameFilesData="ScannedFiles"
+                      nameImagesData="ScannedImages"
+                      repo={report}
+                    />
                   }
                   {
-
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 style={{ textTransform: "capitalize" }}>
-                            Image QC
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.QCFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.QCImages) || 0, 0)).toLocaleString('en-IN')}
-                        </p>
-
-                      </div>
-                    </div>
-
+                    <ReportCard
+                      name="Image QC"
+                      nameFilesData="QCFiles"
+                      nameImagesData="QCImages"
+                      repo={report}
+                    />
                   }
                   {
-
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 className="mt-2" style={{ textTransform: "capitalize" }}>
-                            Doc Classification
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.FlaggingFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.FlaggingImages) || 0, 0)).toLocaleString('en-IN')}
-                        </p>
-
-                      </div>
-                    </div>
-
+                    <ReportCard
+                      name="Doc Classification"
+                      nameFilesData="FlaggingFiles"
+                      nameImagesData="FlaggingImages"
+                      repo={report}
+                    />
                   }
                   {
-
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 style={{ textTransform: "capitalize" }}>
-                            Indexing
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.IndexingFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.IndexingImages) || 0, 0)).toLocaleString('en-IN')}
-
-                        </p>
-
-                      </div>
-                    </div>
-
-                  }
-                  {
-
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 style={{ textTransform: "capitalize" }}>
-                            CBSL QA
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.CBSL_QAFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.CBSL_QAImages) || 0, 0)).toLocaleString('en-IN')}
-
-                        </p>
-
-                      </div>
-                    </div>
-
-                  }
-                  {
-
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 style={{ textTransform: "capitalize" }}>
-                            Client QA
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Client_QAFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Client_QAImages) || 0, 0)).toLocaleString('en-IN')}
-
-                        </p>
-
-
-                      </div>
-                    </div>
-
-                  }
-                  {
-
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 style={{ textTransform: "capitalize" }}>
-                            Export PDF
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Export_PdfFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Export_PdfImages) || 0, 0)).toLocaleString('en-IN')}
-                        </p>
-
-                      </div>
-                    </div>
-
+                    <ReportCard
+                      name="Indexing"
+                      nameFilesData="IndexingFiles"
+                      nameImagesData="IndexingImages"
+                      repo={report}
+                    />
                   }
 
                   {
-
-                    <div className="col-lg-2 col-md-4 col-sm-6">
-                      <div className="summary-card mt-3">
-                        <div className="summary-title">
-                          <h6 style={{ textTransform: "capitalize" }}>
-                            Digi Sign
-                          </h6>
-                        </div>
-                        <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-
-                          Files: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Digi_SignFiles) || 0, 0)).toLocaleString('en-IN')}
-                          <br />
-                          Images: {Number(report?.reduce((sum, elem) => sum + Number(elem?.Digi_SignImages) || 0, 0)).toLocaleString('en-IN')}
-                        </p>
-
-                      </div>
-                    </div>
-
+                    <ReportCard
+                      name="CBSL QA"
+                      nameFilesData="CBSL_QAFiles"
+                      nameImagesData="CBSL_QAImages"
+                      repo={report}
+                    />
                   }
                   {
-                    summary && (
-                      <>
-                        {selectedLocations.length === 0 ? (
-                          summary.map((elem, index) => (
-                            <div
-                              className="col-lg-2 col-md-4 col-sm-6"
-                              key={index}
-                            >
-                              <div className="summary-card mt-3">
-                                <div className="summary-title">
-                                  <h6 style={{ textTransform: "capitalize" }}>
-                                    Inventory Out
-                                  </h6>
-                                </div>
-                                <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                  Files: {elem.Inv_Out_Files} <br />
-                                  Images: {elem.Inv_Out_Images}
-                                </p>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="col-lg-2 col-md-4 col-sm-6">
-                            <div className="summary-card mt-3">
-                              <div className="summary-title">
-                                <h6 style={{ textTransform: "capitalize" }}>
-                                  Inventory Out
-                                </h6>
-                              </div>
-                              <p className="text-center" style={{ fontSize: '13px', fontWeight: '500', color: 'maroon' }}>
-                                Files:{" "}
-                                {selectedLocations.reduce((acc, location) => {
-                                  const locationData = report.find((elem) => elem.LocationName === location);
-                                  return acc + (locationData ? parseInt(locationData.Inv_Out_Files) || 0 : 0);
-                                }, 0).toLocaleString()}
-                                <br />
-                                Images:{" "}
-                                {selectedLocations.reduce((acc, location) => {
-                                  const locationData = report.find((elem) => elem.LocationName === location);
-                                  return acc + (locationData ? parseInt(locationData.Inv_Out_Images) || 0 : 0);
-                                }, 0).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
+                    <ReportCard
+                      name="Client QA"
+                      nameFilesData="Client_QAFiles"
+                      nameImagesData="Client_QAImages"
+                      repo={report}
+                    />
+                  }
+                  {
+                    <ReportCard
+                      name="Export PDF"
+                      nameFilesData="Export_PdfFiles"
+                      nameImagesData="Export_PdfImages"
+                      repo={report}
+                    />
+                  }
+                  {
+                    <ReportCard
+                      name="Digi Sign"
+                      nameFilesData="Digi_SignFiles"
+                      nameImagesData="Digi_SignImages"
+                      repo={report}
+                    />
+                  }
+                  {
+                    <ReportCard
+                      name="Inventory Out"
+                      nameFilesData="Inv_Out_Files"
+                      nameImagesData="Inv_Out_Images"
+                      repo={report}
+                    />
+                  }
+
                 </div>
               </div>
             </div>
@@ -1480,16 +903,16 @@ const Report = () => {
                   style={{ overflowX: "auto" }}
                 >
                   <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
-                  <table class="table table-hover table-bordered table-responsive  data-table">
+                  <table className="table table-hover table-bordered table-responsive  data-table">
                     <thead
                       style={{ color: "#4bc0c0", fontWeight: '300', textAlign: 'center' }}
                     >
                       <tr>
-                        <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
-                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
-                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
-                        <th colspan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
+                        <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
+                        <th colSpan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
                         <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
@@ -1635,17 +1058,17 @@ const Report = () => {
                       style={{ overflowX: "auto", maxHeight: '500px' }}
                     >
                       <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
-                      <table class="table table-hover table-bordered table-responsive date-table">
+                      <table className="table table-hover table-bordered table-responsive date-table">
                         <thead
                           style={{ color: "black", fontWeight: '300', textAlign: 'center' }}
                         >
                           <tr>
-                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                            <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Date</th>
-                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
-                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
-                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
-                            <th colspan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
+                            <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                            <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Date</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
+                            <th colSpan="2" style={{ verticalAlign: 'middle' }}>Document Classification</th>
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>Indexing</th>
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>CBSL QA</th>
                             <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA</th>
@@ -1708,8 +1131,6 @@ const Report = () => {
                                     <td>{isNaN(parseInt(elem.Client_QCImages)) ? "0" : parseInt(elem.Client_QCImages).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
                                     <td>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td>
-                                    {/* <td>{isNaN(parseInt(elem.Digi_SignFiles)) ? "0" : parseInt(elem.Digi_SignFiles).toLocaleString()}</td>
-                                    <td>{isNaN(parseInt(elem.Digi_SignImages)) ? "0" : parseInt(elem.Digi_SignImages).toLocaleString()}</td> */}
                                     <td>{Number(elem?.Digi_SignFiles) ? Number(elem.Digi_SignFiles).toLocaleString('en-IN') : '0'}</td>
                                     <td>{Number(elem?.Digi_SignImages) ? Number(elem.Digi_SignImages).toLocaleString('en-IN') : '0'}</td>
                                     <td>0</td>
@@ -1737,7 +1158,7 @@ const Report = () => {
           </div>
         </div>
       </div>
-      <Footer />
+
 
     </>
   );

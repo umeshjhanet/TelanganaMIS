@@ -8,7 +8,7 @@ import AddGroupModal from './Components/AddGroupModal';
 import { API_URL } from './Api';
 import UpdateGroupModal from './Components/UpdateGroupModal';
 
-const GroupManager = () => {
+const GroupManager = ({ showSideBar }) => {
   const [group, setGroup] = useState();
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,7 +67,7 @@ const GroupManager = () => {
     try {
       const response = await axios.delete(`${API_URL}/deletegroup/${group_id}`);
       setGroup(group.filter((elem) => elem.id !== group_id));
-     
+
       setShowConfirmation(false);
     } catch (error) {
       console.error("There was an error in deleting data!", error);
@@ -104,11 +104,10 @@ const GroupManager = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <Header />
       <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
         <div className='row'>
-          <div className='col-lg-2 col-md-0'></div>
-          <div className='col-lg-10 col-md-12'>
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div
               className="card mt-3"
               style={{ padding: "5px", backgroundColor: "#4BC0C0" }}
@@ -124,7 +123,7 @@ const GroupManager = () => {
                 </div>
                 {isOpen && <AddGroupModal onClose={handleClose} />}
                 <div className='col-lg-2 col-md-2'></div>
-                <div className='col-lg-5 col-md-6'>
+                <div className='col-lg-5 col-md-6' style={{ display: "flex" }}>
                   <input
                     type='text'
                     style={{ width: '300px', height: '40px' }}

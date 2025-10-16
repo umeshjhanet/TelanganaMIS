@@ -8,7 +8,7 @@ import { format, sub } from "date-fns";
 import { MdDownload } from 'react-icons/md';
 import { IoDownload } from 'react-icons/io5';
 
-const ClientDPR = () => {
+const ClientDPR = ({ showSideBar }) => {
     const [isLoading, setIsLoading] = useState('false');
     const [tableData, setTableData] = useState();
     const [error, setError] = useState('false');
@@ -32,7 +32,7 @@ const ClientDPR = () => {
                 let apiUrl = `${API_URL}/clientreporttable`;
                 setIsLoading(true);
                 const response = await axios.get(apiUrl);
-             
+
                 setTableData(response.data);
                 setIsLoading(false);
             } catch (error) {
@@ -53,7 +53,7 @@ const ClientDPR = () => {
                     );
                     const data = apiData.map((item) => item["ScannedImages"]);
 
-                  
+
 
                     setMonthImage({
                         labels: labels.filter((label) => label !== "id"),
@@ -133,7 +133,7 @@ const ClientDPR = () => {
             "Cumulative Scanned Images",
             "Remarks",
         ];
-    
+
         // Prepare rows
         const rows = tableData.map(elem => [
             elem.LocationName || "N/A",
@@ -151,7 +151,7 @@ const ClientDPR = () => {
                 : parseInt(elem.TotalScannedImages).toLocaleString(),
             elem.Remarks || "N/A",
         ]);
-    
+
         // Compute totals
         const totalRow = [
             "Total",
@@ -161,14 +161,14 @@ const ClientDPR = () => {
             tableData.reduce((acc, elem) => acc + (parseInt(elem.TotalScannedImages) || 0), 0).toLocaleString(),
             "N/A", // Remarks column for total row
         ];
-    
+
         // Append total row to rows
         rows.push(totalRow);
-    
+
         // Trigger download
         downloadCSV(headers, rows, "Telangana_District_Court_Data.csv");
     };
-    
+
     const downloadCSV = (headers, rows, filename) => {
         const csvContent = [
             headers.join(","), // Convert headers to CSV
@@ -192,11 +192,11 @@ const ClientDPR = () => {
     return (
         <>
             {isLoading && <Loader />}
-            <Header />
+
             <div className={`container-fluid mb-4 ${isLoading ? 'blur' : ''}`}>
                 <div className="row">
-                    <div className="col-lg-2 col-md-0 "></div>
-                    <div className="col-lg-10 col-md-12 col-sm-12">
+                    <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+                    <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
                         <div className="row mt-2 me-1">
                             <h4 className="text-center">Client Report</h4>
                         </div>

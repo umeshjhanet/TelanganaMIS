@@ -27,30 +27,30 @@ const Login = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token') || localStorage.getItem('authToken');
-  
+
     if (token && isTokenValid(token)) {
       validateToken(token); // Valid token path
     } else {
       navigateToDestination(); // fallback to role-based or guest flow
     }
   }, []);
-  
+
 
   const validateToken = async (token) => {
     try {
 
-  
+
       const response = await axios.post(`${API_URL}/validate-token`, { token });
-  
+
       if (response.data.valid) {
-       
-  
+
+
         localStorage.setItem('authToken', token);
         localStorage.setItem('user', JSON.stringify(response.data)); // ✅ Save user data
-  
+
         navigateToDestination(); // ✅ Use this instead of hardcoding /report
       } else {
-       
+
         navigate('/');
       }
     } catch (error) {
@@ -58,7 +58,7 @@ const Login = () => {
       navigate('/');
     }
   };
-  
+
   const isTokenValid = (token) => {
     try {
       const decoded = JSON.parse(atob(token.split('.')[1]));
@@ -81,7 +81,7 @@ const Login = () => {
       <div className="error mt-1" style={{ marginLeft: '35px' }}>{errorMessages[name]}</div>
     );
   const handleSubmit = async (event) => {
-  
+
     event.preventDefault();
     // Check for empty fields
     if (!username || !password) {
@@ -136,7 +136,7 @@ const Login = () => {
 
   const navigateToDestination = () => {
     const user = JSON.parse(localStorage.getItem('user'));
-  
+
     if (user && user.user_roles) {
       if (user.user_roles.includes("Cbsl User")) {
         navigate('/uploadDatabase');
@@ -153,7 +153,7 @@ const Login = () => {
       navigate('/');
     }
   };
-  
+
 
   // Toggle password visibility
   const handleToggle = () => {
@@ -217,7 +217,7 @@ const Login = () => {
                       {renderErrorMessage('password')}
                       {renderErrorMessage('blank')}
                       <p className="text-end mt-2 me-3" style={{ color: 'white', fontSize: '14px', fontWeight: '500' }}>Forgot Password?</p>
-                       <button className='btn login-btn mt-3' style={{ backgroundColor: '#2b757f', position: 'relative', left: '45px', width: '295px' }}  >
+                      <button className='btn login-btn mt-3' style={{ backgroundColor: '#2b757f', position: 'relative', left: '45px', width: '295px' }}  >
                         {isSubmitting ? 'Logging in...' : 'Submit'}
                       </button>
                     </div>

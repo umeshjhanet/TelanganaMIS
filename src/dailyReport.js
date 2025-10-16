@@ -11,7 +11,7 @@ import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import Chart from 'react-apexcharts';
 
 
-const DailyReport = () => {
+const DailyReport = ({ showSideBar }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [showLocation, setShowLocation] = useState(false);
@@ -271,7 +271,7 @@ const DailyReport = () => {
                 apiUrl += `?${queryParams.join("&")}`;
             }
 
-          
+
 
             const response = await axios.get(apiUrl, { responseType: "blob" });
             const blob = new Blob([response.data], { type: "text/csv" });
@@ -315,11 +315,11 @@ const DailyReport = () => {
                     queryParams.fileType = selectedFileTypes;
                 }
 
-             
+
 
                 setIsLoading(true);
                 const response = await axios.get(apiUrl, { params: queryParams });
-              
+
                 setReport(response.data);
                 setIsLoading(false);
                 updateTotalLocations(response.data);
@@ -348,11 +348,11 @@ const DailyReport = () => {
                     queryParams.fileType = selectedFileTypes;
                 }
 
-              
+
 
                 setIsLoading(true);
                 const response = await axios.get(apiUrl, { params: queryParams });
-               
+
                 setDateReport(response.data);
                 setIsLoading(false);
                 updateTotalLocations(response.data);
@@ -413,7 +413,7 @@ const DailyReport = () => {
                         console.error("No data received from the API");
                         return;
                     }
-                 
+
                     const labels = Object.keys(apiData[0]).filter(
                         (label) => label !== "locationid" && label !== "LocationName"
                     );
@@ -471,7 +471,7 @@ const DailyReport = () => {
                         { label: "QC Images", data: qcImages },
                         { label: "Flagging Images", data: flaggingImages },
                         { label: "Indexing Images", data: indexingImages },
-                        { label: "CBSL QA Images", data: cbslQAImages },    
+                        { label: "CBSL QA Images", data: cbslQAImages },
                         { label: "Client QA Accepted Images", data: clientQAAcceptedImages },
                         { label: "Client QA Rejected Images", data: clientQARejectedImages },
                         { label: "Export PDF Images", data: exportPdfImages },
@@ -499,7 +499,7 @@ const DailyReport = () => {
                     const apiData = response.data;
                     const labels = apiData.map((item) => item["scandate"]);
                     const data = apiData.map((item) => item["Scanned No Of Images"]);
-                  
+
                     setMonthImage({
                         labels: labels.filter((label) => label !== "id"),
                         datasets: [
@@ -509,7 +509,7 @@ const DailyReport = () => {
                             },
                         ],
                     });
-                 
+
                 })
                 .catch((error) => {
                     console.error("Error fetching data:", error);
@@ -520,7 +520,7 @@ const DailyReport = () => {
                 .get(`${API_URL}/tabularData`)
                 .then((response) => {
                     setTableData(response.data);
-                
+
                 })
                 .catch((error) => console.error(error));
         };
@@ -545,11 +545,11 @@ const DailyReport = () => {
                     queryParams.fileType = selectedFileTypes;
                 }
 
-              
+
 
                 setIsLoading(true);
                 const response = await axios.get(apiUrl, { params: queryParams });
-               
+
                 setManPowerData(response.data);
                 setIsLoading(false);
                 updateTotalLocations(response.data);
@@ -574,7 +574,7 @@ const DailyReport = () => {
                     const blob = new Blob([response.data], { type: "text/csv" });
                     const url = window.URL.createObjectURL(blob);
                     setCsv(url);
-                  
+
                 })
                 .catch((error) => {
                     console.error("Error in exporting data:", error);
@@ -767,11 +767,11 @@ const DailyReport = () => {
     );
     return (
         <>
-            <Header />
+
             <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
                 <div className="row">
-                    <div className="col-lg-2 col-md-0 "></div>
-                    <div className="col-lg-10 col-md-12 col-sm-12">
+                    <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+                    <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
                         <div className="row mt-2 me-1">
                             <div
                                 className="card"
@@ -877,18 +877,18 @@ const DailyReport = () => {
                                     className="row mt-5 ms-2 me-2"
                                     style={{ overflowX: "auto" }}
                                 >
-                                    <table class="table table-hover table-bordered table-responsive data-table">
+                                    <table className="table table-hover table-bordered table-responsive data-table">
                                         <thead style={{ color: "#4BC0C0" }}>
                                             <tr>
-                                                <th rowspan="2">Sr. No.</th>
-                                                <th rowspan="2">Location</th>
+                                                <th rowSpan="2">Sr. No.</th>
+                                                <th rowSpan="2">Location</th>
                                                 <th colspan="2">Scanned ({formattedPreviousDate})</th>
                                                 <th colspan="2">
                                                     Scanned ({formattedYesterdayDate})
                                                 </th>
                                                 <th colspan="2">Scanned ({formattedCurrentDate})</th>
                                                 <th colspan="2">Cumulative till date</th>
-                                                <th rowspan="2">Remarks</th>
+                                                <th rowSpan="2">Remarks</th>
                                             </tr>
                                             <tr>
                                                 <th>Files</th>
@@ -1075,12 +1075,12 @@ const DailyReport = () => {
                                     style={{ overflowX: "auto" }}
                                 >
                                     <h5 className="mt-1 mb-2">Total Locations: {totalLocations}</h5>
-                                    <table class="table table-hover table-bordered table-responsive  data-table">
+                                    <table className="table table-hover table-bordered table-responsive  data-table">
                                         <thead
                                             style={{ color: "black", fontWeight: '300', textAlign: 'center' }}
                                         >
                                             <tr>
-                                                <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                                <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Collection of Records</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanning ADF</th>
                                                 <th colspan="2" style={{ verticalAlign: 'middle' }}>Image QC</th>
@@ -1279,7 +1279,7 @@ const DailyReport = () => {
                                 </h6>
                             </div>
                             <div className="row mt-2">
-                                <table class="table table-hover table-bordered table-responsive  data-table">
+                                <table className="table table-hover table-bordered table-responsive  data-table">
                                     <thead>
                                         <tr>
                                             <th>Location Name</th>

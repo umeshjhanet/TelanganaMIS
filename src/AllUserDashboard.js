@@ -7,19 +7,19 @@ import axios, { all } from "axios";
 import "./App.css";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
-import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import { API_URL } from "./Api";
-import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
-import { saveAs } from "file-saver";
 import { toast } from 'react-toastify';
-import { FaChevronDown } from "react-icons/fa";
-import { SearchHeader } from './Components/SearchHeader';
+import SearchBar from "./Components/SearchBar";
+import SearchButton from "./Components/Button";
+import BarGraph from "./Components/BarGraph";
+import DonutGraph from "./Components/DonutGraph";
+import ProjectStatusTable from "./Components/ProjectStatusTable";
 
-const Dashboard = () => {
+const Dashboard = ({ showSideBar }) => {
   const currentDate = new Date();
   const yesterdayDate = sub(currentDate, { days: 1 });
   const previousDate = sub(currentDate, { days: 2 });
@@ -47,112 +47,14 @@ const Dashboard = () => {
   const [target, setTarget] = useState();
   const [selectedDate, setSelectedDate] = useState(null);
   const [yesterdayReport, setYesterdayReport] = useState([]);
-  const [vendorName, setVendorName] = useState();
+  const [vendorName, setVendorName] = useState([]);
   const [locationSearchInput, setLocationSearchInput] = useState("");
-
-  const screenWidth = window.innerWidth;
 
 
 
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-
-  const filteredLocations =
-    locations?.filter(
-      (locationName) =>
-        locationName &&
-        locationName.toLowerCase().includes(locationSearchInput.toLowerCase())
-    ) || [];
-
-
-
   const dropdownMenuRef = useRef(null); // Add this ref for the dropdown menu
-
-  const handleLocationKeyDown = (e) => {
-    if (!showLocation) {
-      setShowLocation(true);
-      return;
-    }
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setHighlightedIndex(prev => {
-          const newIndex = prev < filteredLocations.length - 1 ? prev + 1 : prev;
-
-          // Scroll to ensure the highlighted item is visible
-          if (dropdownMenuRef.current && newIndex !== prev) {
-            const highlightedElement = dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth'
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setHighlightedIndex(prev => {
-          const newIndex = prev > 0 ? prev - 1 : -1;
-
-          // Scroll to ensure the highlighted item is visible
-          if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
-            const highlightedElement = dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth'
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (filteredLocations.length === 1) {
-          handleLocation(filteredLocations[0]);
-          setHighlightedIndex(-1);
-          setShowLocation(false);
-          return;
-        }
-        if (highlightedIndex >= 0 && filteredLocations[highlightedIndex]) {
-          handleLocation(filteredLocations[highlightedIndex]);
-          setHighlightedIndex(-1);
-        }
-        break;
-      case 'Backspace':
-        if (locationSearchInput === '' && selectedLocations.length > 0) {
-          removeLocation(selectedLocations[selectedLocations.length - 1]);
-        }
-        break;
-      case 'Escape':
-        setShowLocation(false);
-        setHighlightedIndex(-1);
-        break;
-      default:
-        break;
-    }
-  };
-
-  // Update your handleLocation function
-  const handleLocation = (locationName) => {
-    if (!selectedLocations.includes(locationName)) {
-      setSelectedLocations([...selectedLocations, locationName]);
-      setShowLocation(false);
-    }
-    setLocationSearchInput("");
-    setShowLocation(false);
-    setHighlightedIndex(-1);
-  };
-  const removeLocation = (locationToRemove) => {
-    setSelectedLocations(selectedLocations.filter(location => location !== locationToRemove));
-  };
 
   const [barFile, setBarFile] = useState({
     labels: [],
@@ -354,12 +256,12 @@ const Dashboard = () => {
         apiUrl += `?${locationQuery}`;
       }
 
-    
+
 
       const response = await axios.get(apiUrl);
       const apiData = response.data;
 
-     
+
 
       if (!apiData || apiData.length === 0) {
         console.error("No data received from the API");
@@ -443,27 +345,8 @@ const Dashboard = () => {
         console.error("Error fetching data:", error);
       });
   };
-  const fetchExportCsvFile = () => {
-    // Construct the API URL with multiple location names
-    const apiUrl = locationName
-      ? `${API_URL}/csv?${locationName
-        .map((name) => `locationName=${name}`)
-        .join("&")}`
-      : `${API_URL}/csv`;
 
-    axios
-      .get(apiUrl, { responseType: "blob" })
-      .then((response) => {
-        const blob = new Blob([response.data], { type: "text/csv" });
-        const url = window.URL.createObjectURL(blob);
-        setCsv(url);
-       
-      })
-      .catch((error) => {
-        console.error("Error in exporting data:", error);
-      });
-  };
- 
+
 
 
   const fetchGraphImageData = async (queryParams) => {
@@ -482,12 +365,12 @@ const Dashboard = () => {
         apiUrl += `?${locationQuery}`;
       }
 
-    
+
 
       const response = await axios.get(apiUrl);
       const apiData = response.data;
 
-    
+
       if (!apiData || apiData.length === 0) {
         console.error("No image data received from the API");
         return;
@@ -639,7 +522,7 @@ const Dashboard = () => {
         const apiData = response.data;
         const labels = apiData.map((item) => item["scandate"]);
         const data = apiData.map((item) => item["Scanned No Of Images"]);
-      
+
         setMonthImage({
           labels: labels.filter((label) => label !== "id"),
           datasets: [
@@ -649,7 +532,7 @@ const Dashboard = () => {
             },
           ],
         });
-      
+
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -669,7 +552,7 @@ const Dashboard = () => {
       .get(apiUrl)
       .then((response) => {
         const apiData = response.data;
-       
+
         if (!apiData || apiData.length === 0) {
           console.error("No data received from the API");
           return;
@@ -677,7 +560,7 @@ const Dashboard = () => {
 
         const labels = Object.keys(apiData[0]);
         const data = Object.values(apiData[0]);
-     
+
         setCivilCase({
           labels: labels.filter((label) => label !== "id"),
           datasets: [
@@ -706,7 +589,7 @@ const Dashboard = () => {
       .get(apiUrl)
       .then((response) => {
         const apiData = response.data;
-       
+
         if (!apiData || apiData.length === 0) {
           console.error("No data received from the API");
           return;
@@ -714,7 +597,7 @@ const Dashboard = () => {
 
         const labels = Object.keys(apiData[0]);
         const data = Object.values(apiData[0]);
-      
+
         setCriminalCase({
           labels: labels.filter((label) => label !== "id"),
           datasets: [
@@ -749,7 +632,7 @@ const Dashboard = () => {
       const response = await axios.get(apiUrl);
       const apiData = response.data;
 
-     
+
 
       if (!apiData || apiData.length === 0) {
         console.error("No data received from the API");
@@ -794,12 +677,12 @@ const Dashboard = () => {
         apiUrl += `?${locationQuery}`;
       }
 
-     
+
 
       const response = await axios.get(apiUrl);
       const apiData = response.data;
 
-  
+
 
       if (!apiData || apiData.length === 0) {
         console.error("No data received from the API");
@@ -809,7 +692,7 @@ const Dashboard = () => {
       const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
       const data = apiData.map(item => item["Images"] || 0);
 
- 
+
 
       setAllLocationImage({
         labels: labels,
@@ -829,7 +712,7 @@ const Dashboard = () => {
     }
   };
 
- 
+
   const fetchTableData = () => {
     axios
       .get(`${API_URL}/tabularData`)
@@ -837,20 +720,20 @@ const Dashboard = () => {
         // console.log(response.data);
         let data = response.data;
         if (selectedLocations.length > 0) {
-         
+
           data = data.filter(item =>
             selectedLocations.includes(item.LocationName)
           );
           // console.log(data);
           setTableData(data);
-        }else{
+        } else {
           setTableData(response.data);
         }
-        
+
       })
       .catch((error) => console.error(error));
   };
-  
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${API_URL}/7daysimages`, {
@@ -949,7 +832,6 @@ const Dashboard = () => {
     fetchAllYesGraphImageData(locationName);
     fetchAllGraphImageData(locationName);
     fetchTableData();
-    fetchExportCsvFile();
     fetchAllWeekImageData(locationName);
     fetchCumulative(locationName);
     fetchLocationData();
@@ -977,6 +859,8 @@ const Dashboard = () => {
       setError("Error fetching report data. Please try again.");
     }
   };
+
+
   const fetchCumulative = async () => {
     try {
       const params = {};
@@ -1022,112 +906,11 @@ const Dashboard = () => {
   }, []);
   const columnSums = calculateColumnSum();
 
-  const formatChartData = (data, colors) => ({
-    options: {
-      chart: {
-        toolbar: {
-          show: false,
-        },
-        stacked: false,
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
-        show: true,
-        width: -15,
-        colors: ["transparent"],
-      },
-      legend: {
-        show: true,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: "30%",
-          borderRadius: 2,
-        },
-      },
-      colors: colors,
-      xaxis: {
-        categories: data.labels,
-      },
-      responsive: [
-        {
-          breakpoint: 1024,
-          options: {
-            plotOptions: {
-              bar: {
-                columnWidth: "30%",
-                borderRadius: 7,
-              },
-            },
-          },
-        },
-      ],
-    },
-    series: [
-      {
-        name: data.datasets[0].label,
-        data: data.datasets[0].data,
-      },
-    ],
-  });
-  const formatWeekChartData = (data, colors) => ({
-    options: {
-      chart: {
-        toolbar: {
-          show: false,
-        },
-        stacked: false,
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
-        show: true,
-        width: -1,
-        colors: ["transparent"],
-      },
-      legend: {
-        show: true,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: "30%",
-          borderRadius: 2,
-        },
-      },
-      colors: colors,
-      xaxis: {
-        categories: data.labels,
-      },
-      responsive: [
-        {
-          breakpoint: 1024,
-          options: {
-            plotOptions: {
-              bar: {
-                columnWidth: "30%",
-                borderRadius: 7,
-              },
-            },
-          },
-        },
-      ],
-    },
-    series: data.datasets.map((dataset, index) => ({
-      name: dataset.label,
-      data: dataset.data,
-      color: colors[index]
-    }))
-  });
   const formatDonutData = (data) => {
     const labels = data.map(item => item.scandate);
     const series = data.map(item => parseInt(item.scannedfiles || item.scannedimages, 10));
 
-   
+
 
     return {
       options: {
@@ -1158,7 +941,7 @@ const Dashboard = () => {
   const donutImageData = formatDonutData(weekImage);
   const donutFileData = formatDonutData(weekFile);
   function downloadCSVFromTable() {
-    const table = document.querySelector(".data-table"); // Select the table by class
+    const table = document.querySelector(".data-table"); // Select the table by className
     let csvContent = "";
 
     // Define the full header row
@@ -1201,9 +984,9 @@ const Dashboard = () => {
         rowContent.push(""); // Add empty data if there are fewer columns
       }
 
-      // For the last row (Total row), handle the colspan=2 logic
+      // For the last row (Total row), handle the colSpan=2 logic
       if (index === rows.length - 1) {
-        // Insert an empty cell after "Total" to account for the colspan=2
+        // Insert an empty cell after "Total" to account for the colSpan=2
         rowContent.splice(1, 0, "");
       }
 
@@ -1367,12 +1150,12 @@ const Dashboard = () => {
       locationNames: currentParams.locations
     };
 
-  
+
 
 
     try {
       await Promise.all([
-     
+
         fetchYesterdayData(),
         fetchData(),
         fetchData(),
@@ -1388,7 +1171,6 @@ const Dashboard = () => {
         fetchAllYesGraphImageData(queryParams),
         fetchAllGraphImageData(queryParams),
         fetchTableData(),
-        fetchExportCsvFile(),
         fetchAllWeekImageData(queryParams),
         fetchCumulative(queryParams),
       ]);
@@ -1404,13 +1186,15 @@ const Dashboard = () => {
     }
   };
 
+  const vendorOptions = vendorName.map(item => item.Vendor);
+
 
   return (
     <>
-      <div className="container-fluid">
+      <div className="main-fluid p-3 m-2">
         <div className="row">
-          <div className="col-lg-2 col-md-0 "></div>
-          <div className="col-lg-10 col-md-12">
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div className="row mt-2">
               <div
                 style={{ display: "flex", justifyContent: "space-between" }}
@@ -1428,463 +1212,171 @@ const Dashboard = () => {
                 </p>
               </div>
             </div>
-
-
-         
             <div
               className="row mt-2 search-report-card d-flex gap-4 flex-wrap align-items-center"
               style={{ gap: '24px' }}
             >
-              <div
-                className="col-sm-3 col-lg-3 d-flex align-items-center gap-3"
-                style={{ position: 'relative', minWidth: '250px' }}
-              >
-                <div
-                  ref={dropdownRef}
-                  className="search-bar"
-                  onClick={() => setShowLocation(true)}
-                  style={{
-                    border: '1px solid #000',
-                    padding: '5px',
-                    borderRadius: '5px',
-                    // minHeight: '30px',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '5px',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    width: '250px',
-                    minWidth: '250px',
-                    maxWidth: '250px',
-                    height: selectedLocations.length >= 2 ? '60px' : 'auto',
-                    overflowY: selectedLocations.length >= 2 ? 'auto' : 'hidden',
-                    overflowX: 'hidden',
-                  }}
-                >
-                  <div>
-                    {selectedLocations.map((location, index) => (
-                      <span key={index} className="selected-location">
-                        {location}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeLocation(location);
-                          }}
-                          style={{
-                            backgroundColor: 'black',
-                            color: 'white',
-                            border: 'none',
-                            marginLeft: '5px',
-                            borderRadius: '50%',
-                            width: '18px',
-                            height: '18px',
-                            fontSize: '12px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          ×
-                        </button>
-                        &nbsp;
-                      </span>
-                    ))}
-                    <input
-                      type="text"
-                      placeholder={selectedLocations.length === 0 ? 'Select Locations...' : ''}
-                      value={locationSearchInput}
-                      onChange={(e) => {
-                        setLocationSearchInput(e.target.value);
-                        setShowLocation(true);
-                      }}
-                      onKeyDown={handleLocationKeyDown}
-                      style={{
-                        border: 'none',
-                        outline: 'none',
-                        width: selectedLocations.length > 0 ? '70px' : '100%',
-                        backgroundColor: 'transparent',
-                        minWidth: '60px',
-                      }}
-                    />
-                  </div>
-                  {selectedLocations.length < 1 ? <FaChevronDown style={{ color: 'grey' }} /> : ''}
-                </div>
-
-                {showLocation && (
-                  <div
-                    ref={dropdownMenuRef}
-                    className="location-card"
-                    style={{
-                      position: 'absolute',
-                      zIndex: 1000,
-                      backgroundColor: 'white',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      width: '230px',
-                      maxHeight: '300px',
-                      overflowY: 'auto',
-                      top: '100%',
-                      marginLeft: '1px',
-                      marginTop: '3px',
-                    }}
-                  >
-                    {filteredLocations.map((locationName, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          padding: '8px 12px',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #eee',
-                          backgroundColor: index === highlightedIndex ? '#f0f0f0' : 'transparent',
-                        }}
-                        onClick={() => {
-                          handleLocation(locationName);
-                          setShowLocation(false);
-                        }}
-                        onMouseEnter={() => setHighlightedIndex(index)}
-                      >
-                        {locationName}
-                      </div>
-                    ))}
-                    {filteredLocations.length === 0 && (
-                      <div style={{ padding: '8px 12px', color: '#999' }}>No locations found</div>
-                    )}
-                  </div>
-                )}
+              <div className="col-lg-4 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
+                <SearchBar
+                  items={locations} // all available locations
+                  selectedItems={selectedLocations} // current selections
+                  onChange={(newSelected) =>
+                    setSelectedLocations(newSelected)
+                  } // update handler
+                  placeholder="Search locations..."
+                  showSelectAll={true}
+                />
               </div>
 
               <div className="col-12 col-md-6 d-flex align-items-center gap-3 flex-nowrap">
-                <button
-                  style={{
-                    backgroundColor: '#4BC0C0',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '5px',
-                    whiteSpace: 'nowrap',
-                  }}
+                <SearchButton
                   onClick={handleClick}
-                  className="me-2"
-                >
-                  Search
-                </button>
-                <button
-                  style={{
-                    backgroundColor: '#4BC0C0',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '5px',
-                    whiteSpace: 'nowrap',
-                  }}
+                  Name="Search"
+                />
+                <SearchButton
                   onClick={handleReset}
-                >
-                  Reset
-                </button>
+                  Name="Reset"
+                />
               </div>
             </div>
             <div className="row mt-2">
               <div className="card">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">SCANNED REPORT OF LAST 30 DAYS </CardTitle>
-                    <Chart
-                      options={formatChartData(monthImage, ["#4BC0C0"]).options}
-                      series={formatChartData(monthImage, ["#4BC0C0"]).series}
-                      type="bar"
-                      height="379"
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading="SCANNED REPORT OF LAST 30 DAYS"
+                  barFile={monthImage}
+                  color={["#4BC0C0"]}
+                  bar="bar"
+                  height={390}
+                />
 
               </div>
             </div>
             <div className="row mt-2">
-              <div className="table-card">
-                <div
-                  className="row"
-                  style={{
-                    padding: "5px",
-                    backgroundColor: "#4BC0C0",
-                    paddingTop: "15px",
-                  }}
-                >
-                  <div className="col-10">
-                    <h6 className="text-center" style={{ color: "white" }}>
-                      PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE
-                      RECORDS FOR DISTRICT COURT OF TELANGANA
-                    </h6>
-                  </div>
-                  <div className="col-2">
-                    <h6 style={{ color: "white", cursor: "pointer" }} onClick={handleExport}>
-                      {" "}
-                      <MdFileDownload style={{ fontSize: "20px" }} />
-                      Export
-                    </h6>
+              <ProjectStatusTable
+                tableData={tableData}
+                columnSums={columnSums}
+                formattedPreviousDate={formattedPreviousDate}
+                formattedYesterdayDate={formattedYesterdayDate}
+                formattedCurrentDate={formattedCurrentDate}
+                showFormatDropdown={showFormatDropdown}
+                handleExport={handleExport}
+                showConfirmation={showConfirmation}
+                exportTableFormat={exportTableFormat}
+                handleTableDropdownChange={handleTableDropdownChange}
+                downloadAllFormatsSummary={downloadAllFormatsSummary}
+                handleCancelExport={handleCancelExport}
+              />
+            </div>
 
-                  </div>
-                  {showFormatDropdown && (
-                    <div style={{ height: '0px', overflow: 'visible', display: 'flex', justifyContent: 'right' }}>
-                      <div className="export-dropdown-card">
-                        <p onClick={() => handleTableDropdownChange('csv')}>CSV</p>
-                        <p onClick={() => handleTableDropdownChange('excel')}>Excel</p>
-                        <p onClick={() => handleTableDropdownChange('pdf')}>PDF</p>
-                      </div>
-                    </div>
-                  )}
-                  {showConfirmation && (
-                    <div className="confirmation-dialog">
-                      <div className="confirmation-content">
-                        <p className="fw-bold">Are you sure you want to export the {exportTableFormat.toUpperCase()} file?</p>
-                        <button className="btn btn-success mt-3 ms-5" onClick={downloadAllFormatsSummary}>Yes</button>
-                        <button className="btn btn-danger ms-3 mt-3" onClick={handleCancelExport}>No</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div
-                  className="row mt-5 ms-2 me-2"
-                  style={{ overflowX: "auto" }}
-                >
-                  <table class="table table-hover table-bordered table-responsive data-table">
-                    <thead style={{ color: "#4BC0C0" }}>
-                      <tr>
-                        <th rowspan="2" style={{ verticalAlign: 'middle' }}>Sr. No.</th>
-                        <th rowspan="2" style={{ verticalAlign: 'middle' }}>Location</th>
-                        <th colspan="2">Scanned ({formattedPreviousDate})</th>
-                        <th colspan="2">
-                          Scanned ({formattedYesterdayDate})
-                        </th>
-                        <th colspan="2">Scanned ({formattedCurrentDate})</th>
-                        <th colspan="2">Cumulative till date</th>
-                      </tr>
-                      <tr>
-                        <th>Files</th>
-                        <th>Images</th>
-                        <th>Files</th>
-                        <th>Images</th>
-                        <th>Files</th>
-                        <th>Images</th>
-                        <th>Files</th>
-                        <th>Images</th>
-                      </tr>
-                    </thead>
+            <div className="row mt-2 ">
+              <div className="col-md-6 col-sm-12">
+                <BarGraph
+                  Heading="Cumulative Files"
+                  barFile={barFile}
+                  color={["#508C9B"]}
+                  bar="bar"
+                  height={350}
+                ></BarGraph>
 
-                    <tbody style={{ color: "gray" }}>
-                      {tableData &&
-                        tableData.map((elem, index) => {
-                        
-                            return (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td style={{ textAlign: 'left' }}>{elem.LocationName}</td>
-                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Prev_Files)) ? 0 : parseInt(elem.Prev_Files).toLocaleString()}</td>
-                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Prev_Images)) ? 0 : parseInt(elem.Prev_Images).toLocaleString()}</td>
-                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Yes_Files)) ? 0 : parseInt(elem.Yes_Files).toLocaleString()}</td>
-                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Yes_Images)) ? 0 : parseInt(elem.Yes_Images).toLocaleString()}</td>
-                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Today_Files)) ? 0 : parseInt(elem.Today_Files).toLocaleString()}</td>
-                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Today_Images)) ? 0 : parseInt(elem.Today_Images).toLocaleString()}</td>
-                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Total_Files)) ? 0 : parseInt(elem.Total_Files).toLocaleString()}</td>
-                                <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Total_Images)) ? 0 : parseInt(elem.Total_Images).toLocaleString()}</td>
-
-                              </tr>
-                            );
-                          
-                          return null;
-                        })}
-
-                      <tr style={{ color: "black" }}>
-                        <td colspan="2">
-                          <strong>Total</strong>
-                        </td>
-
-                        <td>
-                          <strong>{isNaN(parseInt(columnSums.prevFilesSum)) ? 0 : parseInt(columnSums.prevFilesSum).toLocaleString()}</strong>
-                        </td>
-                        <td>
-                          <strong>{isNaN(parseInt(columnSums.prevImagesSum)) ? 0 : parseInt(columnSums.prevImagesSum).toLocaleString()}</strong>
-                        </td>
-                        <td>
-                          <strong>{isNaN(parseInt(columnSums.yesFilesSum)) ? 0 : parseInt(columnSums.yesFilesSum).toLocaleString()}</strong>
-                        </td>
-                        <td>
-                          <strong>{isNaN(parseInt(columnSums.yesImagesSum)) ? 0 : parseInt(columnSums.yesImagesSum).toLocaleString()}</strong>
-                        </td>
-                        <td>
-                          <strong>{isNaN(parseInt(columnSums.todayFilesSum)) ? 0 : parseInt(columnSums.todayFilesSum).toLocaleString()}</strong>
-                        </td>
-                        <td>
-                          <strong>{isNaN(parseInt(columnSums.todayImagesSum)) ? 0 : parseInt(columnSums.todayImagesSum).toLocaleString()}</strong>
-                        </td>
-                        <td>
-                          <strong>{isNaN(parseInt(columnSums.totalFilesSum)) ? 0 : parseInt(columnSums.totalFilesSum).toLocaleString()}</strong>
-                        </td>
-                        <td>
-                          <strong>{isNaN(parseInt(columnSums.totalImagesSum)) ? 0 : parseInt(columnSums.totalImagesSum).toLocaleString()}</strong>
-                        </td>
-
-                      </tr>
-                    </tbody>
-
-                  </table>
-                </div>
+              </div>
+              <div className="col-md-6 col-sm-12">
+                <BarGraph
+                  Heading="Cumulative Images"
+                  barFile={barImage}
+                  color={["#508C9B"]}
+                  bar="bar"
+                  height={350}
+                ></BarGraph>
               </div>
             </div>
-            <div className="row">
+            <div className="row mt-2">
               <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">Cumulative Files </CardTitle>
-                    <Chart
-                      options={formatChartData(barFile, ["#508C9B"]).options}
-                      series={formatChartData(barFile, ["#508C9B"]).series}
-                      type="bar"
-                      height='350'
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading="Civil Cases (Files & Images)"
+                  barFile={civilCase}
+                  color={["#50B498"]}
+                  bar="bar"
+                  height={350}
+                />
 
               </div>
               <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">Cumulative Images </CardTitle>
-                    <Chart
-                      options={formatChartData(barImage, ["#508C9B"]).options}
-                      series={formatChartData(barImage, ["#508C9B"]).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
-              </div>
-            </div>
-            <div className="row mt-4">
-              <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">Civil Cases (Files & Images) </CardTitle>
-                    <Chart
-                      options={formatChartData(civilCase, ['#50B498']).options}
-                      series={formatChartData(civilCase, ['#50B498']).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
-
-              </div>
-              <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">Criminal Cases (Files & Images) </CardTitle>
-                    <Chart
-                      options={formatChartData(criminalCase, ['#50B498']).options}
-                      series={formatChartData(criminalCase, ['#50B498']).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading="Criminal Cases (Files & Images)"
+                  barFile={criminalCase}
+                  color={["#50B498"]}
+                  bar="bar"
+                  height={350}
+                />
 
               </div>
             </div>
-            <div className="row mt-4">
+            <div className="row mt-2">
               <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
-                    <Chart
-                      options={formatChartData(todayFile, ["#36C2CE"]).options}
-                      series={formatChartData(todayFile, ["#36C2CE"]).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading={`PRODUCTION REPORT FOR (${formattedYesterdayDate})`}
+                  subTitle="All Location: Images" // add subtitle support if needed
+                  barFile={todayFile}
+                  color={["#36C2CE"]}
+                  bar="bar"
+                  height={350}
+                />
 
               </div>
               <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">PRODUCTION REPORT FOR ({formattedYesterdayDate})</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                    <Chart
-                      options={formatChartData(todayImage, ["#36C2CE"]).options}
-                      series={formatChartData(todayImage, ["#36C2CE"]).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading={`PRODUCTION REPORT FOR (${formattedYesterdayDate})`}
+                  subTitle="All Location: Images"
+                  barFile={todayImage}
+                  color={["#36C2CE"]}
+                  bar="bar"
+                  height={350}
+                />
 
               </div>
             </div>
-            <div className="row mt-4">
+            <div className="row mt-2">
               <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">Weekly Report (Scanned)</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Files</CardSubtitle>
-                    <Chart
-                      options={donutFileData.options}
-                      series={donutFileData.series}
-                      type="donut"
-                      height="350"
-
-                    />
-                  </CardBody>
-                </Card>
+                <DonutGraph
+                  heading="Weekly Report"
+                  subTitle="All Location: Files"
+                  rawData={weekFile}
+                  height={350}
+                />
               </div>
               <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">Weekly Report (Scanned)</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                    <Chart
-                      options={donutImageData.options}
-                      series={donutImageData.series}
-                      type="donut"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
+                <DonutGraph
+                  heading="Weekly Report (Scanned)"
+                  subTitle="All Location: Images"
+                  rawData={weekImage}
+                  height={350}
+                />
               </div>
             </div>
-            <div className="row mt-4">
+            <div className="row mt-2">
               <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">SCANNED REPORT FOR ({formattedYesterdayDate})</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                    <Chart
-                      options={formatChartData(allLocationYesImage, ["#088395"]).options}
-                      series={formatChartData(allLocationYesImage, ["#088395"]).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading={`SCANNED REPORT FOR (${formattedYesterdayDate})`}
+                  subTitle="All Location: Images"
+                  barFile={allLocationYesImage}
+                  color={["#088395"]}
+                  bar="bar"
+                  height={350}
+                />
               </div>
               <div className="col-md-6 col-sm-12">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
-                    <CardSubtitle className="text-muted" tag="h6">All Location: Images</CardSubtitle>
-                    <Chart
-                      options={formatChartData(allLocationImage, ["#088395"]).options}
-                      series={formatChartData(allLocationImage, ["#088395"]).series}
-                      type="bar"
-                      height="350"
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading="Cumulative Scanned Till Date"
+                  subTitle="All Location: Images"
+                  barFile={allLocationImage}
+                  color={["#088395"]}
+                  bar="bar"
+                  height={350}
+                />
               </div>
             </div>
 
-            <div className="row mt-4">
+            <div className="row mt-2">
               <Card>
                 <CardBody>
                   <CardTitle tag="h5">Images Processing Chart</CardTitle>
@@ -1901,77 +1393,51 @@ const Dashboard = () => {
             </div>
             <div className="row search-report-card mt-2">
               <div className="col-2">
-                {/* <input type="date" value={selectedDate} onChange={handleDateChange}
-                  style={{ height: '40px' }} /> */}
                 <DatePicker
                   className="date-field"
                   selected={selectedDate}
                   onChange={handleDateChange}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="Select Date"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+
+
+                  popperProps={{
+                    modifiers: [
+                      {
+                        name: 'preventOverflow',
+                        options: {
+                          rootBoundary: 'viewport',
+                          tether: false,
+                          altAxis: true,
+                        },
+                      },
+                    ],
+                  }}
+                  popperClassName="compact-picker"
                 />
               </div>
               <div className="col-md-4 col-sm-12">
-                <div
-                  ref={vendorDropdownRef}
-                  className="search-bar"
-                  style={{
-                    border: "1px solid #000",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    minHeight: "30px",
-                    width: '250px'
-                  }}
+                <SearchBar
+                  items={vendorOptions} // all available 
+                  // locations
 
-                  contentEditable={true}
-                  onClick={() => setShowVendor(!showVendor)}
-                >
-                  {selectedVendors.length === 0 && !showVendor && (
-                    <span className="placeholder-text">Search Vendors...</span>
-                  )}
-                  {selectedVendors.map((vendor, index) => (
-                    <span key={index} className="selected-location">
-                      {vendor}
-                      <button
-                        onClick={() => removeVendor(vendor)}
-                        style={{
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                          marginLeft: "5px",
-                        }}
-                      >
-                        x
-                      </button>
-                      &nbsp;
-                    </span>
-                  ))}
-                  <span style={{ minWidth: "5px", display: "inline-block" }}>
-                    &#8203;
-                  </span>
-                </div>
-                {showVendor && (
-                  <>
-                    <div className="location-card">
-                      {vendorName &&
-                        vendorName.map((item, index) => (
-                          <div key={index}>
-                            <p
-                              onClick={() => handleVendor(item.Vendor)}
-                            >
-                              {item.Vendor}
-                            </p>
-                          </div>
-                        ))}
-                    </div>
-                  </>
-                )}
+                  selectedItems={selectedVendors} // current selections
+                  onChange={(newSelected) =>
+                    setSelectedVendors(newSelected)
+                  } // update handler
+                  placeholder="Search Vendors..."
+                  showSelectAll={true}
+                  Name="Vendors"
+                />
               </div>
               <div className="col-3">
                 <button className="btn add-btn" onClick={handleDateFilter}>Submit</button>
               </div>
             </div>
-            <div className="row mt-3 me-1">
+            <div className="row mt-2">
               <div className="table-card">
                 <div
                   className="row"
@@ -1991,7 +1457,7 @@ const Dashboard = () => {
                   className="row mt-3 ms-2 me-2"
                   style={{ overflowX: "auto", maxHeight: '500px' }}
                 >
-                  <table class="table table-hover table-bordered table-responsive date-table" style={{ zIndex: '0' }}>
+                  <table className="table table-hover table-bordered table-responsive date-table" style={{ zIndex: '0' }}>
                     <thead>
                       <tr>
                         <th>Process Steps</th>
@@ -2058,13 +1524,8 @@ const Dashboard = () => {
               <div className="table-card" style={{ marginBottom: "0px" }}>
                 <div className="row" style={{ padding: "5px", backgroundColor: "#4BC0C0", paddingTop: "15px" }}>
                   <div className="col-10">
-                    <h6 className="" style={{ color: "white" }}>Production Report ({formattedYesterdayDate})</h6>
+                    <h6 className="" style={{ color: "white" }}>Production Report ({!selectedDate ? formattedYesterdayDate : selectedDate})</h6>
                   </div>
-                  {/* <div className="col-2 text-end">
-                    <button onClick={handleExportYesterdayCSV} className="btn btn-light" style={{ marginTop: '-10px' }}>
-                      Export to CSV
-                    </button>
-                  </div> */}
                 </div>
                 <div className="row mt-3 ms-2 me-2" style={{ overflowX: "auto" }}>
                   <table className="table table-hover table-bordered table-responsive data-table">

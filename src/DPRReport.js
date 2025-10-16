@@ -10,7 +10,7 @@ import 'jspdf-autotable';
 import { saveAs } from "file-saver";
 import { format, sub } from "date-fns";
 
-const DPRReport = () => {
+const DPRReport = ({ showSideBar }) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,7 +29,7 @@ const DPRReport = () => {
         let apiUrl = `${API_URL}/dprreportTable`;
         setIsLoading(true);
         const response = await axios.get(apiUrl);
-    
+
         setReport(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -43,7 +43,7 @@ const DPRReport = () => {
         let apiUrl = `${API_URL}/yesterdaypr`;
         setIsLoading(true);
         const response = await axios.get(apiUrl);
-       
+
         setYesterdayReport(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -57,7 +57,7 @@ const DPRReport = () => {
         let apiUrl = `${API_URL}/targettabletillnow`;
         setIsLoading(true);
         const response = await axios.get(apiUrl);
-        console.log("API Response:", response.data); // Log the API response
+
         setTargetTill(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -77,7 +77,7 @@ const DPRReport = () => {
       alert("No data to export");
       return;
     }
-  
+
     // Define the header row
     const headers = [
       "Site Name",
@@ -102,7 +102,7 @@ const DPRReport = () => {
       "Inventory Out Files",
       "Inventory Out Images",
     ];
-  
+
     // Generate rows
     const rows = report.map((elem) => [
       elem.LocationName,
@@ -127,7 +127,7 @@ const DPRReport = () => {
       elem.InventoryOutFiles || 0,
       elem.InventoryOutImages || 0,
     ]);
-  
+
     // Calculate the total row
     const totalRow = [
       "Total", // Label for the total row
@@ -135,12 +135,12 @@ const DPRReport = () => {
         return rows.reduce((sum, row) => sum + (parseFloat(row[index + 1]) || 0), 0);
       }),
     ];
-  
+
     // Convert to CSV string
     const csvContent = [headers, ...rows, totalRow]
       .map((row) => row.map((cell) => `"${cell}"`).join(","))
       .join("\n");
-  
+
     // Create a Blob and trigger download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, "Cumulative_Production_Report.csv");
@@ -150,7 +150,7 @@ const DPRReport = () => {
       alert("No data to export");
       return;
     }
-  
+
     // Define the header row
     const headers = [
       "Location Name",
@@ -191,7 +191,7 @@ const DPRReport = () => {
       "Inventory Out Files",
       "Inventory Out MP",
     ];
-  
+
     // Generate rows
     const rows = yesterdayReport.map((elem) => [
       elem.LocationName,
@@ -232,7 +232,7 @@ const DPRReport = () => {
       parseFloat(elem.Inv_Out_Files) || 0,
       parseFloat(elem.InventoryOut_MP) || 0,
     ]);
-  
+
     // Calculate totals
     const totalRow = [
       "Total", // Label for the total row
@@ -241,23 +241,23 @@ const DPRReport = () => {
         return rows.reduce((sum, row) => sum + (parseFloat(row[index + 1]) || 0), 0);
       }),
     ];
-  
+
     // Convert to CSV string
     const csvContent = [headers, ...rows, totalRow]
       .map((row) => row.map((cell) => `"${cell}"`).join(","))
       .join("\n");
-  
+
     // Create a Blob and trigger download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `Production_Report-${formattedYesterdayDate}.csv`);
-  };  
+  };
   const exportTargetAchievedData = () => {
     // Ensure targettill is defined and is an array
     if (!Array.isArray(targettill)) {
       console.error("targettill is undefined or not an array:", targettill);
       return;
     }
-  
+
     const headers = [
       "Location Name",
       "Expected Work Order Volume",
@@ -268,13 +268,13 @@ const DPRReport = () => {
       "Submitted for Customer QA",
       "Achieved % as per Submitted for Customer QA",
     ];
-  
+
     const rows = targettill.map(elem => {
       const expectedVolume = parseInt(elem.ExpectedVolume) || 0;
       const scannedImages = parseInt(elem.ScannedImages) || 0;
       const qcImages = parseInt(elem.QCImages) || 0;
       const clientQAImages = parseInt(elem.Client_QA_AcceptedImages) || 0;
-  
+
       const scanningPercentage = expectedVolume
         ? ((scannedImages / expectedVolume) * 100).toFixed(2)
         : "0.00";
@@ -284,7 +284,7 @@ const DPRReport = () => {
       const clientQAPercentage = expectedVolume
         ? ((clientQAImages / expectedVolume) * 100).toFixed(2)
         : "0.00";
-  
+
       return [
         elem.LocationName || "N/A",
         isNaN(expectedVolume) ? "0" : expectedVolume.toLocaleString(),
@@ -296,7 +296,7 @@ const DPRReport = () => {
         `${clientQAPercentage}%`,
       ];
     });
-  
+
     // Calculate totals for each column
     const totalExpectedVolume = targettill.reduce(
       (acc, elem) => acc + (parseInt(elem.ExpectedVolume) || 0),
@@ -314,7 +314,7 @@ const DPRReport = () => {
       (acc, elem) => acc + (parseInt(elem.Client_QA_AcceptedImages) || 0),
       0
     );
-  
+
     // Add totals row
     rows.push([
       "Total",
@@ -326,7 +326,7 @@ const DPRReport = () => {
       totalClientQAImages.toLocaleString(),
       "--", // Placeholder for percentage
     ]);
-  
+
     // Download CSV
     downloadCSV(headers, rows, "Target_Achieved_Data.csv");
   };
@@ -361,11 +361,11 @@ const DPRReport = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <Header />
+
       <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
         <div className="row">
-          <div className="col-lg-2 col-md-0 "></div>
-          <div className="col-lg-10 col-md-12 col-sm-12">
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div className="row mt-2 me-1">
               <h4 className="text-center">DPR Report</h4>
             </div>

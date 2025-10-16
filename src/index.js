@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import Header from './Components/Header';
+import Header from './Components/NewHeader';
 import Footer from './Components/Footer';
 import Dashboard from './dashboard';
 import Report from './report';
@@ -22,59 +21,76 @@ import { AuthProvider } from './AuthContext';
 import ShortReport from './shortreport';
 import UpdateGroupModal from './Components/UpdateGroupModal';
 import AddRoleModal from './Components/AddRoleModal';
-import UpdateRoleModal from './Components/UpdateRoleModal'
+import UpdateRoleModal from './Components/UpdateRoleModal';
+import PrivateRoute from './PrivateRoute';
 import DBSiteReports from './dbSiteReports';
 import SiteReports from './siteReports';
-import PrivateRoute from './PrivateRoute';
 import DailyReport from './dailyReport';
-import Locationwisereport from './clientreport';
-import AddRemarks from './addRemarks';
+import FollowUpReportForm from './follow_up_report';
 import DPRReport from './DPRReport';
 import ClientDPR from './ClientDPR';
-import FollowUpReportForm from './follow_up_report';
-import CostingReport from './CostingReport';
-import CustomerQAReport from './customerQAReport';
 import DevelopmentPage from './developmentPage';
 import CumulativeReport from './cumulativeReport';
+import CustomerQAReport from './customerQAReport';
+import { createRoot } from 'react-dom/client';
+import AddRemarks from './addRemarks';
+import Locationwisereport from './clientreport';
 
-const App = () => {
+
+const AppContent = () => {
+  const location = useLocation('');
+  const [showSideBar, setShowSideBar] = useState(false);
+
   return (
-    <Router>
+    <>
+      {location.pathname !== '/' && location.pathname !== '/clientreport' && (
+        <Header showSideBar={showSideBar} setShowSideBar={setShowSideBar} />
+      )}
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
-        <Route path="/uploadDatabase" element={<PrivateRoute element={<UploadDatabase />} />} />
-        <Route path="/report" element={<PrivateRoute element={<Report />} />} />
-        <Route path="/customerQAReport" element={<PrivateRoute element={<CustomerQAReport />} />} />
-        <Route path="/dbSiteReports" element={<PrivateRoute element={<DBSiteReports />} />} />
-        <Route path="/siteReports"element={<PrivateRoute element={<SiteReports />} />} />
-        <Route path="/groupManager" element={<PrivateRoute element={<GroupManager />} />} />
-        <Route path="/addGroupModal" element={<PrivateRoute element={<AddGroupModal />} />} />
-        <Route path="/updateGroupModal" element={<PrivateRoute element={<UpdateGroupModal />} />} />
-        <Route path="/userRole" element={<PrivateRoute element={<UserRole />} />} />
-        <Route path="/addRoleModal" element={<PrivateRoute element={<AddRoleModal />} />} />
-        <Route path="/updateRoleModal" element={<PrivateRoute element={<UpdateRoleModal />} />} />
-        <Route path="/User_Form" element={<PrivateRoute element={<User_Form />} />} />
-        <Route path="/User_List" element={<PrivateRoute element={<User_List />} />} />
-        <Route path="/file" element={<PrivateRoute element={<File />} />} />
-        <Route path="/MIS_Form" element={<PrivateRoute element={<MIS_Form />} />} />
-        <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC />} />} />
-        <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal />} />} />
-        <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport />} />} />
-        <Route path="/DPRReport" element={<PrivateRoute element={<DPRReport />} />} />
-        <Route path="/clientreport" element={<PrivateRoute element={<Locationwisereport />} />} />
-        <Route path="/addRemarks" element={<PrivateRoute element={<AddRemarks />} />} />
-        <Route path="/ClientDPR" element={<PrivateRoute element={<ClientDPR />} />} />
-        <Route path="/CostingReport" element={<PrivateRoute element={<CostingReport />} />} />
-        <Route path="/follow_up_report" element={<PrivateRoute element={<FollowUpReportForm />} />} />
+        <Route path="/dashboard" element={<PrivateRoute element={<Dashboard showSideBar={showSideBar} />} />} />
+        <Route path="/uploadDatabase" element={<PrivateRoute element={<UploadDatabase showSideBar={showSideBar} />} />} />
+        <Route path="/report" element={<PrivateRoute element={<Report showSideBar={showSideBar} />} />} />
+        <Route path="/dailyReport" element={<PrivateRoute element={<DailyReport showSideBar={showSideBar} />} />} />
+        <Route path="/dbSiteReports" element={<PrivateRoute element={<DBSiteReports showSideBar={showSideBar} />} />} />
+        <Route path="/siteReports" element={<PrivateRoute element={<SiteReports showSideBar={showSideBar} />} />} />
+        <Route path="/groupManager" element={<PrivateRoute element={<GroupManager showSideBar={showSideBar} />} />} />
+        <Route path="/addGroupModal" element={<PrivateRoute element={<AddGroupModal showSideBar={showSideBar} />} />} />
+        <Route path="/updateGroupModal" element={<PrivateRoute element={<UpdateGroupModal showSideBar={showSideBar} />} />} />
+        <Route path="/userRole" element={<PrivateRoute element={<UserRole showSideBar={showSideBar} />} />} />
+        <Route path="/addRoleModal" element={<PrivateRoute element={<AddRoleModal showSideBar={showSideBar} />} />} />
+        <Route path="/updateRoleModal" element={<PrivateRoute element={<UpdateRoleModal showSideBar={showSideBar} />} />} />
+        <Route path="/User_Form" element={<PrivateRoute element={<User_Form showSideBar={showSideBar} />} />} />
+        <Route path="/User_List" element={<PrivateRoute element={<User_List showSideBar={showSideBar} />} />} />
+        <Route path="/file" element={<PrivateRoute element={<File showSideBar={showSideBar} />} />} />
+        <Route path="/addRemarks" element={<PrivateRoute element={<AddRemarks showSideBar={showSideBar} />} />} />
+        <Route path="/MIS_Form" element={<PrivateRoute element={<MIS_Form showSideBar={showSideBar} />} />} />
+        <Route path="/mis_updc" element={<PrivateRoute element={<MISUPDC showSideBar={showSideBar} />} />} />
+        <Route path="/UpdateUserModal" element={<PrivateRoute element={<UpdateUserModal showSideBar={showSideBar} />} />} />
+        <Route path="/shortreport" element={<PrivateRoute element={<ShortReport showSideBar={showSideBar} />} />} />
+        <Route path="/DPRReport" element={<PrivateRoute element={<DPRReport showSideBar={showSideBar} />} />} />
+        <Route path="/follow_up_report" element={<PrivateRoute element={<FollowUpReportForm showSideBar={showSideBar} />} />} />
+        <Route path="/ClientDPR" element={<PrivateRoute element={<ClientDPR showSideBar={showSideBar} />} />} />
         <Route path="/developmentPage" element={<PrivateRoute element={<DevelopmentPage />} />} />
-        <Route path="/cumulativeReport" element={<PrivateRoute element={<CumulativeReport />} />} />
+        <Route path="/cumulativeReport" element={<PrivateRoute element={<CumulativeReport showSideBar={showSideBar} />} />} />
+        <Route path="/customerQAReport" element={<PrivateRoute element={<CustomerQAReport showSideBar={showSideBar} />} />} />
+        <Route path="/clientreport" element={<PrivateRoute element={<Locationwisereport showSideBar={showSideBar} />} />} />
+
       </Routes>
-    </Router>
-    
+
+      {location.pathname !== '/' && (
+        <Footer />
+      )}
+    </>
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
-reportWebVitals();
+const App = () => (
+  <Router>
+    <AppContent />
+  </Router>
+);
 
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+reportWebVitals();

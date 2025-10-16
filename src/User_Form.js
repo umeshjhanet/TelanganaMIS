@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import { API_URL } from './Api';
 
-const User_Form = () => {
+const User_Form = ({ showSideBar }) => {
   const [group, setGroup] = useState();
   const [email, setEmail] = useState();
   const [location, setLocation] = useState();
@@ -250,7 +250,7 @@ const User_Form = () => {
     toast.info("Creating user, please wait...");
     try {
       const response = await axios.post(`${API_URL}/createuser`, updatedFormData);
-      
+
       toast.success("User created successfully");
     } catch (error) {
       if (error.response && error.response.status === 409) {
@@ -316,7 +316,7 @@ const User_Form = () => {
     } else {
       setDesignationError(false);
     }
-   
+
 
     return valid;
   }
@@ -335,7 +335,7 @@ const User_Form = () => {
 
   return (
     <>
-      <Header />
+
       <ToastContainer />
       <div className='container-fluid'>
         <div className='row'>
@@ -376,7 +376,7 @@ const User_Form = () => {
                     <input type='password' placeholder='Confirm Password' name='confirmPassword' style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange} /><br />
                     {confirmPasswordError && <span style={{ color: 'red' }}>Confirm Password is required<br /></span>}
                     <label className='mt-1'>User Type</label>
-                    <select name="user_type" id="usertype" class="form-control select2" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}>
+                    <select name="user_type" id="usertype" className="form-control select2" style={{ width: '100%', height: '35px', border: '1px solid lightgray', borderRadius: '2px' }} onChange={handleInputChange}>
                       <option value="0" selected>Select user type</option>
                       <option value="1">Record Keeper</option>
                       <option value="2">Client User</option>
@@ -415,7 +415,7 @@ const User_Form = () => {
                     <label className='mt-1'>Select Location</label><br />
                     <div>
                       {selectedLocations.map((location, index) => (
-                        <span key={index} style={{color:'#107393'}}>
+                        <span key={index} style={{ color: '#107393' }}>
                           {location.name}
                           <button className='close-btn' onClick={() => handleRemoveLocation(index)}>&times;</button> {/* Delete button */}
                         </span>
@@ -427,12 +427,12 @@ const User_Form = () => {
                       placeholder="Select Location"
                       className="form-control"
                       style={{ width: "100%", height: "35px", border: "1px solid lightgray", borderRadius: "2px" }}
-                      
+
                       onClick={handleLocationDropdown}
                       onChange={handleInputChange}
                       onKeyDown={handleKeyDown}
                     />
-                    
+
                     {locationDropdown && (
                       <div className='group-dropdown'>
                         {location && location.map((elem, index) => (

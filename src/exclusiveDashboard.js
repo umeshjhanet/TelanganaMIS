@@ -16,8 +16,13 @@ import { BsAlignTop } from "react-icons/bs";
 import moment from "moment";
 import { toast } from 'react-toastify';
 import { FaChevronDown } from "react-icons/fa";
+import SearchBar from "./Components/SearchBar";
+import SearchButton from "./Components/Button";
+import BarGraph from "./Components/BarGraph";
+import DonutGraph from "./Components/DonutGraph";
+import BarGraph1 from "./Components/ShowHideBarGraph";
 
-const ExclusiveDashboard = () => {
+const ExclusiveDashboard = ({ showSideBar }) => {
   const [data2, setData2] = useState();
   const currentDate = new Date();
   const yesterdayDate = sub(currentDate, { days: 1 });
@@ -49,12 +54,9 @@ const ExclusiveDashboard = () => {
   const [showYesterday, setShowYesterday] = useState(false);
   const [showCumulative, setShowCumulative] = useState(false);
   const [chartData, setChartData] = useState(null);
-  const [highVolumeData, setHighVolumeData] = useState(null);
-  const [billingChartData, setBillingChartData] = useState(null);
-  const [billingTotalData, setBillingTotalData] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [yesterdayReport, setYesterdayReport] = useState([]);
-  const [vendorName, setVendorName] = useState();
+  const [vendorName, setVendorName] = useState([]);
   const [cumulative, setCumulative] = useState();
   const [target, setTarget] = useState();
   const navigate = useNavigate();
@@ -303,56 +305,6 @@ const ExclusiveDashboard = () => {
     };
   }, []);
 
-  // const handleLocation = (location) => {
-  //   if (!selectedLocations.includes(location)) {
-  //     setSelectedLocations([...selectedLocations, location]);
-  //   }
-  //   setSearchInput('');
-  //   setFilteredLocations(locations);
-  //   setShowLocation(false);
-  // };
-
-  // const removeLocation = (location) => {
-  //   setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
-  // };
-  // const handleLocation = (location) => {
-  //   if (!selectedLocations.includes(location)) {
-  //     setSelectedLocations([...selectedLocations, location]);
-  //   }
-  //   setLocationSearchInput("");
-  //   setShowLocation(false);
-  // };
-
-  // const removeLocation = (locationToRemove) => {
-  //   setSelectedLocations(
-  //     selectedLocations.filter((location) => location !== locationToRemove)
-  //   );
-  // };
-  // const handleSearchChange = (e) => {
-  //   const value = e.target.value;
-  //   setSearchInput(value);
-
-  //   if (value === "") {
-  //     setFilteredLocations(locations);
-  //   } else {
-  //     setFilteredLocations(
-  //       locations.filter((loc) =>
-  //         loc.LocationName.toLowerCase().includes(value.toLowerCase())
-  //       )
-  //     );
-  //   }
-  // };
-
-  // const handleExport = () => {
-  //   if (csv) {
-  //     const link = document.createElement("a");
-  //     link.href = csv;
-  //     link.setAttribute("download", "export.csv");
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   }
-  // };
 
   const handleExport = () => {
     setShowConfirmation(true);
@@ -468,7 +420,7 @@ const ExclusiveDashboard = () => {
       });
       setCumulative(response.data);
     } catch {
-      
+
     }
   };
 
@@ -488,51 +440,6 @@ const ExclusiveDashboard = () => {
   const locationName = selectedLocations;
 
   const vendor = selectedVendors;
-  // const fetchGraphFileData = (selectedLocations) => {
-  //   let apiUrl = `${API_URL}/graph1LocationWise`;
-
-  //   if (selectedLocations && selectedLocations.length > 0) {
-  //     const locationQuery = selectedLocations
-  //       .map((location) => `locationname=${encodeURIComponent(location)}`)
-  //       .join("&");
-  //     apiUrl += `?${locationQuery}`;
-  //   }
-
-  //   axios
-  //     .get(apiUrl)
-  //     .then((response) => {
-  //       const apiData = response.data;
-  //       if (!apiData || apiData.length === 0) {
-  //         console.error("No data received from the API");
-  //         return;
-  //       }
-
-  //       const labels = Object.keys(apiData[0]).filter(
-  //         (label) => label !== "locationid" && label !== "LocationName"
-  //       );
-  //       const datasets = apiData.map((locationData) => {
-  //         return {
-  //           label: "No. of Files", // Use location name as label for each dataset
-  //           data: labels.map((label) => locationData[label]),
-  //           backgroundColor: "#8DECB4", // Change the background color here
-  //         };
-  //       });
-  //       setBarFile({
-  //         labels: labels,
-  //         datasets: datasets,
-  //         options: {
-  //           scales: {
-  //             y: {
-  //               beginAtZero: true,
-  //             },
-  //           },
-  //         },
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // };
 
   const fetchGraphFileData = async (queryParams) => {
     try {
@@ -550,12 +457,12 @@ const ExclusiveDashboard = () => {
         apiUrl += `?${locationQuery}`;
       }
 
-      
+
 
       const response = await axios.get(apiUrl);
       const apiData = response.data;
 
-   
+
 
       if (!apiData || apiData.length === 0) {
         console.error("No data received from the API");
@@ -598,7 +505,7 @@ const ExclusiveDashboard = () => {
         const blob = new Blob([response.data], { type: "text/csv" });
         const url = window.URL.createObjectURL(blob);
         setCsv(url);
-        
+
       })
       .catch((error) => {
         console.error("Error in exporting data:", error);
@@ -626,7 +533,7 @@ const ExclusiveDashboard = () => {
       const response = await axios.get(apiUrl);
       const apiData = response.data;
 
-     
+
 
       if (!apiData || apiData.length === 0) {
         console.error("No image data received from the API");
@@ -656,45 +563,7 @@ const ExclusiveDashboard = () => {
       });
     }
   };
-  // const fetchTodayGraphFileData = () => {
-  //   let apiUrl = `${API_URL}/graph7`;
 
-  //   if (selectedLocations && selectedLocations.length > 0) {
-  //     const locationQuery = selectedLocations
-  //       .map((location) => `locationname=${encodeURIComponent(location)}`)
-  //       .join("&");
-  //     apiUrl += `?${locationQuery}`;
-  //   }
-
-  //   axios
-  //     .get(apiUrl)
-  //     .then((response) => {
-  //       const apiData = response.data;
-  //       if (!apiData || apiData.length === 0) {
-  //         console.error("No data received from the API");
-  //         return;
-  //       }
-
-  //       const labels = Object.keys(apiData[0]).filter(
-  //         (label) => label !== "locationid" && label !== "LocationName"
-  //       );
-  //       const datasets = apiData.map((locationData) => {
-  //         return {
-  //           label: "No. of Files",
-  //           data: labels.map((label) => locationData[label]),
-  //           backgroundColor: "#B04759", // Change the background color here
-  //         };
-  //       });
-
-  //       setTodayFile({
-  //         labels: labels,
-  //         datasets: datasets,
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // };
 
   const fetchTodayGraphFileData = () => {
     let apiUrl = `${API_URL}/graph7`;
@@ -736,45 +605,6 @@ const ExclusiveDashboard = () => {
       });
   };
 
-  // const fetchTodayGraphImageData = () => {
-  //   let apiUrl = `${API_URL}/graph8`;
-
-  //   if (selectedLocations && selectedLocations.length > 0) {
-  //     const locationQuery = selectedLocations
-  //       .map((location) => `locationname=${encodeURIComponent(location)}`)
-  //       .join("&");
-  //     apiUrl += `?${locationQuery}`;
-  //   }
-
-  //   axios
-  //     .get(apiUrl)
-  //     .then((response) => {
-  //       const apiData = response.data;
-  //       if (!apiData || apiData.length === 0) {
-  //         console.error("No data received from the API");
-  //         return;
-  //       }
-
-  //       const labels = Object.keys(apiData[0]).filter(
-  //         (label) => label !== "locationid" && label !== "LocationName"
-  //       );
-  //       const datasets = apiData.map((locationData) => {
-  //         return {
-  //           label: "No. of Images",
-  //           data: labels.map((label) => locationData[label]),
-  //           backgroundColor: "#B04759", // Change the background color here
-  //         };
-  //       });
-
-  //       setTodayImage({
-  //         labels: labels,
-  //         datasets: datasets,
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // };
 
   const fetchTodayGraphImageData = () => {
     let apiUrl = `${API_URL}/graph8`;
@@ -816,25 +646,6 @@ const ExclusiveDashboard = () => {
       });
   };
 
-  // const fetchWeekImageGraphData = async () => {
-  //   try {
-  //     const params = {
-  //       params: {
-  //         locationNames: selectedLocations,
-  //       },
-  //     };
-  //     const response = await axios.get(`${API_URL}/graph6`, params);
-  //     const apiData = response.data;
-
-  //     if (Array.isArray(apiData)) {
-  //       setWeekImage(apiData);
-  //     } else {
-  //       console.error("Unexpected data format for weekImage:", apiData);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching weekImage data:", error);
-  //   }
-  // };
 
   const fetchWeekImageGraphData = async () => {
     try {
@@ -856,20 +667,7 @@ const ExclusiveDashboard = () => {
     }
   };
 
-  // const fetchWeekFileGraphData = async () => {
-  //   try {
-  //     const params = { params: { locationNames: selectedLocations } };
-  //     const response = await axios.get(`${API_URL}/graph5`, params);
-  //     const apiData = response.data;
-  //     if (Array.isArray(apiData)) {
-  //       setWeekFile(apiData);
-  //     } else {
-  //       console.error("Unexpected data format for weekFile:", apiData);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching weekFile data:", error);
-  //   }
-  // };
+
 
   const fetchWeekFileGraphData = async () => {
     try {
@@ -898,7 +696,7 @@ const ExclusiveDashboard = () => {
         const apiData = response.data;
         const labels = apiData.map((item) => item["scandate"]);
         const data = apiData.map((item) => item["Scanned No Of Images"]);
-      
+
         setMonthImage({
           labels: labels.filter((label) => label !== "id"),
           datasets: [
@@ -908,14 +706,14 @@ const ExclusiveDashboard = () => {
             },
           ],
         });
-       
+
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   };
 
-  
+
 
   const fetchCivilCaseGraphData = () => {
     let apiUrl = `${API_URL}/civil`;
@@ -931,7 +729,7 @@ const ExclusiveDashboard = () => {
       .get(apiUrl)
       .then((response) => {
         const apiData = response.data;
-     
+
         if (!apiData || apiData.length === 0) {
           console.error("No data received from the API");
           return;
@@ -939,7 +737,7 @@ const ExclusiveDashboard = () => {
 
         const labels = Object.keys(apiData[0]);
         const data = Object.values(apiData[0]);
-       
+
         setCivilCase({
           labels: labels.filter((label) => label !== "id"),
           datasets: [
@@ -955,7 +753,7 @@ const ExclusiveDashboard = () => {
       });
   };
 
- 
+
   const fetchCriminalCaseGraphData = () => {
     let apiUrl = `${API_URL}/criminal`;
 
@@ -970,7 +768,7 @@ const ExclusiveDashboard = () => {
       .get(apiUrl)
       .then((response) => {
         const apiData = response.data;
-       
+
         if (!apiData || apiData.length === 0) {
           console.error("No data received from the API");
           return;
@@ -978,7 +776,7 @@ const ExclusiveDashboard = () => {
 
         const labels = Object.keys(apiData[0]);
         const data = Object.values(apiData[0]);
-       
+
         setCriminalCase({
           labels: labels.filter((label) => label !== "id"),
           datasets: [
@@ -994,7 +792,7 @@ const ExclusiveDashboard = () => {
       });
   };
 
-  
+
 
   const fetchAllYesGraphImageData = async (queryParams) => {
     try {
@@ -1012,7 +810,7 @@ const ExclusiveDashboard = () => {
         apiUrl += `?${locationQuery}`;
       }
 
-    
+
 
       const response = await axios.get(apiUrl);
       const apiData = response.data;
@@ -1065,12 +863,12 @@ const ExclusiveDashboard = () => {
         apiUrl += `?${locationQuery}`;
       }
 
-    
+
 
       const response = await axios.get(apiUrl);
       const apiData = response.data;
 
-    
+
 
       if (!apiData || apiData.length === 0) {
         console.error("No data received from the API");
@@ -1099,7 +897,7 @@ const ExclusiveDashboard = () => {
     }
   };
 
-  
+
 
   const fetchTableData = () => {
     let apiUrl = `${API_URL}/tabularData`;
@@ -1114,12 +912,12 @@ const ExclusiveDashboard = () => {
       .get(apiUrl)
       .then((response) => {
         setTableData(response.data);
-      
+
       })
       .catch((error) => console.error(error));
   };
 
-  
+
 
   const fetchData = async () => {
     try {
@@ -1232,7 +1030,7 @@ const ExclusiveDashboard = () => {
         const response = await axios.get(`${API_URL}/mptarget`);
         setTarget(response.data);
       } catch {
-        
+
       }
     };
     const fetchVendor = async () => {
@@ -1240,7 +1038,7 @@ const ExclusiveDashboard = () => {
         const response = await axios.get(`${API_URL}/vendorName`);
         setVendorName(response.data);
       } catch {
-        
+
       }
     };
 
@@ -1256,11 +1054,6 @@ const ExclusiveDashboard = () => {
 
   const columnSums = calculateColumnSum();
 
-  // if (!userLog) {
-  //   navigate('/');
-  // }
-  // Log the content of allLocationImage before passing it to the BarChart component
- 
   const formatChartData = (data, colors) => ({
     options: {
       chart: {
@@ -1389,7 +1182,7 @@ const ExclusiveDashboard = () => {
       parseInt(item.scannedfiles || item.scannedimages, 10)
     );
 
-    
+
 
     return {
       options: {
@@ -1491,13 +1284,13 @@ const ExclusiveDashboard = () => {
       locationNames: currentParams.locations
     };
 
-    
 
-    
+
+
 
     try {
       await Promise.all([
-     
+
         fetchYesterdayData(),
         fetchData(),
         fetchData(),
@@ -1528,13 +1321,15 @@ const ExclusiveDashboard = () => {
       setIsLoading(false);
     }
   };
+  const vendorOptions = vendorName.map(item => item.Vendor);
+
 
   return (
     <>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-lg-2 col-md-0 "></div>
-          <div className="col-lg-10 col-md-12">
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div className="row mt-2">
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <h4>Telangana Dashboard</h4>
@@ -1550,191 +1345,58 @@ const ExclusiveDashboard = () => {
                 </p>
               </div>
             </div>
-           
+
 
             <div
               className="row mt-2 search-report-card d-flex gap-4 flex-wrap align-items-center"
               style={{ gap: '24px' }}
             >
               <div
-                className="col-sm-3 col-lg-3 d-flex align-items-center gap-3"
-                style={{ position: 'relative', minWidth: '250px' }}
+                className="col-lg-4 col-md-2 col-sm-12 mt-1"
+                style={{ position: 'relative' }}
               >
-                <div
-                  ref={dropdownRef}
-                  className="search-bar"
-                  onClick={() => setShowLocation(true)}
-                  style={{
-                    border: '1px solid #000',
-                    padding: '5px',
-                    borderRadius: '5px',
-                    // minHeight: '30px',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '5px',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    width: '250px',
-                    minWidth: '250px',
-                    maxWidth: '250px',
-                    height: selectedLocations.length >= 2 ? '60px' : 'auto',
-                    overflowY: selectedLocations.length >= 2 ? 'auto' : 'hidden',
-                    overflowX: 'hidden',
-                  }}
-                >
-                  <div>
-                    {selectedLocations.map((location, index) => (
-                      <span key={index} className="selected-location">
-                        {location}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeLocation(location);
-                          }}
-                          style={{
-                            backgroundColor: 'black',
-                            color: 'white',
-                            border: 'none',
-                            marginLeft: '5px',
-                            borderRadius: '50%',
-                            width: '18px',
-                            height: '18px',
-                            fontSize: '12px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          ×
-                        </button>
-                        &nbsp;
-                      </span>
-                    ))}
-                    <input
-                      type="text"
-                      placeholder={selectedLocations.length === 0 ? 'Select Locations...' : ''}
-                      value={locationSearchInput}
-                      onChange={(e) => {
-                        setLocationSearchInput(e.target.value);
-                        setShowLocation(true);
-                      }}
-                      onKeyDown={handleLocationKeyDown}
-                      style={{
-                        border: 'none',
-                        outline: 'none',
-                        width: selectedLocations.length > 0 ? '70px' : '100%',
-                        backgroundColor: 'transparent',
-                        minWidth: '60px',
-                      }}
-                    />
-                  </div>
-                  {selectedLocations.length < 1 ? <FaChevronDown style={{ color: 'grey' }} /> : ''}
-                </div>
-
-                {showLocation && (
-                  <div
-                    ref={dropdownMenuRef}
-                    className="location-card"
-                    style={{
-                      position: 'absolute',
-                      zIndex: 1000,
-                      backgroundColor: 'white',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      width: '230px',
-                      maxHeight: '300px',
-                      overflowY: 'auto',
-                      top: '100%',
-                      marginLeft: '1px',
-                      marginTop: '3px',
-                    }}
-                  >
-                    {filteredLocations.map((locationName, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          padding: '8px 12px',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #eee',
-                          backgroundColor: index === highlightedIndex ? '#f0f0f0' : 'transparent',
-                        }}
-                        onClick={() => {
-                          handleLocation(locationName);
-                          setShowLocation(false);
-                        }}
-                        onMouseEnter={() => setHighlightedIndex(index)}
-                      >
-                        {locationName}
-                      </div>
-                    ))}
-                    {filteredLocations.length === 0 && (
-                      <div style={{ padding: '8px 12px', color: '#999' }}>No locations found</div>
-                    )}
-                  </div>
-                )}
+                <SearchBar
+                  items={locations} // all available locations
+                  selectedItems={selectedLocations} // current selections
+                  onChange={(newSelected) =>
+                    setSelectedLocations(newSelected)
+                  } // update handler
+                  placeholder="Search locations..."
+                  showSelectAll={true}
+                />
               </div>
 
               <div className="col-12 col-md-6 d-flex align-items-center gap-3 flex-nowrap">
-                <button
-                  style={{
-                    backgroundColor: '#4BC0C0',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '5px',
-                    whiteSpace: 'nowrap',
-                  }}
+                <SearchButton
                   onClick={handleClick}
-                  className="me-2"
-                >
-                  Search
-                </button>
-                <button
-                  style={{
-                    backgroundColor: '#4BC0C0',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '5px',
-                    whiteSpace: 'nowrap',
-                  }}
+                  Name="Search"
+                />
+                <SearchButton
                   onClick={handleReset}
-                >
-                  Reset
-                </button>
+                  Name="Reset"
+                />
               </div>
             </div>
 
             <div className="row mt-2">
               <div className="card">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">
-                      SCANNED REPORT OF LAST 30 DAYS{" "}
-                    </CardTitle>
-                    <Chart
-                      options={formatLongData(monthImage, ["#4bc0c0"]).options}
-                      series={formatLongData(monthImage, ["#4bc0c0"]).series}
-                      type="bar"
-                      height="379"
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading="SCANNED REPORT OF LAST 30 DAYS"
+                  barFile={monthImage}
+                  color={["#4BC0C0"]}
+                  bar="bar"
+                  height={390}
+                />
               </div>
             </div>
             <div className="row mt-2">
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">Cumulative Images </CardTitle>
-                  <Chart
-                    options={formatChartData(barImage, ["#8DECB4"]).options}
-                    series={formatChartData(barImage, ["#8DECB4"]).series}
-                    type="bar"
-                    height="350"
-                  />
-                </CardBody>
-              </Card>
+              <BarGraph
+                Heading="Cumulative Images"
+                barFile={barImage}
+                color={["#3674b5d9"]}
+                bar="bar"
+                height={350}
+              ></BarGraph>
             </div>
             <div className="row search-report-card mt-2">
               <div className="col-2">
@@ -1744,60 +1406,39 @@ const ExclusiveDashboard = () => {
                   onChange={handleDateChange}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="Select Date"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+
+                  popperProps={{
+                    modifiers: [
+                      {
+                        name: 'preventOverflow',
+                        options: {
+                          rootBoundary: 'viewport',
+                          tether: false,
+                          altAxis: true,
+                        },
+                      },
+                    ],
+                  }}
+                  popperClassName="compact-picker"
                 />
               </div>
               <div className="col-md-4 col-sm-12">
-                <div
-                  ref={vendorDropdownRef}
-                  className="search-bar"
-                  style={{
-                    border: "1px solid #000",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    minHeight: "30px",
-                    width: "250px",
-                  }}
-                  contentEditable={true}
-                  onClick={() => setShowVendor(!showVendor)}
-                >
-                  {selectedVendors.length === 0 && !showVendor && (
-                    <span className="placeholder-text">Search Vendors...</span>
-                  )}
-                  {selectedVendors.map((vendor, index) => (
-                    <span key={index} className="selected-location">
-                      {vendor}
-                      <button
-                        onClick={() => removeVendor(vendor)}
-                        style={{
-                          backgroundColor: "black",
-                          color: "white",
-                          border: "none",
-                          marginLeft: "5px",
-                        }}
-                      >
-                        x
-                      </button>
-                      &nbsp;
-                    </span>
-                  ))}
-                  <span style={{ minWidth: "5px", display: "inline-block" }}>
-                    &#8203;
-                  </span>
-                </div>
-                {showVendor && (
-                  <>
-                    <div className="location-card">
-                      {vendorName &&
-                        vendorName.map((item, index) => (
-                          <div key={index}>
-                            <p onClick={() => handleVendor(item.Vendor)}>
-                              {item.Vendor}
-                            </p>
-                          </div>
-                        ))}
-                    </div>
-                  </>
-                )}
+                <SearchBar
+                  items={vendorOptions} // all available 
+                  // locations
+
+                  selectedItems={selectedVendors} // current selections
+                  onChange={(newSelected) =>
+                    setSelectedVendors(newSelected)
+                  } // update handler
+                  placeholder="Search Vendors..."
+                  showSelectAll={true}
+                  Name="Vendors"
+
+                />
               </div>
               <div className="col-3">
                 <button className="btn add-btn" onClick={handleDateFilter}>
@@ -1820,60 +1461,28 @@ const ExclusiveDashboard = () => {
                 </CardBody>
               </Card>
             </div>
-          
+
             <div className="row mt-4">
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">
-                    SCANNED REPORT FOR ({formattedYesterdayDate})
-                    <button className="btn add-btn" onClick={hideYesterday}>
-                      {showYesterday ? "Hide" : "Show"}
-                    </button>
-                  </CardTitle>
-                  <CardSubtitle className="text-muted" tag="h6">
-                    All Location: Images
-                  </CardSubtitle>
-                  {showYesterday && (
-                    <Chart
-                      options={
-                        formatLongData(allLocationYesImage, ["#AF8260"]).options
-                      }
-                      series={
-                        formatLongData(allLocationYesImage, ["#AF8260"]).series
-                      }
-                      type="bar"
-                      height="350"
-                    />
-                  )}
-                </CardBody>
-              </Card>
+              <BarGraph1
+                Heading={`SCANNED REPORT FOR (${formattedYesterdayDate})`}
+                subTitle="All Location: Images"
+                barFile={allLocationYesImage}
+                color={["#AF8260"]}
+                bar="bar"
+                height={350}
+              />
+
             </div>
             <div className="row mt-4">
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">
-                    Cumulative Scanned Till Date
-                    <button className="btn add-btn" onClick={hideCumulative}>
-                      {showCumulative ? "Hide" : "Show"}
-                    </button>
-                  </CardTitle>
-                  <CardSubtitle className="text-muted" tag="h6">
-                    All Location: Images
-                  </CardSubtitle>
-                  {showCumulative && (
-                    <Chart
-                      options={
-                        formatLongData(allLocationImage, ["#AF8260"]).options
-                      }
-                      series={
-                        formatLongData(allLocationImage, ["#AF8260"]).series
-                      }
-                      type="bar"
-                      height="350"
-                    />
-                  )}
-                </CardBody>
-              </Card>
+              <BarGraph1
+                Heading="Cummulative Scanned Till Date"
+                subTitle="All Location: Images"
+                barFile={allLocationYesImage}
+                color={["#AF8260"]}
+                bar="bar"
+                height={350}
+              />
+                 
             </div>
 
             <div className="row mt-3 me-1">
@@ -2047,7 +1656,7 @@ const ExclusiveDashboard = () => {
                 >
                   <div className="col-10">
                     <h6 className="" style={{ color: "white" }}>
-                      Production Report ({formattedYesterdayDate})
+                      Production Report ({!selectedDate?formattedYesterdayDate:selectedDate})
                     </h6>
                   </div>
                   {/* <div className="col-2 text-end">

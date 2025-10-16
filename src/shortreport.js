@@ -7,7 +7,7 @@ import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
 import { API_URL } from "./Api";
 
-const ShortReport = () => {
+const ShortReport = ({ showSideBar }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [showLocation, setShowLocation] = useState(false);
@@ -45,8 +45,8 @@ const ShortReport = () => {
     };
     const locationName = selectedLocations;
     useEffect(() => {
-        
-        fetchData(); 
+
+        fetchData();
         fetchSummaryReportCsvFile(locationName, startDate, endDate);
     }, []);
 
@@ -87,16 +87,16 @@ const ShortReport = () => {
         }
     };
 
-    
+
 
     const fetchSummaryReportCsvFile = (locationName, startDate, endDate) => {
         // Format the dates as ISO strings without time component
         // const formatDate = (date) => {
         //     return date.toISOString().split('T')[0];
         // };
-    
+
         let apiUrl = `${API_URL}/summarycsv`;
-    
+
         // Construct query parameters based on provided inputs
         const queryParams = {};
         if (locationName && locationName.length > 0) {
@@ -106,13 +106,13 @@ const ShortReport = () => {
             queryParams.startDate = formatDateSummary(new Date(startDate));
             queryParams.endDate = formatDateSummary(new Date(endDate));
         }
-    
+
         // Construct the API URL with query parameters
         const queryString = Object.keys(queryParams).map(key => `${key}=${queryParams[key]}`).join('&');
         if (queryString) {
             apiUrl += `?${queryString}`;
         }
-    
+
         // Make GET request to fetch CSV file
         axios.get(apiUrl, { responseType: "blob" })
             .then((response) => {
@@ -125,9 +125,9 @@ const ShortReport = () => {
                 console.error("Error in exporting data:", error);
             });
     };
-    
-    
-    
+
+
+
     const fetchReportData = async () => {
         try {
             const apiUrl = `${API_URL}/reportTable`;
@@ -194,11 +194,11 @@ const ShortReport = () => {
 
     return (
         <>
-            <Header />
+
             <div className={`container-fluid ${isLoading ? 'loading' : ''}`}>
                 <div className="row">
-                    <div className="col-lg-2 col-md-2 "></div>
-                    <div className="col-lg-10 col-md-9 col-sm-12">
+                    <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+                    <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
                         <div className="row mt-4 me-1">
                             <div
                                 className="card"
@@ -481,44 +481,44 @@ const ShortReport = () => {
                                         </div>
                                     </div>
                                 ))}
-                               
-                                    <div
-                                        className="col-lg-2 col-md-4 col-sm-6"
-                                        
-                                    >
-                                        <div className="summary-card mt-3">
-                                            <div className="summary-title">
-                                                <h6 style={{ textTransform: "capitalize" }}>
-                                                    CSV Generation
-                                                </h6>
-                                            </div>
-                                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
-                                                Total Files: 0
-                                                <br />
-                                                Total Images: 0
-                                            </p>
+
+                                <div
+                                    className="col-lg-2 col-md-4 col-sm-6"
+
+                                >
+                                    <div className="summary-card mt-3">
+                                        <div className="summary-title">
+                                            <h6 style={{ textTransform: "capitalize" }}>
+                                                CSV Generation
+                                            </h6>
                                         </div>
+                                        <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                                            Total Files: 0
+                                            <br />
+                                            Total Images: 0
+                                        </p>
                                     </div>
-                               
-                                
-                                    <div
-                                        className="col-lg-2 col-md-4 col-sm-6"
-                                        
-                                    >
-                                        <div className="summary-card mt-3">
-                                            <div className="summary-title">
-                                                <h6 style={{ textTransform: "capitalize" }}>
-                                                    Inventory Out
-                                                </h6>
-                                            </div>
-                                            <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
-                                                Total Files: 0
-                                                <br />
-                                                Total Images: 0
-                                            </p>
+                                </div>
+
+
+                                <div
+                                    className="col-lg-2 col-md-4 col-sm-6"
+
+                                >
+                                    <div className="summary-card mt-3">
+                                        <div className="summary-title">
+                                            <h6 style={{ textTransform: "capitalize" }}>
+                                                Inventory Out
+                                            </h6>
                                         </div>
+                                        <p className="text-center" style={{ fontSize: '12px', fontWeight: '500', color: 'maroon' }}>
+                                            Total Files: 0
+                                            <br />
+                                            Total Images: 0
+                                        </p>
                                     </div>
-                               
+                                </div>
+
 
                             </div>
                         </div>

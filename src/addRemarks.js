@@ -5,7 +5,8 @@ import { MdFileDownload } from 'react-icons/md';
 import { format, sub } from "date-fns";
 import Header from './Components/Header';
 
-const AddRemarks = () => {
+
+const AddRemarks = ({ showSideBar }) => {
     const [tableData, setTableData] = useState();
     const [report, setReport] = useState();
     const [selectedLocation, setSelectedLocation] = useState();
@@ -25,6 +26,7 @@ const AddRemarks = () => {
     const formattedYesterdayDate = format(yesterdayDate, "dd-MM-yyyy");
     const formattedYesterdayDateforRemarks = format(yesterdayDate, "yyyy-MM-dd");
     const formattedDateforRemarks = format(currentDate, "yyyy-MM-dd");
+    const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         const fetchReportData = (locationName) => {
 
@@ -32,7 +34,7 @@ const AddRemarks = () => {
                 .get(`${API_URL}/Table`)
                 .then((response) => {
                     setReport(response.data);
-                   
+
                 })
                 .catch((error) => console.error(error));
         };
@@ -41,7 +43,7 @@ const AddRemarks = () => {
                 .get(`${API_URL}/tabularData`)
                 .then((response) => {
                     setTableData(response.data);
-                  
+
                 })
                 .catch((error) => console.error(error));
         };
@@ -51,17 +53,19 @@ const AddRemarks = () => {
 
             // If selectedLocations are provided, join them into a comma-separated string
             if (selectedLocations && selectedLocations.length > 0) {
-                params.locationNames = selectedLocations.join(',');
+                params.locationName = selectedLocations.join(",");
             }
 
             // Make the API request with optional parameters
             axios
                 .get(`${API_URL}/yesterday-table`, { params })
                 .then((response) => {
-                    setYesterdayReport(response.data);
-                  
+                    setYesterdayReport(response.data.data); // this is the array
+
                 })
                 .catch((error) => console.error(error));
+
+
         };
         fetchTableData();
         fetchYesterdayReportData();
@@ -124,11 +128,11 @@ const AddRemarks = () => {
 
     return (
         <>
-            <Header />
-            <div className="container-fluid">
+
+            <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
                 <div className="row">
-                    <div className="col-lg-2 col-md-0 "></div>
-                    <div className="col-lg-10 col-md-12">
+                    <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+                    <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
                         <div className="row mt-2">
                             <div>
                                 <div className="table-card" style={{ marginBottom: '25px' }}>
@@ -150,17 +154,17 @@ const AddRemarks = () => {
                                         className="row mt-2 ms-2 me-2"
                                         style={{ overflowX: "auto", overflowY: 'auto' }}
                                     >
-                                        <table class="table table-hover table-bordered table-responsive data-table">
+                                        <table className="table table-hover table-bordered table-responsive data-table">
                                             <thead
                                                 style={{ color: "#4BC0C0", fontWeight: '300', textAlign: 'center' }}
                                             >
                                                 <tr>
-                                                    <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
-                                                    <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Remarks</th>
+                                                    <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                                    <th colSpan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
+                                                    <th colSpan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                                    <th colSpan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
+                                                    <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
+                                                    <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Remarks</th>
                                                 </tr>
                                                 <tr
                                                     style={{ color: "#4BC0C0", fontWeight: '300' }}
@@ -181,7 +185,7 @@ const AddRemarks = () => {
                                                 {Array.isArray(yesterdayReport) &&
                                                     yesterdayReport.map((elem, index) => (
                                                         <tr key={index} style={{ backgroundColor: "white" }}>
-                                                            <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.locationname}</td>
+                                                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationname}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
@@ -191,8 +195,8 @@ const AddRemarks = () => {
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
                                                             <td className='text-center'>
-                                                                <button className='btn' style={{backgroundColor:'#4BC0C0'}} onClick={() => handleAddDailyClick(elem.locationname)}>Add </button>
-                                                                <button className='btn ms-1' style={{backgroundColor:'#4BC0C0'}} onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}> View</button>
+                                                                <button className='btn' style={{ backgroundColor: '#4BC0C0' }} onClick={() => handleAddDailyClick(elem.locationname)}>Add </button>
+                                                                <button className='btn ms-1' style={{ backgroundColor: '#4BC0C0' }} onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}> View</button>
                                                             </td>
                                                         </tr>
                                                     ))
@@ -237,17 +241,17 @@ const AddRemarks = () => {
                                         className="row mt-2 ms-2 me-2"
                                         style={{ overflowX: "auto", overflowY: 'auto' }}
                                     >
-                                        <table class="table table-hover table-bordered table-responsive data-table">
+                                        <table className="table table-hover table-bordered table-responsive data-table">
                                             <thead
                                                 style={{ color: "#4BC0C0", fontWeight: '300', textAlign: 'center' }}
                                             >
                                                 <tr>
-                                                    <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>QC</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
-                                                    <th colspan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
-                                                    <th rowspan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Remarks</th>
+                                                    <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Location</th>
+                                                    <th colSpan="2" style={{ verticalAlign: 'middle' }}>Scanned</th>
+                                                    <th colSpan="2" style={{ verticalAlign: 'middle' }}>QC</th>
+                                                    <th colSpan="2" style={{ verticalAlign: 'middle' }}>Offered for QA</th>
+                                                    <th colSpan="2" style={{ verticalAlign: 'middle' }}>Client QA Done</th>
+                                                    <th rowSpan="2" style={{ whiteSpace: 'nowrap', verticalAlign: 'middle' }}>Remarks</th>
                                                 </tr>
                                                 <tr
                                                     style={{ color: "#4BC0C0", fontWeight: '300' }}
@@ -269,7 +273,7 @@ const AddRemarks = () => {
                                                 {report &&
                                                     report.map((elem, index) => (
                                                         <tr key={index} style={{ backgroundColor: "white" }}>
-                                                            <td style={{ whiteSpace: 'nowrap',textAlign:'left' }}>{elem.LocationName}</td>
+                                                            <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.LocationName}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
@@ -279,8 +283,8 @@ const AddRemarks = () => {
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
                                                             <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
                                                             <td className='text-center'>
-                                                                <button className='btn' style={{backgroundColor:'#4BC0C0'}} onClick={() => handleAddCumulativeClick(elem.LocationName)}>Add</button>
-                                                                <button className='btn ms-1' style={{backgroundColor:'#4BC0C0'}} onClick={() => handleViewCumulativeClick(elem.Remarks, elem.SpecialRequests)}>View</button>
+                                                                <button className='btn' style={{ backgroundColor: '#4BC0C0' }} onClick={() => handleAddCumulativeClick(elem.LocationName)}>Add</button>
+                                                                <button className='btn ms-1' style={{ backgroundColor: '#4BC0C0' }} onClick={() => handleViewCumulativeClick(elem.Remarks, elem.SpecialRequests)}>View</button>
                                                             </td>
                                                         </tr>
                                                     ))

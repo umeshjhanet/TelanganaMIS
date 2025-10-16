@@ -6,9 +6,12 @@ import { MdFileDownload } from 'react-icons/md';
 import axios from 'axios';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaChevronDown } from 'react-icons/fa';
+import SearchBar from "./Components/SearchBar";
+import SearchButton from "./Components/Button";
+import BarGraph from "./Components/BarGraph";
+import DonutGraph from "./Components/DonutGraph";
 
-const CustomerQAReport = () => {
+const CustomerQAReport = ({ showSideBar }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [showLocation, setShowLocation] = useState(false);
@@ -31,98 +34,6 @@ const CustomerQAReport = () => {
     // Add a new state for tracking highlighted index in dropdown
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-    // Filtered locations based on search input
-    const filteredLocations = locations?.filter(item =>
-        item.toLowerCase().includes(locationSearchInput.toLowerCase())
-    ) || [];
-
-    // Add this ref for the dropdown menu
-
-    const handleLocationKeyDown = (e) => {
-        if (!showLocation) {
-            setShowLocation(true);
-            return;
-        }
-
-        switch (e.key) {
-            case 'ArrowDown':
-                e.preventDefault();
-                setHighlightedIndex(prev => {
-                    const newIndex = prev < filteredLocations.length - 1 ? prev + 1 : prev;
-
-                    // Scroll to ensure the highlighted item is visible
-                    if (dropdownMenuRef.current && newIndex !== prev) {
-                        const highlightedElement = dropdownMenuRef.current.children[newIndex];
-                        if (highlightedElement) {
-                            highlightedElement.scrollIntoView({
-                                block: 'nearest',
-                                behavior: 'smooth'
-                            });
-                        }
-                    }
-
-                    return newIndex;
-                });
-                break;
-            case 'ArrowUp':
-                e.preventDefault();
-                setHighlightedIndex(prev => {
-                    const newIndex = prev > 0 ? prev - 1 : -1;
-
-                    // Scroll to ensure the highlighted item is visible
-                    if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
-                        const highlightedElement = dropdownMenuRef.current.children[newIndex];
-                        if (highlightedElement) {
-                            highlightedElement.scrollIntoView({
-                                block: 'nearest',
-                                behavior: 'smooth'
-                            });
-                        }
-                    }
-
-                    return newIndex;
-                });
-                break;
-            case 'Enter':
-                e.preventDefault();
-                if (filteredLocations.length === 1) {
-                    handleLocation(filteredLocations[0]);
-                    setHighlightedIndex(-1);
-                    return;
-                }
-                if (highlightedIndex >= 0 && filteredLocations[highlightedIndex]) {
-                    handleLocation(filteredLocations[highlightedIndex]);
-                    setHighlightedIndex(-1);
-                }
-                break;
-            case 'Backspace':
-                if (locationSearchInput === '' && selectedLocations.length > 0) {
-                    removeLocation(selectedLocations[selectedLocations.length - 1]);
-                }
-                break;
-            case 'Escape':
-                setShowLocation(false);
-                setHighlightedIndex(-1);
-                break;
-            default:
-                break;
-        }
-    };
-
-    const handleLocation = (locationName) => {
-        if (!selectedLocations.includes(locationName)) {
-            setSelectedLocations([...selectedLocations, locationName]);
-            setSearchInput("");
-        }
-        setLocationSearchInput("");
-        setShowLocation(false);
-        setHighlightedIndex(-1);
-    };
-    const removeLocation = (locationName) => {
-        setSelectedLocations(
-            selectedLocations.filter((loc) => loc !== locationName)
-        );
-    };
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -167,13 +78,13 @@ const CustomerQAReport = () => {
                 setError("Start date and end date are required.");
                 return;
             }
-            
+
 
             setIsLoading(true);
 
             const response = await axios.get(apiUrl, { params: queryParams });
 
-          
+
 
             // ✅ Ensure response.data is an array before setting state
             if (Array.isArray(response.data)) {
@@ -215,10 +126,10 @@ const CustomerQAReport = () => {
                     queryParams.startDate = formatDate(startDate);
                     queryParams.endDate = formatDate(endDate);
                 }
-              
+
                 setIsLoading(true);
                 const response = await axios.get(apiUrl, { params: queryParams });
-               
+
                 setReport(response.data);
                 setIsLoading(false);
                 updateTotalLocations(response.data);
@@ -270,18 +181,18 @@ const CustomerQAReport = () => {
     const updateTotalLocations = (data) => {
         const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
         setTotalLocations(uniqueLocations.length);
-       
+
     };
-   
+
     const fetchLocation = async () => {
         try {
             let apiUrl = `${API_URL}/locations`;
             setIsLoading(true);
             const response = await axios.get(apiUrl);
-         
+
 
             // Extract just the LocationName values
-            const locationNames = response.data.map(item => item.LocationName );
+            const locationNames = response.data.map(item => item.LocationName);
 
             setLocations(locationNames);
             setIsLoading(false);
@@ -303,11 +214,11 @@ const CustomerQAReport = () => {
     return (
         <>
             {isLoading && <Loader />}
-            <Header />
+
             <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
                 <div className="row">
-                    <div className="col-lg-2 col-md-0 "></div>
-                    <div className="col-lg-10 col-md-12 col-sm-12">
+                    <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+                    <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
                         <div className="row mt-2 me-1">
                             <div
                                 className="card"
@@ -318,146 +229,19 @@ const CustomerQAReport = () => {
                                 </h6>
                             </div>
                         </div>
-                     
-                        <div className='search-report-card mt-2 me-1'>
+
+                        <div className='row mt-2 me-1 search-report-card'>
                             <p>Select Location, Start Date and End Date to view data.</p>
-                        <div
-                            className=" mt-2 me-1"
-                            style={{
-                                minHeight: '50px',
-                                padding: '5px',
-                                display: 'flex',
-                                gap: '10px',            // Fixed horizontal gap between items
-                                alignItems: 'center',   // Vertically center items
-                                flexWrap: 'wrap'        // Allow wrapping for smaller screens
-                            }}
-                        >
-                        
-                            
-                            {/* Search Box */}
-                            <div style={{ minWidth: '250px', position: 'relative' }}>
-                                <div
-                                    ref={dropdownRef}
-                                    className="search-bar"
-                                    style={{
-                                        border: "1px solid #000",
-                                        padding: "5px",
-                                        borderRadius: "2px",
-                                        height: "38px",
-                                        display: "flex",
-                                        flexWrap: "wrap",
-                                        alignItems: "center",
-                                        position: "relative",
-                                        width: "100%",
-                                        marginTop: "-4px"
-                                    }}
-                                    onClick={() => setShowLocation(true)}
-                                >
-                                    {selectedLocations.map((location, index) => (
-                                        <span
-                                            key={index}
-                                            className="selected-location"
-                                            style={{
-                                                padding: "5px",
-                                                borderRadius: "5px",
-                                                margin: "2px",
-                                                display: "inline-block",
-                                                marginTop: "-20px"
-                                            }}
-                                        >
-                                            {location}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    removeLocation(location);
-                                                }}
-                                                style={{
-                                                    backgroundColor: "black",
-                                                    color: "white",
-                                                    border: "none",
-                                                    marginLeft: "5px",
-                                                    borderRadius: "50%",
-                                                    width: "18px",
-                                                    height: "18px",
-                                                    fontSize: "12px",
-                                                    display: "inline-flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center"
-                                                }}
-                                            >
-                                                ×
-                                            </button>
-                                            &nbsp;
-                                        </span>
-                                    ))}
-                                    <input
-                                        type="text"
-                                        placeholder={selectedLocations.length === 0 ? "Search Locations..." : ""}
-                                        value={locationSearchInput}
-                                        onChange={(e) => {
-                                            setLocationSearchInput(e.target.value);
-                                            setShowLocation(true);
-                                        }}
-                                        onKeyDown={handleLocationKeyDown}
-                                        style={{
-                                            border: "none",
-                                            outline: "none",
-                                            width: "100%",
-                                            backgroundColor: "transparent",
-                                            minWidth: "60px",
-                                            flex: 1,
-                                            paddingRight: "25px"
-                                        }}
-                                    />
-                                </div>
-                                {selectedLocations == 0 && showLocation && (
-                                    <div
-                                        ref={dropdownMenuRef}
-                                        className="location-card"
-                                        style={{
-                                            position: 'absolute',
-                                            width: '220px',
-                                            maxWidth: '310px',
-                                            backgroundColor: 'white',
-                                            border: '1px solid #ccc',
-                                            borderRadius: '4px',
-                                            minHeight: '200px',
-                                            overflowY: 'auto',
-                                            zIndex: 1000,
-                                            marginTop: '2px',
-                                            boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                                        }}
-                                    >
-                                        {filteredLocations.map((location, index) => (
-                                            <div
-                                                key={index}
-                                                style={{
-                                                    padding: '8px 12px',
-                                                    cursor: 'pointer',
-                                                    borderBottom: '1px solid #eee',
-                                                    backgroundColor: index === highlightedIndex ? '#f0f0f0' : 'transparent'
-                                                }}
-                                                onClick={() => handleLocation(location)}
-                                                onMouseEnter={() => setHighlightedIndex(index)}
-                                            >
-                                                {location}
-                                            </div>
-                                        ))}
-                                        {filteredLocations.length === 0 && (
-                                            <div style={{ padding: '8px 12px', color: '#999' }}>No locations found</div>
-                                        )}
-                                    </div>
-                                )}
+                            <div className="col-lg-3 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
+                                <SearchBar
+                                    items={locations}
+                                    selectedItems={selectedLocations}
+                                    onChange={newSelected => setSelectedLocations(newSelected)}
+                                    placeholder="Search locations..."
+                                    showSelectAll={true}
+                                />
                             </div>
-                            {/* Date fields and button */}
-                            <div
-                                style={{
-                                    // display: 'flex',
-                                    //alignItems: 'center',
-                                    // gap: '10px',           // Small gap between input/button
-                                    // flexWrap: 'wrap'
-                                }}
-                            >
+                            <div className="col-lg-4 col-md-8 col-sm-12 d-flex flex-wrap ">
                                 <DatePicker
                                     className="date-field"
                                     selected={startDate}
@@ -467,6 +251,8 @@ const CustomerQAReport = () => {
                                     showMonthDropdown
                                     showYearDropdown
                                     dropdownMode="select"
+
+
                                     popperProps={{
                                         modifiers: [
                                             {
@@ -486,10 +272,10 @@ const CustomerQAReport = () => {
                                     style={{
                                         height: "40px",
                                         backgroundColor: "#4BC0C0",
-                                        marginBottom: "5px",
+                                        marginBottom: "3px",
+                                        marginTop: "1px",
                                         borderRadius: "0px",
                                         color: 'white',
-                                        whiteSpace: 'nowrap'
                                     }}
                                 >
                                     To
@@ -503,6 +289,8 @@ const CustomerQAReport = () => {
                                     showMonthDropdown
                                     showYearDropdown
                                     dropdownMode="select"
+
+
                                     popperProps={{
                                         modifiers: [
                                             {
@@ -517,23 +305,12 @@ const CustomerQAReport = () => {
                                     }}
                                     popperClassName="compact-picker"
                                 />
-                                <button
-                                    className="btn add-btn"
-                                    onClick={handleClick}
-                                    style={{
-                                        height: "40px",
-                                        backgroundColor: "#4BC0C0",
-                                        color: 'white',
-                                        borderRadius: '0px',
-                                        marginLeft: '8px',
-                                        whiteSpace: 'nowrap'
-                                    }}
-                                >
-                                    Submit
-                                </button>
                             </div>
+
+
+                            <div className="col-md-2"><SearchButton onClick={handleClick} Name="Search" /></div>
                         </div>
-                        </div>
+
 
                         <div className="row mt-2 me-1">
                             <div className="table-card">
@@ -611,8 +388,8 @@ const CustomerQAReport = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     )
 }

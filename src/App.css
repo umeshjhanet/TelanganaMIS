@@ -395,7 +395,7 @@ input[type="submit"]:hover {
 
 .table-card {
   background-color: white;
-  margin-bottom: 70px;
+  /* margin-bottom: 70px; */
   border-radius: 4px;
 }
 .pagination .active .page-link {

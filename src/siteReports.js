@@ -1,9 +1,10 @@
-import React, { useEffect, useState ,useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Header from './Components/Header';
 import axios from 'axios';
 import { API_URL } from './Api';
-
-const SiteReports = () => {
+import SearchBar from "./Components/SearchBar";
+import SearchButton from "./Components/Button";
+const SiteReports = ({ showSideBar }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [dbServer, setDBServer] = useState([]);
@@ -259,11 +260,11 @@ const SiteReports = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <Header />
+
       <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
         <div className="row">
-          <div className="col-lg-2 col-md-0"></div>
-          <div className="col-lg-10 col-md-12">
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div className="row mt-4 me-1">
               <div
                 className="card"
@@ -274,136 +275,20 @@ const SiteReports = () => {
                 </h6>
               </div>
             </div>
-            <div className="row mt-2 me-1 search-report-card " style={{minHeight:"92px"}}>
-              <div className="col-lg-4 col-md-2 col-sm-12 mt-1">
-              <div
-                      ref={dropdownRef}
-                      className="site_search-bar"
-                      style={{
-                        border: "1px solid #000",
-                        padding: "5px",
-                        borderRadius: "5px",
-                        minHeight: "30px",
-                        backgroundColor:  "transparent", // Dull background
-                        cursor:  "pointer" // Disabled cursor
-                      }}
-                      onClick={() => {
-                       
-                          setShowLocation(true);
-                        }
-                      }
-                    >
-                { selectedLocations.map((location, index) => (
-                        <span key={index} className="selected-location">
-                          {location}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeLocation(location);
-                            }}
-                            style={{
-                              backgroundColor: "black",
-                              color: "white",
-                              border: "none",
-                              marginLeft: "5px",
-                              borderRadius: "50%",
-                              width: "18px",
-                              height: "18px",
-                              fontSize: "12px",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center"
-                            }}
-                          >
-                            ×
-                          </button>
-                          &nbsp;
-                        </span>
-                      ))}
-                
-                <input
-                  type='text'
-                  
-                  value={locationSearchInput}
-                  onChange={(e) => {
-                          
-                            setLocationSearchInput(e.target.value);
-                            setShowLocation(true);
-                         
-                        }}
-                        onKeyDown={handleLocationKeyDown}
-                        placeholder={
-                          selectedLocations.length === 0
-                            ? "Search Locations..."
-                            : ""
-                        }
-                        
-                        style={{ 
-                          // height: '35px',
-                          border: "none",
-                          outline: "none",
-                          width: selectedLocations.length > 0 ? "70px" : "100%",
-                          backgroundColor: "transparent",
-                          minWidth: "60px"
-                        }}
-                        
-                  
+            <div className='row mt-2 me-1 search-report-card' style={{ display: "flex" }}>
+              <div className="col-lg-3 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
+                <SearchBar
+                  items={locations}
+                  selectedItems={selectedLocations}
+                  onChange={newSelected => setSelectedLocations(newSelected)}
+                  placeholder="Search locations..."
+                  showSelectAll={true}
                 />
-
-                </div>
-                {showLocation && (
-                  <div
-                     ref={dropdownMenuRef} // Add ref to the dropdown menu
-                    className="location-card"
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      maxWidth: "300px",
-                      backgroundColor: "white",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                      minHeight: "200px",
-                      overflowY: "auto",
-                      zIndex: 1000,
-                      marginTop: "2px",
-                      boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    {filteredLocations.map((location, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          padding: "8px 12px",
-                          cursor: "pointer",
-                          borderBottom: "1px solid #eee",
-                          backgroundColor:
-                            index === highlightedIndex
-                              ? "#f0f0f0"
-                              : "transparent",
-                        }}
-                        onClick={() => 
-                          handleLocation(location)
-                        }
-                       
-                        onMouseEnter={() => setHighlightedIndex(index)}
-                      >
-                        {location}
-                      </div>
-                    ))}
-
-                    {filteredLocations.length === 0 && (
-                      <div style={{ padding: "8px 12px", color: "#999" }}>
-                        No locations found
-                      </div>
-                    )}
-                  </div>
-                )}
-                </div>
-                <button className='btn search-btn mb-1' style={{ color: 'white' }} onClick={handleClick}>Search</button>
-              
               </div>
-              <div className='row ' style={{backgroundColor:'white' ,marginTop:'10px' ,width:"101%"}}>
-                <div className='lg-4 sm-2'  style={{display:"flex" , justifyContent:"flex-end" ,marginTop:"10px"}}>
+              <div className="col-md-2 mt-1"><SearchButton onClick={handleClick} Name="Search" /></div>
+            </div>
+            <div className='row ' style={{ backgroundColor: 'white', marginTop: '10px', width: "101%" }}>
+              <div className='lg-4 sm-2' style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
                 <div className='col-1 mt-2 mb-2'>
                   <button
                     onClick={() => exportToCSV(currentServers, 'server_report')}
@@ -420,8 +305,8 @@ const SiteReports = () => {
                   </button>
                 </div>
               </div>
-              <div className='server-report' style={{backgroundColor:"white"}}>
-                <table className='server-reports table-bordered mt-1 mb-4' style={{marginTop:"20px"}}>
+              <div className='server-report' style={{ backgroundColor: "white" }}>
+                <table className='server-reports table-bordered mt-1 mb-4' style={{ marginTop: "20px" }}>
                   <thead>
                     <tr>
                       <th style={{ whiteSpace: 'nowrap', color: '#4bc0c0' }}>Sr.No</th>
@@ -541,8 +426,8 @@ const SiteReports = () => {
             </div>
           </div>
         </div>
-        </div>
-      
+      </div>
+
 
       {showServerError && (
         <div className="modal">

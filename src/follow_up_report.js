@@ -6,7 +6,7 @@ import { IoDownload } from 'react-icons/io5';
 import { format, sub } from "date-fns";
 import { ToastContainer, toast } from 'react-toastify';
 
-const FollowUpReportForm = () => {
+const FollowUpReportForm = ({ showSideBar }) => {
     const [followupData, setFollowupData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -156,11 +156,11 @@ const FollowUpReportForm = () => {
 
     return (
         <>
-            <Header />
+
             <div className='container-fluid mt-2 mb-5'>
                 <div className='row'>
-                    <div className='col-2'></div>
-                    <div className='col-10'>
+                    <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+                    <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
 
                         <h4 className='text-center'>Follow-Up Form</h4>
                         <div className='follow_up-form mt-4'>
@@ -292,7 +292,7 @@ const FollowUpReportForm = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="row ms-2 me-2" style={{  overflowX: "auto" }}>
+                                <div className="row ms-2 me-2" style={{ overflowX: "auto" }}>
                                     <table className="table table-hover table-bordered table-responsive data-table">
                                         <thead style={{ color: '#4BC0C0' }}>
                                             <tr>

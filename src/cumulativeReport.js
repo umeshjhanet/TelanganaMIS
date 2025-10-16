@@ -1,4 +1,4 @@
-import React, { useEffect, useState , useRef} from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Header from './Components/Header'
 import { MdFileDownload } from 'react-icons/md'
 import axios from 'axios';
@@ -6,10 +6,11 @@ import { API_URL } from './Api';
 import DatePicker from "react-datepicker";
 import { format, sub } from "date-fns";
 import Papa from "papaparse";
+import SearchBar from './Components/SearchBar';
 
-const CumulativeReport = () => {
-    const [startDate,setStartDate] = useState("");
-    const [endDate,setEndDate] = useState("");
+const CumulativeReport = ({ showSideBar }) => {
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const currentDate = new Date();
     const yesterdayDate = sub(currentDate, { days: 1 });
     const previousDate = sub(currentDate, { days: 2 });
@@ -28,6 +29,9 @@ const CumulativeReport = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const dropdownRef = useRef(null);
+    const [locations, setLocations] = useState();
+    const [error, setError] = useState();
+    const [processes, setProcesses] = useState([]);
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -41,6 +45,28 @@ const CumulativeReport = () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, [dropdownRef]);
+    const fetchLocation = async () => {
+        try {
+            let apiUrl = `${API_URL}/locations`;
+            setIsLoading(true);
+            const response = await axios.get(apiUrl);
+
+            // Extract just the LocationName values
+            const locationNames = response.data.map(item => item.LocationName);
+
+            setLocations(locationNames);
+            setIsLoading(false);
+
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+            setError("Error fetching locations. Please try again.");
+            setIsLoading(false);
+        }
+    };
+    useEffect(() => {
+        fetchLocation();
+    }, [])
+
     const fetchCumulative = async () => {
         try {
             const params = {};
@@ -48,15 +74,33 @@ const CumulativeReport = () => {
                 params.date = selectedDate;
             }
             const response = await axios.get(`${API_URL}/manpowerData`, { params });
-            setCumulative(response.data.result); // Only set the array
-        } catch {         
+            const result = response.data.result;
+
+            setCumulative(result);
+
+            // Extract and set processes separately
+            const processNames = result.map(item => item.process);
+            setProcesses(processNames);
+
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
     };
+    // const fetchCumulative = async () => {
+    //     try {
+    //         const params = {};
+    //         if (selectedDate) {
+    //             params.date = selectedDate;
+    //         }
+    //         const response = await axios.get(`${API_URL}/manpowerData`, { params });
+    //         setCumulative(response.data.result); // Only set the array
+    //     } catch {
+    //     }
+    // };
     const fetchDetailed = async (params = {}) => {
         try {
-           
+
             const response = await axios.get(`${API_URL}/api/daily-summary`, { params });
-            console.log("API response:", response.data);
             setDetailedReport(response.data);
         } catch (error) {
             console.error("Error fetching detailed report", error);
@@ -522,32 +566,30 @@ const CumulativeReport = () => {
     return (
         <>
             {isLoading && <Loader />}
-            <Header />
+
             <div className={`container-fluid`}>
                 <div className="row">
-                    <div className="col-lg-2 col-md-2 "></div>
-                    <div className="col-lg-10 col-md-10 col-sm-12">
+                    <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+                    <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
                         <div className="row mt-3 me-1">
                             <div className="table-card">
                                 <div className='row search-report-card'>
                                     <div className="col-2">
                                         <DatePicker
                                             className="date-field"
-                                            selected={startDate}
-                                            onChange={(date) => setStartDate(date)}
+                                            selected={selectedDate}
+                                            onChange={handleDateChange}
                                             dateFormat="dd-MM-yyyy"
-                                            placeholderText="Start Date"
+                                            placeholderText="Select Date"
                                             showMonthDropdown
                                             showYearDropdown
                                             dropdownMode="select"
-
-
                                             popperProps={{
                                                 modifiers: [
                                                     {
-                                                        name: 'preventOverflow',
+                                                        name: "preventOverflow",
                                                         options: {
-                                                            rootBoundary: 'viewport',
+                                                            rootBoundary: "viewport",
                                                             tether: false,
                                                             altAxis: true,
                                                         },
@@ -558,32 +600,32 @@ const CumulativeReport = () => {
                                         />
                                     </div>
                                     <div className="col-3 mt-1">
-                                        <button className="btn add-btn" style={{marginTop:'-5px'}} onClick={handleDateFilter}>Submit</button>
+                                        <button className="btn add-btn" style={{ marginTop: '-5px' }} onClick={handleDateFilter}>Submit</button>
                                     </div>
                                 </div>
                                 <div className='row '>
-                                        <div className='col-md-8 d-md-block d-none col-11'>
-                                            <h5 className="mt-2">
-                                                Telangana - Process & Manpower Detailed Summary: <span style={{ color: '#AC1754' }}>{!selectedDate ? formattedYesterdayDate : new Date(selectedDate).toLocaleDateString('en-GB')}</span>
-                                            </h5>
-                                        </div>
-                                        <div className='col-md-2 col-5'>
-                                            <button className='btn add-btn p-2 w-100' style={{marginLeft:'0px', fontSize: '12px', backgroundColor: "#4bc0c0", color: "#000" }} onClick={handleTable}>{showTable ? 'Hide Detailed Report' : 'Show Detailed Report'}</button>
-                                        </div>
-                                        <div className='col-md-2 col-5'>
-                                            <button className='p-2 btn add-btn w-100' onClick={exportToCSV} style={{marginLeft:'0px', fontSize: '12px', backgroundColor: "#4bc0c0", color: "#000", border: "0px" }}><MdFileDownload /> Export CSV</button>
-                                        </div>
-                                        <div className='col-md-8 d-md-none d-block col-12'>
-                                            <h5 className="mt-2">
+                                    <div className='col-md-8 d-md-block d-none col-11'>
+                                        <h5 className="mt-2">
                                             Telangana - Process & Manpower Detailed Summary: <span style={{ color: '#AC1754' }}>{!selectedDate ? formattedYesterdayDate : new Date(selectedDate).toLocaleDateString('en-GB')}</span>
-                                            </h5>
-                                        </div>
+                                        </h5>
                                     </div>
+                                    <div className='col-md-2 col-5'>
+                                        <button className='btn add-btn p-2 w-100' style={{ marginLeft: '0px', fontSize: '12px', backgroundColor: "#4bc0c0", color: "#000" }} onClick={handleTable}>{showTable ? 'Hide Detailed Report' : 'Show Detailed Report'}</button>
+                                    </div>
+                                    <div className='col-md-2 col-5'>
+                                        <button className='p-2 btn add-btn w-100' onClick={exportToCSV} style={{ marginLeft: '0px', fontSize: '12px', backgroundColor: "#4bc0c0", color: "#000", border: "0px" }}><MdFileDownload /> Export CSV</button>
+                                    </div>
+                                    <div className='col-md-8 d-md-none d-block col-12'>
+                                        <h5 className="mt-2">
+                                            Telangana - Process & Manpower Detailed Summary: <span style={{ color: '#AC1754' }}>{!selectedDate ? formattedYesterdayDate : new Date(selectedDate).toLocaleDateString('en-GB')}</span>
+                                        </h5>
+                                    </div>
+                                </div>
                                 <div
                                     className="row mt-3 ms-2 me-2"
                                     style={{ overflowX: "auto", maxHeight: '500px' }}
                                 >
-                                    <table class="table table-hover table-bordered table-responsive date-table" style={{ zIndex: '0' }}>
+                                    <table className="table table-hover table-bordered table-responsive date-table" style={{ zIndex: '0' }}>
                                         <thead style={{ backgroundColor: '#FF8989' }}>
                                             <tr>
                                                 <th>Process Steps</th>
@@ -625,7 +667,7 @@ const CumulativeReport = () => {
 
                                                 return (
                                                     <tr key={index}>
-                                                        <td style={{textAlign:"left"}}>{elem.process}</td>
+                                                        <td style={{ textAlign: "left" }}>{elem.process}</td>
                                                         <td>{present}</td>
                                                         <td>{files}</td>
                                                         <td>{images}</td>
@@ -680,151 +722,30 @@ const CumulativeReport = () => {
                                         </div>
                                         <div className='row mt-3 ms-2 me-2'>
                                             <div className="col-lg-4 col-md-2 col-sm-12">
-                                                <div
-                                                    ref={dropdownRef}
-                                                    className="search-bar"
-                                                    style={{
-                                                        border: "1px solid #000",
-                                                        padding: "5px",
-                                                        borderRadius: "5px",
-                                                        minHeight: "30px",
-                                                    }}
 
-                                                    contentEditable={true}
-                                                    onClick={() => setShowLocation(!showLocation)}
-                                                >
-                                                    {selectedLocations.length === 0 && !showLocation && (
-                                                        <span className="placeholder-text">Search Locations...</span>
-                                                    )}
-                                                    {selectedLocations.map((location, index) => (
-                                                        <span key={index} className="selected-location">
-                                                            {location}
-                                                            <button
-                                                                onClick={() => removeLocation(location)}
-                                                                style={{
-                                                                    backgroundColor: "black",
-                                                                    color: "white",
-                                                                    border: "none",
-                                                                    marginLeft: "5px",
-                                                                }}
-                                                            >
-                                                                x
-                                                            </button>
-                                                            &nbsp;
-                                                        </span>
-                                                    ))}
-                                                    <span style={{ minWidth: "5px", display: "inline-block" }}>
-                                                        &#8203;
-                                                    </span>
-                                                </div>
-                                                {showLocation && (
-                                                    <>
-                                                        <div className="location-card">
-                                                            {detailedReport &&
-                                                                detailedReport.map((item, index) => (
-                                                                    <div key={index}>
-                                                                        <p
-                                                                            onClick={() => handleLocation(item.locationname)}
-                                                                        >
-                                                                            {item.locationname}
-                                                                        </p>
-                                                                    </div>
-                                                                ))}
-                                                        </div>
-                                                    </>
-                                                )}
+                                                <SearchBar
+                                                    items={locations} // all available locations
+                                                    selectedItems={selectedLocations} // current selections
+                                                    onChange={(newSelected) =>
+                                                        setSelectedLocations(newSelected)
+                                                    } // update handler
+                                                    placeholder="Search locations..."
+                                                    showSelectAll={true}
+                                                />
                                             </div>
                                             <div className="col-lg-4 col-md-2 col-sm-12" style={{ position: 'relative' }}>
-                                                <div
-                                                    className="search-bar"
-                                                    style={{
-                                                        border: "1px solid #000",
-                                                        padding: "5px",
-                                                        borderRadius: "5px",
-                                                        minHeight: "30px",
-                                                        cursor: "pointer",
-                                                        display: "flex",
-                                                        flexWrap: "wrap",
-                                                        gap: "5px"
-                                                    }}
-                                                    onClick={() => setShowProcess(!showProcess)}
-                                                >
-                                                    {selectedProcesses.length === 0 && (
-                                                        <span className="placeholder-text" style={{ color: "#aaa" }}>
-                                                            Select Processes...
-                                                        </span>
-                                                    )}
-                                                    {selectedProcesses.map((process, index) => (
-                                                        <span
-                                                            key={index}
-                                                            className="selected-process"
-                                                            style={{
-                                                                backgroundColor: "#007bff",
-                                                                color: "white",
-                                                                borderRadius: "15px",
-                                                                padding: "2px 8px",
-                                                                display: "inline-flex",
-                                                                alignItems: "center",
-                                                                userSelect: "none"
-                                                            }}
-                                                        >
-                                                            {process}
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    removeProcess(process);
-                                                                }}
-                                                                style={{
-                                                                    backgroundColor: "transparent",
-                                                                    color: "white",
-                                                                    border: "none",
-                                                                    marginLeft: "5px",
-                                                                    cursor: "pointer",
-                                                                    fontWeight: "bold"
-                                                                }}
-                                                            >
-                                                                &times;
-                                                            </button>
-                                                        </span>
-                                                    ))}
-                                                </div>
 
-                                                {showProcess && (
-                                                    <div
-                                                        className="process-dropdown"
-                                                        style={{
-                                                            position: "absolute",
-                                                            top: "100%",
-                                                            left: 0,
-                                                            right: 0,
-                                                            maxHeight: "150px",
-                                                            overflowY: "auto",
-                                                            border: "1px solid #ccc",
-                                                            backgroundColor: "white",
-                                                            zIndex: 1000,
-                                                            borderRadius: "4px",
-                                                            marginTop: "5px",
-                                                        }}
-                                                    >
-                                                        {processOptions.map((item, index) => (
-                                                            <div
-                                                                key={index}
-                                                                style={{
-                                                                    padding: "8px",
-                                                                    cursor: selectedProcesses.includes(item) ? "not-allowed" : "pointer",
-                                                                    backgroundColor: selectedProcesses.includes(item) ? "#e9ecef" : "white"
-                                                                }}
-                                                                onClick={() => {
-                                                                    if (!selectedProcesses.includes(item)) {
-                                                                        handleProcess(item);
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {item}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
+
+                                                <SearchBar
+                                                    items={processes} // all available locations
+                                                    selectedItems={selectedProcesses} // current selections
+                                                    onChange={(newSelected) =>
+                                                        setSelectedProcesses(newSelected)
+                                                    } // update handler
+                                                    placeholder="Search processes..."
+                                                    showSelectAll={true}
+                                                    Name="Process"
+                                                />
                                             </div>
                                             <div className='col-lg-4 col-md-2 col-sm-12'>
                                                 <button className='btn add-btn' onClick={handleLocationFilter}>Submit</button>
@@ -858,7 +779,7 @@ const CumulativeReport = () => {
                                                             {detailedReport.map((elem, index) => (
                                                                 <tr key={index}>
                                                                     <td>{index + 1}</td>
-                                                                    <td style={{textAlign:'left'}}>{elem.locationname}</td>
+                                                                    <td style={{ textAlign: 'left' }}>{elem.locationname}</td>
                                                                     {processesToRender.map((processKey, pIndex) => {
                                                                         const config = processConfig[processKey];
                                                                         if (!config) return null;

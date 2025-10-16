@@ -8,7 +8,7 @@ import UpdateUserModal from "./Components/UpdateUserModal";
 import { ToastContainer } from "react-toastify";
 import { API_URL } from "./Api";
 
-const User_List = () => {
+const User_List = ({ showSideBar }) => {
   const [user, setUser] = useState([]);
   const [location, setLocation] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,7 +49,7 @@ const User_List = () => {
         `${API_URL}/createuserdelete/${user_id}`
       );
       setUser(user.filter((elem) => elem.user_id !== user_id));
-    
+
       setShowConfirmation(false);
     } catch (error) {
       console.error("There was an error in deleting data!", error);
@@ -81,8 +81,9 @@ const User_List = () => {
       setIsLoading(true);
       axios
         .get(`${API_URL}/user_master`)
-        .then((response) => {setUser(response.data)
-          setFilteredUsers(response.data); 
+        .then((response) => {
+          setUser(response.data)
+          setFilteredUsers(response.data);
           setIsLoading(false);
         })
         .catch((error) => {
@@ -102,7 +103,7 @@ const User_List = () => {
             map[location.LocationID] = location.LocationName;
           });
 
-         
+
           setLocationsMap(map);
           setIsLoading(false);
         })
@@ -116,12 +117,6 @@ const User_List = () => {
     fetchLocation();
   }, []);
 
-
-  // const filteredUsers = user.filter(
-  //   (elem) =>
-  //     elem.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     elem.user_email_id.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
   const getLocationNameById = (locations) => {
     const locationArray = locations.split(",");
     let result = "";
@@ -136,23 +131,23 @@ const User_List = () => {
     }
     return result;
   };
-    const handleKey = (e) => {
-  switch (e.key) {
-    case 'Enter':
-      handleSearch();
-      break;
-    // You can add more cases as needed
-    default:
-      // Optional: handle other keys
-      break;
+  const handleKey = (e) => {
+    switch (e.key) {
+      case 'Enter':
+        handleSearch();
+        break;
+      // You can add more cases as needed
+      default:
+        // Optional: handle other keys
+        break;
+    }
   }
-}
   const handleSearch = () => {
     if (searchQuery.trim() === "") {
-      
+
       setFilteredUsers(user);
     } else {
-      
+
       const filtered = user.filter(
         (elem) =>
           elem.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -179,16 +174,16 @@ const User_List = () => {
         <tbody>
           {filteredUsers.map((elem, index) => (
             <tr key={elem.user_id}>
-              <td  style={{textAlign:'left'}}>{index + 1}</td>
-              <td  style={{textAlign:'left'}}>
+              <td style={{ textAlign: 'left' }}>{index + 1}</td>
+              <td style={{ textAlign: 'left' }}>
                 {elem.first_name} {elem.middle_name} {elem.last_name}
               </td>
-              <td style={{textAlign:'left'}}>{elem.designation}</td>
-              <td style={{textAlign:'left'}}>{elem.user_email_id}</td>
+              <td style={{ textAlign: 'left' }}>{elem.designation}</td>
+              <td style={{ textAlign: 'left' }}>{elem.user_email_id}</td>
               <td>{elem.phone_no}</td>
-              <td style={{textAlign:'left'}}>{elem.user_role}</td>
-              <td style={{textAlign:'left'}}>{getLocationNameById(elem.locations)}</td>
-              <td style={{textAlign:'left'}}>
+              <td style={{ textAlign: 'left' }}>{elem.user_role}</td>
+              <td style={{ textAlign: 'left' }}>{getLocationNameById(elem.locations)}</td>
+              <td style={{ textAlign: 'left' }}>
                 <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{ color: 'blue', fontSize: '20px' }} />
                 /
                 <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
@@ -203,16 +198,16 @@ const User_List = () => {
         <tbody>
           {currentUsers.map((elem, index) => (
             <tr key={elem.user_id}>
-              <td style={{textAlign:'left'}}>{index + 1}</td>
-              <td style={{textAlign:'left'}}>
+              <td style={{ textAlign: 'left' }}>{index + 1}</td>
+              <td style={{ textAlign: 'left' }}>
                 {elem.first_name} {elem.middle_name} {elem.last_name}
               </td>
-              <td style={{textAlign:'left'}}>{elem.designation}</td>
-              <td style={{textAlign:'left'}}>{elem.user_email_id}</td>
+              <td style={{ textAlign: 'left' }}>{elem.designation}</td>
+              <td style={{ textAlign: 'left' }}>{elem.user_email_id}</td>
               <td>{elem.phone_no}</td>
-              <td style={{textAlign:'left'}}>{elem.user_roles}</td>
-              <td style={{textAlign:'left'}}>{getLocationNameById(elem.locations)}</td>
-              <td style={{textAlign:'left'}}>
+              <td style={{ textAlign: 'left' }}>{elem.user_roles}</td>
+              <td style={{ textAlign: 'left' }}>{getLocationNameById(elem.locations)}</td>
+              <td style={{ textAlign: 'left' }}>
                 <BiEdit onClick={() => handleOpenModal(elem.user_id)} style={{ color: 'blue', fontSize: '20px' }} />
                 /
                 <RiDeleteBin5Line onClick={() => handleDeleteUserId(elem.user_id)} style={{ color: 'red', fontSize: '20px' }} />
@@ -225,12 +220,12 @@ const User_List = () => {
   };
   return (
     <>
-    {isLoading && <Loader/>}
-      <Header />
+      {isLoading && <Loader />}
+
       <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
         <div className="row">
-          <div className="col-lg-2 col-md-0"></div>
-          <div className="col-lg-10 col-md-12">
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div className="row mt-4 me-1">
               <div
                 className="card"
@@ -251,25 +246,25 @@ const User_List = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKey}
                 />
-                <button className='btn search-btn mb-1' style={{color:'white'}} onClick={handleSearch}>Search</button>
+                <button className='btn search-btn mb-1' style={{ color: 'white' }} onClick={handleSearch}>Search</button>
               </div>
-              
-                  <table className='user-tables table-bordered mt-1 mb-4'>
-                    <thead>
-                      <tr>
-                        <th>All</th>
-                        <th>User Name</th>
-                        <th>Designation</th>
-                        <th>User Email</th>
-                        <th>Phone</th>
-                        <th>User Role</th>
-                        <th>Locations Allotted</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    {renderUsers()}
-                  </table>
-                
+
+              <table className='user-tables table-bordered mt-1 mb-4'>
+                <thead>
+                  <tr>
+                    <th>All</th>
+                    <th>User Name</th>
+                    <th>Designation</th>
+                    <th>User Email</th>
+                    <th>Phone</th>
+                    <th>User Role</th>
+                    <th>Locations Allotted</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                {renderUsers()}
+              </table>
+
               {showConfirmation && (
                 <div className="confirmation-dialog">
                   <div className="confirmation-content">
@@ -281,31 +276,31 @@ const User_List = () => {
               )}
               {isModalOpen && <UpdateUserModal userId={userIdToEdit} onClose={handleCloseModal} />}
               {!searchQuery && (
-          <div className="row">
-            <ul className="pagination justify-content-center">
-              {user.length > usersPerPage &&
-                Array(Math.ceil(user.length / usersPerPage))
-                  .fill()
-                  .map((_, index) => (
-                    <li
-                      key={index}
-                      className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-                    >
-                      <button
-                        className="page-link"
-                        onClick={() => paginate(index + 1)}
-                      >
-                        {index + 1}
-                      </button>
-                    </li>
-                  ))}
-            </ul>
-          </div>
-        )}
+                <div className="row">
+                  <ul className="pagination justify-content-center">
+                    {user.length > usersPerPage &&
+                      Array(Math.ceil(user.length / usersPerPage))
+                        .fill()
+                        .map((_, index) => (
+                          <li
+                            key={index}
+                            className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => paginate(index + 1)}
+                            >
+                              {index + 1}
+                            </button>
+                          </li>
+                        ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
-        
+
       </div>
       <ToastContainer />
       <Footer />

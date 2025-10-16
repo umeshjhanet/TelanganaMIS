@@ -1,10 +1,10 @@
-import React, { useEffect,useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Header from './Components/Header'
 import Footer from './Components/Footer'
 import ReactDatePicker from 'react-datepicker'
 
-const MISUPDC = () => {
+const MISUPDC = ({ showSideBar }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -22,7 +22,7 @@ const MISUPDC = () => {
         e.preventDefault();
         try {
             const response = await axios.post("https://192.168.3.119:81/userinfo", formData);
-           
+
         } catch (error) {
             console.error("Error creating post:", error);
         }
@@ -31,11 +31,11 @@ const MISUPDC = () => {
 
     return (
         <>
-            <Header />
+
             <div className='container'>
                 <div className='row'>
-                    <div className='col-1'></div>
-                    <div className='col-11'>
+                    <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+                    <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
                         <h5>Registration form</h5>
                         <div className='form' style={{ border: '1px solid black', padding: '20px' }}>
                             <form onSubmit={handleSubmit}>

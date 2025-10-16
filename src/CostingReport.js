@@ -4,7 +4,7 @@ import Header from './Components/Header';
 import { API_URL } from './Api';
 import { toast, ToastContainer } from 'react-toastify';
 
-const CostingReport = () => {
+const CostingReport = ({showSideBar}) => {
     const [salaries, setSalaries] = useState({});
     const [dataMapping, setDataMapping] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -207,11 +207,11 @@ const CostingReport = () => {
     return (
         <>
             <ToastContainer />
-            <Header />
-            <div className="container-fluid mt-2 mb-4">
-                <div className="row">
-                    <div className="col-2"></div>
-                    <div className="col-10">
+           
+            <div className="main-fluid p-3 m-2">
+        <div className="row">
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
                         <h4 className='text-center'>Process Wise Costing Report</h4>
                         {showEditable ?
                             <>

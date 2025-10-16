@@ -1,13 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { CCard, CCardBody, CCol, CCardHeader, CRow } from "@coreui/react";
-import {
-  CChartBar,
-  CChartDoughnut,
-  CChartLine,
-  CChartPie,
-  CChartPolarArea,
-  CChartRadar,
-} from "@coreui/react-chartjs";
 import Chart from "react-apexcharts";
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import Header from "./Components/Header";
@@ -25,8 +16,13 @@ import "jspdf-autotable";
 import html2canvas from "html2canvas";
 import { toast } from "react-toastify";
 import { FaChevronDown } from "react-icons/fa";
+import SearchBar from "./Components/SearchBar";
+import SearchButton from "./Components/Button";
+import BarGraph from "./Components/BarGraph";
+import DonutGraph from "./Components/DonutGraph";
+import ProjectStatusTable from "./Components/ProjectStatusTable";
 
-const DistrictHeadDashboard = () => {
+const DistrictHeadDashboard = ({ showSideBar }) => {
   const [data2, setData2] = useState();
   const currentDate = new Date();
   const yesterdayDate = sub(currentDate, { days: 1 });
@@ -66,10 +62,7 @@ const DistrictHeadDashboard = () => {
 
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-  // Filtered locations based on search input
-  // const filteredLocations = locations?.filter(item =>
-  //   item.Location.toLowerCase().includes(locationSearchInput.toLowerCase())
-  // ) || [];
+ 
   const filteredLocations =
     locations?.filter(
       (locationName) =>
@@ -213,48 +206,6 @@ const DistrictHeadDashboard = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [dropdownRef]);
-
-  // const handleLocation = (location) => {
-  //   if (!selectedLocations.includes(location)) {
-  //     setSelectedLocations([...selectedLocations, location]);
-  //   }
-  //   setSearchInput('');
-  //   setFilteredLocations(locations);
-  //   setShowLocation(false);
-  // };
-
-  // const removeLocation = (location) => {
-  //   setSelectedLocations(selectedLocations.filter((loc) => loc !== location));
-  // };
-  // const handleLocation = (location) => {
-  //   if (!selectedLocations.includes(location)) {
-  //     setSelectedLocations([...selectedLocations, location]);
-  //   }
-  //   setLocationSearchInput("");
-  //   setShowLocation(false);
-  // };
-
-  // const removeLocation = (locationToRemove) => {
-  //   setSelectedLocations(
-  //     selectedLocations.filter((location) => location !== locationToRemove)
-  //   );
-  // };
-
-
-  // const handleSearchChange = (e) => {
-  //   const value = e.target.value;
-  //   setSearchInput(value);
-
-  //   if (value === "") {
-  //     setFilteredLocations(locations);
-  //   } else {
-  //     setFilteredLocations(
-  //       locations.filter((loc) =>
-  //         loc.LocationName.toLowerCase().includes(value.toLowerCase())
-  //       )
-  //     );
-  //   }
-  // };
   const handleExport = () => {
     setShowFormatDropdown(!showFormatDropdown);
   };
@@ -334,7 +285,7 @@ const DistrictHeadDashboard = () => {
         const blob = new Blob([response.data], { type: "text/csv" });
         const url = window.URL.createObjectURL(blob);
         setCsv(url);
-      
+
       })
       .catch((error) => {
         console.error("Error in exporting data:", error);
@@ -353,7 +304,7 @@ const DistrictHeadDashboard = () => {
         const apiData = response.data;
         const labels = apiData.map((item) => item["scandate"]);
         const data = apiData.map((item) => item["Scanned No Of Images"]);
-      
+
         setMonthImage({
           labels: labels.filter((label) => label !== "id"),
           datasets: [
@@ -363,7 +314,7 @@ const DistrictHeadDashboard = () => {
             },
           ],
         });
-     
+
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -382,11 +333,11 @@ const DistrictHeadDashboard = () => {
       .get(apiUrl)
       .then((response) => {
         setTableData(response.data);
-       
+
       })
       .catch((error) => console.error(error));
   };
-  
+
   const fetchAllGraphImageData = async (queryParams) => {
     try {
       let apiUrl = `${API_URL}/graph10`;
@@ -403,12 +354,12 @@ const DistrictHeadDashboard = () => {
         apiUrl += `?${locationQuery}`;
       }
 
-    
+
 
       const response = await axios.get(apiUrl);
       const apiData = response.data;
 
-  
+
       if (!apiData || apiData.length === 0) {
         console.error("No data received from the API");
         return;
@@ -417,7 +368,7 @@ const DistrictHeadDashboard = () => {
       const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
       const data = apiData.map(item => item["Images"] || 0);
 
-     
+
 
       setAllLocationImage({
         labels: labels,
@@ -504,7 +455,7 @@ const DistrictHeadDashboard = () => {
   });
 
   function downloadCSVFromTable() {
-    const table = document.querySelector(".data-table"); // Select the table by class
+    const table = document.querySelector(".data-table"); // Select the table by className
     let csvContent = "";
 
     // Define the full header row
@@ -556,9 +507,9 @@ const DistrictHeadDashboard = () => {
         rowContent.push(""); // Add empty data if there are fewer columns
       }
 
-      // For the last row (Total row), handle the colspan=2 logic
+      // For the last row (Total row), handle the colSpan=2 logic
       if (index === rows.length - 1) {
-        // Insert an empty cell after "Total" to account for the colspan=2
+        // Insert an empty cell after "Total" to account for the colSpan=2
         rowContent.splice(1, 0, "");
       }
 
@@ -667,13 +618,13 @@ const DistrictHeadDashboard = () => {
       locationNames: currentParams.locations
     };
 
-   
+
 
 
 
     try {
       await Promise.all([
-        
+
 
 
         fetchMonthImageGraphData(queryParams),
@@ -699,8 +650,8 @@ const DistrictHeadDashboard = () => {
     <>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-lg-2 col-md-2 "></div>
-          <div className="col-lg-10 col-md-10">
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div className="row mt-2">
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <h4> Telangana Dashboard</h4>
@@ -716,451 +667,76 @@ const DistrictHeadDashboard = () => {
                 </p>
               </div>
             </div>
-           
+
             <div
               className="row mt-2 search-report-card d-flex gap-4 flex-wrap align-items-center"
               style={{ gap: '24px' }}
             >
               <div
-                className="col-sm-3 col-lg-3 d-flex align-items-center gap-3"
-                style={{ position: 'relative', minWidth: '250px' }}
+                className="col-lg-4 col-md-2 col-sm-12 mt-1"
+                style={{ position: 'relative' }}
               >
-                <div
-                  ref={dropdownRef}
-                  className="search-bar"
-                  onClick={() => setShowLocation(true)}
-                  style={{
-                    border: '1px solid #000',
-                    padding: '5px',
-                    borderRadius: '5px',
-                    // minHeight: '30px',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '5px',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    width: '250px',
-                    minWidth: '250px',
-                    maxWidth: '250px',
-                    height: selectedLocations.length >= 2 ? '60px' : 'auto',
-                    overflowY: selectedLocations.length >= 2 ? 'auto' : 'hidden',
-                    overflowX: 'hidden',
-                  }}
-                >
-                  <div>
-                    {selectedLocations.map((location, index) => (
-                      <span key={index} className="selected-location">
-                        {location}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeLocation(location);
-                          }}
-                          style={{
-                            backgroundColor: 'black',
-                            color: 'white',
-                            border: 'none',
-                            marginLeft: '5px',
-                            borderRadius: '50%',
-                            width: '18px',
-                            height: '18px',
-                            fontSize: '12px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          ×
-                        </button>
-                        &nbsp;
-                      </span>
-                    ))}
-                    <input
-                      type="text"
-                      placeholder={selectedLocations.length === 0 ? 'Select Locations...' : ''}
-                      value={locationSearchInput}
-                      onChange={(e) => {
-                        setLocationSearchInput(e.target.value);
-                        setShowLocation(true);
-                      }}
-                      onKeyDown={handleLocationKeyDown}
-                      style={{
-                        border: 'none',
-                        outline: 'none',
-                        width: selectedLocations.length > 0 ? '70px' : '100%',
-                        backgroundColor: 'transparent',
-                        minWidth: '60px',
-                      }}
-                    />
-                  </div>
-                  {selectedLocations.length < 1 ? <FaChevronDown style={{ color: 'grey' }} /> : ''}
-                </div>
-
-                {showLocation && (
-                  <div
-                    ref={dropdownMenuRef}
-                    className="location-card"
-                    style={{
-                      position: 'absolute',
-                      zIndex: 1000,
-                      backgroundColor: 'white',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      width: '230px',
-                      maxHeight: '300px',
-                      overflowY: 'auto',
-                      top: '100%',
-                      marginLeft: '1px',
-                      marginTop: '3px',
-                    }}
-                  >
-                    {filteredLocations.map((locationName, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          padding: '8px 12px',
-                          cursor: 'pointer',
-                          borderBottom: '1px solid #eee',
-                          backgroundColor: index === highlightedIndex ? '#f0f0f0' : 'transparent',
-                        }}
-                        onClick={() => {
-                          handleLocation(locationName);
-                          setShowLocation(false);
-                        }}
-                        onMouseEnter={() => setHighlightedIndex(index)}
-                      >
-                        {locationName}
-                      </div>
-                    ))}
-                    {filteredLocations.length === 0 && (
-                      <div style={{ padding: '8px 12px', color: '#999' }}>No locations found</div>
-                    )}
-                  </div>
-                )}
+                <SearchBar
+                  items={locations} // all available locations
+                  selectedItems={selectedLocations} // current selections
+                  onChange={(newSelected) =>
+                    setSelectedLocations(newSelected)
+                  } // update handler
+                  placeholder="Search locations..."
+                  showSelectAll={true}
+                />
               </div>
 
               <div className="col-12 col-md-6 d-flex align-items-center gap-3 flex-nowrap">
-                <button
-                  style={{
-                    backgroundColor: '#4BC0C0',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '5px',
-                    whiteSpace: 'nowrap',
-                  }}
+                <SearchButton
                   onClick={handleClick}
-                  className="me-2"
-                >
-                  Search
-                </button>
-                <button
-                  style={{
-                    backgroundColor: '#4BC0C0',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '5px',
-                    whiteSpace: 'nowrap',
-                  }}
+                  Name="Search"
+                />
+                <SearchButton
                   onClick={handleReset}
-                >
-                  Reset
-                </button>
+                  Name="Reset"
+                />
               </div>
             </div>
             <div className="row mt-2">
               <div className="card">
-                <Card>
-                  <CardBody>
-                    <CardTitle tag="h5">
-                      SCANNED REPORT OF LAST 30 DAYS{" "}
-                    </CardTitle>
-                    <Chart
-                      options={formatChartData(monthImage, ["#4BC0C0"]).options}
-                      series={formatChartData(monthImage, ["#4BC0C0"]).series}
-                      type="bar"
-                      height="379"
-                    />
-                  </CardBody>
-                </Card>
+                <BarGraph
+                  Heading="SCANNED REPORT OF LAST 30 DAYS"
+                  barFile={monthImage}
+                  color={["#4BC0C0"]}
+                  bar="bar"
+                  height={390}
+                />
               </div>
             </div>
             <div className="row mt-2">
-              <div className="table-card">
-                <div
-                  className="row"
-                  style={{
-                    padding: "5px",
-                    backgroundColor: "#4BC0C0",
-                    paddingTop: "15px",
-                  }}
-                >
-                  <div className="col-10">
-                    <h6 className="text-center" style={{ color: "white" }}>
-                      PROJECT UPDATE OF SCANNING AND DIGITIZATION OF CASE
-                      RECORDS FOR DISTRICT COURT OF TELANGANA
-                    </h6>
-                  </div>
-                  <div className="col-2">
-                    <h6
-                      style={{ color: "white", cursor: "pointer" }}
-                      onClick={handleExport}
-                    >
-                      {" "}
-                      <MdFileDownload style={{ fontSize: "20px" }} />
-                      Export
-                    </h6>
-                  </div>
-                  {showFormatDropdown && (
-                    <div
-                      style={{
-                        height: "0px",
-                        overflow: "visible",
-                        display: "flex",
-                        justifyContent: "right",
-                      }}
-                    >
-                      <div className="export-dropdown-card">
-                        <p onClick={() => handleTableDropdownChange("csv")}>
-                          CSV
-                        </p>
-                        <p onClick={() => handleTableDropdownChange("excel")}>
-                          Excel
-                        </p>
-                        <p onClick={() => handleTableDropdownChange("pdf")}>
-                          PDF
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {showConfirmation && (
-                    <div className="confirmation-dialog">
-                      <div className="confirmation-content">
-                        <p className="fw-bold">
-                          Are you sure you want to export the{" "}
-                          {exportTableFormat.toUpperCase()} file?
-                        </p>
-                        <button
-                          className="btn btn-success mt-3 ms-5"
-                          onClick={downloadAllFormatsSummary}
-                        >
-                          Yes
-                        </button>
-                        <button
-                          className="btn btn-danger ms-3 mt-3"
-                          onClick={handleCancelExport}
-                        >
-                          No
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div
-                  className="row mt-5 ms-2 me-2"
-                  style={{ overflowX: "auto" }}
-                >
-                  <table class="table table-hover table-bordered table-responsive data-table">
-                    <thead style={{ color: "#4BC0C0" }}>
-                      <tr>
-                        <th rowspan="2" style={{ verticalAlign: "middle" }}>
-                          Sr. No.
-                        </th>
-                        <th rowspan="2" style={{ verticalAlign: "middle" }}>
-                          Location
-                        </th>
-                        <th colspan="2">Scanned ({formattedPreviousDate})</th>
-                        <th colspan="2">Scanned ({formattedYesterdayDate})</th>
-                        <th colspan="2">Scanned ({formattedCurrentDate})</th>
-                        <th colspan="2">Cumulative till date</th>
-                      </tr>
-                      <tr>
-                        <th>Files</th>
-                        <th>Images</th>
-                        <th>Files</th>
-                        <th>Images</th>
-                        <th>Files</th>
-                        <th>Images</th>
-                        <th>Files</th>
-                        <th>Images</th>
-                      </tr>
-                    </thead>
-
-                    <tbody style={{ color: "gray" }}>
-                      {tableData &&
-                        tableData.map((elem, index) => {
-                         
-                            return (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td style={{ textAlign: "left" }}>
-                                  {elem.LocationName}
-                                </td>
-                                <td>
-                                  {isNaN(parseInt(elem.Prev_Files))
-                                    ? 0
-                                    : parseInt(
-                                      elem.Prev_Files
-                                    ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {isNaN(parseInt(elem.Prev_Images))
-                                    ? 0
-                                    : parseInt(
-                                      elem.Prev_Images
-                                    ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {isNaN(parseInt(elem.Yes_Files))
-                                    ? 0
-                                    : parseInt(elem.Yes_Files).toLocaleString()}
-                                </td>
-                                <td>
-                                  {isNaN(parseInt(elem.Yes_Images))
-                                    ? 0
-                                    : parseInt(
-                                      elem.Yes_Images
-                                    ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {isNaN(parseInt(elem.Today_Files))
-                                    ? 0
-                                    : parseInt(
-                                      elem.Today_Files
-                                    ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {isNaN(parseInt(elem.Today_Images))
-                                    ? 0
-                                    : parseInt(
-                                      elem.Today_Images
-                                    ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {isNaN(parseInt(elem.Total_Files))
-                                    ? 0
-                                    : parseInt(
-                                      elem.Total_Files
-                                    ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {isNaN(parseInt(elem.Total_Images))
-                                    ? 0
-                                    : parseInt(
-                                      elem.Total_Images
-                                    ).toLocaleString()}
-                                </td>
-                              </tr>
-                            );
-                          
-                          return null;
-                        })}
-
-                      <tr style={{ color: "black" }}>
-                        <td colspan="2">
-                          <strong>Total</strong>
-                        </td>
-
-                        <td>
-                          <strong>
-                            {isNaN(parseInt(columnSums.prevFilesSum))
-                              ? 0
-                              : parseInt(
-                                columnSums.prevFilesSum
-                              ).toLocaleString()}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            {isNaN(parseInt(columnSums.prevImagesSum))
-                              ? 0
-                              : parseInt(
-                                columnSums.prevImagesSum
-                              ).toLocaleString()}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            {isNaN(parseInt(columnSums.yesFilesSum))
-                              ? 0
-                              : parseInt(
-                                columnSums.yesFilesSum
-                              ).toLocaleString()}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            {isNaN(parseInt(columnSums.yesImagesSum))
-                              ? 0
-                              : parseInt(
-                                columnSums.yesImagesSum
-                              ).toLocaleString()}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            {isNaN(parseInt(columnSums.todayFilesSum))
-                              ? 0
-                              : parseInt(
-                                columnSums.todayFilesSum
-                              ).toLocaleString()}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            {isNaN(parseInt(columnSums.todayImagesSum))
-                              ? 0
-                              : parseInt(
-                                columnSums.todayImagesSum
-                              ).toLocaleString()}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            {isNaN(parseInt(columnSums.totalFilesSum))
-                              ? 0
-                              : parseInt(
-                                columnSums.totalFilesSum
-                              ).toLocaleString()}
-                          </strong>
-                        </td>
-                        <td>
-                          <strong>
-                            {isNaN(parseInt(columnSums.totalImagesSum))
-                              ? 0
-                              : parseInt(
-                                columnSums.totalImagesSum
-                              ).toLocaleString()}
-                          </strong>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <div className="row mt-2">
+                <ProjectStatusTable
+                  tableData={tableData}
+                  columnSums={columnSums}
+                  formattedPreviousDate={formattedPreviousDate}
+                  formattedYesterdayDate={formattedYesterdayDate}
+                  formattedCurrentDate={formattedCurrentDate}
+                  showFormatDropdown={showFormatDropdown}
+                  handleExport={handleExport}
+                  showConfirmation={showConfirmation}
+                  exportTableFormat={exportTableFormat}
+                  handleTableDropdownChange={handleTableDropdownChange}
+                  downloadAllFormatsSummary={downloadAllFormatsSummary}
+                  handleCancelExport={handleCancelExport}
+                />
               </div>
             </div>
 
             <div className="row mt-2">
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">Cumulative Scanned Till Date</CardTitle>
-                  <CardSubtitle className="text-muted" tag="h6">
-                    All Location: Images
-                  </CardSubtitle>
-                  <Chart
-                    options={
-                      formatChartData(allLocationImage, ["#088395"]).options
-                    }
-                    series={
-                      formatChartData(allLocationImage, ["#088395"]).series
-                    }
-                    type="bar"
-                    height="350"
-                  />
-                </CardBody>
-              </Card>
+              <BarGraph
+                Heading="Cumulative Scanned Till Date"
+                subTitle="All Location: Images"
+                barFile={allLocationImage}
+                color={["#088395"]}
+                bar="bar"
+                height={350}
+              />
             </div>
           </div>
         </div>
