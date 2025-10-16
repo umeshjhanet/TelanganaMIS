@@ -39,7 +39,7 @@ const CumulativeReport = ({ showSideBar }) => {
             }
         };
 
-        document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
 
         return () => {
             document.removeEventListener('click', handleClickOutside);
@@ -144,374 +144,616 @@ const CumulativeReport = ({ showSideBar }) => {
             return;
         }
 
-        setIsLoading(true);
-        try {
-            await fetchCumulative(); // assuming this returns a Promise
-            await fetchDetailed({ date: selectedDate });
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    const exportToCSV = () => {
-        const headers = [
-            "Process Steps",
-            "Manpower",
-            "Files",
-            "Images",
-            "Manpower Target",
-            "Average",
-            "Differences B/W Target & Achieved"
-        ];
+    setIsLoading(true);
+    try {
+      await fetchCumulative(); // assuming this returns a Promise
+      await fetchDetailed({ date: selectedDate });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const exportToCSV = () => {
+    const headers = [
+      "Process Steps",
+      "Manpower",
+      "Files",
+      "Images",
+      "Manpower Target",
+      "Average",
+      "Differences B/W Target & Achieved",
+    ];
 
-        const data = [];
+    const data = [];
 
-        if (Array.isArray(cumulative)) {
-            cumulative.forEach(elem => {
-                const process = elem.process;
-                const present = parseFloat(elem.Present) || 0;
-                const files = parseFloat(elem.files) || 0;
-                const images = parseFloat(elem.images) || 0;
+    if (Array.isArray(cumulative)) {
+      cumulative.forEach((elem) => {
+        const process = elem.process;
+        const present = parseFloat(elem.Present) || 0;
+        const files = parseFloat(elem.files) || 0;
+        const images = parseFloat(elem.images) || 0;
 
-                const targetObj = target.find(t => t.process_name === process);
-                const targetValue = targetObj ? parseFloat(targetObj.target) : "-";
+        const targetObj = target.find((t) => t.process_name === process);
+        const targetValue = targetObj ? parseFloat(targetObj.target) : "-";
 
-                // Calculate average
-                let average = "-";
-                if (present > 0) {
-                    average = images > 0 ? (images / present).toFixed(2) : (files / present).toFixed(2);
-                }
-
-                // Calculate difference
-                let difference = "-";
-                if (targetValue !== "-" && average !== "-") {
-                    const diff = (parseFloat(average) / parseFloat(targetValue)) * 100;
-                    difference = isNaN(diff) ? "-" : `${diff.toFixed(2)}%`;
-                }
-
-                data.push([
-                    process,
-                    present || 0,
-                    files || 0,
-                    images || 0,
-                    targetValue !== "-" ? targetValue : "-",
-                    average !== "-" ? average : "-",
-                    difference
-                ]);
-            });
-
-            // Total Row
-            const totalManpower = cumulative.reduce((sum, elem) => sum + (parseFloat(elem.Present) || 0), 0);
-            const totalFiles = cumulative.reduce((sum, elem) => sum + (parseFloat(elem.files) || 0), 0);
-            const totalImages = cumulative.reduce((sum, elem) => sum + (parseFloat(elem.images) || 0), 0);
-            const totalTarget = cumulative.reduce((sum, elem) => {
-                const t = target.find(x => x.process_name === elem.process);
-                return sum + (t ? parseFloat(t.target) || 0 : 0);
-            }, 0);
-
-            data.push([
-                "Total",
-                totalManpower,
-                totalFiles,
-                totalImages,
-                totalTarget || "-",
-                "-",
-                "-"
-            ]);
+        // Calculate average
+        let average = "-";
+        if (present > 0) {
+          average =
+            images > 0
+              ? (images / present).toFixed(2)
+              : (files / present).toFixed(2);
         }
 
-        // 🔹 Convert to CSV and trigger download
-        const csvData = Papa.unparse([headers, ...data]);
-        const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "table_data.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    // ✅ Function to calculate total manpower
-    const getTotalManpower = () => {
-        return cumulative?.manpowerData
-            ? Object.values(cumulative.manpowerData).reduce((sum, val) => sum + (parseInt(val) || 0), 0)
-            : "-";
-    };
-    // ✅ Function to calculate total files
-    const getTotalFiles = () => {
-        const scannedFiles = cumulative?.scannedData
-            ? [
-                cumulative.scannedData.total_inventoryfiles,
-                cumulative.scannedData.total_scanfiles,
-                cumulative.scannedData.total_qcfiles,
-                cumulative.scannedData.total_flaggingfiles,
-                cumulative.scannedData.total_indexfiles,
-                cumulative.scannedData.total_cbslqafiles
-            ]
-            : [];
-
-        const barcodingFiles = cumulative?.barcodingData
-            ? [
-                cumulative.barcodingData.total_barcodingfiles,
-                cumulative.barcodingData.preparefiles,
-                cumulative.barcodingData.refillingfiles,
-                cumulative.barcodingData.invoutfiles
-            ]
-            : [];
-
-        return [...scannedFiles, ...barcodingFiles]
-            .reduce((sum, val) => sum + (parseInt(val) || 0), 0) || "-";
-    };
-    // ✅ Function to calculate total images
-    const getTotalImages = () => {
-        const scannedImages = cumulative?.scannedData
-            ? [
-                cumulative.scannedData.total_scanimages,
-                cumulative.scannedData.total_qcimages,
-                cumulative.scannedData.total_flaggingimages,
-                cumulative.scannedData.total_indeximages,
-                cumulative.scannedData.total_cbslqaimages
-            ]
-            : [];
-
-        const barcodingImages = cumulative?.barcodingData
-            ? [
-                cumulative.barcodingData.prepareimages,
-                cumulative.barcodingData.refillingimages
-            ]
-            : [];
-
-        return [...scannedImages, ...barcodingImages]
-            .reduce((sum, val) => sum + (parseInt(val) || 0), 0) || "-";
-    };
-    const processOptions = ['Inventory', 'Scanning', 'QC', 'Flagging', 'Indexing', 'CBSL QA', 'Support Personnel', 'Unidentified'];
-    const processStructure = {
-        Inventory: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
-        Scanning: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
-        QC: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
-        Flagging: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
-        Indexing: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
-        CBSL_QA: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
-        SupportPersonnel: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
-        Unidentified: ['MP', 'Files', 'Images', 'Manpower Target', 'Average', 'Difference %'],
-    };
-    const allProcesses = Object.keys(processStructure);
-    const processesToRender = selectedProcesses.length === 0 ? allProcesses : selectedProcesses;
-    const processConfig = {
-        Inventory: {
-            present: 'Inventory_Present',
-            files: 'Inventory_Files',
-            images: null,
-            target: 200,
-        },
-        Scanning: {
-            present: 'Scanning_Present',
-            files: 'Scanning_Files',
-            images: 'Scanning_Images',
-            target: 10500,
-        },
-        QC: {
-            present: 'QC_Present',
-            files: 'QC_Files',
-            images: 'QC_Images',
-            target: 9000,
-        },
-        Flagging: {
-            present: 'Flagging_Present',
-            files: 'Flagging_Files',
-            images: 'Flagging_Images',
-            target: 8000,
-        },
-        Indexing: {
-            present: 'Indexing_Present',
-            files: 'Indexing_Files',
-            images: 'Indexing_Images',
-            target: 7000,
-        },
-        CBSL_QA: {
-            present: 'CBSLQA_Present',
-            files: 'CBSLQA_Files',
-            images: 'CBSLQA_Images',
-            target: 15000,
-        },
-        SupportPersonnel: {
-            present: 'SupportPersonnel_Present',
-            files: null,
-            images: null,
-            target: null,
-        },
-        Unidentified: {
-            present: 'Unidentified_Present',
-            files: null,
-            images: null,
-            target: null,
-        }
-    };
-    const exportLocationToCSV = () => {
-        if (!Array.isArray(detailedReport) || detailedReport.length === 0) {
-            alert("No data available to export.");
-            return;
+        // Calculate difference
+        let difference = "-";
+        if (targetValue !== "-" && average !== "-") {
+          const diff = (parseFloat(average) / parseFloat(targetValue)) * 100;
+          difference = isNaN(diff) ? "-" : `${diff.toFixed(2)}%`;
         }
 
-        const headers = [
-            "Sr.No", "Location", "Inv MP", "Inv Files", "-", "Target",
-            "Average", "Differences B/W Target & Average", "Scan MP", "Scan Files", "Scan Images", "Target",
-            "Average", "Differences B/W Target & Achieved", "QC MP", "QC Files", "QC Images", "Target",
-            "Achieved", "Differences B/W Target & Achieved", "Flag MP", "Flag Files", "Flag Images", "Target",
-            "Achieved", "Differences B/W Target & Achieved", "Index MP", "Index Files", "Index Images", "Target",
-            "Achieved", "Differences B/W Target & Achieved", "CBSLQA MP", "CBSLQA Files", "CBSLQA Images", "Target",
-            "Achieved", "Differences B/W Target & Achieved", "Support Personnel MP", "-", "-", "-", "-", "-",
-            "Unidentified MP", "-", "-", "-", "-", "-"
-        ];
+        data.push([
+          process,
+          present || 0,
+          files || 0,
+          images || 0,
+          targetValue !== "-" ? targetValue : "-",
+          average !== "-" ? average : "-",
+          difference,
+        ]);
+      });
 
-        const standardValues = {
-            Inventory: 200,
-            Scanning: 10500,
-            QC: 9000,
-            Flagging: 8000,
-            Indexing: 7000,
-            CBSLQA: 15000
-        };
+      // Total Row
+      const totalManpower = cumulative.reduce(
+        (sum, elem) => sum + (parseFloat(elem.Present) || 0),
+        0
+      );
+      const totalFiles = cumulative.reduce(
+        (sum, elem) => sum + (parseFloat(elem.files) || 0),
+        0
+      );
+      const totalImages = cumulative.reduce(
+        (sum, elem) => sum + (parseFloat(elem.images) || 0),
+        0
+      );
+      const totalTarget = cumulative.reduce((sum, elem) => {
+        const t = target.find((x) => x.process_name === elem.process);
+        return sum + (t ? parseFloat(t.target) || 0 : 0);
+      }, 0);
 
-        let csvRows = [];
-        csvRows.push(headers.join(','));
+      data.push([
+        "Total",
+        totalManpower,
+        totalFiles,
+        totalImages,
+        totalTarget || "-",
+        "-",
+        "-",
+      ]);
+    }
 
-        // Totals
-        let totals = {
-            Inventory_Present: 0,
-            Inventory_Files: 0,
-            Scanning_Present: 0,
-            Scanning_Files: 0,
-            Scanning_Images: 0,
-            QC_Present: 0,
-            QC_Files: 0,
-            QC_Images: 0,
-            Flagging_Present: 0,
-            Flagging_Files: 0,
-            Flagging_Images: 0,
-            Indexing_Present: 0,
-            Indexing_Files: 0,
-            Indexing_Images: 0,
-            CBSLQA_Present: 0,
-            CBSLQA_Files: 0,
-            CBSLQA_Images: 0,
-            SupportPersonnel_Present: 0,
-            Unidentified_Present: 0
-        };
+    // 🔹 Convert to CSV and trigger download
+    const csvData = Papa.unparse([headers, ...data]);
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "table_data.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-        detailedReport.forEach((elem, index) => {
-            // Update totals
-            Object.keys(totals).forEach(key => {
-                totals[key] += Number(elem[key] || 0);
-            });
+  // ✅ Function to calculate total manpower
+  const getTotalManpower = () => {
+    return cumulative?.manpowerData
+      ? Object.values(cumulative.manpowerData).reduce(
+          (sum, val) => sum + (parseInt(val) || 0),
+          0
+        )
+      : "-";
+  };
+  // ✅ Function to calculate total files
+  const getTotalFiles = () => {
+    const scannedFiles = cumulative?.scannedData
+      ? [
+          cumulative.scannedData.total_inventoryfiles,
+          cumulative.scannedData.total_scanfiles,
+          cumulative.scannedData.total_qcfiles,
+          cumulative.scannedData.total_flaggingfiles,
+          cumulative.scannedData.total_indexfiles,
+          cumulative.scannedData.total_cbslqafiles,
+        ]
+      : [];
 
-            const row = [
-                index + 1,
-                elem.locationname,
-                elem.Inventory_Present,
-                elem.Inventory_Files,
-                "-",
-                standardValues.Inventory,
-                elem.Inventory_Present ? (elem.Inventory_Files / elem.Inventory_Present).toFixed(2) : "-",
-                elem.Inventory_Present ? ((elem.Inventory_Files / elem.Inventory_Present) / standardValues.Inventory * 100).toFixed(2) : "-",
+    const barcodingFiles = cumulative?.barcodingData
+      ? [
+          cumulative.barcodingData.total_barcodingfiles,
+          cumulative.barcodingData.preparefiles,
+          cumulative.barcodingData.refillingfiles,
+          cumulative.barcodingData.invoutfiles,
+        ]
+      : [];
 
-                elem.Scanning_Present,
-                elem.Scanning_Files,
-                elem.Scanning_Images,
-                standardValues.Scanning,
-                elem.Scanning_Present ? (elem.Scanning_Images / elem.Scanning_Present).toFixed(2) : "-",
-                elem.Scanning_Present ? ((elem.Scanning_Images / elem.Scanning_Present) / standardValues.Scanning * 100).toFixed(2) : "-",
+    return (
+      [...scannedFiles, ...barcodingFiles].reduce(
+        (sum, val) => sum + (parseInt(val) || 0),
+        0
+      ) || "-"
+    );
+  };
+  // ✅ Function to calculate total images
+  const getTotalImages = () => {
+    const scannedImages = cumulative?.scannedData
+      ? [
+          cumulative.scannedData.total_scanimages,
+          cumulative.scannedData.total_qcimages,
+          cumulative.scannedData.total_flaggingimages,
+          cumulative.scannedData.total_indeximages,
+          cumulative.scannedData.total_cbslqaimages,
+        ]
+      : [];
 
-                elem.QC_Present,
-                elem.QC_Files,
-                elem.QC_Images,
-                standardValues.QC,
-                elem.QC_Present ? (elem.QC_Images / elem.QC_Present).toFixed(2) : "-",
-                elem.QC_Present ? ((elem.QC_Images / elem.QC_Present) / standardValues.QC * 100).toFixed(2) : "-",
+    const barcodingImages = cumulative?.barcodingData
+      ? [
+          cumulative.barcodingData.prepareimages,
+          cumulative.barcodingData.refillingimages,
+        ]
+      : [];
 
-                elem.Flagging_Present,
-                elem.Flagging_Files,
-                elem.Flagging_Images,
-                standardValues.Flagging,
-                elem.Flagging_Present ? (elem.Flagging_Images / elem.Flagging_Present).toFixed(2) : "-",
-                elem.Flagging_Present ? ((elem.Flagging_Images / elem.Flagging_Present) / standardValues.Flagging * 100).toFixed(2) : "-",
+    return (
+      [...scannedImages, ...barcodingImages].reduce(
+        (sum, val) => sum + (parseInt(val) || 0),
+        0
+      ) || "-"
+    );
+  };
+  const processOptions = [
+    "Inventory",
+    "Scanning",
+    "QC",
+    "Flagging",
+    "Indexing",
+    "CBSL QA",
+    "Support Personnel",
+    "Unidentified",
+  ];
+  const processStructure = {
+    Inventory: [
+      "MP",
+      "Files",
+      "Images",
+      "Manpower Target",
+      "Average",
+      "Difference %",
+    ],
+    Scanning: [
+      "MP",
+      "Files",
+      "Images",
+      "Manpower Target",
+      "Average",
+      "Difference %",
+    ],
+    QC: ["MP", "Files", "Images", "Manpower Target", "Average", "Difference %"],
+    Flagging: [
+      "MP",
+      "Files",
+      "Images",
+      "Manpower Target",
+      "Average",
+      "Difference %",
+    ],
+    Indexing: [
+      "MP",
+      "Files",
+      "Images",
+      "Manpower Target",
+      "Average",
+      "Difference %",
+    ],
+    CBSL_QA: [
+      "MP",
+      "Files",
+      "Images",
+      "Manpower Target",
+      "Average",
+      "Difference %",
+    ],
+    SupportPersonnel: [
+      "MP",
+      "Files",
+      "Images",
+      "Manpower Target",
+      "Average",
+      "Difference %",
+    ],
+    Unidentified: [
+      "MP",
+      "Files",
+      "Images",
+      "Manpower Target",
+      "Average",
+      "Difference %",
+    ],
+  };
+  const allProcesses = Object.keys(processStructure);
+  const processesToRender =
+    selectedProcesses.length === 0 ? allProcesses : selectedProcesses;
+  const processConfig = {
+    Inventory: {
+      present: "Inventory_Present",
+      files: "Inventory_Files",
+      images: null,
+      target: 200,
+    },
+    Scanning: {
+      present: "Scanning_Present",
+      files: "Scanning_Files",
+      images: "Scanning_Images",
+      target: 10500,
+    },
+    QC: {
+      present: "QC_Present",
+      files: "QC_Files",
+      images: "QC_Images",
+      target: 9000,
+    },
+    Flagging: {
+      present: "Flagging_Present",
+      files: "Flagging_Files",
+      images: "Flagging_Images",
+      target: 8000,
+    },
+    Indexing: {
+      present: "Indexing_Present",
+      files: "Indexing_Files",
+      images: "Indexing_Images",
+      target: 7000,
+    },
+    CBSL_QA: {
+      present: "CBSLQA_Present",
+      files: "CBSLQA_Files",
+      images: "CBSLQA_Images",
+      target: 15000,
+    },
+    SupportPersonnel: {
+      present: "SupportPersonnel_Present",
+      files: null,
+      images: null,
+      target: null,
+    },
+    Unidentified: {
+      present: "Unidentified_Present",
+      files: null,
+      images: null,
+      target: null,
+    },
+  };
+  const exportLocationToCSV = () => {
+    if (!Array.isArray(detailedReport) || detailedReport.length === 0) {
+      alert("No data available to export.");
+      return;
+    }
 
-                elem.Indexing_Present,
-                elem.Indexing_Files,
-                elem.Indexing_Images,
-                standardValues.Indexing,
-                elem.Indexing_Present ? (elem.Indexing_Images / elem.Indexing_Present).toFixed(2) : "-",
-                elem.Indexing_Present ? ((elem.Indexing_Images / elem.Indexing_Present) / standardValues.Indexing * 100).toFixed(2) : "-",
+    const headers = [
+      "Sr.No",
+      "Location",
+      "Inv MP",
+      "Inv Files",
+      "-",
+      "Target",
+      "Average",
+      "Differences B/W Target & Average",
+      "Scan MP",
+      "Scan Files",
+      "Scan Images",
+      "Target",
+      "Average",
+      "Differences B/W Target & Achieved",
+      "QC MP",
+      "QC Files",
+      "QC Images",
+      "Target",
+      "Achieved",
+      "Differences B/W Target & Achieved",
+      "Flag MP",
+      "Flag Files",
+      "Flag Images",
+      "Target",
+      "Achieved",
+      "Differences B/W Target & Achieved",
+      "Index MP",
+      "Index Files",
+      "Index Images",
+      "Target",
+      "Achieved",
+      "Differences B/W Target & Achieved",
+      "CBSLQA MP",
+      "CBSLQA Files",
+      "CBSLQA Images",
+      "Target",
+      "Achieved",
+      "Differences B/W Target & Achieved",
+      "Support Personnel MP",
+      "-",
+      "-",
+      "-",
+      "-",
+      "-",
+      "Unidentified MP",
+      "-",
+      "-",
+      "-",
+      "-",
+      "-",
+    ];
 
-                elem.CBSLQA_Present,
-                elem.CBSLQA_Files,
-                elem.CBSLQA_Images,
-                standardValues.CBSLQA,
-                elem.CBSLQA_Present ? (elem.CBSLQA_Images / elem.CBSLQA_Present).toFixed(2) : "-",
-                elem.CBSLQA_Present ? ((elem.CBSLQA_Images / elem.CBSLQA_Present) / standardValues.CBSLQA * 100).toFixed(2) : "-",
+    const standardValues = {
+      Inventory: 200,
+      Scanning: 10500,
+      QC: 9000,
+      Flagging: 8000,
+      Indexing: 7000,
+      CBSLQA: 15000,
+    };
 
-                elem.SupportPersonnel_Present,
-                "-", "-", "-", "-", "-",
-                elem.Unidentified_Present,
-                "-", "-", "-", "-", "-"
-            ];
+    let csvRows = [];
+    csvRows.push(headers.join(","));
 
-            csvRows.push(row.join(','));
-        });
+    // Totals
+    let totals = {
+      Inventory_Present: 0,
+      Inventory_Files: 0,
+      Scanning_Present: 0,
+      Scanning_Files: 0,
+      Scanning_Images: 0,
+      QC_Present: 0,
+      QC_Files: 0,
+      QC_Images: 0,
+      Flagging_Present: 0,
+      Flagging_Files: 0,
+      Flagging_Images: 0,
+      Indexing_Present: 0,
+      Indexing_Files: 0,
+      Indexing_Images: 0,
+      CBSLQA_Present: 0,
+      CBSLQA_Files: 0,
+      CBSLQA_Images: 0,
+      SupportPersonnel_Present: 0,
+      Unidentified_Present: 0,
+    };
 
-        // Add Total row
-        const totalRow = [
-            "Total",
-            "-",
-            totals.Inventory_Present,
-            totals.Inventory_Files,
-            "-",
-            standardValues.Inventory,
-            totals.Inventory_Present ? (totals.Inventory_Files / totals.Inventory_Present).toFixed(2) : "-",
-            totals.Inventory_Present ? ((totals.Inventory_Files / totals.Inventory_Present) / standardValues.Inventory * 100).toFixed(2) : "-",
+    detailedReport.forEach((elem, index) => {
+      // Update totals
+      Object.keys(totals).forEach((key) => {
+        totals[key] += Number(elem[key] || 0);
+      });
 
-            totals.Scanning_Present,
-            totals.Scanning_Files,
-            totals.Scanning_Images,
-            standardValues.Scanning,
-            totals.Scanning_Present ? (totals.Scanning_Images / totals.Scanning_Present).toFixed(2) : "-",
-            totals.Scanning_Present ? ((totals.Scanning_Images / totals.Scanning_Present) / standardValues.Scanning * 100).toFixed(2) : "-",
+      const row = [
+        index + 1,
+        elem.locationname,
+        elem.Inventory_Present,
+        elem.Inventory_Files,
+        "-",
+        standardValues.Inventory,
+        elem.Inventory_Present
+          ? (elem.Inventory_Files / elem.Inventory_Present).toFixed(2)
+          : "-",
+        elem.Inventory_Present
+          ? (
+              (elem.Inventory_Files /
+                elem.Inventory_Present /
+                standardValues.Inventory) *
+              100
+            ).toFixed(2)
+          : "-",
 
-            totals.QC_Present,
-            totals.QC_Files,
-            totals.QC_Images,
-            standardValues.QC,
-            totals.QC_Present ? (totals.QC_Images / totals.QC_Present).toFixed(2) : "-",
-            totals.QC_Present ? ((totals.QC_Images / totals.QC_Present) / standardValues.QC * 100).toFixed(2) : "-",
+        elem.Scanning_Present,
+        elem.Scanning_Files,
+        elem.Scanning_Images,
+        standardValues.Scanning,
+        elem.Scanning_Present
+          ? (elem.Scanning_Images / elem.Scanning_Present).toFixed(2)
+          : "-",
+        elem.Scanning_Present
+          ? (
+              (elem.Scanning_Images /
+                elem.Scanning_Present /
+                standardValues.Scanning) *
+              100
+            ).toFixed(2)
+          : "-",
 
-            totals.Flagging_Present,
-            totals.Flagging_Files,
-            totals.Flagging_Images,
-            standardValues.Flagging,
-            totals.Flagging_Present ? (totals.Flagging_Images / totals.Flagging_Present).toFixed(2) : "-",
-            totals.Flagging_Present ? ((totals.Flagging_Images / totals.Flagging_Present) / standardValues.Flagging * 100).toFixed(2) : "-",
+        elem.QC_Present,
+        elem.QC_Files,
+        elem.QC_Images,
+        standardValues.QC,
+        elem.QC_Present ? (elem.QC_Images / elem.QC_Present).toFixed(2) : "-",
+        elem.QC_Present
+          ? (
+              (elem.QC_Images / elem.QC_Present / standardValues.QC) *
+              100
+            ).toFixed(2)
+          : "-",
 
-            totals.Indexing_Present,
-            totals.Indexing_Files,
-            totals.Indexing_Images,
-            standardValues.Indexing,
-            totals.Indexing_Present ? (totals.Indexing_Images / totals.Indexing_Present).toFixed(2) : "-",
-            totals.Indexing_Present ? ((totals.Indexing_Images / totals.Indexing_Present) / standardValues.Indexing * 100).toFixed(2) : "-",
+        elem.Flagging_Present,
+        elem.Flagging_Files,
+        elem.Flagging_Images,
+        standardValues.Flagging,
+        elem.Flagging_Present
+          ? (elem.Flagging_Images / elem.Flagging_Present).toFixed(2)
+          : "-",
+        elem.Flagging_Present
+          ? (
+              (elem.Flagging_Images /
+                elem.Flagging_Present /
+                standardValues.Flagging) *
+              100
+            ).toFixed(2)
+          : "-",
 
-            totals.CBSLQA_Present,
-            totals.CBSLQA_Files,
-            totals.CBSLQA_Images,
-            standardValues.CBSLQA,
-            totals.CBSLQA_Present ? (totals.CBSLQA_Images / totals.CBSLQA_Present).toFixed(2) : "-",
-            totals.CBSLQA_Present ? ((totals.CBSLQA_Images / totals.CBSLQA_Present) / standardValues.CBSLQA * 100).toFixed(2) : "-",
+        elem.Indexing_Present,
+        elem.Indexing_Files,
+        elem.Indexing_Images,
+        standardValues.Indexing,
+        elem.Indexing_Present
+          ? (elem.Indexing_Images / elem.Indexing_Present).toFixed(2)
+          : "-",
+        elem.Indexing_Present
+          ? (
+              (elem.Indexing_Images /
+                elem.Indexing_Present /
+                standardValues.Indexing) *
+              100
+            ).toFixed(2)
+          : "-",
 
-            totals.SupportPersonnel_Present,
-            "-", "-", "-", "-", "-",
-            totals.Unidentified_Present,
-            "-", "-", "-", "-", "-"
-        ];
-        csvRows.push(totalRow.join(','));
+        elem.CBSLQA_Present,
+        elem.CBSLQA_Files,
+        elem.CBSLQA_Images,
+        standardValues.CBSLQA,
+        elem.CBSLQA_Present
+          ? (elem.CBSLQA_Images / elem.CBSLQA_Present).toFixed(2)
+          : "-",
+        elem.CBSLQA_Present
+          ? (
+              (elem.CBSLQA_Images /
+                elem.CBSLQA_Present /
+                standardValues.CBSLQA) *
+              100
+            ).toFixed(2)
+          : "-",
+
+        elem.SupportPersonnel_Present,
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        elem.Unidentified_Present,
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+      ];
+
+      csvRows.push(row.join(","));
+    });
+
+    // Add Total row
+    const totalRow = [
+      "Total",
+      "-",
+      totals.Inventory_Present,
+      totals.Inventory_Files,
+      "-",
+      standardValues.Inventory,
+      totals.Inventory_Present
+        ? (totals.Inventory_Files / totals.Inventory_Present).toFixed(2)
+        : "-",
+      totals.Inventory_Present
+        ? (
+            (totals.Inventory_Files /
+              totals.Inventory_Present /
+              standardValues.Inventory) *
+            100
+          ).toFixed(2)
+        : "-",
+
+      totals.Scanning_Present,
+      totals.Scanning_Files,
+      totals.Scanning_Images,
+      standardValues.Scanning,
+      totals.Scanning_Present
+        ? (totals.Scanning_Images / totals.Scanning_Present).toFixed(2)
+        : "-",
+      totals.Scanning_Present
+        ? (
+            (totals.Scanning_Images /
+              totals.Scanning_Present /
+              standardValues.Scanning) *
+            100
+          ).toFixed(2)
+        : "-",
+
+      totals.QC_Present,
+      totals.QC_Files,
+      totals.QC_Images,
+      standardValues.QC,
+      totals.QC_Present
+        ? (totals.QC_Images / totals.QC_Present).toFixed(2)
+        : "-",
+      totals.QC_Present
+        ? (
+            (totals.QC_Images / totals.QC_Present / standardValues.QC) *
+            100
+          ).toFixed(2)
+        : "-",
+
+      totals.Flagging_Present,
+      totals.Flagging_Files,
+      totals.Flagging_Images,
+      standardValues.Flagging,
+      totals.Flagging_Present
+        ? (totals.Flagging_Images / totals.Flagging_Present).toFixed(2)
+        : "-",
+      totals.Flagging_Present
+        ? (
+            (totals.Flagging_Images /
+              totals.Flagging_Present /
+              standardValues.Flagging) *
+            100
+          ).toFixed(2)
+        : "-",
+
+      totals.Indexing_Present,
+      totals.Indexing_Files,
+      totals.Indexing_Images,
+      standardValues.Indexing,
+      totals.Indexing_Present
+        ? (totals.Indexing_Images / totals.Indexing_Present).toFixed(2)
+        : "-",
+      totals.Indexing_Present
+        ? (
+            (totals.Indexing_Images /
+              totals.Indexing_Present /
+              standardValues.Indexing) *
+            100
+          ).toFixed(2)
+        : "-",
+
+      totals.CBSLQA_Present,
+      totals.CBSLQA_Files,
+      totals.CBSLQA_Images,
+      standardValues.CBSLQA,
+      totals.CBSLQA_Present
+        ? (totals.CBSLQA_Images / totals.CBSLQA_Present).toFixed(2)
+        : "-",
+      totals.CBSLQA_Present
+        ? (
+            (totals.CBSLQA_Images /
+              totals.CBSLQA_Present /
+              standardValues.CBSLQA) *
+            100
+          ).toFixed(2)
+        : "-",
+
+      totals.SupportPersonnel_Present,
+      "-",
+      "-",
+      "-",
+      "-",
+      "-",
+      totals.Unidentified_Present,
+      "-",
+      "-",
+      "-",
+      "-",
+      "-",
+    ];
+    csvRows.push(totalRow.join(","));
 
         // Create CSV and trigger download
         const csvContent = "data:text/csv;charset=utf-8," + csvRows.join('\n');
@@ -642,28 +884,39 @@ const CumulativeReport = ({ showSideBar }) => {
                                                 const targetObj = target.find(t => t.process_name === elem.process);
                                                 const targetValue = targetObj ? parseFloat(targetObj.target) : 0;
 
-                                                const files = parseFloat(elem.files) || 0;
-                                                const images = parseFloat(elem.images) || 0;
-                                                const present = parseFloat(elem.Present) || 0;
+                          const files = parseFloat(elem.files) || 0;
+                          const images = parseFloat(elem.images) || 0;
+                          const present = parseFloat(elem.Present) || 0;
 
-                                                const average = present > 0
-                                                    ? (images > 0 ? images / present : files / present)
-                                                    : 0;
+                          const average =
+                            present > 0
+                              ? images > 0
+                                ? images / present
+                                : files / present
+                              : 0;
 
-                                                const difference = (targetValue > 0 && average > 0)
-                                                    ? (average / targetValue) * 100
-                                                    : "-";
+                          const difference =
+                            targetValue > 0 && average > 0
+                              ? (average / targetValue) * 100
+                              : "-";
 
-                                                // Color coding style logic
-                                                let differenceStyle = {};
-                                                if (difference !== "-") {
-                                                    const diffValue = parseFloat(difference);
-                                                    if (diffValue <= 90) differenceStyle = { backgroundColor: "red", color: "white" };
-                                                    else if ((diffValue > 90 && diffValue < 99)) {
-                                                        differenceStyle = { backgroundColor: "yellow" };
-                                                    }
-                                                    else if (diffValue >= 100) differenceStyle = { backgroundColor: "green", color: "white" };
-                                                }
+                          // Color coding style logic
+                          let differenceStyle = {};
+                          if (difference !== "-") {
+                            const diffValue = parseFloat(difference);
+                            if (diffValue <= 90)
+                              differenceStyle = {
+                                backgroundColor: "red",
+                                color: "white",
+                              };
+                            else if (diffValue > 90 && diffValue < 99) {
+                              differenceStyle = { backgroundColor: "yellow" };
+                            } else if (diffValue >= 100)
+                              differenceStyle = {
+                                backgroundColor: "green",
+                                color: "white",
+                              };
+                          }
 
                                                 return (
                                                     <tr key={index}>
@@ -784,99 +1037,156 @@ const CumulativeReport = ({ showSideBar }) => {
                                                                         const config = processConfig[processKey];
                                                                         if (!config) return null;
 
-                                                                        const present = Number(elem?.[config.present] || 0);
-                                                                        const files = config.files ? Number(elem?.[config.files] || 0) : '-';
-                                                                        const images = config.images ? Number(elem?.[config.images] || 0) : '-';
-                                                                        const target = config.target;
+                                      const present = Number(
+                                        elem?.[config.present] || 0
+                                      );
+                                      const files = config.files
+                                        ? Number(elem?.[config.files] || 0)
+                                        : "-";
+                                      const images = config.images
+                                        ? Number(elem?.[config.images] || 0)
+                                        : "-";
+                                      const target = config.target;
 
-                                                                        let avg = null;
-                                                                        if (processKey === 'Inventory') {
-                                                                            // For Inventory, average = files / present
-                                                                            avg = (files !== '-' && present !== 0) ? (files / present) : null;
-                                                                        } else {
-                                                                            // For others, average = images / present
-                                                                            avg = (images !== '-' && present !== 0) ? (images / present) : null;
-                                                                        }
+                                      let avg = null;
+                                      if (processKey === "Inventory") {
+                                        // For Inventory, average = files / present
+                                        avg =
+                                          files !== "-" && present !== 0
+                                            ? files / present
+                                            : null;
+                                      } else {
+                                        // For others, average = images / present
+                                        avg =
+                                          images !== "-" && present !== 0
+                                            ? images / present
+                                            : null;
+                                      }
 
-                                                                        const diffPercent = (avg !== null && target)
-                                                                            ? (avg / target) * 100
-                                                                            : null;
+                                      const diffPercent =
+                                        avg !== null && target
+                                          ? (avg / target) * 100
+                                          : null;
 
-                                                                        // Determine color based on diffPercent
-                                                                        let bgColor = '';
-                                                                        if (diffPercent !== null) {
-                                                                            if (diffPercent < 90) bgColor = '#ffcccc'; // light red
-                                                                            else if (diffPercent < 100) bgColor = '#fff3cd'; // light yellow
-                                                                            else bgColor = '#d4edda'; // light green
-                                                                        }
+                                      // Determine color based on diffPercent
+                                      let bgColor = "";
+                                      if (diffPercent !== null) {
+                                        if (diffPercent < 90)
+                                          bgColor = "#ffcccc"; // light red
+                                        else if (diffPercent < 100)
+                                          bgColor = "#fff3cd"; // light yellow
+                                        else bgColor = "#d4edda"; // light green
+                                      }
 
-                                                                        return (
-                                                                            <React.Fragment key={pIndex}>
-                                                                                <td style={{ backgroundColor: bgColor }}>{present || '-'}</td>
-                                                                                <td style={{ backgroundColor: bgColor }}>{files !== '-' ? files : '-'}</td>
-                                                                                <td style={{ backgroundColor: bgColor }}>{images !== '-' ? images : '-'}</td>
-                                                                                <td style={{ backgroundColor: bgColor }}>{target || '-'}</td>
-                                                                                <td style={{ backgroundColor: bgColor }}>
-                                                                                    {avg !== null ? avg.toFixed(2) : '-'}
-                                                                                </td>
-                                                                                <td style={{ backgroundColor: bgColor }}>
-                                                                                    {diffPercent !== null ? diffPercent.toFixed(2) : '-'}
-                                                                                </td>
-                                                                            </React.Fragment>
-                                                                        );
-                                                                    })}
+                                      return (
+                                        <React.Fragment key={pIndex}>
+                                          <td
+                                            style={{ backgroundColor: bgColor }}
+                                          >
+                                            {present || "-"}
+                                          </td>
+                                          <td
+                                            style={{ backgroundColor: bgColor }}
+                                          >
+                                            {files !== "-" ? files : "-"}
+                                          </td>
+                                          <td
+                                            style={{ backgroundColor: bgColor }}
+                                          >
+                                            {images !== "-" ? images : "-"}
+                                          </td>
+                                          <td
+                                            style={{ backgroundColor: bgColor }}
+                                          >
+                                            {target || "-"}
+                                          </td>
+                                          <td
+                                            style={{ backgroundColor: bgColor }}
+                                          >
+                                            {avg !== null
+                                              ? avg.toFixed(2)
+                                              : "-"}
+                                          </td>
+                                          <td
+                                            style={{ backgroundColor: bgColor }}
+                                          >
+                                            {diffPercent !== null
+                                              ? diffPercent.toFixed(2)
+                                              : "-"}
+                                          </td>
+                                        </React.Fragment>
+                                      );
+                                    }
+                                  )}
+                                </tr>
+                              ))}
 
-                                                                </tr>
-                                                            ))}
+                              {/* TOTAL ROW */}
+                              <tr
+                                style={{
+                                  fontWeight: "bold",
+                                  backgroundColor: "#f0f0f0",
+                                }}
+                              >
+                                <td colSpan={2}>Total</td>
+                                {processesToRender.map((processKey, pIndex) => {
+                                  const config = processConfig[processKey];
+                                  if (!config) return null;
 
-                                                            {/* TOTAL ROW */}
-                                                            <tr style={{ fontWeight: 'bold', backgroundColor: '#f0f0f0' }}>
-                                                                <td colSpan={2}>Total</td>
-                                                                {processesToRender.map((processKey, pIndex) => {
-                                                                    const config = processConfig[processKey];
-                                                                    if (!config) return null;
+                                  const totalPresent = detailedReport.reduce(
+                                    (a, b) =>
+                                      a + Number(b[config.present] || 0),
+                                    0
+                                  );
+                                  const totalFiles = config.files
+                                    ? detailedReport.reduce(
+                                        (a, b) =>
+                                          a + Number(b[config.files] || 0),
+                                        0
+                                      )
+                                    : "-";
+                                  const totalImages = config.images
+                                    ? detailedReport.reduce(
+                                        (a, b) =>
+                                          a + Number(b[config.images] || 0),
+                                        0
+                                      )
+                                    : "-";
 
-                                                                    const totalPresent = detailedReport.reduce(
-                                                                        (a, b) => a + Number(b[config.present] || 0),
-                                                                        0
-                                                                    );
-                                                                    const totalFiles = config.files
-                                                                        ? detailedReport.reduce((a, b) => a + Number(b[config.files] || 0), 0)
-                                                                        : '-';
-                                                                    const totalImages = config.images
-                                                                        ? detailedReport.reduce((a, b) => a + Number(b[config.images] || 0), 0)
-                                                                        : '-';
-
-                                                                    return (
-                                                                        <React.Fragment key={pIndex}>
-                                                                            <td>{totalPresent || '-'}</td>
-                                                                            <td>{totalFiles !== '-' ? totalFiles : '-'}</td>
-                                                                            <td>{totalImages !== '-' ? totalImages : '-'}</td>
-                                                                            <td colSpan={3}></td>
-                                                                        </React.Fragment>
-                                                                    );
-                                                                })}
-                                                            </tr>
-                                                        </>
-                                                    ) : (
-                                                        <tr>
-                                                            <td colSpan="50">No data available</td>
-                                                        </tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                                  return (
+                                    <React.Fragment key={pIndex}>
+                                      <td>{totalPresent || "-"}</td>
+                                      <td>
+                                        {totalFiles !== "-" ? totalFiles : "-"}
+                                      </td>
+                                      <td>
+                                        {totalImages !== "-"
+                                          ? totalImages
+                                          : "-"}
+                                      </td>
+                                      <td colSpan={3}></td>
+                                    </React.Fragment>
+                                  );
+                                })}
+                              </tr>
+                            </>
+                          ) : (
+                            <tr>
+                              <td colSpan="50">No data available</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
+                  </div>
                 </div>
+              )}
             </div>
-        </>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
-    )
-}
-
-export default CumulativeReport
-
+export default CumulativeReport;

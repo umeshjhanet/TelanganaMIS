@@ -1,5 +1,3 @@
-
-
 import React, { useState } from "react";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
@@ -19,24 +17,36 @@ const Dashboard = ({ showSideBar }) => {
   const isAdmin = userLog?.user_roles?.includes("Super Admin");
   const isCbslAdmin = userLog?.user_roles?.includes("CBSL Admin");
   const isExternalClient = userLog?.user_roles?.includes("Client");
-  const isHead = userLog?.user_roles?.includes("head") || userLog?.user_roles?.includes("Mis server Reports");
-  const exclusiveUser = userLog && (userLog.user_id === 99 || userLog.user_id === 209);
+  const isHead =
+    userLog?.user_roles?.includes("head") ||
+    userLog?.user_roles?.includes("Mis server Reports");
+  const exclusiveUser =
+    userLog && (userLog.user_id === 99 || userLog.user_id === 209);
 
   // Location check with null safety
   const isEmptyLocations =
     !userLog?.locations ||
     userLog.locations.length === 0 ||
-    (userLog.locations.length === 1 && (userLog.locations[0]?.id === null && userLog.locations[0]?.name === null));
+    (userLog.locations.length === 1 &&
+      userLog.locations[0]?.id === null &&
+      userLog.locations[0]?.name === null);
 
   // Dashboard renderer
   const renderDashboard = () => {
     if (!userLog) return <AllUserDashboard showSideBar={showSideBar} />;
-    if (isDistrictHeadUser) return <DistrictHeadDashboard showSideBar={showSideBar} />;
+    if (isDistrictHeadUser)
+      return <DistrictHeadDashboard showSideBar={showSideBar} />;
     if (isCbslAdmin) return <CbslAdminDashboard showSideBar={showSideBar} />;
     if (exclusiveUser) return <ExclusiveDashboard />;
-    if (isAdmin || isHead || isEmptyLocations) return <AllUserDashboard showSideBar={showSideBar} />;
+    if (isAdmin || isHead || isEmptyLocations)
+      return <AllUserDashboard showSideBar={showSideBar} />;
     // if (isExternalClient) return <LocationWiseDashboard />;
-    return <LocationWiseDashboard location={userLog.locations} showSideBar={showSideBar} />;
+    return (
+      <LocationWiseDashboard
+        location={userLog.locations}
+        showSideBar={showSideBar}
+      />
+    );
   };
 
   return (
