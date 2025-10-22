@@ -184,7 +184,7 @@ const UserRole = ({ showSideBar }) => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   )
 }

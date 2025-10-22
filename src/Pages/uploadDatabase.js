@@ -115,7 +115,7 @@ const UploadDatabase = ({ showSideBar }) => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </>
     );
 };

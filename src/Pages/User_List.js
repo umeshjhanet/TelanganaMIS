@@ -303,7 +303,7 @@ const User_List = ({ showSideBar }) => {
 
       </div>
       <ToastContainer />
-      <Footer />
+      
     </>
   );
 

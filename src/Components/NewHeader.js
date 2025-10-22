@@ -14,6 +14,7 @@ import {
     Link,
     Router,
     useLocation,
+    NavLink,
 } from "react-router-dom";
 import { FaUserAlt } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
@@ -37,6 +38,20 @@ const Header = ({ showSideBar, setShowSideBar }) => {
     const isActive = (path) =>
         location.pathname === path
             ? { color: "#107393", fontWeight: "bold" }
+            : { color: "black", textDecoration: "none" };
+
+    const activeLink = ({ isActive }) => ({
+        display: "flex",
+        alignItems: "center",
+        color: isActive ? "black" : "#107393",
+        fontWeight: isActive ? "bold" : "normal",
+        textDecoration: "none",
+        cursor: "pointer",
+    });
+
+    const isClosedSideBarActive = (path) =>
+        location.pathname === path
+            ? { color: "#050606ff", fontWeight: "bold" }
             : { color: "black", textDecoration: "none" };
 
     // Retrieve user info from local storage
@@ -157,25 +172,24 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                     )}
                 </div>
                 <div className="row">
-                    {
-                        userRoles.includes("All District Head") ? (
-                            <Link
-                                to="/locationwisereport"
-                                className="ms-1"
-                                style={{ ...isActive("/locationwisereport") }}
-                            >
-                                <FaHome
-                                    style={{
-                                        marginRight: "10px",
-                                        fontSize: "20px",
-                                        color: "#107393",
-                                    }}
-                                />
-                                Another Dashboard
-                            </Link>
-                        ) : (
-                            ""
-                        )}
+                    {userRoles.includes("All District Head") ? (
+                        <Link
+                            to="/locationwisereport"
+                            className="ms-1"
+                            style={{ ...isActive("/locationwisereport") }}
+                        >
+                            <FaHome
+                                style={{
+                                    marginRight: "10px",
+                                    fontSize: "20px",
+                                    color: "#107393",
+                                }}
+                            />
+                            Another Dashboard
+                        </Link>
+                    ) : (
+                        ""
+                    )}
                 </div>
 
                 <div className="row mt-1">
@@ -204,7 +218,8 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                         userRoles.includes("Management") ||
                         userRoles.includes("CBSL Admin") ||
                         userRoles.includes("All District Head") ||
-                        userRoles.includes("Cbsl User") || userRoles.includes("Server Database Monitoring") ? (
+                        userRoles.includes("Cbsl User") ||
+                        userRoles.includes("Server Database Monitoring") ? (
                         <Link to="/report" style={{ ...isActive("/report") }}>
                             <VscGraph
                                 style={{
@@ -347,9 +362,9 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                 <div className="row">
                     {userRoles.includes("Admin") || userRoles.includes("CBSL Admin") ? (
                         <Link
-                            to='/addRemarks'
+                            to="/addRemarks"
                             className="ms-1"
-                            style={{ ...isActive('/addRemarks') }}
+                            style={{ ...isActive("/addRemarks") }}
                         >
                             <VscGraph
                                 style={{
@@ -386,7 +401,9 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                     )}
                 </div>
 
-                {userRoles.includes("Admin") || userRoles.includes("Management") || userRoles.includes("CBSL Admin") ? (
+                {userRoles.includes("Admin") ||
+                    userRoles.includes("Management") ||
+                    userRoles.includes("CBSL Admin") ? (
                     <Link
                         to="/clientreport"
                         className="ms-1"
@@ -404,8 +421,6 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                 ) : (
                     ""
                 )}
-
-
 
                 <div className="row mt-1" onClick={handleActiveTab}>
                     {userRoles.includes("Admin") ? (
@@ -527,17 +542,16 @@ const Header = ({ showSideBar, setShowSideBar }) => {
             </div>
         </div>
     );
- 
 
     return (
         <>
             <div className="d-none d-xl-block d-lg-block d-md-none d-sm-none">
                 <nav
                     className="navbar navbar-expand-lg"
-                    style={{ backgroundColor: '#4BC0C0' }}
+                    style={{ backgroundColor: "#4BC0C0" }}
                 >
                     <div className="container-fluid">
-                        <span className="btn" onClick={handleSideBar} >
+                        <span className="btn" onClick={handleSideBar}>
                             <IoMenuOutline
                                 style={{
                                     color: "white",
@@ -593,35 +607,33 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                                         alt="Logo"
                                     />
                                 </div>
-                                <div style={{ height: "100vh", overflowY: "auto", marginLeft: "12px" }}>
-                                    {/* Shrinked sidebar content */}
+                                <div
+                                    style={{
+                                        height: "100vh",
+                                        overflowY: "auto",
+                                        marginLeft: "12px",
+                                    }}
+                                >
+
+
+
+
+
                                     {manualFile ? (
-                                        <div
-                                            className="row"
-                                            onClick={() => window.open(manualFile, "_blank")}
-                                        >
-                                            <Link
+                                        <div className="row" onClick={() => window.open(manualFile, "_blank")}>
+                                            <NavLink
                                                 to="#"
                                                 className="ms-4 mt-3"
-                                                style={{
-                                                    color: "black",
-                                                    textDecoration: "none",
-                                                    cursor: "pointer",
-                                                }}
+                                                style={activeLink}
                                             >
                                                 <PiFilePdfDuotone
-                                                    style={{
-                                                        marginRight: "10px",
-                                                        fontSize: "20px",
-                                                        color: "#107393",
-                                                    }}
+                                                    style={{ marginRight: "10px", fontSize: "20px", color: "#107393" }}
                                                 />
-                                            </Link>
+                                            </NavLink>
                                         </div>
                                     ) : (
                                         ""
                                     )}
-                                    {/* ... rest of the shrinked sidebar content */}
                                     <div className="row">
                                         {(userRoles.includes("Admin") ||
                                             userRoles.includes("Server Monitoring") ||
@@ -629,272 +641,110 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                                             userRoles.includes("CBSL Admin") ||
                                             userRoles.includes("All District Head") ||
                                             userRoles.includes("Cbsl User")) && (
-                                                <Link
-                                                    to="/dashboard"
-                                                    className="ms-4 mt-3"
-                                                    style={{
-                                                        ...isActive("/dashboard"),
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <FaHome
-                                                        style={{ fontSize: "20px", color: "#107393" }}
-                                                    />
-                                                    {showSideBar && (
-                                                        <span style={{ marginLeft: "10px" }}></span>
-                                                    )}
-                                                </Link>
+                                                <NavLink to="/dashboard" className="ms-4 mt-3" end style={activeLink}>
+                                                    <FaHome style={{ fontSize: "20px" }} />
+                                                </NavLink>
                                             )}
                                     </div>
-
                                     <div className="row mt-1">
-                                        {(userRoles.includes("Admin") ||
-                                            userRoles.includes("Cbsl User")) && (
-                                                <Link
-                                                    to="/uploadDatabase"
-                                                    className="ms-4 mt-3"
-                                                    style={{
-                                                        ...isActive("/uploadDatabase"),
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <MdUpload
-                                                        style={{ fontSize: "20px", color: "#107393" }}
-                                                    />
-                                                    {showSideBar && (
-                                                        <span style={{ marginLeft: "10px" }}></span>
-                                                    )}
-                                                </Link>
-                                            )}
+                                        {(userRoles.includes("Admin") || userRoles.includes("Cbsl User")) && (
+                                            <NavLink to="/uploadDatabase" className="ms-4 mt-3" style={activeLink}>
+                                                <MdUpload style={{ fontSize: "20px" }} />
+                                            </NavLink>
+                                        )}
                                     </div>
-
                                     <div className="row">
                                         {(userRoles.includes("Admin") ||
                                             userRoles.includes("Management") ||
                                             userRoles.includes("CBSL Admin") ||
                                             userRoles.includes("All District Head") ||
                                             userRoles.includes("Cbsl User")) && (
-                                                <Link
-                                                    to="/report"
-                                                    className="ms-4 mt-3"
-                                                    style={{
-                                                        ...isActive("/report"),
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <VscGraph
-                                                        style={{ fontSize: "20px", color: "#107393" }}
-                                                    />
-                                                    {showSideBar && (
-                                                        <span style={{ marginLeft: "10px" }}></span>
-                                                    )}
-                                                </Link>
+                                                <NavLink to="/report" className="ms-4 mt-3" style={activeLink}>
+                                                    <VscGraph style={{ fontSize: "20px" }} />
+                                                </NavLink>
                                             )}
                                     </div>
-
                                     <div className="row">
                                         {(userRoles.includes("Admin") ||
                                             userRoles.includes("Management") ||
                                             userRoles.includes("CBSL Admin")) && (
-                                                <Link
-                                                    className="ms-4 mt-3"
-                                                    to="/file"
-                                                    style={{
-                                                        ...isActive("/file"),
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <BsCloudyFill
-                                                        style={{ fontSize: "20px", color: "#107393" }}
-                                                    />
-                                                    {showSideBar && (
-                                                        <span style={{ marginLeft: "10px" }}></span>
-                                                    )}
-                                                </Link>
+                                                <NavLink to="/file" className="ms-4 mt-3" style={activeLink}>
+                                                    <BsCloudyFill style={{ fontSize: "20px" }} />
+                                                </NavLink>
                                             )}
                                     </div>
                                     {userRoles.includes("Management") ? (
                                         <div className="row">
-                                            <Link
-                                                to="/developmentPage"
-                                                style={{ ...isActive("/developmentPage") }}
-                                            >
-                                                <VscGraph
-                                                    style={{
-                                                        marginRight: "10px",
-                                                        fontSize: "20px",
-                                                        color: "#107393",
-                                                    }}
-                                                />
-
-                                            </Link>
+                                            <NavLink to="/developmentPage" className="ms-4 mt-3" style={activeLink}>
+                                                <VscGraph style={{ fontSize: "20px" }} />
+                                            </NavLink>
                                         </div>
                                     ) : (
                                         ""
                                     )}
-
                                     <div className="row">
                                         {(userRoles.includes("Admin") ||
                                             userRoles.includes("Management") ||
                                             userRoles.includes("CBSL Admin")) && (
-                                                <Link
-                                                    className="ms-4 mt-3"
-                                                    to="/cumulativeReport"
-                                                    style={{
-                                                        ...isActive("/cumulativeReport"),
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <VscGraph
-                                                        style={{ fontSize: "20px", color: "#107393" }}
-                                                    />
-                                                    {showSideBar && (
-                                                        <span style={{ marginLeft: "10px" }}></span>
-                                                    )}
-                                                </Link>
+                                                <NavLink to="/cumulativeReport" className="ms-4 mt-3" style={activeLink}>
+                                                    <VscGraph style={{ fontSize: "20px" }} />
+                                                </NavLink>
                                             )}
                                     </div>
-
                                     <div className="row">
                                         {(userRoles.includes("Admin") ||
                                             userRoles.includes("Management") ||
                                             userRoles.includes("CBSL Admin")) && (
-                                                <Link
-                                                    className="ms-4 mt-3"
-                                                    to="/customerQAReport"
-                                                    style={{
-                                                        ...isActive("/customerQAReport"),
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <VscGraph
-                                                        style={{ fontSize: "20px", color: "#107393" }}
-                                                    />
-                                                    {showSideBar && (
-                                                        <span style={{ marginLeft: "10px" }}></span>
-                                                    )}
-                                                </Link>
+                                                <NavLink to="/customerQAReport" className="ms-4 mt-3" style={activeLink}>
+                                                    <VscGraph style={{ fontSize: "20px" }} />
+                                                </NavLink>
                                             )}
                                     </div>
-
                                     {(userRoles.includes("Admin") ||
                                         userRoles.includes("Server Database Monitoring")) && (
                                             <div className="row mt-1">
-                                                <Link
-                                                    className="ms-4 mt-3"
-                                                    to="/dbSiteReports"
-                                                    style={{
-                                                        ...isActive("/dbSiteReports"),
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <VscGraph
-                                                        style={{ fontSize: "20px", color: "#107393" }}
-                                                    />
-                                                    {showSideBar && (
-                                                        <span style={{ marginLeft: "10px" }}></span>
-                                                    )}
-                                                </Link>
+                                                <NavLink to="/dbSiteReports" className="ms-4 mt-3" style={activeLink}>
+                                                    <VscGraph style={{ fontSize: "20px" }} />
+                                                </NavLink>
                                             </div>
                                         )}
-
                                     {(userRoles.includes("Admin") ||
                                         userRoles.includes("Server Database Monitoring")) && (
                                             <div className="row mt-1">
-                                                <Link
-                                                    className="ms-4 mt-3"
-                                                    to="/siteReports"
-                                                    style={{
-                                                        ...isActive("/siteReports"),
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <VscGraph
-                                                        style={{ fontSize: "20px", color: "#107393" }}
-                                                    />
-                                                    {showSideBar && (
-                                                        <span style={{ marginLeft: "10px" }}></span>
-                                                    )}
-                                                </Link>
+                                                <NavLink to="/siteReports" className="ms-4 mt-3" style={activeLink}>
+                                                    <VscGraph style={{ fontSize: "20px" }} />
+                                                </NavLink>
                                             </div>
                                         )}
-
-
                                     {userRoles.includes("Admin") || userRoles.includes("CBSL Admin") ? (
                                         <div className="row">
-                                            <Link
-                                                to='/addRemarks'
-                                                className="ms-4 mt-3"
-                                                style={{ ...isActive('/addRemarks') }}
-                                            >
-                                                <VscGraph
-                                                    style={{
-                                                        marginRight: "10px",
-                                                        fontSize: "20px",
-                                                        color: "#107393",
-                                                    }}
-                                                />
-
-
-                                            </Link>
+                                            <NavLink to="/addRemarks" className="ms-4 mt-3" style={activeLink}>
+                                                <VscGraph style={{ fontSize: "20px" }} />
+                                            </NavLink>
                                         </div>
                                     ) : (
                                         ""
                                     )}
-
-
                                     <div className="row">
-                                        {userRoles.includes("Admin") || userRoles.includes("CBSL Admin") && (
-                                            <Link
-                                                className="ms-4 mt-3"
-                                                to="/MIS_Form"
-                                                style={{
-                                                    ...isActive("/MIS_Form"),
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <MdAdd style={{ fontSize: "20px", color: "#107393" }} />
-                                                {showSideBar && (
-                                                    <span style={{ marginLeft: "10px" }}></span>
-                                                )}
-                                            </Link>
-                                        )}
+                                        {userRoles.includes("Admin") ||
+                                            (userRoles.includes("CBSL Admin") && (
+                                                <NavLink to="/MIS_Form" className="ms-4 mt-3" style={activeLink}>
+                                                    <MdAdd style={{ fontSize: "20px" }} />
+                                                </NavLink>
+                                            ))}
                                     </div>
-
                                     {userRoles.includes("Admin") || userRoles.includes("Management") ? (
                                         <div className="row">
-                                            <Link
-                                                to="/clientreport"
-                                                className="ms-4 mt-3"
-                                                style={{ ...isActive("/clientreport") }}
-                                            >
-                                                <MdReport
-                                                    style={{
-                                                        marginRight: "10px",
-                                                        fontSize: "20px",
-                                                        color: "#107393",
-                                                    }}
-                                                />
-
-                                            </Link>
+                                            <NavLink to="/clientreport" className="ms-4 mt-3" style={activeLink}>
+                                                <MdReport style={{ fontSize: "20px", marginRight: "10px" }} />
+                                            </NavLink>
                                         </div>
                                     ) : (
                                         ""
                                     )}
-
-
-                                    <div className="row mt-1" onClick={handleActiveTab}>
+                                    <div className="row mt-1" onClick={handleMasterDropdown}>
                                         {userRoles.includes("Admin") && (
-                                            <Link
+                                            <div
                                                 className="ms-4 mt-3"
                                                 style={{
                                                     color: "black",
@@ -913,99 +763,31 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                                                     }}
                                                     onClick={handleMasterDropdown}
                                                 />
-                                                {showSideBar && (
-                                                    <span style={{ marginLeft: "10px" }}></span>
-                                                )}
-                                                {showSideBar && (
-                                                    <IoIosArrowDown
-                                                        style={{ marginLeft: "auto" }}
-                                                        onClick={handleMasterDropdown}
-                                                    />
-                                                )}
-                                            </Link>
+                                                {showSideBar && <span style={{ marginLeft: "10px" }}></span>}
+                                                {showSideBar && <IoIosArrowDown style={{ marginLeft: "auto" }} />}
+                                            </div>
                                         )}
                                     </div>
 
                                     {showMasterDropdown && userRoles.includes("Admin") && (
                                         <>
                                             <hr />
-                                            <Link
-                                                to="/groupManager"
-                                                className="ms-4 mt-3"
-                                                style={{
-                                                    color: "black",
-                                                    textDecoration: "none",
-                                                    cursor: "pointer",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <FaUsers
-                                                    style={{ fontSize: "20px", color: "#107393" }}
-                                                />
-                                                {showSideBar && (
-                                                    <span style={{ marginLeft: "10px" }}></span>
-                                                )}
-                                            </Link>
-                                            <Link
-                                                to="/userRole"
-                                                className="ms-4 mt-3"
-                                                style={{
-                                                    color: "black",
-                                                    textDecoration: "none",
-                                                    marginTop: "20px",
-                                                    cursor: "pointer",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <RiUserFill
-                                                    style={{ fontSize: "20px", color: "#107393" }}
-                                                />
-                                                {showSideBar && (
-                                                    <span style={{ marginLeft: "10px" }}></span>
-                                                )}
-                                            </Link>
-                                            <Link
-                                                to="/User_Form"
-                                                className="ms-4 mt-3"
-                                                style={{
-                                                    color: "black",
-                                                    textDecoration: "none",
-                                                    marginTop: "20px",
-                                                    cursor: "pointer",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <HiMiniUserPlus
-                                                    style={{ fontSize: "20px", color: "#107393" }}
-                                                />
-                                                {showSideBar && (
-                                                    <span style={{ marginLeft: "10px" }}></span>
-                                                )}
-                                            </Link>
-                                            <Link
-                                                to="/User_List"
-                                                className="ms-4 mt-3"
-                                                style={{
-                                                    color: "black",
-                                                    textDecoration: "none",
-                                                    cursor: "pointer",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <HiMiniUserGroup
-                                                    style={{ fontSize: "20px", color: "#107393" }}
-                                                />
-                                                {showSideBar && (
-                                                    <span style={{ marginLeft: "10px" }}></span>
-                                                )}
-                                            </Link>
+                                            <NavLink to="/groupManager" className="ms-4 mt-3" style={activeLink} end>
+                                                <FaUsers style={{ fontSize: "20px", color: "inherit" }} />
+                                            </NavLink>
+                                            <NavLink to="/userRole" className="ms-4 mt-3" style={activeLink} end>
+                                                <RiUserFill style={{ fontSize: "20px", color: "inherit" }} />
+                                            </NavLink>
+                                            <NavLink to="/User_Form" className="ms-4 mt-3" style={activeLink} end>
+                                                <HiMiniUserPlus style={{ fontSize: "20px", color: "inherit" }} />
+                                            </NavLink>
+                                            <NavLink to="/User_List" className="ms-4 mt-3" style={activeLink} end>
+                                                <HiMiniUserGroup style={{ fontSize: "20px", color: "inherit" }} />
+                                            </NavLink>
                                             <hr />
                                         </>
                                     )}
+
                                 </div>
                             </div>
                         </div>
@@ -1025,7 +807,7 @@ const Header = ({ showSideBar, setShowSideBar }) => {
             <div className="d-block d-xl-none d-lg-none d-md-block d-sm-block">
                 <nav
                     className="navbar navbar-expand-lg"
-                    style={{ backgroundColor: '#4BC0C0' }}
+                    style={{ backgroundColor: "#4BC0C0" }}
                 >
                     <div className="container-fluid">
                         <span className="btn" onClick={handleMobileSideBar}>

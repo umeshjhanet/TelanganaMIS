@@ -494,7 +494,7 @@ const User_Form = ({ showSideBar }) => {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   )
 }

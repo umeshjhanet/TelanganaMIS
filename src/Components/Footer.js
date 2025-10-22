@@ -1,6 +1,7 @@
 import React from 'react'
 
 const Footer = () => {
+    let currentYear = new Date().getFullYear();
     return (
         <>
             <div className='d-none d-xl-block d-sm-none'>
@@ -8,7 +9,7 @@ const Footer = () => {
                     <div className='row'>
                         <div className='col-2'></div>
                         <div className='col-10 text-center'>
-                        <p>© 2025 CBSLGROUP All rights reserved</p>
+                        <p>© {currentYear} CBSLGROUP All rights reserved</p>
                         </div>
                     </div>
                 </div>

@@ -187,7 +187,7 @@ const GroupManager = ({ showSideBar }) => {
           </div>
         </div>
       </div>
-      <Footer />
+    
     </>
   )
 }
