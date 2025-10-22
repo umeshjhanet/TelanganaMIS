@@ -118,6 +118,7 @@ const Report = ({ showSideBar }) => {
   };
 
   const fetchReportData = async () => {
+    setIsLoading(true);
     try {
       let apiUrl = `${API_URL}/reportTable`;
       const queryParams = {};
@@ -142,7 +143,7 @@ const Report = ({ showSideBar }) => {
 
 
 
-      setIsLoading(true);
+    
       const response = await axios.get(apiUrl, { params: queryParams });
 
       setReport(response.data);
@@ -152,9 +153,12 @@ const Report = ({ showSideBar }) => {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
       setIsLoading(false);
+    }finally{
+      setIsLoading(false);
     }
   };
   const fetchDateReportData = async () => {
+    //setIsLoading(true);
     try {
       let apiUrl = `${API_URL}/datewisereport`;
       const queryParams = {};
@@ -175,59 +179,74 @@ const Report = ({ showSideBar }) => {
 
 
 
-      setIsLoading(true);
+      //setIsLoading(true);
       const response = await axios.get(apiUrl, { params: queryParams });
 
       setDateReport(response.data);
-      setIsLoading(false);
+      //setIsLoading(false);
       updateTotalLocations(response.data);
     } catch (error) {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
-      setIsLoading(false);
+      //setIsLoading(false);
+    }finally{
+     // setIsLoading(false);
     }
   };
   const fetchLocation = async () => {
+    //setIsLoading(true);
     try {
       let apiUrl = `${API_URL}/locations`;
-      setIsLoading(true);
+      //setIsLoading(true);
       const response = await axios.get(apiUrl);
 
       // Extract just the LocationName values
       const locationNames = response.data.map(item => item.LocationName);
 
       setLocations(locationNames);
-      setIsLoading(false);
+      //setIsLoading(false);
       updateTotalLocations(locationNames);
     } catch (error) {
       console.error("Error fetching locations:", error);
       setError("Error fetching locations. Please try again.");
+      //setIsLoading(false);
+    }finally{
+      //setIsLoading(false);
+    }
+  };
+ 
+  useEffect(() => {
+  const locationName = selectedLocations;
+  const fileType = selectedFileTypes;
+
+  const fetchFileTypes = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/summaryfiletype`);
+      setfileType(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const loadInitialData = async () => {
+    setIsLoading(true);
+    try {
+      // Execute all initial API calls in parallel
+      await Promise.all([
+        fetchLocation(),
+        fetchReportData(),
+        fetchFileTypes(),
+        ...(startDate && endDate ? [fetchDateReportData()] : [])
+      ]);
+    } catch (error) {
+      console.error("Error in initial API calls:", error);
+    } finally {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    const locationName = selectedLocations;
-    const fileType = selectedFileTypes;
 
-
-    const fetchFileTypes = () => {
-      setIsLoading(true);
-      axios.get(`${API_URL}/summaryfiletype`)
-        .then(response => {
-          setfileType(response.data)
-          setIsLoading(false);
-        })
-        .catch(error => console.error(error));
-      setIsLoading(false);
-    }
-    fetchLocation();
-    // summaryData();
-    fetchReportData();
-    if (startDate && endDate) {
-      fetchDateReportData();
-    }
-    fetchFileTypes();
-  }, []);
+  loadInitialData();
+}, []); // Empty dependency array - runs only once when component mounts
 
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
@@ -608,13 +627,15 @@ const Report = ({ showSideBar }) => {
       setIsLoading(false); // hide loader
     }
   };
+ 
 
 
   return (
     <>
+    {isLoading && <Loader />}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
-      {isLoading && <Loader />}
+      
 
       <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
         <div className="row">

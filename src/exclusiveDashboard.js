@@ -76,93 +76,9 @@ const ExclusiveDashboard = ({ showSideBar }) => {
 
 
 
-  const dropdownMenuRef = useRef(null); // Add this ref for the dropdown menu
+  const dropdownMenuRef = useRef(null); 
 
-  const handleLocationKeyDown = (e) => {
-    if (!showLocation) {
-      setShowLocation(true);
-      return;
-    }
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setHighlightedIndex(prev => {
-          const newIndex = prev < filteredLocations.length - 1 ? prev + 1 : prev;
-
-          // Scroll to ensure the highlighted item is visible
-          if (dropdownMenuRef.current && newIndex !== prev) {
-            const highlightedElement = dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth'
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setHighlightedIndex(prev => {
-          const newIndex = prev > 0 ? prev - 1 : -1;
-
-          // Scroll to ensure the highlighted item is visible
-          if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
-            const highlightedElement = dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth'
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (filteredLocations.length === 1) {
-          handleLocation(filteredLocations[0]);
-          setHighlightedIndex(-1);
-          setShowLocation(false);
-          return;
-        }
-        if (highlightedIndex >= 0 && filteredLocations[highlightedIndex]) {
-          handleLocation(filteredLocations[highlightedIndex]);
-          setHighlightedIndex(-1);
-        }
-        break;
-      case 'Backspace':
-        if (locationSearchInput === '' && selectedLocations.length > 0) {
-          removeLocation(selectedLocations[selectedLocations.length - 1]);
-        }
-        break;
-      case 'Escape':
-        setShowLocation(false);
-        setHighlightedIndex(-1);
-        break;
-      default:
-        break;
-    }
-  };
-
-  // Update your handleLocation function
-  const handleLocation = (locationName) => {
-    if (!selectedLocations.includes(locationName)) {
-      setSelectedLocations([...selectedLocations, locationName]);
-      setShowLocation(false);
-    }
-    setLocationSearchInput("");
-    setShowLocation(false);
-    setHighlightedIndex(-1);
-  };
-  const removeLocation = (locationToRemove) => {
-    setSelectedLocations(selectedLocations.filter(location => location !== locationToRemove));
-  };
+  
 
   const getStyle = (property) => {
     return getComputedStyle(document.documentElement).getPropertyValue(
@@ -375,24 +291,56 @@ const ExclusiveDashboard = ({ showSideBar }) => {
       totalImagesSum,
     };
   };
-  const fetchYesterdayData = async () => {
+  // const fetchYesterdayData = async () => {
+  //   try {
+  //     const params = {};
+
+  //     if (selectedDate) {
+  //       params.date = selectedDate;
+  //     }
+
+  //     if (selectedVendors && selectedVendors.length > 0) {
+  //       params.vendor = selectedVendors.join(","); // Convert array to comma-separated string
+  //     }
+
+  //     if (selectedLocations && selectedLocations.length > 0) {
+  //       params.locationName = selectedLocations;
+  //     }
+
+  //     const response = await axios.get(`${API_URL}/vendorReport`, { params });
+  //     setYesterdayReport(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching report data:", error);
+  //     setError("Error fetching report data. Please try again.");
+  //   }
+  // };
+
+
+    const fetchYesterdayData = async (locationName) => {
     try {
       const params = {};
-
+  
       if (selectedDate) {
         params.date = selectedDate;
       }
-
-      if (selectedVendors && selectedVendors.length > 0) {
-        params.vendor = selectedVendors.join(","); // Convert array to comma-separated string
+  
+      if (selectedVendors) {  // vendor works perfectly with backend
+        params.vendor = selectedVendors;
       }
-
-      if (selectedLocations && selectedLocations.length > 0) {
-        params.locationName = selectedLocations;
-      }
-
+  
+      // backend ignores location — we’ll handle filtering on frontend
       const response = await axios.get(`${API_URL}/vendorReport`, { params });
-      setYesterdayReport(response.data);
+  
+      let data = response.data;
+  
+      // frontend filter by location name
+      if (selectedLocations && selectedLocations.length > 0) {
+        data = data.filter(item =>
+          selectedLocations.includes(item.locationname)
+        );
+      }
+  
+      setYesterdayReport(data);
     } catch (error) {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
@@ -412,7 +360,8 @@ const ExclusiveDashboard = ({ showSideBar }) => {
       }
 
       if (selectedLocations && selectedLocations.length > 0) {
-        params.locationName = selectedLocations;
+        // params.locationName = selectedLocations;
+         params.locationName = selectedLocations.join(",");
       }
 
       const response = await axios.get(`${API_URL}/fetch-data-sequential`, {
@@ -1002,26 +951,40 @@ const ExclusiveDashboard = ({ showSideBar }) => {
     }
   };
   useEffect(() => {
-    fetchLocationData();
-    fetchYesterdayData();
+    const fetchAllData = async () => {
+        setIsLoading(true);
+        try {
+          await Promise.all([
+    fetchLocationData(),
+    fetchYesterdayData(),
     // fetchCumulativeData();
     // fetchBillingData();
     // fetch15LocationsData();
-    fetchData(locationName, vendor);
-    fetchGraphFileData(locationName);
-    fetchGraphImageData(locationName);
-    fetchWeekFileGraphData(locationName);
-    fetchWeekImageGraphData(locationName);
-    fetchMonthImageGraphData(locationName);
-    fetchTodayGraphFileData(locationName);
-    fetchTodayGraphImageData(locationName);
-    fetchCivilCaseGraphData(locationName);
-    fetchCriminalCaseGraphData(locationName);
-    fetchAllYesGraphImageData(locationName);
-    fetchAllGraphImageData(locationName);
-    fetchTableData();
-    fetchExportCsvFile();
-    fetchCumulative(locationName);
+    fetchData(locationName, vendor),
+    fetchGraphFileData(locationName),
+    fetchGraphImageData(locationName),
+    fetchWeekFileGraphData(locationName),
+    fetchWeekImageGraphData(locationName),
+    fetchMonthImageGraphData(locationName),
+    fetchTodayGraphFileData(locationName),
+    fetchTodayGraphImageData(locationName),
+    fetchCivilCaseGraphData(locationName),
+    fetchCriminalCaseGraphData(locationName),
+    fetchAllYesGraphImageData(locationName),
+    fetchAllGraphImageData(locationName),
+    fetchTableData(),
+    fetchExportCsvFile(),
+    fetchCumulative(locationName),
+    ]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchAllData();
+
   }, []);
 
   useEffect(() => {
@@ -1287,7 +1250,7 @@ const ExclusiveDashboard = ({ showSideBar }) => {
 
 
 
-
+   setIsLoading(true);
     try {
       await Promise.all([
 
@@ -1317,15 +1280,23 @@ const ExclusiveDashboard = ({ showSideBar }) => {
       // Reset search tracking on error
       setLastSearchTime(null);
       setLastSearchParams(null);
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
   };
   const vendorOptions = vendorName.map(item => item.Vendor);
 
+  const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
+
 
   return (
     <>
+    {isLoading && <Loader/>}
       <div className="container-fluid">
         <div className="row">
           <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>

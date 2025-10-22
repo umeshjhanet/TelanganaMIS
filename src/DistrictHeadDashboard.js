@@ -62,7 +62,7 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
 
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
- 
+
   const filteredLocations =
     locations?.filter(
       (locationName) =>
@@ -74,91 +74,10 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
 
   const dropdownMenuRef = useRef(null); // Add this ref for the dropdown menu
 
-  const handleLocationKeyDown = (e) => {
-    if (!showLocation) {
-      setShowLocation(true);
-      return;
-    }
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setHighlightedIndex(prev => {
-          const newIndex = prev < filteredLocations.length - 1 ? prev + 1 : prev;
-
-          // Scroll to ensure the highlighted item is visible
-          if (dropdownMenuRef.current && newIndex !== prev) {
-            const highlightedElement = dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth'
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setHighlightedIndex(prev => {
-          const newIndex = prev > 0 ? prev - 1 : -1;
-
-          // Scroll to ensure the highlighted item is visible
-          if (dropdownMenuRef.current && newIndex !== prev && newIndex >= 0) {
-            const highlightedElement = dropdownMenuRef.current.children[newIndex];
-            if (highlightedElement) {
-              highlightedElement.scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth'
-              });
-            }
-          }
-
-          return newIndex;
-        });
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (filteredLocations.length === 1) {
-          handleLocation(filteredLocations[0]);
-          setHighlightedIndex(-1);
-          setShowLocation(false);
-          return;
-        }
-        if (highlightedIndex >= 0 && filteredLocations[highlightedIndex]) {
-          handleLocation(filteredLocations[highlightedIndex]);
-          setHighlightedIndex(-1);
-        }
-        break;
-      case 'Backspace':
-        if (locationSearchInput === '' && selectedLocations.length > 0) {
-          removeLocation(selectedLocations[selectedLocations.length - 1]);
-        }
-        break;
-      case 'Escape':
-        setShowLocation(false);
-        setHighlightedIndex(-1);
-        break;
-      default:
-        break;
-    }
-  };
+  
 
   // Update your handleLocation function
-  const handleLocation = (locationName) => {
-    if (!selectedLocations.includes(locationName)) {
-      setSelectedLocations([...selectedLocations, locationName]);
-      setShowLocation(false);
-    }
-    setLocationSearchInput("");
-    setShowLocation(false);
-    setHighlightedIndex(-1);
-  };
-  const removeLocation = (locationToRemove) => {
-    setSelectedLocations(selectedLocations.filter(location => location !== locationToRemove));
-  };
+ 
 
 
   const [monthImage, setMonthImage] = useState({
@@ -257,7 +176,7 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
     };
   };
   const fetchLocationData = async () => {
-    setIsLoading(true);
+    
     try {
       const response = await axios.get(`${API_URL}/locations`);
       //setLocations(response.data);
@@ -268,7 +187,7 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
     } catch (error) {
       console.error(error);
     }
-    setIsLoading(false);
+    
   };
   //const locationName = selectedLocations;
   const fetchExportCsvFile = () => {
@@ -389,12 +308,24 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
   };
 
   useEffect(() => {
-
-    fetchLocationData();
-    fetchMonthImageGraphData(locationName);
-    fetchAllGraphImageData(locationName);
-    fetchTableData();
-    fetchExportCsvFile();
+    const fetchAllData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([
+          fetchLocationData(),
+          fetchMonthImageGraphData(locationName),
+          fetchAllGraphImageData(locationName),
+          fetchTableData(),
+          fetchExportCsvFile(),
+        ]);
+      } catch (error) {
+        console.error("Error fetching dat:", error);
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAllData();
   }, []);
   const columnSums = calculateColumnSum();
   const isDistrictHeadUser =
@@ -646,8 +577,15 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
     }
   };
 
+  const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
+
   return (
     <>
+      {isLoading && <Loader />}
       <div className="container-fluid">
         <div className="row">
           <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>

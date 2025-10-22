@@ -27,50 +27,50 @@ const AddRemarks = ({ showSideBar }) => {
     const formattedYesterdayDateforRemarks = format(yesterdayDate, "yyyy-MM-dd");
     const formattedDateforRemarks = format(currentDate, "yyyy-MM-dd");
     const [isLoading, setIsLoading] = useState(false);
+    const fetchReportData = () => {
+  return axios.get(`${API_URL}/Table`)
+    .then(response => setReport(response.data))
+    .catch(error => console.error(error));
+};
+
+const fetchTableData = () => {
+  return axios.get(`${API_URL}/tabularData`)
+    .then(response => setTableData(response.data))
+    .catch(error => console.error(error));
+};
+
+const fetchYesterdayReportData = () => {
+  const params = {};
+  return axios.get(`${API_URL}/yesterday-table`, { params })
+    .then(response => setYesterdayReport(response.data.data))
+    .catch(error => console.error(error));
+};
+
     useEffect(() => {
-        const fetchReportData = (locationName) => {
-
-            axios
-                .get(`${API_URL}/Table`)
-                .then((response) => {
-                    setReport(response.data);
-
-                })
-                .catch((error) => console.error(error));
-        };
-        const fetchTableData = () => {
-            axios
-                .get(`${API_URL}/tabularData`)
-                .then((response) => {
-                    setTableData(response.data);
-
-                })
-                .catch((error) => console.error(error));
-        };
-        const fetchYesterdayReportData = (selectedLocations) => {
-            // Create an object to hold query parameters
-            const params = {};
-
-            // If selectedLocations are provided, join them into a comma-separated string
-            if (selectedLocations && selectedLocations.length > 0) {
-                params.locationName = selectedLocations.join(",");
+        const fetchAllData = async () => {
+            setIsLoading(true);
+            try {
+                await Promise.all([
+                    fetchTableData(),
+                    fetchYesterdayReportData(),
+                    fetchReportData(),
+                ]);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setIsLoading(false);
             }
-
-            // Make the API request with optional parameters
-            axios
-                .get(`${API_URL}/yesterday-table`, { params })
-                .then((response) => {
-                    setYesterdayReport(response.data.data); // this is the array
-
-                })
-                .catch((error) => console.error(error));
-
-
         };
-        fetchTableData();
-        fetchYesterdayReportData();
-        fetchReportData();
-    }, [])
+
+        fetchAllData();
+    }, []);
+
+
+    const Loader = () => (
+        <div className="loader-overlay">
+            <div className="loader"></div>
+        </div>
+    );
     const handleAddDailyClick = (selectedLocation) => {
         setSelectedLocation(selectedLocation);
         setIsAddDailyModalOpen(true);
@@ -128,7 +128,7 @@ const AddRemarks = ({ showSideBar }) => {
 
     return (
         <>
-
+            {isLoading && <Loader />}
             <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
                 <div className="row">
                     <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>

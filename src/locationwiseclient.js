@@ -1144,10 +1144,7 @@ const Locationwiseclientreport = ({ showSideBar }) => {
                                             <th>Images</th>
                                             <th>Files</th>
                                             <th>Images</th>
-                                            {/* <th>Files</th>
-                                            <th>Images</th> */}
-                                            {/* <th>Files</th>
-                                            <th>Images</th> */}
+
                                         </tr>
                                     </thead>
                                     <tbody
@@ -1157,7 +1154,7 @@ const Locationwiseclientreport = ({ showSideBar }) => {
                                             yesterdayReport.map((elem, index) => (
                                                 <tr key={index} style={{ backgroundColor: "white" }}>
                                                     <td style={{ whiteSpace: 'nowrap', textAlign: 'left' }}>{elem.locationname}</td>
-                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.InputFiles)) ? "0" : parseInt(elem.InputFiles).toLocaleString()}</td> */}
+
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedFiles)) ? "0" : parseInt(elem.ScannedFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ScannedImages)) ? "0" : parseInt(elem.ScannedImages).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.QCFiles)) ? "0" : parseInt(elem.QCFiles).toLocaleString()}</td>
@@ -1170,10 +1167,7 @@ const Locationwiseclientreport = ({ showSideBar }) => {
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
-                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td> */}
-                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
+
                                                     <td className="text-center"><button
                                                         className="btn client-view-btn"
                                                         onClick={() => handleViewDailyClick(elem.Remarks, elem.SpecialRequests)}
@@ -1202,10 +1196,7 @@ const Locationwiseclientreport = ({ showSideBar }) => {
                                                 <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
                                                 <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
                                                 <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
-                                                {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
-                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedImages)) ? 0 : parseInt(elem.RectifiedImages)), 0).toLocaleString()}</td> */}
-                                                {/* <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
-                                                <td>{yesterdayReport.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0).toLocaleString()}</td> */}
+
                                                 <td></td>
                                             </tr>
                                         )}
@@ -1304,10 +1295,7 @@ const Locationwiseclientreport = ({ showSideBar }) => {
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.CBSLQAImages)) ? "0" : parseInt(elem.CBSLQAImages).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedFiles)) ? "0" : parseInt(elem.ApprovedFiles).toLocaleString()}</td>
                                                     <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.ApprovedImages)) ? "0" : parseInt(elem.ApprovedImages).toLocaleString()}</td>
-                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedFiles)) ? "0" : parseInt(elem.RectifiedFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.RectifiedImages)) ? "0" : parseInt(elem.RectifiedImages).toLocaleString()}</td> */}
-                                                    {/* <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfFiles)) ? "0" : parseInt(elem.Export_PdfFiles).toLocaleString()}</td>
-                                                    <td style={{ textAlign: 'end' }}>{isNaN(parseInt(elem.Export_PdfImages)) ? "0" : parseInt(elem.Export_PdfImages).toLocaleString()}</td> */}
+
                                                     <td className="text-center"><button
                                                         className="btn client-view-btn"
                                                         onClick={() => handleViewCumulativeClick(elem.Remarks, elem.SpecialRequests)}
@@ -1336,10 +1324,7 @@ const Locationwiseclientreport = ({ showSideBar }) => {
                                                 <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.CBSLQAImages)) ? 0 : parseInt(elem.CBSLQAImages)), 0).toLocaleString()}</td>
                                                 <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedFiles)) ? 0 : parseInt(elem.ApprovedFiles)), 0).toLocaleString()}</td>
                                                 <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.ApprovedImages)) ? 0 : parseInt(elem.ApprovedImages)), 0).toLocaleString()}</td>
-                                                {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedFiles)) ? 0 : parseInt(elem.RectifiedFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.RectifiedImages)) ? 0 : parseInt(elem.RectifiedImages)), 0).toLocaleString()}</td> */}
-                                                {/* <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfFiles)) ? 0 : parseInt(elem.Export_PdfFiles)), 0).toLocaleString()}</td>
-                                                <td>{report.reduce((acc, elem) => acc + (isNaN(parseInt(elem.Export_PdfImages)) ? 0 : parseInt(elem.Export_PdfImages)), 0).toLocaleString()}</td> */}
+
                                                 <td></td>
                                             </tr>
                                         )}
@@ -1357,9 +1342,7 @@ const Locationwiseclientreport = ({ showSideBar }) => {
                                 <CardTitle tag="h5" className="d-flex justify-content-between align-items-center">
                                     <span>Cumulative Files</span>
                                     <div className="d-flex justify-content-between align-items-center">
-                                        {/* <div className="me-2" onClick={toggleChartFileType} style={{ cursor: "pointer" }}>
-                                                {chartFileType === "line" ? <FaChartBar size={20} /> : <FaChartLine size={20} />}
-                                            </div> */}
+
                                         <VscTable size={20} onClick={handleFileTable} style={{ cursor: 'pointer' }} />
                                     </div>
                                 </CardTitle>

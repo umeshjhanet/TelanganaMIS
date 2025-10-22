@@ -73,7 +73,7 @@ const Locationwisereport = ({ showSideBar }) => {
         locations[0].id === null &&
         locations[0].name === null;
     const fetchLocationData = async () => {
-        setIsLoading(true);
+       
         try {
             const response = await axios.get(`${API_URL}/locations`);
             //setLocations(response.data);
@@ -83,7 +83,7 @@ const Locationwisereport = ({ showSideBar }) => {
         } catch (error) {
             console.error(error);
         }
-        setIsLoading(false);
+        //setIsLoading(false);
     };
 
     const [barImage, setBarImage] = useState({
@@ -808,29 +808,45 @@ const Locationwisereport = ({ showSideBar }) => {
             console.error("Error fetching today remarks:", error);
         }
     };
-
-
     useEffect(() => {
-        fetchLocationData();
-        fetchTodayRemarks();
-        fetchCumulativeRemarks();
+      const fetchAllData = async () => {
+        setIsLoading(true);
+        try {
+          await Promise.all([
+             fetchLocationData(),
+        fetchTodayRemarks(),
+        fetchCumulativeRemarks(),
 
 
-        fetchAllGraphImageData();
-        fetchAllYesGraphImageData();
-        fetchReportData();
-        fetchYesterdayReportData();
-        fetchData();
-        fetchGraphImageData();
-        fetchTodayGraphImageData();
-        fetchGraphFileData();
-        fetchTodayGraphFileData();
-        fetchTableData();
-        fetchExportCsvFile();
-        fetchStatusDetails();
+        fetchAllGraphImageData(),
+        fetchAllYesGraphImageData(),
+        fetchReportData(),
+        fetchYesterdayReportData(),
+        fetchData(),
+        fetchGraphImageData(),
+        fetchTodayGraphImageData(),
+        fetchGraphFileData(),
+        fetchTodayGraphFileData(),
+        fetchTableData(),
+        fetchExportCsvFile(),
+        fetchStatusDetails(),
 
+          ]);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+    
+      fetchAllData();
     }, []);
 
+      const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
     const columnSums = calculateColumnSum();
 
     if (!userLog) {
@@ -1142,7 +1158,7 @@ const Locationwisereport = ({ showSideBar }) => {
 
 
 
-
+        setIsLoading(true);
         try {
             await Promise.all([
 
@@ -1174,6 +1190,7 @@ const Locationwisereport = ({ showSideBar }) => {
             // Reset search tracking on error
             setLastSearchTime(null);
             setLastSearchParams(null);
+            setIsLoading(false);
         } finally {
             setIsLoading(false);
         }
@@ -1192,6 +1209,7 @@ const Locationwisereport = ({ showSideBar }) => {
 
     return (
         <>
+          {isLoading && <Loader/>}
             <Header2 />
             {isEmptyLocations ? (
                 <>

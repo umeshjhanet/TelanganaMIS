@@ -10,6 +10,7 @@ import SearchBar from "./Components/SearchBar";
 import SearchButton from "./Components/Button";
 import BarGraph from "./Components/BarGraph";
 import DonutGraph from "./Components/DonutGraph";
+import { toast } from 'react-toastify';
 
 const CustomerQAReport = ({ showSideBar }) => {
     const [startDate, setStartDate] = useState('');
@@ -103,45 +104,46 @@ const CustomerQAReport = ({ showSideBar }) => {
             setIsLoading(false);
         }
     };
-    useEffect(() => {
-        const locationName = selectedLocations;
+    const locationName = selectedLocations;
 
 
-        const fetchReportData = async () => {
-            try {
-                let apiUrl = `${API_URL}/reportTable`;
-                const queryParams = {};
+    const fetchReportData = async () => {
+        try {
+            let apiUrl = `${API_URL}/reportTable`;
+            const queryParams = {};
 
-                const userLog = JSON.parse(localStorage.getItem('user'));
+            const userLog = JSON.parse(localStorage.getItem('user'));
 
-                if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
-                    // Set locationName from userLog if it exists and conditions are met
-                    queryParams.locationName = userLog.locations[0].name;
-                }
-                else if (selectedLocations) {
-                    queryParams.locationName = selectedLocations;
-                }
-
-                if (startDate && endDate) {
-                    queryParams.startDate = formatDate(startDate);
-                    queryParams.endDate = formatDate(endDate);
-                }
-
-                setIsLoading(true);
-                const response = await axios.get(apiUrl, { params: queryParams });
-
-                setReport(response.data);
-                setIsLoading(false);
-                updateTotalLocations(response.data);
-            } catch (error) {
-                console.error("Error fetching report data:", error);
-                setError("Error fetching report data. Please try again.");
-                setIsLoading(false);
+            if (userLog?.locations && userLog.locations.length === 1 && userLog.user_roles.includes("Cbsl User")) {
+                // Set locationName from userLog if it exists and conditions are met
+                queryParams.locationName = userLog.locations[0].name;
             }
-        };
-        fetchReportData();
-        // fetchData();
-    }, [selectedLocations, startDate, endDate]);
+            else if (selectedLocations) {
+                queryParams.locationName = selectedLocations;
+            }
+
+            if (startDate && endDate) {
+                queryParams.startDate = formatDate(startDate);
+                queryParams.endDate = formatDate(endDate);
+            }
+
+            setIsLoading(true);
+            const response = await axios.get(apiUrl, { params: queryParams });
+
+            setReport(response.data);
+            setIsLoading(false);
+            updateTotalLocations(response.data);
+        } catch (error) {
+            console.error("Error fetching report data:", error);
+            setError("Error fetching report data. Please try again.");
+            setIsLoading(false);
+        }
+    };
+    // useEffect(() => {
+
+    //     fetchReportData();
+    //     // fetchData();
+    // }, []);
     const exportCustomerCSV = () => {
         if (!data || data.length === 0) {
             alert("No data available to export!");
@@ -203,8 +205,78 @@ const CustomerQAReport = ({ showSideBar }) => {
             setIsLoading(false);
         }
     };
-    const handleClick = () => {
-        fetchData(selectedLocations, startDate, endDate);
+    const [lastSearchTime, setLastSearchTime] = useState(null);
+    const [lastSearchParams, setLastSearchParams] = useState(null);
+    const handleClick = async () => {
+        // fetchData(selectedLocations, startDate, endDate);
+        // Validate date selection (if either start or end date is selected)
+        if(selectedLocations.length==1&&startDate && endDate ){
+        if (startDate || endDate) {
+            if (!startDate) {
+                toast.error("Please select Start Date");
+                return;
+            }
+            if (!endDate) {
+                toast.error("Please select End Date");
+                return;
+            }
+            if (startDate > endDate) {
+                toast.error("End Date cannot be before Start Date");
+                return;
+            }
+        }
+
+        // setIsLoading(true); // show loader
+
+        const queryParams = {};
+
+        const currentParams = {
+            locations: selectedLocations.join(","),
+            // fileType: selectedFileTypes.join(","),
+            startDate: startDate ? formatDate(startDate) : null,
+            endDate: endDate ? formatDate(endDate) : null
+        };
+        //Check if this is the same as last search
+        if (lastSearchParams && JSON.stringify(lastSearchParams) === JSON.stringify(currentParams)) {
+            toast.info("Same search parameters detected. Please wait before searching again.");
+            return;
+        }
+
+        // Check cooldown period (5 seconds)
+        const now = Date.now();
+
+
+
+        setLastSearchTime(now);
+        setLastSearchParams(currentParams);
+
+        queryParams.locationName = selectedLocations.join(",");
+        // queryParams.filetype = selectedFileTypes.join(",");
+
+        if (startDate && endDate) {
+            queryParams.startDate = formatDate(startDate);
+            queryParams.endDate = formatDate(endDate);
+        }
+
+
+
+        try {
+            await Promise.all([
+                // summaryData(queryParams),
+                fetchData(queryParams),
+                fetchReportData(queryParams),
+                // fetchDateReportData(queryParams),
+            ]);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            toast.error("Error fetching data. Please try again.");
+            // Reset search tracking on error
+            setLastSearchTime(null);
+            setLastSearchParams(null);
+        } finally {
+            setIsLoading(false); // hide loader
+        }
+    }
     };
     const Loader = () => (
         <div className="loader-overlay">
@@ -238,7 +310,7 @@ const CustomerQAReport = ({ showSideBar }) => {
                                     selectedItems={selectedLocations}
                                     onChange={newSelected => setSelectedLocations(newSelected)}
                                     placeholder="Search locations..."
-                                    showSelectAll={true}
+                                    showSelectAll={false}
                                 />
                             </div>
                             <div className="col-lg-4 col-md-8 col-sm-12 d-flex flex-wrap ">

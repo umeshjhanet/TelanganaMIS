@@ -226,7 +226,7 @@ const Dashboard = ({ showSideBar }) => {
     };
   };
   const fetchLocationData = async () => {
-    setIsLoading(true);
+    //setIsLoading(true);
     try {
       const response = await axios.get(`${API_URL}/locations`);
       //setLocations(response.data);
@@ -236,7 +236,7 @@ const Dashboard = ({ showSideBar }) => {
     } catch (error) {
       console.error(error);
     }
-    setIsLoading(false);
+    //setIsLoading(false);
   };
   const locationName = selectedLocations;
 
@@ -816,52 +816,98 @@ const Dashboard = ({ showSideBar }) => {
       console.error("Error fetching data:", error);
     }
   };
+  
+
   useEffect(() => {
-
-    fetchYesterdayData();
-    fetchData();
-    fetchGraphFileData(locationName);
-    fetchGraphImageData(locationName);
-    fetchWeekFileGraphData(locationName);
-    fetchWeekImageGraphData(locationName);
-    fetchMonthImageGraphData(locationName);
-    fetchTodayGraphFileData(locationName);
-    fetchTodayGraphImageData(locationName);
-    fetchCivilCaseGraphData(locationName);
-    fetchCriminalCaseGraphData(locationName);
-    fetchAllYesGraphImageData(locationName);
-    fetchAllGraphImageData(locationName);
-    fetchTableData();
-    fetchAllWeekImageData(locationName);
-    fetchCumulative(locationName);
-    fetchLocationData();
-  }, []);
-  const fetchYesterdayData = async () => {
+  const fetchAllData = async () => {
+    setIsLoading(true);
     try {
-      const params = {};
-
-      if (selectedDate) {
-        params.date = selectedDate;
-      }
-
-      if (selectedVendors) {  // Ensure vendor is included if selected
-        params.vendor = selectedVendors;
-      }
-
-      if (selectedLocations && selectedLocations.length > 0) {
-        params.locationName = selectedLocations; // Pass locations if selected
-      }
-
-      const response = await axios.get(`${API_URL}/vendorReport`, { params });
-      setYesterdayReport(response.data);
+      await Promise.all([
+        fetchYesterdayData(),
+        fetchData(),
+        fetchGraphFileData(locationName),
+        fetchGraphImageData(locationName),
+        fetchWeekFileGraphData(locationName),
+        fetchWeekImageGraphData(locationName),
+        fetchMonthImageGraphData(locationName),
+        fetchTodayGraphFileData(locationName),
+        fetchTodayGraphImageData(locationName),
+        fetchCivilCaseGraphData(locationName),
+        fetchCriminalCaseGraphData(locationName),
+        fetchAllYesGraphImageData(locationName),
+        fetchAllGraphImageData(locationName),
+        fetchTableData(),
+        fetchAllWeekImageData(locationName),
+        fetchCumulative(locationName),
+        fetchLocationData()
+      ]);
     } catch (error) {
-      console.error("Error fetching report data:", error);
-      setError("Error fetching report data. Please try again.");
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  fetchAllData();
+}, []);
+  // const fetchYesterdayData = async (locationName) => {
+  //   try {
+  //     const params = {};
 
-  const fetchCumulative = async () => {
+  //     if (selectedDate) {
+  //       params.date = selectedDate;
+  //     }
+
+  //     if (selectedVendors) {  // Ensure vendor is included if selected
+  //       params.vendor = selectedVendors;
+  //     }
+
+  //     if (selectedLocations && selectedLocations.length > 0) {
+  //       params.locationname = selectedLocations; // Pass locations if selected
+  //     }
+
+  //     const response = await axios.get(`${API_URL}/vendorReport`, { params });
+  //     setYesterdayReport(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching report data:", error);
+  //     setError("Error fetching report data. Please try again.");
+  //   }
+  // };
+
+
+  const fetchYesterdayData = async (locationName) => {
+  try {
+    const params = {};
+
+    if (selectedDate) {
+      params.date = selectedDate;
+    }
+
+    if (selectedVendors) {  // vendor works perfectly with backend
+      params.vendor = selectedVendors;
+    }
+
+    // backend ignores location — we’ll handle filtering on frontend
+    const response = await axios.get(`${API_URL}/vendorReport`, { params });
+
+    let data = response.data;
+
+    // frontend filter by location name
+    if (selectedLocations && selectedLocations.length > 0) {
+      data = data.filter(item =>
+        selectedLocations.includes(item.locationname)
+      );
+    }
+
+    setYesterdayReport(data);
+  } catch (error) {
+    console.error("Error fetching report data:", error);
+    setError("Error fetching report data. Please try again.");
+  }
+};
+
+
+  const fetchCumulative = async (locationName) => {
     try {
       const params = {};
       if (selectedDate) {
@@ -871,7 +917,9 @@ const Dashboard = ({ showSideBar }) => {
         params.vendor = selectedVendors.join(","); // Convert array to comma-separated string
       }
       if (selectedLocations && selectedLocations.length > 0) {
-        params.locationName = selectedLocations;
+        // params.locationName = selectedLocations;
+        params.locationName = selectedLocations.join(",");
+
       }
       const response = await axios.get(`${API_URL}/fetch-data-sequential`, { params });
       setCumulative(response.data);
@@ -896,11 +944,12 @@ const Dashboard = ({ showSideBar }) => {
         console.error("Error fetching target data");
       }
     };
-    const fetchData = async () => {
-      setIsLoading(true);  // ✅ Set loading before fetching
-      await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
-      setIsLoading(false); // ✅ Only set false after both complete
-    };
+    // const fetchData = async () => {
+    //   //setIsLoading(true);  // ✅ Set loading before fetching
+    //   await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
+    //   //setIsLoading(false); // ✅ Only set false after both complete
+    // };
+    fetchTarget();
     fetchData();
     fetchVendor();
   }, []);
@@ -1152,12 +1201,12 @@ const Dashboard = ({ showSideBar }) => {
 
 
 
-
+    setIsLoading(true);
     try {
       await Promise.all([
 
         fetchYesterdayData(),
-        fetchData(),
+        //fetchData(),
         fetchData(),
         fetchGraphFileData(queryParams),
         fetchGraphImageData(queryParams),
@@ -1188,9 +1237,14 @@ const Dashboard = ({ showSideBar }) => {
 
   const vendorOptions = vendorName.map(item => item.Vendor);
 
-
+   const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
   return (
     <>
+    {isLoading && <Loader/>}
       <div className="main-fluid p-3 m-2">
         <div className="row">
           <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>

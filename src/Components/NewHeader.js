@@ -527,6 +527,7 @@ const Header = ({ showSideBar, setShowSideBar }) => {
             </div>
         </div>
     );
+ 
 
     return (
         <>

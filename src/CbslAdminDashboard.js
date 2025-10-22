@@ -248,30 +248,61 @@ const CbslAdminDashboard = ({ showSideBar }) => {
       totalImagesSum,
     };
   };
-  const fetchYesterdayData = async () => {
+  // const fetchYesterdayData = async () => {
+  //   try {
+  //     const params = {};
+
+  //     if (selectedDate) {
+  //       params.date = selectedDate;
+  //     }
+
+  //     if (selectedVendors) {  // Ensure vendor is included if selected
+  //       params.vendor = selectedVendors;
+  //     }
+
+  //     if (selectedLocations && selectedLocations.length > 0) {
+  //       params.locationName = selectedLocations; // Pass locations if selected
+  //     }
+
+  //     const response = await axios.get(`${API_URL}/vendorReport`, { params });
+  //     setYesterdayReport(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching report data:", error);
+  //     setError("Error fetching report data. Please try again.");
+  //   }
+  // };
+
+
+   const fetchYesterdayData = async (locationName) => {
     try {
       const params = {};
-
+  
       if (selectedDate) {
         params.date = selectedDate;
       }
-
-      if (selectedVendors) {  // Ensure vendor is included if selected
+  
+      if (selectedVendors) {  // vendor works perfectly with backend
         params.vendor = selectedVendors;
       }
-
-      if (selectedLocations && selectedLocations.length > 0) {
-        params.locationName = selectedLocations; // Pass locations if selected
-      }
-
+  
+      // backend ignores location — we’ll handle filtering on frontend
       const response = await axios.get(`${API_URL}/vendorReport`, { params });
-      setYesterdayReport(response.data);
+  
+      let data = response.data;
+  
+      // frontend filter by location name
+      if (selectedLocations && selectedLocations.length > 0) {
+        data = data.filter(item =>
+          selectedLocations.includes(item.locationname)
+        );
+      }
+  
+      setYesterdayReport(data);
     } catch (error) {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
     }
   };
-
   const fetchCumulative = async () => {
     try {
       const params = {};
@@ -285,7 +316,8 @@ const CbslAdminDashboard = ({ showSideBar }) => {
       }
 
       if (selectedLocations && selectedLocations.length > 0) {
-        params.locationName = selectedLocations;
+        // params.locationName = selectedLocations;
+        params.locationName = selectedLocations.join(",");
       }
 
       const response = await axios.get(`${API_URL}/fetch-data-sequential`, { params });
@@ -313,12 +345,12 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     };
 
     const fetchData = async () => {
-      setIsLoading(true);  // ✅ Set loading before fetching
+      
       await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
-      setIsLoading(false); // ✅ Only set false after both complete
+     
     };
     const fetchLocationData = async () => {
-      setIsLoading(true);
+     
       try {
         const response = await axios.get(`${API_URL}/locations`);
         const locationNames = response.data.map((item) => item.LocationName);
@@ -326,7 +358,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
       } catch (error) {
         console.error(error);
       }
-      setIsLoading(false);
+    
     };
     fetchLocationData();
     fetchData();
@@ -347,7 +379,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   };
 
   const fetchLocationData = async () => {
-    setIsLoading(true);
+    
     try {
       const response = await axios.get(`${API_URL}/locations`);
       //setLocations(response.data);
@@ -357,7 +389,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     } catch (error) {
       console.error(error);
     }
-    setIsLoading(false);
+  
   };
   const locationName = selectedLocations;
 
@@ -805,23 +837,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     }
   };
 
-  // const fetchTableData = () => {
-  //   let apiUrl = `${API_URL}/tabularData`;
-
-  //   if (selectedLocations && selectedLocations.length > 0) {
-  //     const locationQuery = selectedLocations
-  //       .map((location) => `locationName=${encodeURIComponent(location)}`)
-  //       .join("&");
-  //     apiUrl += `?${locationQuery}`;
-  //   }
-  //   axios
-  //     .get(apiUrl)
-  //     .then((response) => {
-  //       setTableData(response.data);
-
-  //     })
-  //     .catch((error) => console.error(error));
-  // };
+ 
 
   const fetchTableData = () => {
     axios
@@ -927,25 +943,39 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     }
   };
 
-  useEffect(() => {
-    fetchLocationData();
-    fetchYesterdayData();
-    fetchCumulative(locationName);
-    fetchData(locationName);
-    fetchGraphFileData(locationName);
-    fetchGraphImageData(locationName);
-    fetchWeekFileGraphData(locationName);
-    fetchWeekImageGraphData(locationName);
-    fetchMonthImageGraphData(locationName);
-    fetchTodayGraphFileData(locationName);
-    fetchTodayGraphImageData(locationName);
-    fetchCivilCaseGraphData(locationName);
-    fetchCriminalCaseGraphData(locationName);
-    fetchAllYesGraphImageData(locationName);
-    fetchAllGraphImageData(locationName);
-    fetchTableData();
-    fetchExportCsvFile();
 
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([
+          fetchYesterdayData(),
+          fetchData(),
+          fetchGraphFileData(locationName),
+          fetchGraphImageData(locationName),
+          fetchWeekFileGraphData(locationName),
+          fetchWeekImageGraphData(locationName),
+          fetchMonthImageGraphData(locationName),
+          fetchTodayGraphFileData(locationName),
+          fetchTodayGraphImageData(locationName),
+          fetchCivilCaseGraphData(locationName),
+          fetchCriminalCaseGraphData(locationName),
+          fetchAllYesGraphImageData(locationName),
+          fetchAllGraphImageData(locationName),
+          fetchTableData(),
+          //fetchAllWeekImageData(locationName),
+          fetchCumulative(locationName),
+          fetchLocationData()
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchAllData();
   }, []);
 
   const columnSums = calculateColumnSum();
@@ -1221,9 +1251,9 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     };
 
 
+    
 
-
-
+    setIsLoading(true);
     try {
       await Promise.all([
 
@@ -1254,14 +1284,21 @@ const CbslAdminDashboard = ({ showSideBar }) => {
       setLastSearchTime(null);
       setLastSearchParams(null);
     } finally {
-      setIsLoading(false);
+       setIsLoading(false);
     }
   };
   const vendorOptions = vendorName.map(item => item.Vendor);
 
+   const Loader = () => (
+    <div className="loader-overlay">
+      <div className="loader"></div>
+    </div>
+  );
+
 
   return (
     <>
+    {isLoading && <Loader/>}
       <div className="p-3 m-0">
         <div className="main-fluid">
           <div className="row">
