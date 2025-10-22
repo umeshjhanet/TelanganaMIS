@@ -2,16 +2,16 @@ import React, { useEffect, useState, useRef } from "react";
 import Chart from 'react-apexcharts';
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import axios, { all } from "axios";
-import "./App.css";
+import "../App.css";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import { VscTable } from "react-icons/vsc";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 import { useNavigate } from 'react-router-dom';
 import { FaChartBar, FaChartLine } from "react-icons/fa";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import Header from "./Components/Header";
-import Footer from "./Components/Footer";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 const newData = [{ name: 'Page A', uv: 400, pv: 2400, amt: 2400 }, { name: 'Page B', uv: 450, pv: 2400, amt: 2400 },];
 
 const Locationwiseclientreport = ({ showSideBar }) => {

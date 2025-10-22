@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Header from './Components/Header';
-import Footer from './Components/Footer';
-import { API_URL } from './Api';
+import Header from '../Components/Header';
+import Footer from '../Components/Footer';
+import { API_URL } from '../Api';
 import { ToastContainer, toast } from 'react-toastify';
 
 const UploadDatabase = ({ showSideBar }) => {

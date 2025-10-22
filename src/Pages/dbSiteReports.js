@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Header from './Components/Header';
+import Header from '../Components/Header';
 import axios from 'axios';
-import { API_URL } from './Api';
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
-import BarGraph from "./Components/BarGraph";
-import DonutGraph from "./Components/DonutGraph";
+import { API_URL } from '../Api';
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
+import BarGraph from "../Components/BarGraph";
+import DonutGraph from "../Components/DonutGraph";
 
 const DBSiteReports = ({ showSideBar }) => {
   const [isLoading, setIsLoading] = useState(false);

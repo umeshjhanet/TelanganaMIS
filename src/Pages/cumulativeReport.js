@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react'
-import Header from './Components/Header'
+import Header from '../Components/Header'
 import { MdFileDownload } from 'react-icons/md'
 import axios from 'axios';
-import { API_URL } from './Api';
+import { API_URL } from '../Api';
 import DatePicker from "react-datepicker";
 import { format, sub } from "date-fns";
 import Papa from "papaparse";
-import SearchBar from './Components/SearchBar';
+import SearchBar from '../Components/SearchBar';
 
 const CumulativeReport = ({ showSideBar }) => {
     const [startDate, setStartDate] = useState("");

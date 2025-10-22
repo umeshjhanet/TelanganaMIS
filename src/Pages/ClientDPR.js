@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import Header from './Components/Header'
+import Header from '../Components/Header'
 import axios from 'axios';
-import { API_URL } from './Api';
+import { API_URL } from '../Api';
 import Chart from 'react-apexcharts';
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import { format, sub } from "date-fns";

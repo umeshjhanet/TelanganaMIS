@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import Chart from "react-apexcharts";
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
-import Header from "./Components/Header";
+import Header from "../Components/Header";
 import axios, { all } from "axios";
-import "./App.css";
-import Footer from "./Components/Footer";
+import "../App.css";
+import Footer from "../Components/Footer";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 import { Navigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -16,11 +16,11 @@ import "jspdf-autotable";
 import html2canvas from "html2canvas";
 import { toast } from "react-toastify";
 import { FaChevronDown } from "react-icons/fa";
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
-import BarGraph from "./Components/BarGraph";
-import DonutGraph from "./Components/DonutGraph";
-import ProjectStatusTable from "./Components/ProjectStatusTable";
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
+import BarGraph from "../Components/BarGraph";
+import DonutGraph from "../Components/DonutGraph";
+import ProjectStatusTable from "../Components/ProjectStatusTable";
 
 const DistrictHeadDashboard = ({ showSideBar }) => {
   const [data2, setData2] = useState();

@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios, { all } from "axios";
 import DatePicker from "react-datepicker";
-import "./App.css";
+import "../App.css";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 import { useNavigate } from 'react-router-dom';
 import Chart from "react-apexcharts";
 import { Card, CardBody, CardTitle, CardSubtitle } from "reactstrap";
@@ -14,11 +14,11 @@ import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { toast } from "react-toastify";
 import { FaChevronDown } from "react-icons/fa";
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
-import BarGraph from "./Components/BarGraph";
-import DonutGraph from "./Components/DonutGraph";
-import ProjectStatusTable from "./Components/ProjectStatusTable";
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
+import BarGraph from "../Components/BarGraph";
+import DonutGraph from "../Components/DonutGraph";
+import ProjectStatusTable from "../Components/ProjectStatusTable";
 
 const CbslAdminDashboard = ({ showSideBar }) => {
   const [data2, setData2] = useState();
@@ -273,30 +273,30 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   // };
 
 
-   const fetchYesterdayData = async (locationName) => {
+  const fetchYesterdayData = async (locationName) => {
     try {
       const params = {};
-  
+
       if (selectedDate) {
         params.date = selectedDate;
       }
-  
+
       if (selectedVendors) {  // vendor works perfectly with backend
         params.vendor = selectedVendors;
       }
-  
+
       // backend ignores location — we’ll handle filtering on frontend
       const response = await axios.get(`${API_URL}/vendorReport`, { params });
-  
+
       let data = response.data;
-  
+
       // frontend filter by location name
       if (selectedLocations && selectedLocations.length > 0) {
         data = data.filter(item =>
           selectedLocations.includes(item.locationname)
         );
       }
-  
+
       setYesterdayReport(data);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -345,12 +345,12 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     };
 
     const fetchData = async () => {
-      
+
       await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
-     
+
     };
     const fetchLocationData = async () => {
-     
+
       try {
         const response = await axios.get(`${API_URL}/locations`);
         const locationNames = response.data.map((item) => item.LocationName);
@@ -358,7 +358,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
       } catch (error) {
         console.error(error);
       }
-    
+
     };
     fetchLocationData();
     fetchData();
@@ -379,7 +379,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   };
 
   const fetchLocationData = async () => {
-    
+
     try {
       const response = await axios.get(`${API_URL}/locations`);
       //setLocations(response.data);
@@ -389,7 +389,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     } catch (error) {
       console.error(error);
     }
-  
+
   };
   const locationName = selectedLocations;
 
@@ -837,7 +837,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     }
   };
 
- 
+
 
   const fetchTableData = () => {
     axios
@@ -974,7 +974,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
         setIsLoading(false);
       }
     };
-  
+
     fetchAllData();
   }, []);
 
@@ -1251,7 +1251,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     };
 
 
-    
+
 
     setIsLoading(true);
     try {
@@ -1284,12 +1284,12 @@ const CbslAdminDashboard = ({ showSideBar }) => {
       setLastSearchTime(null);
       setLastSearchParams(null);
     } finally {
-       setIsLoading(false);
+      setIsLoading(false);
     }
   };
   const vendorOptions = vendorName.map(item => item.Vendor);
 
-   const Loader = () => (
+  const Loader = () => (
     <div className="loader-overlay">
       <div className="loader"></div>
     </div>
@@ -1298,7 +1298,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
 
   return (
     <>
-    {isLoading && <Loader/>}
+      {isLoading && <Loader />}
       <div className="p-3 m-0">
         <div className="main-fluid">
           <div className="row">

@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { API_URL } from './Api';
+import { API_URL } from '../Api';
 import Papa from 'papaparse';
-import Header from './Components/Header';
+import Header from '../Components/Header';
 import { MdFileDownload } from 'react-icons/md';
 import axios from 'axios';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
-import BarGraph from "./Components/BarGraph";
-import DonutGraph from "./Components/DonutGraph";
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
+import BarGraph from "../Components/BarGraph";
+import DonutGraph from "../Components/DonutGraph";
 import { toast } from 'react-toastify';
 
 const CustomerQAReport = ({ showSideBar }) => {
@@ -210,73 +210,73 @@ const CustomerQAReport = ({ showSideBar }) => {
     const handleClick = async () => {
         // fetchData(selectedLocations, startDate, endDate);
         // Validate date selection (if either start or end date is selected)
-        if(selectedLocations.length==1&&startDate && endDate ){
-        if (startDate || endDate) {
-            if (!startDate) {
-                toast.error("Please select Start Date");
+        if (selectedLocations.length == 1 && startDate && endDate) {
+            if (startDate || endDate) {
+                if (!startDate) {
+                    toast.error("Please select Start Date");
+                    return;
+                }
+                if (!endDate) {
+                    toast.error("Please select End Date");
+                    return;
+                }
+                if (startDate > endDate) {
+                    toast.error("End Date cannot be before Start Date");
+                    return;
+                }
+            }
+
+            // setIsLoading(true); // show loader
+
+            const queryParams = {};
+
+            const currentParams = {
+                locations: selectedLocations.join(","),
+                // fileType: selectedFileTypes.join(","),
+                startDate: startDate ? formatDate(startDate) : null,
+                endDate: endDate ? formatDate(endDate) : null
+            };
+            //Check if this is the same as last search
+            if (lastSearchParams && JSON.stringify(lastSearchParams) === JSON.stringify(currentParams)) {
+                toast.info("Same search parameters detected. Please wait before searching again.");
                 return;
             }
-            if (!endDate) {
-                toast.error("Please select End Date");
-                return;
+
+            // Check cooldown period (5 seconds)
+            const now = Date.now();
+
+
+
+            setLastSearchTime(now);
+            setLastSearchParams(currentParams);
+
+            queryParams.locationName = selectedLocations.join(",");
+            // queryParams.filetype = selectedFileTypes.join(",");
+
+            if (startDate && endDate) {
+                queryParams.startDate = formatDate(startDate);
+                queryParams.endDate = formatDate(endDate);
             }
-            if (startDate > endDate) {
-                toast.error("End Date cannot be before Start Date");
-                return;
+
+
+
+            try {
+                await Promise.all([
+                    // summaryData(queryParams),
+                    fetchData(queryParams),
+                    fetchReportData(queryParams),
+                    // fetchDateReportData(queryParams),
+                ]);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                toast.error("Error fetching data. Please try again.");
+                // Reset search tracking on error
+                setLastSearchTime(null);
+                setLastSearchParams(null);
+            } finally {
+                setIsLoading(false); // hide loader
             }
         }
-
-        // setIsLoading(true); // show loader
-
-        const queryParams = {};
-
-        const currentParams = {
-            locations: selectedLocations.join(","),
-            // fileType: selectedFileTypes.join(","),
-            startDate: startDate ? formatDate(startDate) : null,
-            endDate: endDate ? formatDate(endDate) : null
-        };
-        //Check if this is the same as last search
-        if (lastSearchParams && JSON.stringify(lastSearchParams) === JSON.stringify(currentParams)) {
-            toast.info("Same search parameters detected. Please wait before searching again.");
-            return;
-        }
-
-        // Check cooldown period (5 seconds)
-        const now = Date.now();
-
-
-
-        setLastSearchTime(now);
-        setLastSearchParams(currentParams);
-
-        queryParams.locationName = selectedLocations.join(",");
-        // queryParams.filetype = selectedFileTypes.join(",");
-
-        if (startDate && endDate) {
-            queryParams.startDate = formatDate(startDate);
-            queryParams.endDate = formatDate(endDate);
-        }
-
-
-
-        try {
-            await Promise.all([
-                // summaryData(queryParams),
-                fetchData(queryParams),
-                fetchReportData(queryParams),
-                // fetchDateReportData(queryParams),
-            ]);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            toast.error("Error fetching data. Please try again.");
-            // Reset search tracking on error
-            setLastSearchTime(null);
-            setLastSearchParams(null);
-        } finally {
-            setIsLoading(false); // hide loader
-        }
-    }
     };
     const Loader = () => (
         <div className="loader-overlay">

@@ -2,22 +2,22 @@ import React, { useEffect, useState, useRef } from "react";
 import Chart from 'react-apexcharts';
 import DatePicker from "react-datepicker";
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
-import Header from "./Components/Header";
+import Header from "../Components/Header";
 import axios, { all } from "axios";
-import "./App.css";
+import "../App.css";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { toast } from 'react-toastify';
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
-import BarGraph from "./Components/BarGraph";
-import DonutGraph from "./Components/DonutGraph";
-import ProjectStatusTable from "./Components/ProjectStatusTable";
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
+import BarGraph from "../Components/BarGraph";
+import DonutGraph from "../Components/DonutGraph";
+import ProjectStatusTable from "../Components/ProjectStatusTable";
 
 const Dashboard = ({ showSideBar }) => {
   const currentDate = new Date();
@@ -816,40 +816,40 @@ const Dashboard = ({ showSideBar }) => {
       console.error("Error fetching data:", error);
     }
   };
-  
+
 
   useEffect(() => {
-  const fetchAllData = async () => {
-    setIsLoading(true);
-    try {
-      await Promise.all([
-        fetchYesterdayData(),
-        fetchData(),
-        fetchGraphFileData(locationName),
-        fetchGraphImageData(locationName),
-        fetchWeekFileGraphData(locationName),
-        fetchWeekImageGraphData(locationName),
-        fetchMonthImageGraphData(locationName),
-        fetchTodayGraphFileData(locationName),
-        fetchTodayGraphImageData(locationName),
-        fetchCivilCaseGraphData(locationName),
-        fetchCriminalCaseGraphData(locationName),
-        fetchAllYesGraphImageData(locationName),
-        fetchAllGraphImageData(locationName),
-        fetchTableData(),
-        fetchAllWeekImageData(locationName),
-        fetchCumulative(locationName),
-        fetchLocationData()
-      ]);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const fetchAllData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([
+          fetchYesterdayData(),
+          fetchData(),
+          fetchGraphFileData(locationName),
+          fetchGraphImageData(locationName),
+          fetchWeekFileGraphData(locationName),
+          fetchWeekImageGraphData(locationName),
+          fetchMonthImageGraphData(locationName),
+          fetchTodayGraphFileData(locationName),
+          fetchTodayGraphImageData(locationName),
+          fetchCivilCaseGraphData(locationName),
+          fetchCriminalCaseGraphData(locationName),
+          fetchAllYesGraphImageData(locationName),
+          fetchAllGraphImageData(locationName),
+          fetchTableData(),
+          fetchAllWeekImageData(locationName),
+          fetchCumulative(locationName),
+          fetchLocationData()
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  fetchAllData();
-}, []);
+    fetchAllData();
+  }, []);
   // const fetchYesterdayData = async (locationName) => {
   //   try {
   //     const params = {};
@@ -876,35 +876,35 @@ const Dashboard = ({ showSideBar }) => {
 
 
   const fetchYesterdayData = async (locationName) => {
-  try {
-    const params = {};
+    try {
+      const params = {};
 
-    if (selectedDate) {
-      params.date = selectedDate;
+      if (selectedDate) {
+        params.date = selectedDate;
+      }
+
+      if (selectedVendors) {  // vendor works perfectly with backend
+        params.vendor = selectedVendors;
+      }
+
+      // backend ignores location — we’ll handle filtering on frontend
+      const response = await axios.get(`${API_URL}/vendorReport`, { params });
+
+      let data = response.data;
+
+      // frontend filter by location name
+      if (selectedLocations && selectedLocations.length > 0) {
+        data = data.filter(item =>
+          selectedLocations.includes(item.locationname)
+        );
+      }
+
+      setYesterdayReport(data);
+    } catch (error) {
+      console.error("Error fetching report data:", error);
+      setError("Error fetching report data. Please try again.");
     }
-
-    if (selectedVendors) {  // vendor works perfectly with backend
-      params.vendor = selectedVendors;
-    }
-
-    // backend ignores location — we’ll handle filtering on frontend
-    const response = await axios.get(`${API_URL}/vendorReport`, { params });
-
-    let data = response.data;
-
-    // frontend filter by location name
-    if (selectedLocations && selectedLocations.length > 0) {
-      data = data.filter(item =>
-        selectedLocations.includes(item.locationname)
-      );
-    }
-
-    setYesterdayReport(data);
-  } catch (error) {
-    console.error("Error fetching report data:", error);
-    setError("Error fetching report data. Please try again.");
-  }
-};
+  };
 
 
   const fetchCumulative = async (locationName) => {
@@ -1237,14 +1237,14 @@ const Dashboard = ({ showSideBar }) => {
 
   const vendorOptions = vendorName.map(item => item.Vendor);
 
-   const Loader = () => (
+  const Loader = () => (
     <div className="loader-overlay">
       <div className="loader"></div>
     </div>
   );
   return (
     <>
-    {isLoading && <Loader/>}
+      {isLoading && <Loader />}
       <div className="main-fluid p-3 m-2">
         <div className="row">
           <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { CCard, CCardBody } from "@coreui/react";
 import axios from "axios";
 import { format, sub } from "date-fns";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 import Chart from "react-apexcharts";
 import { Card, CardBody, CardTitle, CardSubtitle } from "reactstrap";
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
-import BarGraph from "./Components/BarGraph";
-import DonutGraph from "./Components/DonutGraph";
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
+import BarGraph from "../Components/BarGraph";
+import DonutGraph from "../Components/DonutGraph";
 
 const LocationWiseDashboard = ({ showSideBar }) => {
   const currentDate = new Date();

@@ -3,24 +3,24 @@ import Chart from "react-apexcharts";
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import axios, { all } from "axios";
 import DatePicker from "react-datepicker";
-import "./App.css";
-import Footer from "./Components/Footer";
+import "../App.css";
+import Footer from "../Components/Footer";
 // import { BarChart } from "@mui/x-charts/BarChart";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import DistrictHeadDashboard from "./DistrictHeadDashboard";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { BsAlignTop } from "react-icons/bs";
 import moment from "moment";
 import { toast } from 'react-toastify';
 import { FaChevronDown } from "react-icons/fa";
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
-import BarGraph from "./Components/BarGraph";
-import DonutGraph from "./Components/DonutGraph";
-import BarGraph1 from "./Components/ShowHideBarGraph";
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
+import BarGraph from "../Components/BarGraph";
+import DonutGraph from "../Components/DonutGraph";
+import BarGraph1 from "../Components/ShowHideBarGraph";
 
 const ExclusiveDashboard = ({ showSideBar }) => {
   const [data2, setData2] = useState();
@@ -76,9 +76,9 @@ const ExclusiveDashboard = ({ showSideBar }) => {
 
 
 
-  const dropdownMenuRef = useRef(null); 
+  const dropdownMenuRef = useRef(null);
 
-  
+
 
   const getStyle = (property) => {
     return getComputedStyle(document.documentElement).getPropertyValue(
@@ -316,30 +316,30 @@ const ExclusiveDashboard = ({ showSideBar }) => {
   // };
 
 
-    const fetchYesterdayData = async (locationName) => {
+  const fetchYesterdayData = async (locationName) => {
     try {
       const params = {};
-  
+
       if (selectedDate) {
         params.date = selectedDate;
       }
-  
+
       if (selectedVendors) {  // vendor works perfectly with backend
         params.vendor = selectedVendors;
       }
-  
+
       // backend ignores location — we’ll handle filtering on frontend
       const response = await axios.get(`${API_URL}/vendorReport`, { params });
-  
+
       let data = response.data;
-  
+
       // frontend filter by location name
       if (selectedLocations && selectedLocations.length > 0) {
         data = data.filter(item =>
           selectedLocations.includes(item.locationname)
         );
       }
-  
+
       setYesterdayReport(data);
     } catch (error) {
       console.error("Error fetching report data:", error);
@@ -361,7 +361,7 @@ const ExclusiveDashboard = ({ showSideBar }) => {
 
       if (selectedLocations && selectedLocations.length > 0) {
         // params.locationName = selectedLocations;
-         params.locationName = selectedLocations.join(",");
+        params.locationName = selectedLocations.join(",");
       }
 
       const response = await axios.get(`${API_URL}/fetch-data-sequential`, {
@@ -952,38 +952,38 @@ const ExclusiveDashboard = ({ showSideBar }) => {
   };
   useEffect(() => {
     const fetchAllData = async () => {
-        setIsLoading(true);
-        try {
-          await Promise.all([
-    fetchLocationData(),
-    fetchYesterdayData(),
-    // fetchCumulativeData();
-    // fetchBillingData();
-    // fetch15LocationsData();
-    fetchData(locationName, vendor),
-    fetchGraphFileData(locationName),
-    fetchGraphImageData(locationName),
-    fetchWeekFileGraphData(locationName),
-    fetchWeekImageGraphData(locationName),
-    fetchMonthImageGraphData(locationName),
-    fetchTodayGraphFileData(locationName),
-    fetchTodayGraphImageData(locationName),
-    fetchCivilCaseGraphData(locationName),
-    fetchCriminalCaseGraphData(locationName),
-    fetchAllYesGraphImageData(locationName),
-    fetchAllGraphImageData(locationName),
-    fetchTableData(),
-    fetchExportCsvFile(),
-    fetchCumulative(locationName),
-    ]);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      setIsLoading(true);
+      try {
+        await Promise.all([
+          fetchLocationData(),
+          fetchYesterdayData(),
+          // fetchCumulativeData();
+          // fetchBillingData();
+          // fetch15LocationsData();
+          fetchData(locationName, vendor),
+          fetchGraphFileData(locationName),
+          fetchGraphImageData(locationName),
+          fetchWeekFileGraphData(locationName),
+          fetchWeekImageGraphData(locationName),
+          fetchMonthImageGraphData(locationName),
+          fetchTodayGraphFileData(locationName),
+          fetchTodayGraphImageData(locationName),
+          fetchCivilCaseGraphData(locationName),
+          fetchCriminalCaseGraphData(locationName),
+          fetchAllYesGraphImageData(locationName),
+          fetchAllGraphImageData(locationName),
+          fetchTableData(),
+          fetchExportCsvFile(),
+          fetchCumulative(locationName),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  fetchAllData();
+    fetchAllData();
 
   }, []);
 
@@ -1250,7 +1250,7 @@ const ExclusiveDashboard = ({ showSideBar }) => {
 
 
 
-   setIsLoading(true);
+    setIsLoading(true);
     try {
       await Promise.all([
 
@@ -1296,7 +1296,7 @@ const ExclusiveDashboard = ({ showSideBar }) => {
 
   return (
     <>
-    {isLoading && <Loader/>}
+      {isLoading && <Loader />}
       <div className="container-fluid">
         <div className="row">
           <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
@@ -1453,7 +1453,7 @@ const ExclusiveDashboard = ({ showSideBar }) => {
                 bar="bar"
                 height={350}
               />
-                 
+
             </div>
 
             <div className="row mt-3 me-1">
@@ -1627,7 +1627,7 @@ const ExclusiveDashboard = ({ showSideBar }) => {
                 >
                   <div className="col-10">
                     <h6 className="" style={{ color: "white" }}>
-                      Production Report ({!selectedDate?formattedYesterdayDate:selectedDate})
+                      Production Report ({!selectedDate ? formattedYesterdayDate : selectedDate})
                     </h6>
                   </div>
                   {/* <div className="col-2 text-end">

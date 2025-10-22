@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Header from "./Components/Header";
-import Footer from "./Components/Footer";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 import axios from "axios";
 import { MdFileDownload } from "react-icons/md";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -13,10 +13,10 @@ import html2canvas from 'html2canvas';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaChevronDown } from "react-icons/fa";
-import SearchBar from "./Components/SearchBar";
-import Search from "./Components/Button";
-import ReportCard from "./Components/ReportCard";
-import SearchButton from "./Components/Button";
+import SearchBar from "../Components/SearchBar";
+import Search from "../Components/Button";
+import ReportCard from "../Components/ReportCard";
+import SearchButton from "../Components/Button";
 
 
 const Report = ({ showSideBar }) => {
@@ -143,7 +143,7 @@ const Report = ({ showSideBar }) => {
 
 
 
-    
+
       const response = await axios.get(apiUrl, { params: queryParams });
 
       setReport(response.data);
@@ -153,7 +153,7 @@ const Report = ({ showSideBar }) => {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
       setIsLoading(false);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
@@ -189,8 +189,8 @@ const Report = ({ showSideBar }) => {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
       //setIsLoading(false);
-    }finally{
-     // setIsLoading(false);
+    } finally {
+      // setIsLoading(false);
     }
   };
   const fetchLocation = async () => {
@@ -210,43 +210,43 @@ const Report = ({ showSideBar }) => {
       console.error("Error fetching locations:", error);
       setError("Error fetching locations. Please try again.");
       //setIsLoading(false);
-    }finally{
+    } finally {
       //setIsLoading(false);
     }
   };
- 
+
   useEffect(() => {
-  const locationName = selectedLocations;
-  const fileType = selectedFileTypes;
+    const locationName = selectedLocations;
+    const fileType = selectedFileTypes;
 
-  const fetchFileTypes = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/summaryfiletype`);
-      setfileType(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    const fetchFileTypes = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/summaryfiletype`);
+        setfileType(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  const loadInitialData = async () => {
-    setIsLoading(true);
-    try {
-      // Execute all initial API calls in parallel
-      await Promise.all([
-        fetchLocation(),
-        fetchReportData(),
-        fetchFileTypes(),
-        ...(startDate && endDate ? [fetchDateReportData()] : [])
-      ]);
-    } catch (error) {
-      console.error("Error in initial API calls:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const loadInitialData = async () => {
+      setIsLoading(true);
+      try {
+        // Execute all initial API calls in parallel
+        await Promise.all([
+          fetchLocation(),
+          fetchReportData(),
+          fetchFileTypes(),
+          ...(startDate && endDate ? [fetchDateReportData()] : [])
+        ]);
+      } catch (error) {
+        console.error("Error in initial API calls:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  loadInitialData();
-}, []); // Empty dependency array - runs only once when component mounts
+    loadInitialData();
+  }, []); // Empty dependency array - runs only once when component mounts
 
   const updateTotalLocations = (data) => {
     const uniqueLocations = [...new Set(data.map(elem => elem.LocationName))];
@@ -627,15 +627,15 @@ const Report = ({ showSideBar }) => {
       setIsLoading(false); // hide loader
     }
   };
- 
+
 
 
   return (
     <>
-    {isLoading && <Loader />}
+      {isLoading && <Loader />}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
-      
+
 
       <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>
         <div className="row">

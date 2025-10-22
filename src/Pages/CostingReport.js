@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Header from './Components/Header';
-import { API_URL } from './Api';
+import Header from '../Components/Header';
+import { API_URL } from '../Api';
 import { toast, ToastContainer } from 'react-toastify';
 
 const CostingReport = ({showSideBar}) => {

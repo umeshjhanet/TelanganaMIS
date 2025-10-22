@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Header from './Components/Header';
-import Footer from './Components/Footer';
+import Header from '../Components/Header';
+import Footer from '../Components/Footer';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
-import { API_URL } from './Api';
+import { API_URL } from '../Api';
 
 const User_Form = ({ showSideBar }) => {
   const [group, setGroup] = useState();

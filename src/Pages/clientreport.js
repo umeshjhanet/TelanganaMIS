@@ -2,22 +2,22 @@ import React, { useEffect, useState, useRef } from "react";
 import Chart from 'react-apexcharts';
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import axios, { all } from "axios";
-import "./App.css";
+import "../App.css";
 import { format, sub } from "date-fns";
 import { MdFileDownload } from "react-icons/md";
 import { VscTable } from "react-icons/vsc";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 import { useNavigate } from 'react-router-dom';
 import { FaChartBar, FaChartLine } from "react-icons/fa";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import Header from "./Components/Header";
-import Footer from "./Components/Footer";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 import Locationwiseclientreport from "./locationwiseclient";
-import Header2 from "./Components/Header2";
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
-import BarGraph from "./Components/BarGraph";
-import DonutGraph from "./Components/DonutGraph";
+import Header2 from "../Components/Header2";
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
+import BarGraph from "../Components/BarGraph";
+import DonutGraph from "../Components/DonutGraph";
 import { toast } from "react-toastify";
 const newData = [{ name: 'Page A', uv: 400, pv: 2400, amt: 2400 }, { name: 'Page B', uv: 450, pv: 2400, amt: 2400 },];
 
@@ -73,7 +73,7 @@ const Locationwisereport = ({ showSideBar }) => {
         locations[0].id === null &&
         locations[0].name === null;
     const fetchLocationData = async () => {
-       
+
         try {
             const response = await axios.get(`${API_URL}/locations`);
             //setLocations(response.data);
@@ -809,44 +809,44 @@ const Locationwisereport = ({ showSideBar }) => {
         }
     };
     useEffect(() => {
-      const fetchAllData = async () => {
-        setIsLoading(true);
-        try {
-          await Promise.all([
-             fetchLocationData(),
-        fetchTodayRemarks(),
-        fetchCumulativeRemarks(),
+        const fetchAllData = async () => {
+            setIsLoading(true);
+            try {
+                await Promise.all([
+                    fetchLocationData(),
+                    fetchTodayRemarks(),
+                    fetchCumulativeRemarks(),
 
 
-        fetchAllGraphImageData(),
-        fetchAllYesGraphImageData(),
-        fetchReportData(),
-        fetchYesterdayReportData(),
-        fetchData(),
-        fetchGraphImageData(),
-        fetchTodayGraphImageData(),
-        fetchGraphFileData(),
-        fetchTodayGraphFileData(),
-        fetchTableData(),
-        fetchExportCsvFile(),
-        fetchStatusDetails(),
+                    fetchAllGraphImageData(),
+                    fetchAllYesGraphImageData(),
+                    fetchReportData(),
+                    fetchYesterdayReportData(),
+                    fetchData(),
+                    fetchGraphImageData(),
+                    fetchTodayGraphImageData(),
+                    fetchGraphFileData(),
+                    fetchTodayGraphFileData(),
+                    fetchTableData(),
+                    fetchExportCsvFile(),
+                    fetchStatusDetails(),
 
-          ]);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-    
-      fetchAllData();
+                ]);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchAllData();
     }, []);
 
-      const Loader = () => (
-    <div className="loader-overlay">
-      <div className="loader"></div>
-    </div>
-  );
+    const Loader = () => (
+        <div className="loader-overlay">
+            <div className="loader"></div>
+        </div>
+    );
     const columnSums = calculateColumnSum();
 
     if (!userLog) {
@@ -1209,7 +1209,7 @@ const Locationwisereport = ({ showSideBar }) => {
 
     return (
         <>
-          {isLoading && <Loader/>}
+            {isLoading && <Loader />}
             <Header2 />
             {isEmptyLocations ? (
                 <>

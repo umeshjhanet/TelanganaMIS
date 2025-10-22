@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import Header from "./Components/Header";
-import Footer from "./Components/Footer";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 import DistrictHeadDashboard from "./DistrictHeadDashboard";
 import AllUserDashboard from "./AllUserDashboard";
 import LocationWiseDashboard from "./LocationWiseDashboard";
 import CbslAdminDashboard from "./CbslAdminDashboard";
 import ExclusiveDashboard from "./exclusiveDashboard";
-import "./App.css";
+import "../App.css";
 
 const Dashboard = ({ showSideBar }) => {
   const userLog = JSON.parse(localStorage.getItem("user"));

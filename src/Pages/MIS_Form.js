@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import Header from './Components/Header'
-import Footer from './Components/Footer'
+import Header from '../Components/Header'
+import Footer from '../Components/Footer'
 import DatePicker from 'react-datepicker';
-import { ProcessCardData } from './ProcessCardData';
+import { ProcessCardData } from '../ProcessCardData';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import readXlsxFile from 'read-excel-file';
-import { API_URL } from './Api';
+import { API_URL } from '../Api';
 import { ToastContainer, toast } from 'react-toastify';
 
 const MIS_Form = ({ showSideBar }) => {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import Header from './Components/Header'
-import Footer from './Components/Footer'
+import Header from '../Components/Header'
+import Footer from '../Components/Footer'
 import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import AddGroupModal from './Components/AddGroupModal';
-import { API_URL } from './Api';
-import UpdateGroupModal from './Components/UpdateGroupModal';
+import AddGroupModal from '../Components/AddGroupModal';
+import { API_URL } from '../Api';
+import UpdateGroupModal from '../Components/UpdateGroupModal';
 
 const GroupManager = ({ showSideBar }) => {
   const [group, setGroup] = useState();

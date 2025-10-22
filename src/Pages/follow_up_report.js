@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Header from './Components/Header';
-import { API_URL } from './Api';
+import Header from '../Components/Header';
+import { API_URL } from '../Api';
 import { IoDownload } from 'react-icons/io5';
 import { format, sub } from "date-fns";
 import { ToastContainer, toast } from 'react-toastify';

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import Header from './Components/Header'
-import Footer from './Components/Footer'
+import Header from '../Components/Header'
+import Footer from '../Components/Footer'
 import axios from 'axios';
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import AddRoleModal from './Components/AddRoleModal';
-import UpdateRoleModal from './Components/UpdateRoleModal';
-import { API_URL } from './Api';
+import AddRoleModal from '../Components/AddRoleModal';
+import UpdateRoleModal from '../Components/UpdateRoleModal';
+import { API_URL } from '../Api';
 
 const UserRole = ({ showSideBar }) => {
   const [role, setRole] = useState();

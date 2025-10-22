@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-import { API_URL } from './Api';
+import { API_URL } from '../Api';
 import { MdFileDownload } from 'react-icons/md';
 import { format, sub } from "date-fns";
-import Header from './Components/Header';
+import Header from '../Components/Header';
 
 
 const AddRemarks = ({ showSideBar }) => {

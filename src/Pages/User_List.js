@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Header from "./Components/Header";
-import Footer from "./Components/Footer";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 import axios from "axios";
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import UpdateUserModal from "./Components/UpdateUserModal";
+import UpdateUserModal from "../Components/UpdateUserModal";
 import { ToastContainer } from "react-toastify";
-import { API_URL } from "./Api";
+import { API_URL } from "../Api";
 
 const User_List = ({ showSideBar }) => {
   const [user, setUser] = useState([]);

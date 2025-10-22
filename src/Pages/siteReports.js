@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Header from './Components/Header';
+import Header from '../Components/Header';
 import axios from 'axios';
-import { API_URL } from './Api';
-import SearchBar from "./Components/SearchBar";
-import SearchButton from "./Components/Button";
+import { API_URL } from '../Api';
+import SearchBar from "../Components/SearchBar";
+import SearchButton from "../Components/Button";
 const SiteReports = ({ showSideBar }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
