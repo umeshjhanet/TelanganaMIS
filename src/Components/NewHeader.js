@@ -43,7 +43,7 @@ const Header = ({ showSideBar, setShowSideBar }) => {
     const activeLink = ({ isActive }) => ({
         display: "flex",
         alignItems: "center",
-        color: isActive ? "black" : "#107393",
+        color: isActive ? "#ae3030ff" : "#107393",
         fontWeight: isActive ? "bold" : "normal",
         textDecoration: "none",
         cursor: "pointer",
