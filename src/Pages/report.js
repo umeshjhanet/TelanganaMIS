@@ -625,6 +625,7 @@ const Report = ({ showSideBar }) => {
       setLastSearchParams(null);
     } finally {
       setIsLoading(false); // hide loader
+      setTotalLocations(selectedLocations.length>0?selectedLocations:totalLocations)
     }
   };
 

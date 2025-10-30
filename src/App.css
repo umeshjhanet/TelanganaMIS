@@ -331,16 +331,35 @@ input[type="submit"]:hover {
   height: 40px;
   width: 65px;
 }
+.toggle-btn{
+  position: absolute;
+  top: 10px;
+  left: 170px;
+  cursor: pointer;
+}
+
+.toggle-btn-sidebar{
+  position: absolute;
+  top: 10px;
+  left: 80px;
+  cursor: pointer;
+}
+.toggle-btn:hover,.toggle-btn-sidebar:hover{
+  cursor: pointer;
+  transform: scale(1.1);
+  transition: transform 0.2 ease;
+  opacity: 0.8;
+}
 
 .mobile-sidebar {
-  bottom: 25px;
+  bottom: 70px;
   height: 100%;
   margin-bottom: -70px;
   margin-top: 0px;
   padding-bottom: 70px;
   position: fixed;
   background-color: white;
-  width: 240px;
+  width: 200px;
   box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);
   z-index: 999;
 }
@@ -355,7 +374,11 @@ input[type="submit"]:hover {
   background-color: white;
   width: 200px;
   box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);
+  z-index: 999;
+  
 }
+
+
 
 .shrink-sidebar {
   bottom: 70px;
@@ -892,7 +915,7 @@ input[type="submit"] {
 }
 
 .react-datepicker__month-container{
-  width: 320px;
+  width: 260px;
 }
 
 .react-datepicker__month-select{
@@ -903,4 +926,10 @@ input[type="submit"] {
   width: 85px;
   
 }
- 
+.react-datepicker-popper, .compact-picker {
+  left: 40px !important;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}

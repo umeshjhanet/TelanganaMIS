@@ -10,7 +10,8 @@ import SearchBar from "../Components/SearchBar";
 import SearchButton from "../Components/Button";
 import BarGraph from "../Components/BarGraph";
 import DonutGraph from "../Components/DonutGraph";
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const CustomerQAReport = ({ showSideBar }) => {
     const [startDate, setStartDate] = useState('');
@@ -210,7 +211,16 @@ const CustomerQAReport = ({ showSideBar }) => {
     const handleClick = async () => {
         // fetchData(selectedLocations, startDate, endDate);
         // Validate date selection (if either start or end date is selected)
-        if (selectedLocations.length == 1 && startDate && endDate) {
+        
+            if(startDate && endDate){
+            if(selectedLocations.length<1){
+                toast.error("Select Location");
+                return;
+            }
+            if(selectedLocations.length>1){
+                toast.error("Select One Location Only");
+                return;
+            }}
             if (startDate || endDate) {
                 if (!startDate) {
                     toast.error("Please select Start Date");
@@ -223,8 +233,8 @@ const CustomerQAReport = ({ showSideBar }) => {
                 if (startDate > endDate) {
                     toast.error("End Date cannot be before Start Date");
                     return;
-                }
-            }
+                }}
+            
 
             // setIsLoading(true); // show loader
 
@@ -276,7 +286,7 @@ const CustomerQAReport = ({ showSideBar }) => {
             } finally {
                 setIsLoading(false); // hide loader
             }
-        }
+        
     };
     const Loader = () => (
         <div className="loader-overlay">
@@ -285,6 +295,7 @@ const CustomerQAReport = ({ showSideBar }) => {
     );
     return (
         <>
+       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
             {isLoading && <Loader />}
 
             <div className={`container-fluid ${isLoading ? 'blur' : ''}`}>

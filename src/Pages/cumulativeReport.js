@@ -86,17 +86,7 @@ const CumulativeReport = ({ showSideBar }) => {
             console.error("Error fetching data:", error);
         }
     };
-    // const fetchCumulative = async () => {
-    //     try {
-    //         const params = {};
-    //         if (selectedDate) {
-    //             params.date = selectedDate;
-    //         }
-    //         const response = await axios.get(`${API_URL}/manpowerData`, { params });
-    //         setCumulative(response.data.result); // Only set the array
-    //     } catch {
-    //     }
-    // };
+   
     const fetchDetailed = async (params = {}) => {
         try {
 

@@ -66,6 +66,7 @@ const Dashboard = ({ showSideBar }) => {
       },
     ],
   });
+  const userLog = JSON.parse(localStorage.getItem("user"));
   const [barImage, setBarImage] = useState({
     labels: [],
     datasets: [
@@ -1262,7 +1263,7 @@ const Dashboard = ({ showSideBar }) => {
                   }}
                 >
                   Last Active Login:{" "}
-                  {/* {userLog ? userLog.last_active_login : "Guest"} */}
+                  {userLog ? userLog.last_active_login : "Guest"}
                 </p>
               </div>
             </div>
