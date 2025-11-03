@@ -315,7 +315,7 @@ const CustomerQAReport = ({ showSideBar }) => {
 
                         <div className='row mt-2 me-1 search-report-card'>
                             <p>Select Location, Start Date and End Date to view data.</p>
-                            <div className="col-lg-3 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
+                            <div className="col-lg-4 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
                                 <SearchBar
                                     items={locations}
                                     selectedItems={selectedLocations}

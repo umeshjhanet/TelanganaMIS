@@ -625,7 +625,7 @@ const Report = ({ showSideBar }) => {
       setLastSearchParams(null);
     } finally {
       setIsLoading(false); // hide loader
-      setTotalLocations(selectedLocations.length>0?selectedLocations:totalLocations)
+      setTotalLocations(selectedLocations.length>0?selectedLocations.length:totalLocations)
     }
   };
 
@@ -654,7 +654,7 @@ const Report = ({ showSideBar }) => {
             </div>
             <div className="row mt-2 me-1 search-report-card" >
               {!userRoles.includes("Cbsl User") && (
-                <div className="col-lg-3 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
+                <div className="col-xl-3 col-lg-4 col-md-2 col-sm-12 mt-1" style={{ position: "relative" }}>
                   <SearchBar
                     items={locations}
                     selectedItems={selectedLocations}
@@ -674,10 +674,11 @@ const Report = ({ showSideBar }) => {
                   }
                   placeholder="Search File Types..."
                   showSelectAll={true}
+                  Name="Files"
                 />
               </div>
 
-              <div className="col-lg-4 col-md-8 col-sm-12 d-flex flex-wrap ">
+              <div className="col-lg-4 col-md-8 col-sm-12 d-flex flex-wrap mt-1">
                 <DatePicker
                   className="date-field"
                   selected={startDate}
@@ -744,7 +745,7 @@ const Report = ({ showSideBar }) => {
                 />
               </div>
 
-              <div className="col-md-2"><SearchButton onClick={handleClick} Name="Search" /></div>
+              <div className="col-md-2 mt-2"><SearchButton onClick={handleClick} Name="Search" /></div>
             </div>
             <div className="row mt-3 me-1">
               <div

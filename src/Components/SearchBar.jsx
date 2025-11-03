@@ -85,7 +85,7 @@ const SearchBar = ({
                 break;
             case "Enter":
                 e.preventDefault();
-                if (filteredItems.length === 1) {
+                if (filteredItems.length === 2) {
                     onChange([filteredItems[0]]);
                     setSearchInput("");
                     setShowDropdown(false);

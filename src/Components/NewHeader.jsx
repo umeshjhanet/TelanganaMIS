@@ -124,35 +124,477 @@ const Header = ({ showSideBar, setShowSideBar }) => {
   }, []);
 
   // Fixed expandedSideBar function - properly returns JSX
-  const ExpandedSideBar = () => (
-    <div className="col-2" style={{ paddingRight: "0px", paddingLeft: "0px" }}>
-      <div className={isMobile ? "mobile-sidebar" : "sidebar"}>
-        <div className="row header-image ">
-          <img src="logo.png" alt="Logo" />
-        </div>
-        {isMobile && (
-          <div className="toggle-btn" onClick={handleMobileSideBar}>
-            <FaChevronLeft
-              style={{ color: "#4bc0c0", fontSize: "20px", fontWeight: "20px" }}
-            />
-          </div>
-        )}
-        {!isMobile && (
-          <div className="toggle-btn" onClick={handleSideBar}>
-            <FaChevronLeft
-              style={{ color: "#4bc0c0", fontSize: "20px", fontWeight: "10px" }}
-            />
-          </div>
-        )}
+  // const ExpandedSideBar = () => (
+  //   <div className="col-2" style={{ paddingRight: "0px", paddingLeft: "0px" }}>
+  //     <div className={isMobile ? "mobile-sidebar" : "sidebar"}>
+  //       <div className="row header-image ">
+  //         <img src="logo.png" alt="Logo" />
+  //       </div>
+  //       {isMobile && (
+  //         <div className="toggle-btn" onClick={handleMobileSideBar}>
+  //           <FaChevronLeft
+  //             style={{ color: "#4bc0c0", fontSize: "20px", fontWeight: "20px" }}
+  //           />
+  //         </div>
+  //       )}
+  //       {!isMobile && (
+  //         <div className="toggle-btn" onClick={handleSideBar}>
+  //           <FaChevronLeft
+  //             style={{ color: "#4bc0c0", fontSize: "20px", fontWeight: "10px" }}
+  //           />
+  //         </div>
+  //       )}
 
-        {manualFile ? (
-          <div
-            className="row"
-            onClick={() => window.open(manualFile, "_blank")}
-          >
+  //       {manualFile ? (
+  //         <div
+  //           className="row"
+  //           onClick={() => window.open(manualFile, "_blank")}
+  //         >
+  //           <Link
+  //             to="#"
+  //             className="ms-1 mt-1"
+  //             style={{
+  //               color: "black",
+  //               textDecoration: "none",
+  //               cursor: "pointer",
+  //             }}
+  //           >
+  //             <PiFilePdfDuotone
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             User Manual
+  //           </Link>
+  //         </div>
+  //       ) : (
+  //         ""
+  //       )}
+
+  //       <div className="row">
+  //         {userRoles.includes("Admin") ||
+  //         userRoles.includes("Server Database Monitoring") ||
+  //         userRoles.includes("Management") ||
+  //         userRoles.includes("CBSL Admin") ||
+  //         userRoles.includes("All District Head") ||
+  //         userRoles.includes("Cbsl User") ? (
+  //           <Link
+  //             to="/dashboard"
+  //             className="ms-1"
+  //             style={{ ...isActive("/dashboard") }}
+  //           >
+  //             <FaHome
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Dashboard
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+  //       <div className="row">
+  //         {userRoles.includes("All District Head") ? (
+  //           <Link
+  //             to="/locationwisereport"
+  //             className="ms-1"
+  //             style={{ ...isActive("/locationwisereport") }}
+  //           >
+  //             <FaHome
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Another Dashboard
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+
+  //       <div className="row mt-1">
+  //         {userRoles.includes("Admin") || userRoles.includes("Cbsl User") ? (
+  //           <Link
+  //             to="/uploadDatabase"
+  //             className="ms-1"
+  //             style={{ ...isActive("/uploadDatabase") }}
+  //           >
+  //             <MdUpload
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Upload Database
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+
+  //       <div className="row">
+  //         {userRoles.includes("Admin") ||
+  //         userRoles.includes("Management") ||
+  //         userRoles.includes("CBSL Admin") ||
+  //         userRoles.includes("All District Head") ||
+  //         userRoles.includes("Cbsl User") ||
+  //         userRoles.includes("Server Database Monitoring") ? (
+  //           <Link to="/report" style={{ ...isActive("/report") }}>
+  //             <VscGraph
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Location Wise Report
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+
+  //       <div className="row">
+  //         {userRoles.includes("Admin") ||
+  //         userRoles.includes("Management") ||
+  //         userRoles.includes("CBSL Admin") ? (
+  //           <Link to="/file" style={{ ...isActive("/file") }}>
+  //             <BsCloudyFill
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Last Upload File
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+  //       {userRoles.includes("Management") ? (
+  //         <div className="row">
+  //           <Link
+  //             to="/developmentPage"
+  //             style={{ ...isActive("/developmentPage") }}
+  //           >
+  //             <VscGraph
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Man Power Report
+  //           </Link>
+  //         </div>
+  //       ) : (
+  //         ""
+  //       )}
+  //       <div className="row">
+  //         {userRoles.includes("Admin") ||
+  //         userRoles.includes("Management") ||
+  //         userRoles.includes("CBSL Admin") ? (
+  //           <Link
+  //             to="/cumulativeReport"
+  //             style={{ ...isActive("/cumulativeReport") }}
+  //           >
+  //             <VscGraph
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Daily Process-Wise
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+
+  //       <div className="row">
+  //         {userRoles.includes("Admin") ||
+  //         userRoles.includes("Management") ||
+  //         userRoles.includes("CBSL Admin") ? (
+  //           <Link
+  //             to="/customerQAReport"
+  //             style={{ ...isActive("/customerQAReport") }}
+  //           >
+  //             <VscGraph
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Customer QA Report
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+
+  //       {userRoles.includes("Admin") ||
+  //       userRoles.includes("Server Database Monitoring") ? (
+  //         <div className="row mt-1">
+  //           <Link
+  //             to="/dbSiteReports"
+  //             className="ms-1"
+  //             style={{ ...isActive("/dbSiteReports") }}
+  //           >
+  //             <VscGraph
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Server/DB Site Reports
+  //           </Link>
+  //         </div>
+  //       ) : (
+  //         ""
+  //       )}
+
+  //       {userRoles.includes("Admin") ||
+  //       userRoles.includes("Server Database Monitoring") ? (
+  //         <div className="row mt-1">
+  //           <Link
+  //             to="/siteReports"
+  //             className="ms-1"
+  //             style={{ ...isActive("/siteReports") }}
+  //           >
+  //             <VscGraph
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Server Site Reports
+  //           </Link>
+  //         </div>
+  //       ) : (
+  //         ""
+  //       )}
+  //       <div className="row">
+  //         {userRoles.includes("Admin") || userRoles.includes("CBSL Admin") ? (
+  //           <Link
+  //             to="/addRemarks"
+  //             className="ms-1"
+  //             style={{ ...isActive("/addRemarks") }}
+  //           >
+  //             <VscGraph
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Add Remarks
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+
+  //       <div className="row">
+  //         {userRoles.includes("Admin") || userRoles.includes("CBSL Admin") ? (
+  //           <Link
+  //             to="/MIS_Form"
+  //             className="ms-1"
+  //             style={{ ...isActive("/MIS_Form") }}
+  //           >
+  //             <MdAdd
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Add Manpower
+  //           </Link>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+
+  //       {userRoles.includes("Admin") ||
+  //       userRoles.includes("Management") ||
+  //       userRoles.includes("CBSL Admin") ? (
+  //         <Link
+  //           to="/clientreport"
+  //           className="ms-1"
+  //           style={{ ...isActive("/clientreport") }}
+  //         >
+  //           <MdReport
+  //             style={{
+  //               marginRight: "10px",
+  //               fontSize: "20px",
+  //               color: "#107393",
+  //             }}
+  //           />
+  //           Client View
+  //         </Link>
+  //       ) : (
+  //         ""
+  //       )}
+
+  //       <div className="row mt-1" onClick={handleActiveTab}>
+  //         {userRoles.includes("Admin") ? (
+  //           <a
+  //             className="ms-1"
+  //             style={{
+  //               color: "black",
+  //               textDecoration: "none",
+  //               cursor: "pointer",
+  //             }}
+  //             onClick={handleMasterDropdown}
+  //           >
+  //             <FaUserAlt
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //                 cursor: "pointer",
+  //               }}
+  //               onClick={handleMasterDropdown}
+  //             />
+  //             Masters
+  //             <IoIosArrowDown
+  //               style={{ marginLeft: "73px" }}
+  //               onClick={handleMasterDropdown}
+  //             />
+  //           </a>
+  //         ) : (
+  //           ""
+  //         )}
+  //       </div>
+
+  //       {showMasterDropdown && userRoles.includes("Admin") ? (
+  //         <>
+  //           <hr />
+  //           <Link
+  //             to="/groupManager"
+  //             className="ms-1"
+  //             style={{
+  //               color: "black",
+  //               textDecoration: "none",
+  //               cursor: "pointer",
+  //             }}
+  //           >
+  //             <FaUsers
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Group Manager
+  //             <br />
+  //           </Link>
+  //           <Link
+  //             to="/userRole"
+  //             className="ms-1"
+  //             style={{
+  //               color: "black",
+  //               textDecoration: "none",
+  //               marginTop: "20px",
+  //               cursor: "pointer",
+  //             }}
+  //           >
+  //             <RiUserFill
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             User Role
+  //             <br />
+  //           </Link>
+  //           <Link
+  //             to="/User_Form"
+  //             className="ms-1"
+  //             style={{
+  //               color: "black",
+  //               textDecoration: "none",
+  //               marginTop: "20px",
+  //               cursor: "pointer",
+  //             }}
+  //           >
+  //             <HiMiniUserPlus
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             Add User
+  //             <br />
+  //           </Link>
+  //           <Link
+  //             to="/User_List"
+  //             className="ms-1"
+  //             style={{
+  //               color: "black",
+  //               textDecoration: "none",
+  //               cursor: "pointer",
+  //             }}
+  //           >
+  //             <HiMiniUserGroup
+  //               style={{
+  //                 marginRight: "10px",
+  //                 fontSize: "20px",
+  //                 color: "#107393",
+  //               }}
+  //             />
+  //             User List
+  //             <br />
+  //           </Link>
+  //           <hr />
+  //         </>
+  //       ) : (
+  //         ""
+  //       )}
+  //     </div>
+  //   </div>
+  // );
+
+  const ExpandedSideBar = () => (
+  <div className="col-2" style={{ paddingRight: "0px", paddingLeft: "0px" }}>
+    <div className={isMobile ? "mobile-sidebar" : "sidebar"}>
+      <div className="row header-image">
+        <img src="logo.png" alt="Logo" />
+      </div>
+      {isMobile && (
+        <div className="toggle-btn" onClick={handleMobileSideBar}>
+          <FaChevronLeft style={{ color: "#4bc0c0", fontSize: "20px", fontWeight: "20px" }} />
+        </div>
+      )}
+      {!isMobile && (
+        <div className="toggle-btn" onClick={handleSideBar}>
+          <FaChevronLeft style={{ color: "#4bc0c0", fontSize: "20px", fontWeight: "10px" }} />
+        </div>
+      )}
+
+      {/* User Manual Section */}
+      {manualFile && (
+        <div className="sidebar-item">
+          <div className="row mt-2"
+            onClick={() => window.open(manualFile, "_blank")}>
             <Link
               to="#"
-              className="ms-1 mt-1"
+              className="ms-1"
               style={{
                 color: "black",
                 textDecoration: "none",
@@ -169,268 +611,277 @@ const Header = ({ showSideBar, setShowSideBar }) => {
               User Manual
             </Link>
           </div>
-        ) : (
-          ""
-        )}
-
-        <div className="row">
-          {userRoles.includes("Admin") ||
-          userRoles.includes("Server Database Monitoring") ||
-          userRoles.includes("Management") ||
-          userRoles.includes("CBSL Admin") ||
-          userRoles.includes("All District Head") ||
-          userRoles.includes("Cbsl User") ? (
-            <Link
-              to="/dashboard"
-              className="ms-1"
-              style={{ ...isActive("/dashboard") }}
-            >
-              <FaHome
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Dashboard
-            </Link>
-          ) : (
-            ""
-          )}
+          <hr style={{ color: "#b5b2b2ff" }} />
         </div>
-        <div className="row">
-          {userRoles.includes("All District Head") ? (
-            <Link
-              to="/locationwisereport"
-              className="ms-1"
-              style={{ ...isActive("/locationwisereport") }}
-            >
-              <FaHome
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Another Dashboard
-            </Link>
-          ) : (
-            ""
-          )}
-        </div>
+      )}
 
-        <div className="row mt-1">
-          {userRoles.includes("Admin") || userRoles.includes("Cbsl User") ? (
-            <Link
-              to="/uploadDatabase"
-              className="ms-1"
-              style={{ ...isActive("/uploadDatabase") }}
-            >
-              <MdUpload
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Upload Database
-            </Link>
-          ) : (
-            ""
-          )}
-        </div>
-
-        <div className="row">
-          {userRoles.includes("Admin") ||
-          userRoles.includes("Management") ||
-          userRoles.includes("CBSL Admin") ||
-          userRoles.includes("All District Head") ||
-          userRoles.includes("Cbsl User") ||
-          userRoles.includes("Server Database Monitoring") ? (
-            <Link to="/report" style={{ ...isActive("/report") }}>
-              <VscGraph
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Location Wise Report
-            </Link>
-          ) : (
-            ""
-          )}
-        </div>
-
-        <div className="row">
-          {userRoles.includes("Admin") ||
-          userRoles.includes("Management") ||
-          userRoles.includes("CBSL Admin") ? (
-            <Link to="/file" style={{ ...isActive("/file") }}>
-              <BsCloudyFill
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Last Upload File
-            </Link>
-          ) : (
-            ""
-          )}
-        </div>
-        {userRoles.includes("Management") ? (
-          <div className="row">
-            <Link
-              to="/developmentPage"
-              style={{ ...isActive("/developmentPage") }}
-            >
-              <VscGraph
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Man Power Report
-            </Link>
-          </div>
-        ) : (
-          ""
-        )}
-        <div className="row">
-          {userRoles.includes("Admin") ||
-          userRoles.includes("Management") ||
-          userRoles.includes("CBSL Admin") ? (
-            <Link
-              to="/cumulativeReport"
-              style={{ ...isActive("/cumulativeReport") }}
-            >
-              <VscGraph
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Daily Process-Wise
-            </Link>
-          ) : (
-            ""
-          )}
-        </div>
-
-        <div className="row">
-          {userRoles.includes("Admin") ||
-          userRoles.includes("Management") ||
-          userRoles.includes("CBSL Admin") ? (
-            <Link
-              to="/customerQAReport"
-              style={{ ...isActive("/customerQAReport") }}
-            >
-              <VscGraph
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Customer QA Report
-            </Link>
-          ) : (
-            ""
-          )}
-        </div>
-
-        {userRoles.includes("Admin") ||
-        userRoles.includes("Server Database Monitoring") ? (
-          <div className="row mt-1">
-            <Link
-              to="/dbSiteReports"
-              className="ms-1"
-              style={{ ...isActive("/dbSiteReports") }}
-            >
-              <VscGraph
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Server/DB Site Reports
-            </Link>
-          </div>
-        ) : (
-          ""
-        )}
-
-        {userRoles.includes("Admin") ||
-        userRoles.includes("Server Database Monitoring") ? (
-          <div className="row mt-1">
-            <Link
-              to="/siteReports"
-              className="ms-1"
-              style={{ ...isActive("/siteReports") }}
-            >
-              <VscGraph
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Server Site Reports
-            </Link>
-          </div>
-        ) : (
-          ""
-        )}
-        <div className="row">
-          {userRoles.includes("Admin") || userRoles.includes("CBSL Admin") ? (
-            <Link
-              to="/addRemarks"
-              className="ms-1"
-              style={{ ...isActive("/addRemarks") }}
-            >
-              <VscGraph
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Add Remarks
-            </Link>
-          ) : (
-            ""
-          )}
-        </div>
-
-        <div className="row">
-          {userRoles.includes("Admin") || userRoles.includes("CBSL Admin") ? (
-            <Link
-              to="/MIS_Form"
-              className="ms-1"
-              style={{ ...isActive("/MIS_Form") }}
-            >
-              <MdAdd
-                style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
-                }}
-              />
-              Add Manpower
-            </Link>
-          ) : (
-            ""
-          )}
-        </div>
-
-        {userRoles.includes("Admin") ||
+      {/* Dashboard */}
+      {(userRoles.includes("Admin") ||
+        userRoles.includes("Server Database Monitoring") ||
         userRoles.includes("Management") ||
-        userRoles.includes("CBSL Admin") ? (
+        userRoles.includes("CBSL Admin") ||
+        userRoles.includes("All District Head") ||
+        userRoles.includes("Cbsl User")) && (
+        <div className="sidebar-item">
+          <Link
+            to="/dashboard"
+            className="ms-1"
+            style={{ ...isActive("/dashboard") }}
+          >
+            <FaHome
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Dashboard
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Another Dashboard (All District Head) */}
+      {userRoles.includes("All District Head") && (
+        <div className="sidebar-item">
+          <Link
+            to="/locationwisereport"
+            className="ms-1"
+            style={{ ...isActive("/locationwisereport") }}
+          >
+            <FaHome
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Another Dashboard
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Upload Database */}
+      {(userRoles.includes("Admin") || userRoles.includes("Cbsl User")) && (
+        <div className="sidebar-item">
+          <Link
+            to="/uploadDatabase"
+            className="ms-1"
+            style={{ ...isActive("/uploadDatabase") }}
+          >
+            <MdUpload
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Upload Database
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Location Wise Report */}
+      {(userRoles.includes("Admin") ||
+        userRoles.includes("Management") ||
+        userRoles.includes("CBSL Admin") ||
+        userRoles.includes("All District Head") ||
+        userRoles.includes("Cbsl User") ||
+        userRoles.includes("Server Database Monitoring")) && (
+        <div className="sidebar-item">
+          <Link to="/report" style={{ ...isActive("/report") }} className="ms-1">
+            <VscGraph
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Location Wise Report
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Last Upload File */}
+      {(userRoles.includes("Admin") ||
+        userRoles.includes("Management") ||
+        userRoles.includes("CBSL Admin")) && (
+        <div className="sidebar-item">
+          <Link to="/file" style={{ ...isActive("/file") }} className="ms-1">
+            <BsCloudyFill
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Last Upload File
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Man Power Report */}
+      {userRoles.includes("Management") && (
+        <div className="sidebar-item">
+          <Link
+            to="/developmentPage"
+            style={{ ...isActive("/developmentPage") }}
+            className="ms-1"
+          >
+            <VscGraph
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Man Power Report
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Daily Process-Wise */}
+      {(userRoles.includes("Admin") ||
+        userRoles.includes("Management") ||
+        userRoles.includes("CBSL Admin")) && (
+        <div className="sidebar-item">
+          <Link
+            to="/cumulativeReport"
+            style={{ ...isActive("/cumulativeReport") }}
+            className="ms-1"
+          >
+            <VscGraph
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Daily Process-Wise
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Customer QA Report */}
+      {(userRoles.includes("Admin") ||
+        userRoles.includes("Management") ||
+        userRoles.includes("CBSL Admin")) && (
+        <div className="sidebar-item">
+          <Link
+            to="/customerQAReport"
+            style={{ ...isActive("/customerQAReport") }}
+            className="ms-1"
+          >
+            <VscGraph
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Customer QA Report
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Server/DB Site Reports */}
+      {(userRoles.includes("Admin") ||
+        userRoles.includes("Server Database Monitoring")) && (
+        <div className="sidebar-item">
+          <Link
+            to="/dbSiteReports"
+            className="ms-1"
+            style={{ ...isActive("/dbSiteReports") }}
+          >
+            <VscGraph
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Server/DB Site Reports
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Server Site Reports */}
+      {(userRoles.includes("Admin") ||
+        userRoles.includes("Server Database Monitoring")) && (
+        <div className="sidebar-item">
+          <Link
+            to="/siteReports"
+            className="ms-1"
+            style={{ ...isActive("/siteReports") }}
+          >
+            <VscGraph
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Server Site Reports
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Add Remarks */}
+      {(userRoles.includes("Admin") || userRoles.includes("CBSL Admin")) && (
+        <div className="sidebar-item">
+          <Link
+            to="/addRemarks"
+            className="ms-1"
+            style={{ ...isActive("/addRemarks") }}
+          >
+            <VscGraph
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Add Remarks
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Add Manpower */}
+      {(userRoles.includes("Admin") || userRoles.includes("CBSL Admin")) && (
+        <div className="sidebar-item">
+          <Link
+            to="/MIS_Form"
+            className="ms-1"
+            style={{ ...isActive("/MIS_Form") }}
+          >
+            <MdAdd
+              style={{
+                marginRight: "10px",
+                fontSize: "20px",
+                color: "#107393",
+              }}
+            />
+            Add Manpower
+          </Link>
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
+
+      {/* Client View */}
+      {(userRoles.includes("Admin") ||
+        userRoles.includes("Management") ||
+        userRoles.includes("CBSL Admin")) && (
+        <div className="sidebar-item">
           <Link
             to="/clientreport"
             className="ms-1"
@@ -445,12 +896,14 @@ const Header = ({ showSideBar, setShowSideBar }) => {
             />
             Client View
           </Link>
-        ) : (
-          ""
-        )}
+          <hr style={{ color: "#b5b2b2ff" }} />
+        </div>
+      )}
 
-        <div className="row mt-1" onClick={handleActiveTab}>
-          {userRoles.includes("Admin") ? (
+      {/* Masters Dropdown (Admin Only) */}
+      {userRoles.includes("Admin") && (
+        <div className="sidebar-item">
+          <div className="row" onClick={handleActiveTab}>
             <a
               className="ms-1"
               style={{
@@ -470,105 +923,108 @@ const Header = ({ showSideBar, setShowSideBar }) => {
                 onClick={handleMasterDropdown}
               />
               Masters
-              <IoIosArrowDown
-                style={{ marginLeft: "73px" }}
-                onClick={handleMasterDropdown}
-              />
+              <IoIosArrowDown style={{ marginLeft: "73px" }} onClick={handleMasterDropdown} />
             </a>
-          ) : (
-            ""
-          )}
+          </div>
+          <hr style={{ color: "#b5b2b2ff" }} />
         </div>
+      )}
 
-        {showMasterDropdown && userRoles.includes("Admin") ? (
+      {/* Masters Dropdown Content */}
+      <div style={{ marginLeft: "20px" }}>
+        {showMasterDropdown && userRoles.includes("Admin") && (
           <>
-            <hr />
-            <Link
-              to="/groupManager"
-              className="ms-1"
-              style={{
-                color: "black",
-                textDecoration: "none",
-                cursor: "pointer",
-              }}
-            >
-              <FaUsers
+            <div className="sidebar-item">
+              <Link
+                to="/groupManager"
+                className="ms-1"
                 style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
+                  color: "black",
+                  textDecoration: "none",
+                  cursor: "pointer",
                 }}
-              />
-              Group Manager
-              <br />
-            </Link>
-            <Link
-              to="/userRole"
-              className="ms-1"
-              style={{
-                color: "black",
-                textDecoration: "none",
-                marginTop: "20px",
-                cursor: "pointer",
-              }}
-            >
-              <RiUserFill
+              >
+                <FaUsers
+                  style={{
+                    marginRight: "10px",
+                    fontSize: "20px",
+                    color: "#107393",
+                  }}
+                />
+                Group Manager
+              </Link>
+              <hr style={{ color: "#b5b2b2ff" }} />
+            </div>
+            <div className="sidebar-item">
+              <Link
+                to="/userRole"
+                className="ms-1"
                 style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
+                  color: "black",
+                  textDecoration: "none",
+                  cursor: "pointer",
                 }}
-              />
-              User Role
-              <br />
-            </Link>
-            <Link
-              to="/User_Form"
-              className="ms-1"
-              style={{
-                color: "black",
-                textDecoration: "none",
-                marginTop: "20px",
-                cursor: "pointer",
-              }}
-            >
-              <HiMiniUserPlus
+              >
+                <RiUserFill
+                  style={{
+                    marginRight: "10px",
+                    fontSize: "20px",
+                    color: "#107393",
+                  }}
+                />
+                User Role
+              </Link>
+              <hr style={{ color: "#b5b2b2ff" }} />
+            </div>
+            <div className="sidebar-item">
+              <Link
+                to="/User_Form"
+                className="ms-1"
                 style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
+                  color: "black",
+                  textDecoration: "none",
+                  cursor: "pointer",
                 }}
-              />
-              Add User
-              <br />
-            </Link>
-            <Link
-              to="/User_List"
-              className="ms-1"
-              style={{
-                color: "black",
-                textDecoration: "none",
-                cursor: "pointer",
-              }}
-            >
-              <HiMiniUserGroup
+              >
+                <HiMiniUserPlus
+                  style={{
+                    marginRight: "10px",
+                    fontSize: "20px",
+                    color: "#107393",
+                  }}
+                />
+                Add User
+              </Link>
+              <hr style={{ color: "#b5b2b2ff" }} />
+            </div>
+            <div className="sidebar-item">
+              <Link
+                to="/User_List"
+                className="ms-1"
                 style={{
-                  marginRight: "10px",
-                  fontSize: "20px",
-                  color: "#107393",
+                  color: "black",
+                  textDecoration: "none",
+                  cursor: "pointer",
                 }}
-              />
-              User List
-              <br />
-            </Link>
-            <hr />
+              >
+                <HiMiniUserGroup
+                  style={{
+                    marginRight: "10px",
+                    fontSize: "20px",
+                    color: "#107393",
+                  }}
+                />
+                User List
+              </Link>
+              <hr style={{ color: "#b5b2b2ff" }} />
+            </div>
           </>
-        ) : (
-          ""
         )}
       </div>
     </div>
-  );
+  </div>
+);
+
 
   return (
     <>
