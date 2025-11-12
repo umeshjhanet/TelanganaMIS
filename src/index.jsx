@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Header from './Components/NewHeader';
@@ -40,7 +40,8 @@ import Locationwisereport from './Pages/clientreport';
 const AppContent = () => {
   const location = useLocation('');
   const [showSideBar, setShowSideBar] = useState(false);
-
+    const navigate = useNavigate();
+    reportWebVitals(console.log);
   return (
     <>
       {location.pathname !== '/' && location.pathname !== '/clientreport' && (
@@ -87,7 +88,9 @@ const AppContent = () => {
 
 const App = () => (
   <Router>
-    <AppContent />
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   </Router>
 );
 

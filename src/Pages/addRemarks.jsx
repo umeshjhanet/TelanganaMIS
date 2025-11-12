@@ -28,20 +28,20 @@ const AddRemarks = ({ showSideBar }) => {
     const formattedDateforRemarks = format(currentDate, "yyyy-MM-dd");
     const [isLoading, setIsLoading] = useState(false);
     const fetchReportData = () => {
-  return axios.get(`${API_URL}/Table`)
+  return axios.post(`${API_URL}/Table`)
     .then(response => setReport(response.data))
     .catch(error => console.error(error));
 };
 
 const fetchTableData = () => {
-  return axios.get(`${API_URL}/tabularData`)
+  return axios.post(`${API_URL}/tabularData`)
     .then(response => setTableData(response.data))
     .catch(error => console.error(error));
 };
 
 const fetchYesterdayReportData = () => {
   const params = {};
-  return axios.get(`${API_URL}/yesterday-table`, { params })
+  return axios.post(`${API_URL}/yesterday-table`, { params })
     .then(response => setYesterdayReport(response.data.data))
     .catch(error => console.error(error));
 };

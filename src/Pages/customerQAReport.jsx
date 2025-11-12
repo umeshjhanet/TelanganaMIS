@@ -84,7 +84,7 @@ const CustomerQAReport = ({ showSideBar }) => {
 
             setIsLoading(true);
 
-            const response = await axios.get(apiUrl, { params: queryParams });
+            const response = await axios.post(apiUrl, { params: queryParams });
 
 
 
@@ -129,7 +129,7 @@ const CustomerQAReport = ({ showSideBar }) => {
             }
 
             setIsLoading(true);
-            const response = await axios.get(apiUrl, { params: queryParams });
+            const response = await axios.post(apiUrl, { params: queryParams });
 
             setReport(response.data);
             setIsLoading(false);
@@ -191,7 +191,7 @@ const CustomerQAReport = ({ showSideBar }) => {
         try {
             let apiUrl = `${API_URL}/locations`;
             setIsLoading(true);
-            const response = await axios.get(apiUrl);
+            const response = await axios.post(apiUrl);
 
 
             // Extract just the LocationName values

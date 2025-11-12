@@ -27,7 +27,7 @@ const File = ({ showSideBar }) => {
       try {
         let apiUrl = `${API_URL}/locations`;
         setIsLoading(true);
-        const response = await axios.get(apiUrl);
+        const response = await axios.post(apiUrl);
 
         // Extract LocationName and filter out "Banglore High Court Addon"
         const locationNames = response.data
@@ -47,7 +47,7 @@ const File = ({ showSideBar }) => {
     const fetchTableData = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/api/uploadlog`);
+        const response = await axios.post(`${API_URL}/api/uploadlog`);
         setTableData(response.data);
       } catch (error) {
         console.error(error);

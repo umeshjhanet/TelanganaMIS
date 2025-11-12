@@ -355,14 +355,21 @@ input[type="submit"]:hover {
 .mobile-sidebar {
   bottom: 70px;
   height: 100%;
-  margin-bottom: -70px;
+
   margin-top: 0px;
-  padding-bottom: 70px;
+  /* padding-bottom: 70px; */
   position: fixed;
   background-color: white;
-  width: 200px;
+  width: 210px;
   box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);
   z-index: 999;
+  overflow-y: auto;
+  overflow-x: hidden;
+  top: 0;
+  left: 0;
+    /* Better scrolling experience */
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 transparent;
 }
 
 .sidebar {
@@ -876,6 +883,11 @@ input[type="submit"] {
     z-index: 999;
   } */
 }
+@media only screen and (max-width: 766px) {
+     .toDate{
+    margin-top: 20px !important;
+  }
+}
 
 @media only screen and (max-width: 768px) {
   .data-table {
@@ -899,6 +911,8 @@ input[type="submit"] {
     overflow-x: auto;
   height: 40px;
   }
+
+  
 
   .search-btn {
     width: 300px;

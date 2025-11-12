@@ -139,43 +139,70 @@ const User_Form = ({ showSideBar }) => {
     }
   };
 
+  // useEffect(() => {
+  //   const fetchGroup = async() => {
+  //     await axios.post(`${API_URL}/group_master`)
+  //       .then(response => response.json())
+  //       .then(data => setGroup(data))
+  //       .catch(error => console.error(error))
+  //   }
+  //   const fetchLocation = async() => {
+  //     await axios.post(`${API_URL}/locations`)
+  //       .then(response => response.json())
+  //       .then(data => setLocation(data))
+  //       .catch(error => console.error(error))
+  //   }
+  //   const fetchPrivilege = async() => {
+  //     await axios.post(`${API_URL}/privilege`)
+  //       .then(response => response.json())
+  //       .then(data => setPrivilege(data))
+  //       .catch(error => console.error(error))
+  //   }
+  //   const fetchStorage = async() => {
+  //     await axios.post(`${API_URL}/storage`)
+  //       .then(response => response.json())
+  //       .then(data => setStorage(data))
+  //       .catch(error => console.error(error))
+  //   }
+  //   const fetchReporting = async() => {
+  //     await axios.post(`${API_URL}/reporting`)
+  //       .then(response => response.json())
+  //       .then(data => setReporting(data))
+  //       .catch(error => console.error(error))
+  //   }
+  //   fetchGroup();
+  //   fetchLocation();
+  //   fetchPrivilege();
+  //   fetchStorage();
+  //   fetchReporting();
+  // }, [])
+
+
   useEffect(() => {
-    const fetchGroup = () => {
-      fetch(`${API_URL}/group_master`)
-        .then(response => response.json())
-        .then(data => setGroup(data))
-        .catch(error => console.error(error))
+  const fetchAllData = async () => {
+    try {
+      const [groupRes, locationRes, privilegeRes, storageRes, reportingRes] = await Promise.all([
+        axios.post(`${API_URL}/group_master`),
+        axios.post(`${API_URL}/locations`),
+        axios.post(`${API_URL}/privilege`),
+        axios.post(`${API_URL}/storage`),
+        axios.post(`${API_URL}/reporting`)
+      ]);
+
+      setGroup(groupRes.data);
+      setLocation(locationRes.data);
+      setPrivilege(privilegeRes.data);
+      setStorage(storageRes.data);
+      setReporting(reportingRes.data);
+
+    } catch (error) {
+      console.error("Error loading initial data:", error);
     }
-    const fetchLocation = () => {
-      fetch(`${API_URL}/locations`)
-        .then(response => response.json())
-        .then(data => setLocation(data))
-        .catch(error => console.error(error))
-    }
-    const fetchPrivilege = () => {
-      fetch(`${API_URL}/privilege`)
-        .then(response => response.json())
-        .then(data => setPrivilege(data))
-        .catch(error => console.error(error))
-    }
-    const fetchStorage = () => {
-      fetch(`${API_URL}/storage`)
-        .then(response => response.json())
-        .then(data => setStorage(data))
-        .catch(error => console.error(error))
-    }
-    const fetchReporting = () => {
-      fetch(`${API_URL}/reporting`)
-        .then(response => response.json())
-        .then(data => setReporting(data))
-        .catch(error => console.error(error))
-    }
-    fetchGroup();
-    fetchLocation();
-    fetchPrivilege();
-    fetchStorage();
-    fetchReporting();
-  }, [])
+  };
+
+  fetchAllData();
+}, []);
+
 
   const handleGroupDropdown = () => {
     setGroupDropdown(!groupDropdown);

@@ -7,6 +7,7 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import UpdateUserModal from "../Components/UpdateUserModal";
 import { ToastContainer } from "react-toastify";
 import { API_URL } from "../Api";
+import { toast } from "react-toastify";
 
 const User_List = ({ showSideBar }) => {
   const [user, setUser] = useState([]);
@@ -51,6 +52,7 @@ const User_List = ({ showSideBar }) => {
       setUser(user.filter((elem) => elem.user_id !== user_id));
 
       setShowConfirmation(false);
+      toast.info("User deleted...");
     } catch (error) {
       console.error("There was an error in deleting data!", error);
     }
@@ -80,7 +82,7 @@ const User_List = ({ showSideBar }) => {
     const fetchUser = () => {
       setIsLoading(true);
       axios
-        .get(`${API_URL}/user_master`)
+        .post(`${API_URL}/user_master`)
         .then((response) => {
           setUser(response.data)
           setFilteredUsers(response.data);
@@ -95,7 +97,7 @@ const User_List = ({ showSideBar }) => {
     const fetchLocation = () => {
       setIsLoading(true);
       axios
-        .get(`${API_URL}/locations`)
+        .post(`${API_URL}/locations`)
         .then((response) => {
           // Convert locations array into a map where LocationID is the key
           const map = {};
@@ -220,7 +222,9 @@ const User_List = ({ showSideBar }) => {
   };
   return (
     <>
+    <ToastContainer />
       {isLoading && <Loader />}
+
 
       <div className={`container-fluid mb-5 ${isLoading ? 'blur' : ''}`}>
         <div className="row">

@@ -138,6 +138,7 @@ const SearchBar = ({
                             marginRight: "8px",
                         }}
                     >
+
                         Selected {Name} {selectedItems.length}
                     </div>
                 )}

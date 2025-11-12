@@ -47,7 +47,7 @@ const UserRole = ({ showSideBar }) => {
   useEffect(() => {
     const fetchRoleData = () => {
       setIsLoading(true);
-      axios.get(`${API_URL}/user_role`)
+      axios.post(`${API_URL}/user_role`)
         .then(response => {
           setRole(response.data)
           setIsLoading(false);

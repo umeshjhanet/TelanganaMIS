@@ -49,7 +49,7 @@ const CumulativeReport = ({ showSideBar }) => {
         try {
             let apiUrl = `${API_URL}/locations`;
             setIsLoading(true);
-            const response = await axios.get(apiUrl);
+            const response = await axios.post(apiUrl);
 
             // Extract just the LocationName values
             const locationNames = response.data.map(item => item.LocationName);
@@ -73,7 +73,7 @@ const CumulativeReport = ({ showSideBar }) => {
             if (selectedDate) {
                 params.date = selectedDate;
             }
-            const response = await axios.get(`${API_URL}/manpowerData`, { params });
+            const response = await axios.post(`${API_URL}/manpowerData`, { params });
             const result = response.data.result;
 
             setCumulative(result);
@@ -90,7 +90,7 @@ const CumulativeReport = ({ showSideBar }) => {
     const fetchDetailed = async (params = {}) => {
         try {
 
-            const response = await axios.get(`${API_URL}/api/daily-summary`, { params });
+            const response = await axios.post(`${API_URL}/api/daily-summary`, { params });
             setDetailedReport(response.data);
         } catch (error) {
             console.error("Error fetching detailed report", error);
@@ -99,7 +99,7 @@ const CumulativeReport = ({ showSideBar }) => {
     useEffect(() => {
         const fetchTarget = async () => {
             try {
-                const response = await axios.get(`${API_URL}/mptarget`);
+                const response = await axios.post(`${API_URL}/mptarget`);
                 setTarget(response.data);
             } catch {
                 console.error("Error fetching target data");

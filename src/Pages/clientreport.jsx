@@ -75,7 +75,7 @@ const Locationwisereport = ({ showSideBar }) => {
     const fetchLocationData = async () => {
 
         try {
-            const response = await axios.get(`${API_URL}/locations`);
+            const response = await axios.post(`${API_URL}/locations`);
             //setLocations(response.data);
             const locationNames = response.data.map((item) => item.LocationName);
             setLocation(locationNames);
@@ -535,7 +535,7 @@ const Locationwisereport = ({ showSideBar }) => {
 
     const fetchTableData = (queryParams) => {
         axios
-            .get(`${API_URL}/tabularData`)
+            .post(`${API_URL}/tabularData`)
             .then((response) => {
                 setTableData(response.data);
 
@@ -670,7 +670,7 @@ const Locationwisereport = ({ showSideBar }) => {
             }
 
             // Fetch data via Axios
-            const response = await axios.get(apiUrl);
+            const response = await axios.post(apiUrl);
             const apiData = response.data;
 
             if (!apiData || apiData.length === 0) {
@@ -690,26 +690,33 @@ const Locationwisereport = ({ showSideBar }) => {
         }
     };
 
-    const fetchYesterdayReportData = (selectedLocations) => {
-        // Create an object to hold query parameters
-        const params = {};
+    // const fetchYesterdayReportData = (selectedLocations) => {
+    //     // Create an object to hold query parameters
+    //     const params = {};
 
-        // If selectedLocations are provided, join them into a comma-separated string
-        if (selectedLocations && selectedLocations.length > 0) {
-            params.locationName = selectedLocations.join(",");
-        }
+    //     // If selectedLocations are provided, join them into a comma-separated string
+    //     if (selectedLocations && selectedLocations.length > 0) {
+    //         params.locationName = selectedLocations.join(",");
+    //     }
 
-        // Make the API request with optional parameters
-        axios
-            .get(`${API_URL}/yesterday-table`, { params })
-            .then((response) => {
-                setYesterdayReport(response.data.data); // this is the array
+    //     // Make the API request with optional parameters
+    //     axios
+    //         .post(`${API_URL}/yesterday-table`, { params })
+    //         .then((response) => {
+    //             setYesterdayReport(response.data.data); // this is the array
 
-            })
-            .catch((error) => console.error(error));
+    //         })
+    //         .catch((error) => console.error(error));
 
 
-    };
+    // };
+   const fetchYesterdayReportData = () => {
+  const params = {};
+  return axios.post(`${API_URL}/yesterday-table`, { params })
+    .then(response => setYesterdayReport(response.data.data))
+    .catch(error => console.error(error));
+};
+   
     const fetchAllYesGraphImageData = async (queryParams) => {
         try {
             let apiUrl = `${API_URL}/today-location-process-graph`;
@@ -745,39 +752,76 @@ const Locationwisereport = ({ showSideBar }) => {
         }
     };
 
+    // const fetchAllGraphImageData = async (queryParams) => {
+    //     try {
+    //         let apiUrl = `${API_URL}/cumulative-location-process-graph`;
+    //         let body={};
+    //         const locations = queryParams?.selectedLocations || selectedLocations || [];
+    //         if (locations.length > 0) {
+    //          body = locations
+    //                 .map(location => `locationname=${encodeURIComponent(location)}`)
+    //                 .join("&");
+                
+    //         }
+
+    //         const response = await axios.post(apiUrl,body);
+    //         const apiData = response.data;
+
+    //         if (!apiData || apiData.length === 0) {
+    //             console.error("No data received from the API");
+    //             return;
+    //         }
+    //         setAllLocationImage({
+    //             labels: apiData.map(item => item["Location Name"]),
+    //             datasets: [
+    //                 { label: "Scanned", data: apiData.map(item => item["Scanned"]), backgroundColor: "#02B2AF" },
+    //                 { label: "QC", data: apiData.map(item => item["QC"]), backgroundColor: "#FF6384" },
+    //                 { label: "Flagging", data: apiData.map(item => item["Flagging"]), backgroundColor: "#36A2EB" },
+    //                 { label: "Indexing", data: apiData.map(item => item["Indexing"]), backgroundColor: "#FFCE56" },
+    //                 { label: "Offered for QA", data: apiData.map(item => item["Offered for QA"]), backgroundColor: "#4BC0C0" },
+    //                 { label: "Customer QA Done", data: apiData.map(item => item["Customer QA Done"]), backgroundColor: "#9966FF" }
+    //             ],
+    //         });
+    //     } catch (error) {
+    //         console.error("Error fetching all graph image data:", error);
+    //     }
+    // };
+
+
+
     const fetchAllGraphImageData = async (queryParams) => {
-        try {
-            let apiUrl = `${API_URL}/cumulative-location-process-graph`;
-            const locations = queryParams?.selectedLocations || selectedLocations || [];
-            if (locations.length > 0) {
-                const locationQuery = locations
-                    .map(location => `locationname=${encodeURIComponent(location)}`)
-                    .join("&");
-                apiUrl += `?${locationQuery}`;
-            }
+    try {
+        let apiUrl = `${API_URL}/cumulative-location-process-graph`;
 
-            const response = await axios.get(apiUrl);
-            const apiData = response.data;
+        const locations = queryParams?.selectedLocations || selectedLocations || [];
 
-            if (!apiData || apiData.length === 0) {
-                console.error("No data received from the API");
-                return;
-            }
-            setAllLocationImage({
-                labels: apiData.map(item => item["Location Name"]),
-                datasets: [
-                    { label: "Scanned", data: apiData.map(item => item["Scanned"]), backgroundColor: "#02B2AF" },
-                    { label: "QC", data: apiData.map(item => item["QC"]), backgroundColor: "#FF6384" },
-                    { label: "Flagging", data: apiData.map(item => item["Flagging"]), backgroundColor: "#36A2EB" },
-                    { label: "Indexing", data: apiData.map(item => item["Indexing"]), backgroundColor: "#FFCE56" },
-                    { label: "Offered for QA", data: apiData.map(item => item["Offered for QA"]), backgroundColor: "#4BC0C0" },
-                    { label: "Customer QA Done", data: apiData.map(item => item["Customer QA Done"]), backgroundColor: "#9966FF" }
-                ],
-            });
-        } catch (error) {
-            console.error("Error fetching all graph image data:", error);
+        const body = {
+            locations // always send array
+        };
+
+        const response = await axios.post(apiUrl, body);
+        const apiData = response.data;
+
+        if (!apiData || apiData.length === 0) {
+            console.error("No data received from the API");
+            return;
         }
-    };
+
+        setAllLocationImage({
+            labels: apiData.map(item => item["Location Name"]),
+            datasets: [
+                { label: "Scanned", data: apiData.map(item => item["Scanned"]) },
+                { label: "QC", data: apiData.map(item => item["QC"]) },
+                { label: "Flagging", data: apiData.map(item => item["Flagging"]) },
+                { label: "Indexing", data: apiData.map(item => item["Indexing"]) },
+                { label: "Offered for QA", data: apiData.map(item => item["Offered for QA"]) },
+                { label: "Customer QA Done", data: apiData.map(item => item["Customer QA Done"]) }
+            ],
+        });
+    } catch (error) {
+        console.error("Error fetching all graph image data:", error);
+    }
+};
 
     const fetchCumulativeRemarks = async (queryParams) => {
         try {

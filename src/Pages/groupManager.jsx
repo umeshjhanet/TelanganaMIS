@@ -46,7 +46,7 @@ const GroupManager = ({ showSideBar }) => {
   useEffect(() => {
     const fetchGroupData = () => {
       setIsLoading(true);
-      axios.get(`${API_URL}/group_master`)
+      axios.post(`${API_URL}/group_master`)
         .then(response => {
           setGroup(response.data)
           setIsLoading(false);

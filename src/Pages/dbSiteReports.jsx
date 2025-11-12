@@ -53,7 +53,7 @@ const DBSiteReports = ({ showSideBar }) => {
     const fetchServerStatus = () => {
       setIsLoading(true);
       axios
-        .get(`${API_URL}/server_status`)
+        .post(`${API_URL}/server_status`)
         .then((response) => {
           const locations = response.data.map(item => item.location);
           setLocations(locations);
