@@ -366,8 +366,8 @@ const User_Form = ({ showSideBar }) => {
       <ToastContainer />
       <div className='container-fluid'>
         <div className='row'>
-          <div className='col-lg-2 col-md-0'></div>
-          <div className='col-lg-10 col-md-12'>
+          <div className={`${showSideBar ? 'col-lg-1 col-md-0' : 'col-lg-2 col-md-0'} d-none d-lg-block`}></div>
+          <div className={`${showSideBar ? 'col-lg-11 col-md-12' : 'col-lg-10 col-md-12 '} col-sm-12`}>
             <div
               className="card mt-3"
               style={{ padding: "5px", backgroundColor: "#4BC0C0" }}

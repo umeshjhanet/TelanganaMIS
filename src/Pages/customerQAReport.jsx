@@ -82,7 +82,7 @@ const CustomerQAReport = ({ showSideBar }) => {
             }
 
 
-            setIsLoading(true);
+            
 
             const response = await axios.post(apiUrl, { params: queryParams });
 
@@ -102,7 +102,7 @@ const CustomerQAReport = ({ showSideBar }) => {
             console.error("Error fetching report data:", error);
             setError("Error fetching report data. Please try again.");
         } finally {
-            setIsLoading(false);
+          
         }
     };
     const locationName = selectedLocations;
@@ -128,16 +128,16 @@ const CustomerQAReport = ({ showSideBar }) => {
                 queryParams.endDate = formatDate(endDate);
             }
 
-            setIsLoading(true);
+            
             const response = await axios.post(apiUrl, { params: queryParams });
 
             setReport(response.data);
-            setIsLoading(false);
+      
             updateTotalLocations(response.data);
         } catch (error) {
             console.error("Error fetching report data:", error);
             setError("Error fetching report data. Please try again.");
-            setIsLoading(false);
+          
         }
     };
     // useEffect(() => {
@@ -190,7 +190,7 @@ const CustomerQAReport = ({ showSideBar }) => {
     const fetchLocation = async () => {
         try {
             let apiUrl = `${API_URL}/locations`;
-            setIsLoading(true);
+           
             const response = await axios.post(apiUrl);
 
 
@@ -198,12 +198,12 @@ const CustomerQAReport = ({ showSideBar }) => {
             const locationNames = response.data.map(item => item.LocationName);
 
             setLocations(locationNames);
-            setIsLoading(false);
+            
             updateTotalLocations(locationNames);
         } catch (error) {
             console.error("Error fetching locations:", error);
             setError("Error fetching locations. Please try again.");
-            setIsLoading(false);
+           
         }
     };
     const [lastSearchTime, setLastSearchTime] = useState(null);
@@ -236,7 +236,7 @@ const CustomerQAReport = ({ showSideBar }) => {
                 }}
             
 
-            // setIsLoading(true); // show loader
+            setIsLoading(true); // show loader
 
             const queryParams = {};
 

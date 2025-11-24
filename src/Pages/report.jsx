@@ -182,24 +182,24 @@ const Report = ({ showSideBar }) => {
     }
   };
   const fetchLocation = async () => {
-    //setIsLoading(true);
+ 
     try {
       let apiUrl = `${API_URL}/locations`;
-      //setIsLoading(true);
+     
       const response = await axios.post(apiUrl);
 
       // Extract just the LocationName values
       const locationNames = response.data.map((item) => item.LocationName);
 
       setLocations(locationNames);
-      //setIsLoading(false);
+     
       updateTotalLocations(locationNames);
     } catch (error) {
       console.error("Error fetching locations:", error);
       setError("Error fetching locations. Please try again.");
-      //setIsLoading(false);
+     
     } finally {
-      //setIsLoading(false);
+      
     }
   };
 

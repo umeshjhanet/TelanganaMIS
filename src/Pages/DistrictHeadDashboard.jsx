@@ -175,19 +175,18 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
       totalImagesSum,
     };
   };
-  const fetchLocationData = async () => {
-    
+   const fetchLocationData = async () => {
+   
     try {
-      const response = await axios.get(`${API_URL}/locations`);
+      const response = await axios.post(`${API_URL}/locations`);
       //setLocations(response.data);
-      //setFilteredLocations(response.data);
       const locationNames = response.data.map((item) => item.LocationName);
       setLocations(locationNames);
-
+      //setFilteredLocations(response.data);
     } catch (error) {
       console.error(error);
     }
-    
+    //setIsLoading(false);
   };
   //const locationName = selectedLocations;
   const fetchExportCsvFile = () => {
@@ -218,7 +217,7 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
       },
     };
     axios
-      .get(`${API_URL}/graphmonth`, params)
+      .post(`${API_URL}/graphmonth`, params)
       .then((response) => {
         const apiData = response.data;
         const labels = apiData.map((item) => item["scandate"]);
@@ -240,72 +239,58 @@ const DistrictHeadDashboard = ({ showSideBar }) => {
       });
   };
   const fetchTableData = () => {
-    let apiUrl = `${API_URL}/tabularData`;
-
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationName=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
-    }
     axios
-      .get(apiUrl)
+      .post(`${API_URL}/tabularData`)
       .then((response) => {
-        setTableData(response.data);
+     
+        let data = response.data;
+        if (selectedLocations.length > 0) {
+
+          data = data.filter(item =>
+            selectedLocations.includes(item.LocationName)
+          );
+         
+          setTableData(data);
+        } else {
+          setTableData(response.data);
+        }
 
       })
       .catch((error) => console.error(error));
   };
 
-  const fetchAllGraphImageData = async (queryParams) => {
-    try {
-      let apiUrl = `${API_URL}/graph10`;
+const fetchAllGraphImageData = async (queryParams) => {
+  try {
+    const apiUrl = `${API_URL}/graph10`;
 
-      // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
-
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
-      }
-
-
-
-      const response = await axios.get(apiUrl);
-      const apiData = response.data;
-
-
-      if (!apiData || apiData.length === 0) {
-        console.error("No data received from the API");
-        return;
-      }
-
-      const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
-      const data = apiData.map(item => item["Images"] || 0);
-
-
-
-      setAllLocationImage({
-        labels: labels,
-        datasets: [{
-          label: "Images",
-          data: data,
-          backgroundColor: "#02B2AF",
-        }],
-      });
-
-    } catch (error) {
-      console.error("Error in fetchAllGraphImageData:", {
-        message: error.message,
-        response: error.response?.data,
-        config: error.config
-      });
+    const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
     }
-  };
+
+    const response = await axios.post(apiUrl, body);
+    const apiData = response.data;
+
+    if (!apiData || apiData.length === 0) return;
+
+    const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
+    const data = apiData.map(item => item["Images"] || 0);
+
+    setAllLocationImage({
+      labels,
+      datasets: [{
+        label: "Images",
+        data,
+        backgroundColor: "#02B2AF",
+      }],
+    });
+
+  } catch (error) {
+    console.error("Error in fetchAllGraphImageData:", error);
+  }
+};
 
   useEffect(() => {
     const fetchAllData = async () => {

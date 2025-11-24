@@ -41,7 +41,7 @@ const AppContent = () => {
   const location = useLocation('');
   const [showSideBar, setShowSideBar] = useState(false);
     const navigate = useNavigate();
-    reportWebVitals(console.log);
+  
   return (
     <>
       {location.pathname !== '/' && location.pathname !== '/clientreport' && (

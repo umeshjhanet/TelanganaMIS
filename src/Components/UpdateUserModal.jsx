@@ -36,6 +36,7 @@ const UpdateUserModal = ({ onClose, userId }) => {
   const [selectedLocationName, setSelectedLocationName] = useState('');
   const [selectedPrivilegeName, setSelectedPrivilegeName] = useState('');
   const [selectedStorageName, setSelectedStorageName] = useState('');
+  const [setUserEmail,userEmail]=useState('');
 
   const [formData, setFormData] = useState({
     user_email_id: '',
@@ -121,18 +122,47 @@ const UpdateUserModal = ({ onClose, userId }) => {
         .then(data => setReporting(data))
         .catch(error => console.error(error))
     }
-    fetchGroup();
-    fetchEmail();
-    fetchLocation();
-    fetchPrivilege();
-    fetchStorage();
-    fetchReporting();
-    fetchLocation();
-    fetchPrivilege();
-    fetchStorage();
-    fetchReporting();
+    // fetchGroup();
+    // fetchEmail();
+    // fetchLocation();
+    // fetchPrivilege();
+    // fetchStorage();
+    // fetchReporting();
+    // fetchLocation();
+    // fetchPrivilege();
+    // fetchStorage();
+    // fetchReporting();
     fetchUserDetails();
   }, [userId])
+
+  useEffect(() => {
+  const fetchAllData = async () => {
+    try {
+      const [groupRes, locationRes, privilegeRes, storageRes, reportingRes,email] = await Promise.all([
+        axios.post(`${API_URL}/group_master`),
+        axios.post(`${API_URL}/locations`),
+        axios.post(`${API_URL}/privilege`),
+        axios.post(`${API_URL}/storage`),
+        axios.post(`${API_URL}/reporting`),
+       
+      
+      ]);
+
+      setGroup(groupRes.data);
+      setLocation(locationRes.data);
+      setPrivilege(privilegeRes.data);
+      setStorage(storageRes.data);
+      setReporting(reportingRes.data);
+     
+
+    } catch (error) {
+      console.error("Error loading initial data:", error);
+    }
+  };
+  
+
+  fetchAllData();
+}, [userId]);
 
 
 

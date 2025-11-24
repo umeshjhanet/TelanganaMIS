@@ -273,31 +273,56 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   // };
 
 
-  const fetchYesterdayData = async (locationName) => {
+  // const fetchYesterdayData = async (locationName) => {
+  //   try {
+  //     const body = {};
+
+  //     if (selectedDate) {
+  //       params.date = selectedDate;
+  //     }
+
+  //     if (selectedVendors) {  // vendor works perfectly with backend
+  //       params.vendor = selectedVendors;
+  //     }
+
+  //     // backend ignores location — we’ll handle filtering on frontend
+  //     const response = await axios.post(`${API_URL}/vendorReport`, { params });
+
+  //     let data = response.data;
+
+  //     // frontend filter by location name
+  //     if (selectedLocations && selectedLocations.length > 0) {
+  //       data = data.filter(item =>
+  //         selectedLocations.includes(item.locationname)
+  //       );
+  //     }
+
+  //     setYesterdayReport(data);
+  //   } catch (error) {
+  //     console.error("Error fetching report data:", error);
+  //     setError("Error fetching report data. Please try again.");
+  //   }
+  // };
+
+   const fetchYesterdayData = async (locationName) => {
     try {
       const params = {};
-
+  
       if (selectedDate) {
         params.date = selectedDate;
       }
-
-      if (selectedVendors) {  // vendor works perfectly with backend
+  
+      if (selectedVendors) {
         params.vendor = selectedVendors;
       }
-
-      // backend ignores location — we’ll handle filtering on frontend
-      const response = await axios.get(`${API_URL}/vendorReport`, { params });
-
-      let data = response.data;
-
-      // frontend filter by location name
+  
       if (selectedLocations && selectedLocations.length > 0) {
-        data = data.filter(item =>
-          selectedLocations.includes(item.locationname)
-        );
+        params.locations = selectedLocations;
       }
-
-      setYesterdayReport(data);
+  
+      const response = await axios.post(`${API_URL}/vendorReport`, { params });
+      // Remove the frontend filtering since it's now handled in the backend
+      setYesterdayReport(response.data);
     } catch (error) {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
@@ -320,7 +345,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
         params.locationName = selectedLocations.join(",");
       }
 
-      const response = await axios.get(`${API_URL}/fetch-data-sequential`, { params });
+      const response = await axios.post(`${API_URL}/fetch-data-sequential`, { params });
       setCumulative(response.data);
     } catch {
       console.error("Error fetching cumulative data");
@@ -329,7 +354,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   useEffect(() => {
     const fetchTarget = async () => {
       try {
-        const response = await axios.get(`${API_URL}/mptarget`);
+        const response = await axios.post(`${API_URL}/mptarget`);
         setTarget(response.data);
       } catch {
         console.error("Error fetching target data");
@@ -337,7 +362,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     };
     const fetchVendor = async () => {
       try {
-        const response = await axios.get(`${API_URL}/vendorName`);
+        const response = await axios.post(`${API_URL}/vendorName`);
         setVendorName(response.data);
       } catch {
 
@@ -352,7 +377,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     const fetchLocationData = async () => {
 
       try {
-        const response = await axios.get(`${API_URL}/locations`);
+        const response = await axios.post(`${API_URL}/locations`);
         const locationNames = response.data.map((item) => item.LocationName);
         setLocations(locationNames);
       } catch (error) {
@@ -381,7 +406,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   const fetchLocationData = async () => {
 
     try {
-      const response = await axios.get(`${API_URL}/locations`);
+      const response = await axios.post(`${API_URL}/locations`);
       //setLocations(response.data);
       const locationNames = response.data.map((item) => item.LocationName);
       setLocations(locationNames);
@@ -398,19 +423,19 @@ const CbslAdminDashboard = ({ showSideBar }) => {
       let apiUrl = `${API_URL}/graph1LocationWise`;
 
       // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
+       // Prepare request body
+    const body = {};
 
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
-      }
+    // Add locationNames to body if exists
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    }
 
 
-      const response = await axios.get(apiUrl);
+
+      const response = await axios.post(apiUrl,body);
       const apiData = response.data;
 
 
@@ -473,21 +498,17 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     try {
       let apiUrl = `${API_URL}/graph2`;
 
-      // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
+       const body = {};
 
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
-      }
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    }
 
 
 
-      const response = await axios.get(apiUrl);
+      const response = await axios.post(apiUrl,body);
       const apiData = response.data;
 
 
@@ -523,21 +544,18 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   const fetchTodayGraphFileData = () => {
     let apiUrl = `${API_URL}/graph7`;
 
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationname=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
-    }
+     const body = {};
+  if (selectedLocations?.length > 0) {
+    body.locationNames = selectedLocations;
+  }
 
-    axios
-      .get(apiUrl)
-      .then((response) => {
-        const apiData = response.data;
-        if (!apiData || apiData.length === 0) {
-          console.error("No data received from the API");
-          return;
-        }
+  axios.post(apiUrl, body)
+    .then(response => {
+      const apiData = response.data;
+      if (!apiData || apiData.length === 0) {
+        console.error("No data received from the API");
+        return;
+      }
 
         const labels = Object.keys(apiData[0]).filter(
           (label) => label !== "locationid" && label !== "LocationName"
@@ -562,21 +580,18 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   const fetchTodayGraphImageData = () => {
     let apiUrl = `${API_URL}/graph8`;
 
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationname=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
-    }
+    const body = {};
+  if (selectedLocations?.length > 0) {
+    body.locationNames = selectedLocations;
+  }
 
-    axios
-      .get(apiUrl)
-      .then((response) => {
-        const apiData = response.data;
-        if (!apiData || apiData.length === 0) {
-          console.error("No data received from the API");
-          return;
-        }
+  axios.post(apiUrl, body)
+    .then(response => {
+      const apiData = response.data;
+      if (!apiData || apiData.length === 0) {
+        console.error("No data received from the API");
+        return;
+      }
 
         const labels = Object.keys(apiData[0]).filter(
           (label) => label !== "locationid" && label !== "LocationName"
@@ -600,12 +615,12 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   };
   const fetchWeekImageGraphData = async () => {
     try {
-      const params = {
+       const params = {
         params: {
           locationNames: selectedLocations,
         },
       };
-      const response = await axios.get(`${API_URL}/graph6`, params);
+      const response = await axios.post(`${API_URL}/graph6`, params);
       const apiData = response.data;
 
       if (Array.isArray(apiData)) {
@@ -620,7 +635,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   const fetchWeekFileGraphData = async () => {
     try {
       const params = { params: { locationNames: selectedLocations } };
-      const response = await axios.get(`${API_URL}/graph5`, params);
+      const response = await axios.post(`${API_URL}/graph5`, params);
       const apiData = response.data;
       if (Array.isArray(apiData)) {
         setWeekFile(apiData);
@@ -638,7 +653,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
       },
     };
     axios
-      .get(`${API_URL}/graphmonth`, params)
+      .post(`${API_URL}/graphmonth`, params)
       .then((response) => {
         const apiData = response.data;
         const labels = apiData.map((item) => item["scandate"]);
@@ -662,15 +677,13 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   const fetchCivilCaseGraphData = () => {
     let apiUrl = `${API_URL}/civil`;
 
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationname=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
-    }
+     const body = {};
+  if (selectedLocations?.length > 0) {
+    body.locationNames = selectedLocations;
+  }
 
     axios
-      .get(apiUrl)
+      .post(apiUrl,body)
       .then((response) => {
         const apiData = response.data;
 
@@ -699,15 +712,12 @@ const CbslAdminDashboard = ({ showSideBar }) => {
   const fetchCriminalCaseGraphData = () => {
     let apiUrl = `${API_URL}/criminal`;
 
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationname=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
-    }
+    const body = {};
+  if (selectedLocations?.length > 0) {
+    body.locationNames = selectedLocations;
+  }
 
-    axios
-      .get(apiUrl)
+  axios.post(apiUrl, body)
       .then((response) => {
         const apiData = response.data;
 
@@ -739,21 +749,16 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     try {
       let apiUrl = `${API_URL}/graph9`;
 
-      // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
-
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
-      }
+       const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    }
 
 
 
-      const response = await axios.get(apiUrl);
+      const response = await axios.post(apiUrl,body);
       const apiData = response.data;
 
 
@@ -791,21 +796,14 @@ const CbslAdminDashboard = ({ showSideBar }) => {
     try {
       let apiUrl = `${API_URL}/graph10`;
 
-      // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
+      const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    }
 
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
-      }
-
-
-
-      const response = await axios.get(apiUrl);
+    const response = await axios.post(apiUrl, body);
       const apiData = response.data;
 
 
@@ -841,16 +839,16 @@ const CbslAdminDashboard = ({ showSideBar }) => {
 
   const fetchTableData = () => {
     axios
-      .get(`${API_URL}/tabularData`)
+      .post(`${API_URL}/tabularData`)
       .then((response) => {
-        // console.log(response.data);
+       
         let data = response.data;
         if (selectedLocations.length > 0) {
 
           data = data.filter(item =>
             selectedLocations.includes(item.LocationName)
           );
-          // console.log(data);
+        
           setTableData(data);
         } else {
           setTableData(response.data);
@@ -862,7 +860,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/7daysimages`, {
+      const response = await axios.post(`${API_URL}/7daysimages`, {
         params: { locationName },
       });
 
@@ -1259,7 +1257,7 @@ const CbslAdminDashboard = ({ showSideBar }) => {
 
         fetchYesterdayData(),
         fetchData(),
-        fetchData(),
+        
         fetchGraphFileData(queryParams),
         fetchGraphImageData(queryParams),
         fetchWeekFileGraphData(queryParams),

@@ -16,7 +16,7 @@ const UserRole = ({ showSideBar }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [roleIdToDelete, setRoleIdToDelete] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -46,15 +46,15 @@ const UserRole = ({ showSideBar }) => {
 
   useEffect(() => {
     const fetchRoleData = () => {
-      setIsLoading(true);
+      
       axios.post(`${API_URL}/user_role`)
         .then(response => {
           setRole(response.data)
-          setIsLoading(false);
+        
         })
         .catch(error => {
           console.error(error)
-          setIsLoading(false);
+          
         })
     }
     fetchRoleData();

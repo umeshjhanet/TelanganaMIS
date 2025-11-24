@@ -20,6 +20,7 @@ import useInactivityTimer from './useInactivityTimer'; // Add this import
 
 const isAuthenticated = () => {
   const user = localStorage.getItem('user');
+  console.log("user" + user);
   return user !== null;
 };
 

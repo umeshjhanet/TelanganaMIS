@@ -322,19 +322,27 @@ const Locationwisereport = ({ showSideBar }) => {
         try {
             let apiUrl = `${API_URL}/currentstatusimages`;
 
-            // Extract locations from queryParams if present
-            const locations = queryParams?.locationNames
-                ? queryParams.locationNames.split(',')
-                : [];
+            // // Extract locations from queryParams if present
+            // const locations = queryParams?.locationNames
+            //     ? queryParams.locationNames.split(',')
+            //     : [];
 
-            if (locations.length > 0) {
-                const locationQuery = locations
-                    .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-                    .join('&');
-                apiUrl += `?${locationQuery}`;
-            }
+            // if (locations.length > 0) {
+            //     const locationQuery = locations
+            //         .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+            //         .join('&');
+            //     apiUrl += `?${locationQuery}`;
+            // }
+            const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    } else if (Array.isArray(selectedLocations) && selectedLocations.length > 0) {
+      body.locationNames = selectedLocations;
+    }
 
-            const response = await axios.get(apiUrl);
+            const response = await axios.post(apiUrl,body);
             const apiData = response.data;
 
             if (!apiData || (Array.isArray(apiData) && apiData.length === 0)) {
@@ -375,19 +383,28 @@ const Locationwisereport = ({ showSideBar }) => {
         try {
             let apiUrl = `${API_URL}/todaystatusimages`;
 
-            // Extract locations from queryParams.locationNames or fallback to selectedLocations
-            const locations = queryParams?.locationNames
-                ? queryParams.locationNames.split(',').map(loc => loc.trim())
-                : (selectedLocations || []);
+            // // Extract locations from queryParams.locationNames or fallback to selectedLocations
+            // const locations = queryParams?.locationNames
+            //     ? queryParams.locationNames.split(',').map(loc => loc.trim())
+            //     : (selectedLocations || []);
 
-            // Create a single locationNames param with comma-separated locations if any
-            if (locations.length > 0) {
-                const locationQuery = encodeURIComponent(locations.join(','));
-                apiUrl += `?locationNames=${locationQuery}`;
-            }
+            // // Create a single locationNames param with comma-separated locations if any
+            // if (locations.length > 0) {
+            //     const locationQuery = encodeURIComponent(locations.join(','));
+            //     apiUrl += `?locationNames=${locationQuery}`;
+            // }
 
+
+             const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    } else if (Array.isArray(selectedLocations) && selectedLocations.length > 0) {
+      body.locationNames = selectedLocations;
+    }
             // Fetch data via Axios
-            const response = await axios.get(apiUrl);
+            const response = await axios.post(apiUrl,body);
             const apiData = response.data;
 
             if (!apiData || Object.keys(apiData).length === 0) {
@@ -433,19 +450,28 @@ const Locationwisereport = ({ showSideBar }) => {
         try {
             let apiUrl = `${API_URL}/currentstatusfiles`;
 
-            // Extract locations from queryParams if they exist
-            const locations = queryParams?.locationNames
-                ? queryParams.locationNames.split(',')
-                : [];
+            // // Extract locations from queryParams if they exist
+            // const locations = queryParams?.locationNames
+            //     ? queryParams.locationNames.split(',')
+            //     : [];
 
-            if (locations.length > 0) {
-                const locationQuery = locations
-                    .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-                    .join('&');
-                apiUrl += `?${locationQuery}`;
-            }
+            // if (locations.length > 0) {
+            //     const locationQuery = locations
+            //         .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+            //         .join('&');
+            //     apiUrl += `?${locationQuery}`;
+            // }
+            
 
-            const response = await axios.get(apiUrl);
+            const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    } else if (Array.isArray(selectedLocations) && selectedLocations.length > 0) {
+      body.locationNames = selectedLocations;
+    }
+            const response = await axios.post(apiUrl,body);
             const apiData = response.data;
 
             if (!apiData || (Array.isArray(apiData) && apiData.length === 0)) {
@@ -485,14 +511,22 @@ const Locationwisereport = ({ showSideBar }) => {
         try {
             let apiUrl = `${API_URL}/todaystatusfiles`;
 
-            // Join locations as a comma-separated string in locationNames param
-            if (selectedLocations && selectedLocations.length > 0) {
-                const locationQuery = encodeURIComponent(selectedLocations.join(','));
-                apiUrl += `?locationNames=${locationQuery}`;
-            }
+            // // Join locations as a comma-separated string in locationNames param
+            // if (selectedLocations && selectedLocations.length > 0) {
+            //     const locationQuery = encodeURIComponent(selectedLocations.join(','));
+            //     apiUrl += `?locationNames=${locationQuery}`;
+            // }
+             const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    } else if (Array.isArray(selectedLocations) && selectedLocations.length > 0) {
+      body.locationNames = selectedLocations;
+    }
 
 
-            const response = await axios.get(apiUrl);
+            const response = await axios.post(apiUrl,body);
             const apiData = response.data;
 
             if (!apiData || Object.keys(apiData).length === 0) {
@@ -552,7 +586,7 @@ const Locationwisereport = ({ showSideBar }) => {
         }
 
         axios
-            .get(`${API_URL}/statusDetails`, { params }) // Include params in the request
+            .post(`${API_URL}/statusDetails`, { params }) // Include params in the request
             .then((response) => {
                 setStatusDetails(response.data);
 
@@ -561,116 +595,195 @@ const Locationwisereport = ({ showSideBar }) => {
     };
 
 
-    const fetchData = async () => {
-        try {
-            let locations = selectedLocations;
-            if (!Array.isArray(locations)) {
-                console.error("selectedLocations is not an array:", locations);
-                locations = [];
-            }
+    // const fetchData = async () => {
+    //     try {
+    //         let locations = selectedLocations;
+    //         if (!Array.isArray(locations)) {
+    //             console.error("selectedLocations is not an array:", locations);
+    //             locations = [];
+    //         }
 
-            // Build the URL with multiple locationname parameters
-            let apiUrl = `${API_URL}/cumulative-status-images`;
-            if (locations.length > 0) {
-                const locationQuery = locations
-                    .map(loc => `locationname=${encodeURIComponent(loc)}`)
-                    .join('&');
-                apiUrl += `?${locationQuery}`;
-            }
+    //         // Build the URL with multiple locationname parameters
+    //         let apiUrl = `${API_URL}/cumulative-status-images`;
+    //         if (locations.length > 0) {
+    //             const locationQuery = locations
+    //                 .map(loc => `locationname=${encodeURIComponent(loc)}`)
+    //                 .join('&');
+    //             apiUrl += `?${locationQuery}`;
+    //         }
 
-            // Make the GET request
-            const response = await axios.get(apiUrl);
+    //         // Make the GET request
+    //         const response = await axios.post(apiUrl);
 
-            if (!response || !response.data) {
-                console.error("No response or response data from API");
-                setChartData(prevData => ({
-                    ...prevData,
-                    options: { ...prevData.options, xaxis: { categories: [] } },
-                    series: []
-                }));
-                return;
-            }
+    //         if (!response || !response.data) {
+    //             console.error("No response or response data from API");
+    //             setChartData(prevData => ({
+    //                 ...prevData,
+    //                 options: { ...prevData.options, xaxis: { categories: [] } },
+    //                 series: []
+    //             }));
+    //             return;
+    //         }
 
-            const data = response.data;
-            if (!Array.isArray(data) || data.length === 0) {
-                console.warn("API returned no data or empty array");
-                setChartData(prevData => ({
-                    ...prevData,
-                    options: { ...prevData.options, xaxis: { categories: [] } },
-                    series: []
-                }));
-                return;
-            }
+    //         const data = response.data;
+    //         if (!Array.isArray(data) || data.length === 0) {
+    //             console.warn("API returned no data or empty array");
+    //             setChartData(prevData => ({
+    //                 ...prevData,
+    //                 options: { ...prevData.options, xaxis: { categories: [] } },
+    //                 series: []
+    //             }));
+    //             return;
+    //         }
 
-            // Map API data to last 30 days format with fallback and parsing
-            const last30Days = data.map(item => ({
-                date: item.formattedDate || "Unknown Date",
-                scanned: parseInt(item.ScannedImages, 10) || 0,
-                qc: parseInt(item.QCImages, 10) || 0,
-                flagging: parseInt(item.FlaggingImages, 10) || 0,
-                index: parseInt(item.IndexImages, 10) || 0,
-                offeredForQA: parseInt(item.CBSLQAImages, 10) || 0,
-                clientQADone: parseInt(item.ApprovedImages, 10) || 0,
-            }));
+    //         // Map API data to last 30 days format with fallback and parsing
+    //         const last30Days = data.map(item => ({
+    //             date: item.formattedDate || "Unknown Date",
+    //             scanned: parseInt(item.ScannedImages, 10) || 0,
+    //             qc: parseInt(item.QCImages, 10) || 0,
+    //             flagging: parseInt(item.FlaggingImages, 10) || 0,
+    //             index: parseInt(item.IndexImages, 10) || 0,
+    //             offeredForQA: parseInt(item.CBSLQAImages, 10) || 0,
+    //             clientQADone: parseInt(item.ApprovedImages, 10) || 0,
+    //         }));
 
-            // Extract data arrays for chart
-            const dates = last30Days.map(item => item.date);
-            const scannedData = last30Days.map(item => item.scanned);
-            const qcData = last30Days.map(item => item.qc);
-            const flaggingData = last30Days.map(item => item.flagging);
-            const indexData = last30Days.map(item => item.index);
-            const cbslqaData = last30Days.map(item => item.offeredForQA);
-            const clientData = last30Days.map(item => item.clientQADone);
+    //         // Extract data arrays for chart
+    //         const dates = last30Days.map(item => item.date);
+    //         const scannedData = last30Days.map(item => item.scanned);
+    //         const qcData = last30Days.map(item => item.qc);
+    //         const flaggingData = last30Days.map(item => item.flagging);
+    //         const indexData = last30Days.map(item => item.index);
+    //         const cbslqaData = last30Days.map(item => item.offeredForQA);
+    //         const clientData = last30Days.map(item => item.clientQADone);
 
-            // Update chart state with bars and trend lines
-            setChartData(prevData => ({
-                ...prevData,
-                options: {
-                    ...prevData.options,
-                    xaxis: { categories: dates }
-                },
-                series: [
-                    { name: 'Scanned', type: "bar", data: scannedData },
-                    { name: 'Scanned (Trend)', type: "line", data: scannedData },
-                    { name: 'QC', type: "bar", data: qcData },
-                    { name: 'QC (Trend)', type: "line", data: qcData },
-                    { name: 'Flagging', type: "bar", data: flaggingData },
-                    { name: 'Flagging (Trend)', type: "line", data: flaggingData },
-                    { name: 'Indexing', type: "bar", data: indexData },
-                    { name: 'Indexing (Trend)', type: "line", data: indexData },
-                    { name: 'Offered for QA', type: "bar", data: cbslqaData },
-                    { name: 'Offered for QA (Trend)', type: "line", data: cbslqaData },
-                    { name: 'Customer QA Done', type: "bar", data: clientData },
-                    { name: 'Customer QA Done (Trend)', type: "line", data: clientData }
-                ]
-            }));
+    //         // Update chart state with bars and trend lines
+    //         setChartData(prevData => ({
+    //             ...prevData,
+    //             options: {
+    //                 ...prevData.options,
+    //                 xaxis: { categories: dates }
+    //             },
+    //             series: [
+    //                 { name: 'Scanned', type: "bar", data: scannedData },
+    //                 { name: 'Scanned (Trend)', type: "line", data: scannedData },
+    //                 { name: 'QC', type: "bar", data: qcData },
+    //                 { name: 'QC (Trend)', type: "line", data: qcData },
+    //                 { name: 'Flagging', type: "bar", data: flaggingData },
+    //                 { name: 'Flagging (Trend)', type: "line", data: flaggingData },
+    //                 { name: 'Indexing', type: "bar", data: indexData },
+    //                 { name: 'Indexing (Trend)', type: "line", data: indexData },
+    //                 { name: 'Offered for QA', type: "bar", data: cbslqaData },
+    //                 { name: 'Offered for QA (Trend)', type: "line", data: cbslqaData },
+    //                 { name: 'Customer QA Done', type: "bar", data: clientData },
+    //                 { name: 'Customer QA Done (Trend)', type: "line", data: clientData }
+    //             ]
+    //         }));
 
-        } catch (err) {
-            console.error("Error fetching data:", err);
-        }
-    };
+    //     } catch (err) {
+    //         console.error("Error fetching data:", err);
+    //     }
+    // };
 
+    const fetchData = async (queryParams = {}) => {
+  try {
+    const apiUrl = `${API_URL}/cumulative-status-images`;
+
+    // --- Build Body ---
+    const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    } else if (Array.isArray(selectedLocations) && selectedLocations.length > 0) {
+      body.locationNames = selectedLocations;
+    }
+
+    // --- API Call ---
+    const response = await axios.post(apiUrl, body);
+    const apiData = response.data;
+
+    if (!Array.isArray(apiData) || apiData.length === 0) {
+      console.warn("No data received");
+      setChartData(prev => ({
+        ...prev,
+        options: { ...prev.options, xaxis: { categories: [] } },
+        series: []
+      }));
+      return;
+    }
+
+    // --- Parse ---
+    const parsed = apiData.map(item => ({
+      date: item.formattedDate || "Unknown Date",
+      scanned: +item.ScannedImages || 0,
+      qc: +item.QCImages || 0,
+      flagging: +item.FlaggingImages || 0,
+      index: +item.IndexImages || 0,
+      offeredForQA: +item.CBSLQAImages || 0,
+      clientQADone: +item.ApprovedImages || 0,
+    }));
+
+    const dates = parsed.map(i => i.date);
+
+    // --- Update chart ---
+    setChartData(prev => ({
+      ...prev,
+      options: { ...prev.options, xaxis: { categories: dates } },
+      series: [
+        { name: 'Scanned', type: 'bar', data: parsed.map(i => i.scanned) },
+        { name: 'Scanned (Trend)', type: 'line', data: parsed.map(i => i.scanned) },
+
+        { name: 'QC', type: 'bar', data: parsed.map(i => i.qc) },
+        { name: 'QC (Trend)', type: 'line', data: parsed.map(i => i.qc) },
+
+        { name: 'Flagging', type: 'bar', data: parsed.map(i => i.flagging) },
+        { name: 'Flagging (Trend)', type: 'line', data: parsed.map(i => i.flagging) },
+
+        { name: 'Indexing', type: 'bar', data: parsed.map(i => i.index) },
+        { name: 'Indexing (Trend)', type: 'line', data: parsed.map(i => i.index) },
+
+        { name: 'Offered for QA', type: 'bar', data: parsed.map(i => i.offeredForQA) },
+        { name: 'Offered for QA (Trend)', type: 'line', data: parsed.map(i => i.offeredForQA) },
+
+        { name: 'Customer QA Done', type: 'bar', data: parsed.map(i => i.clientQADone) },
+        { name: 'Customer QA Done (Trend)', type: 'line', data: parsed.map(i => i.clientQADone) },
+      ]
+    }));
+
+  } catch (err) {
+    console.error("Error fetching data:", err);
+  }
+};
 
 
     const fetchReportData = async (queryParams) => {
         try {
             let apiUrl = `${API_URL}/Table`;
 
-            // Extract locations if present
-            const locations = queryParams?.locationNames
-                ? queryParams.locationNames.split(',')
-                : [];
+            // // Extract locations if present
+            // const locations = queryParams?.locationNames
+            //     ? queryParams.locationNames.split(',')
+            //     : [];
 
-            // Append location query parameters
-            if (locations.length > 0) {
-                const locationQuery = locations
-                    .map(loc => `locationName=${encodeURIComponent(loc.trim())}`)
-                    .join('&');
-                apiUrl += `?${locationQuery}`;
-            }
+            // // Append location query parameters
+            // if (locations.length > 0) {
+            //     const locationQuery = locations
+            //         .map(loc => `locationName=${encodeURIComponent(loc.trim())}`)
+            //         .join('&');
+            //     apiUrl += `?${locationQuery}`;
+            // }
+             // --- Build Body ---
+    const body = {};
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
+    } else if (Array.isArray(selectedLocations) && selectedLocations.length > 0) {
+      body.locationNames = selectedLocations;
+    }
 
             // Fetch data via Axios
-            const response = await axios.post(apiUrl);
+            const response = await axios.post(apiUrl,body);
             const apiData = response.data;
 
             if (!apiData || apiData.length === 0) {
@@ -720,15 +833,28 @@ const Locationwisereport = ({ showSideBar }) => {
     const fetchAllYesGraphImageData = async (queryParams) => {
         try {
             let apiUrl = `${API_URL}/today-location-process-graph`;
-            const locations = queryParams?.selectedLocations || selectedLocations || [];
-            if (locations.length > 0) {
-                const locationQuery = locations
-                    .map(location => `locationname=${encodeURIComponent(location)}`)
-                    .join("&");
-                apiUrl += `?${locationQuery}`;
-            }
+            // const locations = queryParams?.selectedLocations || selectedLocations || [];
+            // if (locations.length > 0) {
+            //     const locationQuery = locations
+            //         .map(location => `locationname=${encodeURIComponent(location)}`)
+            //         .join("&");
+            //     apiUrl += `?${locationQuery}`;
+            // }
+    //         const body = {};
+    // if (queryParams?.locationNames) {
+    //   body.locationNames = queryParams.locationNames
+    //     .split(',')
+    //     .map(loc => loc.trim());
+    // } else if (Array.isArray(selectedLocations) && selectedLocations.length > 0) {
+    //   body.locationNames = selectedLocations;
+    // }
+    const locations = queryParams?.selectedLocations || selectedLocations || [];
 
-            const response = await axios.get(apiUrl);
+        const body = {
+            locations // always send array
+        };
+
+            const response = await axios.post(apiUrl,body);
             const apiData = response.data;
 
             if (!apiData || apiData.length === 0) {
@@ -823,21 +949,24 @@ const Locationwisereport = ({ showSideBar }) => {
     }
 };
 
+   
+
     const fetchCumulativeRemarks = async (queryParams) => {
-        try {
-            const locations = queryParams || selectedLocations || [];
-            const params = {};
-            if (locations.length > 0) {
-                params.locationName = locations;
-            }
+    try {
+        const locations = queryParams || selectedLocations || [];
+        
+        // Send locations as array in request body, not as params
+        const requestBody = {
+            locationNames: locations
+        };
 
-            const response = await axios.get(`${API_URL}/getcumulativeremarks`, { params });
-            setCardCumulative(response.data);
-        } catch (error) {
-            console.error("Error fetching cumulative remarks:", error);
-        }
-    };
-
+        const response = await axios.post(`${API_URL}/getcumulativeremarks`, requestBody);
+        
+        setCardCumulative(response.data);
+    } catch (error) {
+        console.error("Error fetching cumulative remarks:", error);
+    }
+};
     const fetchTodayRemarks = async (queryParams) => {
         try {
             const locations = queryParams || selectedLocations || [];
@@ -846,7 +975,7 @@ const Locationwisereport = ({ showSideBar }) => {
                 params.locationName = locations;
             }
 
-            const response = await axios.get(`${API_URL}/getdailyremarks`, { params });
+            const response = await axios.post(`${API_URL}/getdailyremarks`, { params });
             setCardCumulative(response.data);
         } catch (error) {
             console.error("Error fetching today remarks:", error);
@@ -1208,7 +1337,7 @@ const Locationwisereport = ({ showSideBar }) => {
 
                 //fetchYesterdayData(),
 
-                fetchData(),//8
+                fetchData(queryParams),//8
                 fetchGraphFileData(queryParams),//4
                 fetchGraphImageData(queryParams),//2
 
@@ -1758,7 +1887,7 @@ const Locationwisereport = ({ showSideBar }) => {
                                         <div className="row">
                                             <h5>Remarks:</h5>
                                             <div>
-                                                {cardCumulative && cardCumulative.length > 0 ? (
+                                                {cardCumulative ? (
                                                     cardCumulative.map((elem, index) => (
                                                         <p key={index} style={{ marginBottom: "5px" }}>
                                                             {elem.CombinedRemarks}

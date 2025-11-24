@@ -50,70 +50,115 @@ const MIS_Form = ({ showSideBar }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [excelData, setExcelData] = useState(null);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const locationData = () => {
-      fetch(`${API_URL}/locations`)
-        .then(respsone => respsone.json())
-        .then(data => setLocation(data))
-        .catch(error => console.error(error))
+  //   const locationData = () => {
+  //     fetch(`${API_URL}/locations`)
+  //       .then(respsone => respsone.json())
+  //       .then(data => setLocation(data))
+  //       .catch(error => console.error(error))
 
-    }
-    const ManagerData = () => {
-      fetch(`${API_URL}/getmanager`)
-        .then(respsone => respsone.json())
-        .then(data => setManager(data))
-        .catch(error => console.error(error))
+  //   }
+  //   const ManagerData = () => {
+  //     fetch(`${API_URL}/getmanager`)
+  //       .then(respsone => respsone.json())
+  //       .then(data => setManager(data))
+  //       .catch(error => console.error(error))
 
-    }
-    const designationData = () => {
-      fetch(`${API_URL}/designations`)
-        .then(respsone => respsone.json())
-        .then(data => setDesignation(data))
-        .catch(error => console.error(error))
-    }
-    const usermasterData = () => {
-      fetch(`${API_URL}/usermaster`)
-        .then(respsone => respsone.json())
-        .then(data => setUsermaster(data))
-        .catch(error => console.error(error))
+  //   }
+  //   const designationData = () => {
+  //     fetch(`${API_URL}/designations`)
+  //       .then(respsone => respsone.json())
+  //       .then(data => setDesignation(data))
+  //       .catch(error => console.error(error))
+  //   }
+  //   const usermasterData = () => {
+  //     fetch(`${API_URL}/usermaster`)
+  //       .then(respsone => respsone.json())
+  //       .then(data => setUsermaster(data))
+  //       .catch(error => console.error(error))
 
-    }
+  //   }
 
-    const fetchManpowerData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(`${API_URL}/manpower_data`);
-        setManpowerData(response.data);
-      } catch (err) {
-        setError('Error fetching report data. Please try again later.');
-      } finally {
-        setIsLoading(false);
+  //   const fetchManpowerData = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const response = await axios.get(`${API_URL}/manpower_data`);
+  //       setManpowerData(response.data);
+  //     } catch (err) {
+  //       setError('Error fetching report data. Please try again later.');
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   const fetchLastInsertedData = async (locationId) => {
+  //     try {
+  //       const response = await fetch(`${API_URL}/manpower_data?locationname=${selectedLocationId}`);
+  //       const data = await response.json();
+
+  //       if (data) {
+  //         setLastInsertedData(data);
+  //       } else {
+  //         setLastInsertedData(null);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching last inserted data:', error);
+  //     }
+  //   };
+
+  //   fetchManpowerData();
+  //   fetchLastInsertedData();
+  //   locationData();
+  //   ManagerData();
+  //   designationData();
+  //   usermasterData();
+
+  // }, [selectedLocationId])
+
+    useEffect(() => {
+  const fetchAllData = async () => {
+    setIsLoading(true);
+    try {
+      const [
+        locationRes, 
+        managerRes, 
+        designationRes, 
+        usermasterRes,
+        manpowerRes,
+        lastInsertedRes
+      ] = await Promise.all([
+        axios.post(`${API_URL}/locations`),
+        axios.post(`${API_URL}/getmanager`),
+        axios.post(`${API_URL}/designations`),
+        axios.post(`${API_URL}/usermaster`),
+        axios.get(`${API_URL}/manpower_data`),
+        axios.get(`${API_URL}/manpower_data?locationname=${selectedLocationId}`)
+      ]);
+
+      // Set all the state variables
+      setLocation(locationRes.data);
+      setManager(managerRes.data);
+      setDesignation(designationRes.data);
+      setUsermaster(usermasterRes.data);
+      setManpowerData(manpowerRes.data);
+      
+      // Handle last inserted data
+      if (lastInsertedRes.data) {
+        setLastInsertedData(lastInsertedRes.data);
+      } else {
+        setLastInsertedData(null);
       }
-    };
-    const fetchLastInsertedData = async (locationId) => {
-      try {
-        const response = await fetch(`${API_URL}/manpower_data?locationname=${selectedLocationId}`);
-        const data = await response.json();
 
-        if (data) {
-          setLastInsertedData(data);
-        } else {
-          setLastInsertedData(null);
-        }
-      } catch (error) {
-        console.error('Error fetching last inserted data:', error);
-      }
-    };
+    } catch (error) {
+      console.error("Error loading initial data:", error);
+      setError("Error fetching report data. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchManpowerData();
-    fetchLastInsertedData();
-    locationData();
-    ManagerData();
-    designationData();
-    usermasterData();
-
-  }, [selectedLocationId])
+  fetchAllData();
+}, [selectedLocationId]);
 
   useEffect(() => {
     if (lastInsertedData) {

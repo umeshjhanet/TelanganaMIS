@@ -23,7 +23,7 @@ const User_List = ({ showSideBar }) => {
   const [userIdToEdit, setUserIdToEdit] = useState(null);
   const [filteredUsers, setFilteredUsers] = useState([]); // State for filtered users
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     user_email_id: "",
@@ -80,22 +80,22 @@ const User_List = ({ showSideBar }) => {
 
   useEffect(() => {
     const fetchUser = () => {
-      setIsLoading(true);
+     
       axios
         .post(`${API_URL}/user_master`)
         .then((response) => {
           setUser(response.data)
           setFilteredUsers(response.data);
-          setIsLoading(false);
+          
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
 
-          setIsLoading(false);
+          
         });
     };
     const fetchLocation = () => {
-      setIsLoading(true);
+     
       axios
         .post(`${API_URL}/locations`)
         .then((response) => {
@@ -107,11 +107,11 @@ const User_List = ({ showSideBar }) => {
 
 
           setLocationsMap(map);
-          setIsLoading(false);
+         
         })
         .catch((error) => {
           console.error("Error fetching location data:", error);
-          setIsLoading(false);
+          
         });
     };
 

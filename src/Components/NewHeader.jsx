@@ -69,6 +69,7 @@ const Header = ({ showSideBar, setShowSideBar }) => {
 
   // Retrieve user info from local storage
   const userLog = JSON.parse(localStorage.getItem("user"));
+ 
   const userRoles = userLog?.user_roles || [];
 
   const getManualFile = () => {

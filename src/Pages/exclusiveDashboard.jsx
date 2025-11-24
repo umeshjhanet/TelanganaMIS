@@ -316,131 +316,199 @@ const ExclusiveDashboard = ({ showSideBar }) => {
   // };
 
 
+  // const fetchYesterdayData = async (locationName) => {
+  //   try {
+  //     const params = {};
+
+  //     if (selectedDate) {
+  //       params.date = selectedDate;
+  //     }
+
+  //     if (selectedVendors) {  // vendor works perfectly with backend
+  //       params.vendor = selectedVendors;
+  //     }
+
+  //     // backend ignores location — we’ll handle filtering on frontend
+  //     const response = await axios.get(`${API_URL}/vendorReport`, { params });
+
+  //     let data = response.data;
+
+  //     // frontend filter by location name
+  //     if (selectedLocations && selectedLocations.length > 0) {
+  //       data = data.filter(item =>
+  //         selectedLocations.includes(item.locationname)
+  //       );
+  //     }
+
+  //     setYesterdayReport(data);
+  //   } catch (error) {
+  //     console.error("Error fetching report data:", error);
+  //     setError("Error fetching report data. Please try again.");
+  //   }
+  // };
   const fetchYesterdayData = async (locationName) => {
     try {
       const params = {};
-
+  
       if (selectedDate) {
         params.date = selectedDate;
       }
-
-      if (selectedVendors) {  // vendor works perfectly with backend
+  
+      if (selectedVendors) {
         params.vendor = selectedVendors;
       }
-
-      // backend ignores location — we’ll handle filtering on frontend
-      const response = await axios.get(`${API_URL}/vendorReport`, { params });
-
-      let data = response.data;
-
-      // frontend filter by location name
+  
       if (selectedLocations && selectedLocations.length > 0) {
-        data = data.filter(item =>
-          selectedLocations.includes(item.locationname)
-        );
+        params.locations = selectedLocations;
       }
-
-      setYesterdayReport(data);
+  
+      const response = await axios.post(`${API_URL}/vendorReport`, { params });
+      // Remove the frontend filtering since it's now handled in the backend
+      setYesterdayReport(response.data);
     } catch (error) {
       console.error("Error fetching report data:", error);
       setError("Error fetching report data. Please try again.");
     }
   };
+  
 
-  const fetchCumulative = async () => {
-    try {
-      const params = {};
 
-      if (selectedDate) {
-        params.date = selectedDate;
+  const fetchCumulative = async (locationName) => {
+      try {
+        const params = {};
+        if (selectedDate) {
+          params.date = selectedDate;
+        }
+        if (selectedVendors && selectedVendors.length > 0) {
+          params.vendor = selectedVendors.join(","); // Convert array to comma-separated string
+        }
+        if (selectedLocations && selectedLocations.length > 0) {
+          // params.locationName = selectedLocations;
+          params.locationName = selectedLocations.join(",");
+  
+        }
+        const response = await axios.post(`${API_URL}/fetch-data-sequential`, { params });
+        setCumulative(response.data);
+      } catch {
+        console.error("Error fetching cumulative data");
       }
-
-      if (selectedVendors && selectedVendors.length > 0) {
-        params.vendor = selectedVendors.join(","); // Convert array to comma-separated string
-      }
-
-      if (selectedLocations && selectedLocations.length > 0) {
-        // params.locationName = selectedLocations;
-        params.locationName = selectedLocations.join(",");
-      }
-
-      const response = await axios.get(`${API_URL}/fetch-data-sequential`, {
-        params,
-      });
-      setCumulative(response.data);
-    } catch {
-
-    }
-  };
+    };
 
   const fetchLocationData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`${API_URL}/locations`);
-      //setLocations(response.data);
-      const locationNames = response.data.map((item) => item.LocationName);
-      setLocations(locationNames);
-      //setFilteredLocations(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-    setIsLoading(false);
-  };
+      //setIsLoading(true);
+      try {
+        const response = await axios.post(`${API_URL}/locations`);
+        //setLocations(response.data);
+        const locationNames = response.data.map((item) => item.LocationName);
+        setLocations(locationNames);
+        //setFilteredLocations(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+      //setIsLoading(false);
+    };
   const locationName = selectedLocations;
 
   const vendor = selectedVendors;
 
-  const fetchGraphFileData = async (queryParams) => {
-    try {
-      let apiUrl = `${API_URL}/graph1LocationWise`;
+  // const fetchGraphFileData = async (queryParams) => {
+  //   try {
+  //     let apiUrl = `${API_URL}/graph1LocationWise`;
 
-      // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
+  //     // Extract locations from queryParams if they exist
+  //     const locations = queryParams?.locationNames
+  //       ? queryParams.locationNames.split(',')
+  //       : [];
 
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
-      }
-
-
-
-      const response = await axios.get(apiUrl);
-      const apiData = response.data;
+  //     if (locations.length > 0) {
+  //       const locationQuery = locations
+  //         .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+  //         .join('&');
+  //       apiUrl += `?${locationQuery}`;
+  //     }
 
 
 
-      if (!apiData || apiData.length === 0) {
-        console.error("No data received from the API");
-        return;
-      }
+  //     const response = await axios.get(apiUrl);
+  //     const apiData = response.data;
 
-      const labels = Object.keys(apiData[0]).filter(
-        label => label !== "locationid" && label !== "LocationName"
-      );
 
-      const datasets = apiData.map(locationData => ({
-        label: locationData.LocationName || "Files",
-        data: labels.map(label => locationData[label]),
-        backgroundColor: "#ad33ff",
-      }));
 
-      setBarFile({
-        labels: labels,
-        datasets: datasets,
-      });
+  //     if (!apiData || apiData.length === 0) {
+  //       console.error("No data received from the API");
+  //       return;
+  //     }
 
-    } catch (error) {
-      console.error("Error in fetchGraphFileData:", {
-        message: error.message,
-        response: error.response?.data,
-        config: error.config
-      });
+  //     const labels = Object.keys(apiData[0]).filter(
+  //       label => label !== "locationid" && label !== "LocationName"
+  //     );
+
+  //     const datasets = apiData.map(locationData => ({
+  //       label: locationData.LocationName || "Files",
+  //       data: labels.map(label => locationData[label]),
+  //       backgroundColor: "#ad33ff",
+  //     }));
+
+  //     setBarFile({
+  //       labels: labels,
+  //       datasets: datasets,
+  //     });
+
+  //   } catch (error) {
+  //     console.error("Error in fetchGraphFileData:", {
+  //       message: error.message,
+  //       response: error.response?.data,
+  //       config: error.config
+  //     });
+  //   }
+  // };
+  
+   const fetchGraphFileData = async (queryParams) => {
+  try {
+    const apiUrl = `${API_URL}/graph1LocationWise`;
+
+    // Prepare request body
+    const body = {};
+
+    // Add locationNames to body if exists
+    if (queryParams?.locationNames) {
+      body.locationNames = queryParams.locationNames
+        .split(',')
+        .map(loc => loc.trim());
     }
-  };
+
+    const response = await axios.post(apiUrl, body);
+    const apiData = response.data;
+
+    if (!apiData || apiData.length === 0) {
+      console.error("No data received from the API");
+      return;
+    }
+
+    const labels = Object.keys(apiData[0]).filter(
+      label => label !== "locationid" && label !== "LocationName"
+    );
+
+    const datasets = apiData.map(locationData => ({
+      label: locationData.LocationName || "Files",
+      data: labels.map(label => locationData[label]),
+      backgroundColor: "#ad33ff",
+    }));
+
+    setBarFile({
+      labels,
+      datasets,
+    });
+
+  } catch (error) {
+    console.error("Error in fetchGraphFileData:", {
+      message: error.message,
+      response: error.response?.data,
+      config: error.config,
+    });
+  }
+};
+  
   const fetchExportCsvFile = () => {
     // Construct the API URL with multiple location names
     const apiUrl = locationName
@@ -462,494 +530,883 @@ const ExclusiveDashboard = ({ showSideBar }) => {
   };
 
 
+  // const fetchGraphImageData = async (queryParams) => {
+  //   try {
+  //     let apiUrl = `${API_URL}/graph2`;
+
+  //     // Extract locations from queryParams if they exist
+  //     const locations = queryParams?.locationNames
+  //       ? queryParams.locationNames.split(',')
+  //       : [];
+
+  //     if (locations.length > 0) {
+  //       const locationQuery = locations
+  //         .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+  //         .join('&');
+  //       apiUrl += `?${locationQuery}`;
+  //     }
+
+
+  //     const response = await axios.get(apiUrl);
+  //     const apiData = response.data;
+
+
+
+  //     if (!apiData || apiData.length === 0) {
+  //       console.error("No image data received from the API");
+  //       return;
+  //     }
+
+  //     const labels = Object.keys(apiData[0]).filter(
+  //       label => label !== "locationid" && label !== "LocationName"
+  //     );
+
+  //     const datasets = apiData.map(locationData => ({
+  //       label: locationData.LocationName || "Images",
+  //       data: labels.map(label => locationData[label]),
+  //       backgroundColor: "#ad33ff",
+  //     }));
+
+  //     setBarImage({
+  //       labels: labels,
+  //       datasets: datasets,
+  //     });
+
+  //   } catch (error) {
+  //     console.error("Error in fetchGraphImageData:", {
+  //       message: error.message,
+  //       response: error.response?.data,
+  //       config: error.config
+  //     });
+  //   }
+  // };
+
+
   const fetchGraphImageData = async (queryParams) => {
     try {
-      let apiUrl = `${API_URL}/graph2`;
-
-      // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
-
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
+      const apiUrl = `${API_URL}/graph2`;
+  
+      const body = {};
+  
+      if (queryParams?.locationNames) {
+        body.locationNames = queryParams.locationNames
+          .split(',')
+          .map(loc => loc.trim());
       }
-
-
-      const response = await axios.get(apiUrl);
+  
+      const response = await axios.post(apiUrl, body);
       const apiData = response.data;
-
-
-
+  
       if (!apiData || apiData.length === 0) {
         console.error("No image data received from the API");
         return;
       }
-
+  
       const labels = Object.keys(apiData[0]).filter(
         label => label !== "locationid" && label !== "LocationName"
       );
-
+  
       const datasets = apiData.map(locationData => ({
         label: locationData.LocationName || "Images",
         data: labels.map(label => locationData[label]),
         backgroundColor: "#ad33ff",
       }));
-
-      setBarImage({
-        labels: labels,
-        datasets: datasets,
-      });
-
+  
+      setBarImage({ labels, datasets });
+  
     } catch (error) {
       console.error("Error in fetchGraphImageData:", {
         message: error.message,
         response: error.response?.data,
-        config: error.config
+        config: error.config,
       });
     }
   };
 
+  // const fetchTodayGraphFileData = () => {
+  //   let apiUrl = `${API_URL}/graph7`;
+
+  //   if (selectedLocations && selectedLocations.length > 0) {
+  //     const locationQuery = selectedLocations
+  //       .map((location) => `locationname=${encodeURIComponent(location)}`)
+  //       .join("&");
+  //     apiUrl += `?${locationQuery}`;
+  //   }
+
+  //   axios
+  //     .get(apiUrl)
+  //     .then((response) => {
+  //       const apiData = response.data;
+  //       if (!apiData || apiData.length === 0) {
+  //         console.error("No data received from the API");
+  //         return;
+  //       }
+
+  //       const labels = Object.keys(apiData[0]).filter(
+  //         (label) => label !== "locationid" && label !== "LocationName"
+  //       );
+  //       const datasets = apiData.map((locationData) => {
+  //         return {
+  //           label: "Files",
+  //           data: labels.map((label) => locationData[label]),
+  //           backgroundColor: "#ad33ff", // Change the background color here
+  //         };
+  //       });
+
+  //       setTodayFile({
+  //         labels: labels,
+  //         datasets: datasets,
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // };
 
   const fetchTodayGraphFileData = () => {
-    let apiUrl = `${API_URL}/graph7`;
-
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationname=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
+    const apiUrl = `${API_URL}/graph7`;
+  
+    const body = {};
+    if (selectedLocations?.length > 0) {
+      body.locationNames = selectedLocations;
     }
-
-    axios
-      .get(apiUrl)
-      .then((response) => {
+  
+    axios.post(apiUrl, body)
+      .then(response => {
         const apiData = response.data;
         if (!apiData || apiData.length === 0) {
           console.error("No data received from the API");
           return;
         }
-
+  
         const labels = Object.keys(apiData[0]).filter(
-          (label) => label !== "locationid" && label !== "LocationName"
+          label => label !== "locationid" && label !== "LocationName"
         );
-        const datasets = apiData.map((locationData) => {
-          return {
-            label: "Files",
-            data: labels.map((label) => locationData[label]),
-            backgroundColor: "#ad33ff", // Change the background color here
-          };
-        });
-
-        setTodayFile({
-          labels: labels,
-          datasets: datasets,
-        });
+  
+        const datasets = apiData.map(locationData => ({
+          label: "Files",
+          data: labels.map(label => locationData[label]),
+          backgroundColor: "#ad33ff",
+        }));
+  
+        setTodayFile({ labels, datasets });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error fetching data:", error);
       });
   };
+  // const fetchTodayGraphImageData = () => {
+  //   let apiUrl = `${API_URL}/graph8`;
+
+  //   if (selectedLocations && selectedLocations.length > 0) {
+  //     const locationQuery = selectedLocations
+  //       .map((location) => `locationname=${encodeURIComponent(location)}`)
+  //       .join("&");
+  //     apiUrl += `?${locationQuery}`;
+  //   }
+
+  //   axios
+  //     .get(apiUrl)
+  //     .then((response) => {
+  //       const apiData = response.data;
+  //       if (!apiData || apiData.length === 0) {
+  //         console.error("No data received from the API");
+  //         return;
+  //       }
+
+  //       const labels = Object.keys(apiData[0]).filter(
+  //         (label) => label !== "locationid" && label !== "LocationName"
+  //       );
+  //       const datasets = apiData.map((locationData) => {
+  //         return {
+  //           label: "Images",
+  //           data: labels.map((label) => locationData[label]),
+  //           backgroundColor: "#ad33ff", // Change the background color here
+  //         };
+  //       });
+
+  //       setTodayImage({
+  //         labels: labels,
+  //         datasets: datasets,
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // };
 
 
-  const fetchTodayGraphImageData = () => {
-    let apiUrl = `${API_URL}/graph8`;
-
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationname=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
+   const fetchTodayGraphImageData = () => {
+    const apiUrl = `${API_URL}/graph8`;
+  
+    const body = {};
+    if (selectedLocations?.length > 0) {
+      body.locationNames = selectedLocations;
     }
-
-    axios
-      .get(apiUrl)
-      .then((response) => {
+  
+    axios.post(apiUrl, body)
+      .then(response => {
         const apiData = response.data;
         if (!apiData || apiData.length === 0) {
           console.error("No data received from the API");
           return;
         }
-
+  
         const labels = Object.keys(apiData[0]).filter(
-          (label) => label !== "locationid" && label !== "LocationName"
+          label => label !== "locationid" && label !== "LocationName"
         );
-        const datasets = apiData.map((locationData) => {
-          return {
-            label: "Images",
-            data: labels.map((label) => locationData[label]),
-            backgroundColor: "#ad33ff", // Change the background color here
-          };
-        });
-
-        setTodayImage({
-          labels: labels,
-          datasets: datasets,
-        });
+  
+        const datasets = apiData.map(locationData => ({
+          label: "Images",
+          data: labels.map(label => locationData[label]),
+          backgroundColor: "#ad33ff",
+        }));
+  
+        setTodayImage({ labels, datasets });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error fetching data:", error);
       });
   };
+  // const fetchWeekImageGraphData = async () => {
+  //   try {
+  //     const params = {
+  //       params: {
+  //         locationNames: selectedLocations,
+  //       },
+  //     };
+  //     const response = await axios.get(`${API_URL}/graph6`, params);
+  //     const apiData = response.data;
+
+  //     if (Array.isArray(apiData)) {
+  //       setWeekImage(apiData);
+  //     } else {
+  //       console.error("Unexpected data format for weekImage:", apiData);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching weekImage data:", error);
+  //   }
+  // };
+
+   const fetchWeekImageGraphData = async () => {
+      try {
+        const params = {
+          params: {
+            locationNames: selectedLocations,
+          },
+        };
+        const response = await axios.post(`${API_URL}/graph6`, params);
+        const apiData = response.data;
+  
+        if (Array.isArray(apiData)) {
+          setWeekImage(apiData);
+        } else {
+          console.error("Unexpected data format for weekImage:", apiData);
+        }
+      } catch (error) {
+        console.error("Error fetching weekImage data:", error);
+      }
+    };
 
 
-  const fetchWeekImageGraphData = async () => {
-    try {
+  // const fetchWeekFileGraphData = async () => {
+  //   try {
+  //     const params = { params: { locationNames: selectedLocations } };
+  //     const response = await axios.get(`${API_URL}/graph5`, params);
+  //     const apiData = response.data;
+  //     if (Array.isArray(apiData)) {
+  //       setWeekFile(apiData);
+  //     } else {
+  //       console.error("Unexpected data format for weekFile:", apiData);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching weekFile data:", error);
+  //   }
+  // };
+
+  // const fetchMonthImageGraphData = () => {
+  //   const params = {
+  //     params: {
+  //       locationNames: selectedLocations, // Assuming selectedLocations is an array of location names
+  //     },
+  //   };
+  //   axios
+  //     .get(`${API_URL}/graphmonth`, params)
+  //     .then((response) => {
+  //       const apiData = response.data;
+  //       const labels = apiData.map((item) => item["scandate"]);
+  //       const data = apiData.map((item) => item["Scanned No Of Images"]);
+
+  //       setMonthImage({
+  //         labels: labels.filter((label) => label !== "id"),
+  //         datasets: [
+  //           {
+  //             ...monthImage.datasets[0],
+  //             data: data,
+  //           },
+  //         ],
+  //       });
+
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // };
+
+
+   const fetchWeekFileGraphData = async () => {
+      try {
+        const params = { params: { locationNames: selectedLocations } };
+        const response = await axios.post(`${API_URL}/graph5`, params);
+        const apiData = response.data;
+        if (Array.isArray(apiData)) {
+          setWeekFile(apiData);
+        } else {
+          console.error("Unexpected data format for weekFile:", apiData);
+        }
+      } catch (error) {
+        console.error("Error fetching weekFile data:", error);
+      }
+    };
+    const fetchMonthImageGraphData = () => {
       const params = {
         params: {
-          locationNames: selectedLocations,
+          locationNames: selectedLocations, // Assuming selectedLocations is an array of location names
         },
       };
-      const response = await axios.get(`${API_URL}/graph6`, params);
-      const apiData = response.data;
-
-      if (Array.isArray(apiData)) {
-        setWeekImage(apiData);
-      } else {
-        console.error("Unexpected data format for weekImage:", apiData);
-      }
-    } catch (error) {
-      console.error("Error fetching weekImage data:", error);
-    }
-  };
-
-
-
-  const fetchWeekFileGraphData = async () => {
-    try {
-      const params = { params: { locationNames: selectedLocations } };
-      const response = await axios.get(`${API_URL}/graph5`, params);
-      const apiData = response.data;
-      if (Array.isArray(apiData)) {
-        setWeekFile(apiData);
-      } else {
-        console.error("Unexpected data format for weekFile:", apiData);
-      }
-    } catch (error) {
-      console.error("Error fetching weekFile data:", error);
-    }
-  };
-
-  const fetchMonthImageGraphData = () => {
-    const params = {
-      params: {
-        locationNames: selectedLocations, // Assuming selectedLocations is an array of location names
-      },
+      axios
+        .post(`${API_URL}/graphmonth`, params)
+        .then((response) => {
+          const apiData = response.data;
+          const labels = apiData.map((item) => item["scandate"]);
+          const data = apiData.map((item) => item["Scanned No Of Images"]);
+  
+          setMonthImage({
+            labels: labels.filter((label) => label !== "id"),
+            datasets: [
+              {
+                ...monthImage.datasets[0],
+                data: data,
+              },
+            ],
+          });
+  
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
     };
-    axios
-      .get(`${API_URL}/graphmonth`, params)
-      .then((response) => {
-        const apiData = response.data;
-        const labels = apiData.map((item) => item["scandate"]);
-        const data = apiData.map((item) => item["Scanned No Of Images"]);
 
-        setMonthImage({
-          labels: labels.filter((label) => label !== "id"),
-          datasets: [
-            {
-              ...monthImage.datasets[0],
-              data: data,
-            },
-          ],
-        });
+  // const fetchCivilCaseGraphData = () => {
+  //   let apiUrl = `${API_URL}/civil`;
 
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
+  //   if (selectedLocations && selectedLocations.length > 0) {
+  //     const locationQuery = selectedLocations
+  //       .map((location) => `locationname=${encodeURIComponent(location)}`)
+  //       .join("&");
+  //     apiUrl += `?${locationQuery}`;
+  //   }
+
+  //   axios
+  //     .get(apiUrl)
+  //     .then((response) => {
+  //       const apiData = response.data;
+
+  //       if (!apiData || apiData.length === 0) {
+  //         console.error("No data received from the API");
+  //         return;
+  //       }
+
+  //       const labels = Object.keys(apiData[0]);
+  //       const data = Object.values(apiData[0]);
+
+  //       setCivilCase({
+  //         labels: labels.filter((label) => label !== "id"),
+  //         datasets: [
+  //           {
+  //             ...civilCase.datasets[0],
+  //             data: data,
+  //           },
+  //         ],
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // };
+
+
+  // const fetchCriminalCaseGraphData = () => {
+  //   let apiUrl = `${API_URL}/criminal`;
+
+  //   if (selectedLocations && selectedLocations.length > 0) {
+  //     const locationQuery = selectedLocations
+  //       .map((location) => `locationname=${encodeURIComponent(location)}`)
+  //       .join("&");
+  //     apiUrl += `?${locationQuery}`;
+  //   }
+
+  //   axios
+  //     .get(apiUrl)
+  //     .then((response) => {
+  //       const apiData = response.data;
+
+  //       if (!apiData || apiData.length === 0) {
+  //         console.error("No data received from the API");
+  //         return;
+  //       }
+
+  //       const labels = Object.keys(apiData[0]);
+  //       const data = Object.values(apiData[0]);
+
+  //       setCriminalCase({
+  //         labels: labels.filter((label) => label !== "id"),
+  //         datasets: [
+  //           {
+  //             ...criminalCase.datasets[0],
+  //             data: data,
+  //           },
+  //         ],
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // };
 
 
 
-  const fetchCivilCaseGraphData = () => {
-    let apiUrl = `${API_URL}/civil`;
+  // const fetchAllYesGraphImageData = async (queryParams) => {
+  //   try {
+  //     let apiUrl = `${API_URL}/graph9`;
 
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationname=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
+  //     // Extract locations from queryParams if they exist
+  //     const locations = queryParams?.locationNames
+  //       ? queryParams.locationNames.split(',')
+  //       : [];
+
+  //     if (locations.length > 0) {
+  //       const locationQuery = locations
+  //         .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+  //         .join('&');
+  //       apiUrl += `?${locationQuery}`;
+  //     }
+
+
+
+  //     const response = await axios.get(apiUrl);
+  //     const apiData = response.data;
+
+
+  //     if (!apiData || apiData.length === 0) {
+  //       console.error("No data received from the API");
+  //       return;
+  //     }
+
+  //     const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
+  //     const data = apiData.map(item => item["Images"] || 0);
+
+
+
+  //     setAllLocationYesImage({
+  //       labels: labels,
+  //       datasets: [{
+  //         label: "Images",
+  //         data: data,
+  //         backgroundColor: "#02B2AF",
+  //       }],
+  //     });
+
+  //   } catch (error) {
+  //     console.error("Error in fetchAllYesGraphImageData:", {
+  //       message: error.message,
+  //       response: error.response?.data,
+  //       config: error.config
+  //     });
+  //   }
+  // };
+
+
+
+
+  // const fetchAllGraphImageData = async (queryParams) => {
+  //   try {
+  //     let apiUrl = `${API_URL}/graph10`;
+
+  //     // Extract locations from queryParams if they exist
+  //     const locations = queryParams?.locationNames
+  //       ? queryParams.locationNames.split(',')
+  //       : [];
+
+  //     if (locations.length > 0) {
+  //       const locationQuery = locations
+  //         .map(location => `locationname=${encodeURIComponent(location.trim())}`)
+  //         .join('&');
+  //       apiUrl += `?${locationQuery}`;
+  //     }
+
+
+
+  //     const response = await axios.get(apiUrl);
+  //     const apiData = response.data;
+
+
+
+  //     if (!apiData || apiData.length === 0) {
+  //       console.error("No data received from the API");
+  //       return;
+  //     }
+
+  //     const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
+  //     const data = apiData.map(item => item["Images"] || 0);
+
+
+  //     setAllLocationImage({
+  //       labels: labels,
+  //       datasets: [{
+  //         label: "Images",
+  //         data: data,
+  //         backgroundColor: "#02B2AF",
+  //       }],
+  //     });
+
+  //   } catch (error) {
+  //     console.error("Error in fetchAllGraphImageData:", {
+  //       message: error.message,
+  //       response: error.response?.data,
+  //       config: error.config
+  //     });
+  //   }
+  // };
+
+
+
+  // const fetchTableData = () => {
+  //   let apiUrl = `${API_URL}/tabularData`;
+
+  //   if (selectedLocations && selectedLocations.length > 0) {
+  //     const locationQuery = selectedLocations
+  //       .map((location) => `locationName=${encodeURIComponent(location)}`)
+  //       .join("&");
+  //     apiUrl += `?${locationQuery}`;
+  //   }
+  //   axios
+  //     .get(apiUrl)
+  //     .then((response) => {
+  //       setTableData(response.data);
+
+  //     })
+  //     .catch((error) => console.error(error));
+  // };
+
+
+
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(`${API_URL}/7daysimages`, {
+  //       params: { locationName },
+  //     });
+
+  //     const data = response.data;
+
+  //     // Process data for the chart
+  //     const dates = data.map((item) => item.date);
+  //     const scannedImages = data.map((item) => parseInt(item.ScannedImages, 10));
+  //     const qcImages = data.map((item) => parseInt(item.QCImages, 10));
+  //     const flaggingImages = data.map((item) => parseInt(item.FlaggingImages, 10));
+  //     const indexImages = data.map((item) => parseInt(item.IndexImages, 10));
+  //     const cbslQaImages = data.map((item) => parseInt(item.CBSL_QAImages, 10));
+  //     const clientQaImages = data.map((item) => parseInt(item.Client_QAImages, 10));
+  //     const digiSignImages = data.map((item) => parseInt(item.DigiSignImages, 10));
+  //     // const dmsUploadImages = data.map((item) => parseInt(item.DMSUploadImages, 10));
+
+  //     setChartData({
+  //       series: [
+  //         { name: "Scanned Images", type: "bar", data: scannedImages, color: "#1E90FF" },
+  //         { name: "QC Images", type: "bar", data: qcImages, color: "#32CD32" },
+  //         { name: "Flagging Images", type: "bar", data: flaggingImages, color: "#AC1754" },
+  //         { name: "Indexing Images", type: "bar", data: indexImages, color: "#4DA1A9" },
+  //         { name: "CBSL QA Images", type: "bar", data: cbslQaImages, color: "#FF4500" },
+  //         { name: "Client QA Images", type: "bar", data: clientQaImages, color: "#735557" },
+  //         { name: "Digi Sign Images", type: "bar", data: digiSignImages, color: "#006A71" },
+  //         // { name: "DMS Upload Images", type: "bar", data: dmsUploadImages, color: "#E69DB8" },
+  //         { name: "Scanned Images (Line)", type: "line", data: scannedImages, color: "#1E90FF" },
+  //         { name: "QC Images (Line)", type: "line", data: qcImages, color: "#32CD32" },
+  //         { name: "Flagging Images (Line)", type: "line", data: flaggingImages, color: "#AC1754" },
+  //         { name: "Indexing Images (Line)", type: "line", data: indexImages, color: "#4DA1A9" },
+  //         { name: "CBSL QA Images (Line)", type: "line", data: cbslQaImages, color: "#FF4500" },
+  //         { name: "Client QA Images (Line)", type: "line", data: clientQaImages, color: "#735557" },
+  //         { name: "Digi Sign Images (Line)", type: "line", data: digiSignImages, color: "#006A71" },
+  //         // { name: "DMS Upload Images (Line)", type: "line", data: dmsUploadImages, color: "#E69DB8" },
+  //       ],
+  //       options: {
+  //         chart: {
+  //           type: "line",
+  //           toolbar: { show: true },
+  //         },
+  //         stroke: {
+  //           width: [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2], // Line series has width 2, bars have 0
+  //           curve: "smooth",
+  //         },
+  //         xaxis: {
+  //           categories: dates,
+  //           title: { text: "Date" },
+  //         },
+  //         yaxis: {
+  //           title: { text: "Images Count" },
+  //         },
+  //         plotOptions: {
+  //           bar: {
+  //             columnWidth: "50%",
+  //             dataLabels: { position: "top" },
+  //           },
+  //         },
+  //         dataLabels: {
+  //           enabled: true,
+  //           enabledOnSeries: [0, 1, 2, 3, 4, 5, 6, 7], // Only for bar series
+  //           formatter: (val) => val,
+  //           offsetY: -10,
+  //           style: { fontSize: "12px", colors: ["#304758"] },
+  //         },
+  //         tooltip: {
+  //           shared: true,
+  //           sharedOnSeries: [8, 9, 10, 11, 12, 13, 14, 15],
+  //           intersect: false,
+  //         },
+  //         legend: {
+  //           position: "top",
+  //         },
+  //       },
+  //     });
+
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+  
+  
+   const fetchCivilCaseGraphData = () => {
+    const apiUrl = `${API_URL}/civil`;
+  
+    const body = {};
+    if (selectedLocations?.length > 0) {
+      body.locationNames = selectedLocations;
     }
-
-    axios
-      .get(apiUrl)
+  
+    axios.post(apiUrl, body)
       .then((response) => {
         const apiData = response.data;
-
-        if (!apiData || apiData.length === 0) {
-          console.error("No data received from the API");
-          return;
-        }
-
-        const labels = Object.keys(apiData[0]);
-        const data = Object.values(apiData[0]);
-
+        if (!apiData || apiData.length === 0) return;
+  
+        const labels = Object.keys(apiData[0]).filter(label => label !== "id");
+        const data = labels.map(label => apiData[0][label]);
+  
         setCivilCase({
-          labels: labels.filter((label) => label !== "id"),
-          datasets: [
-            {
-              ...civilCase.datasets[0],
-              data: data,
-            },
-          ],
+          labels,
+          datasets: [{
+            ...civilCase.datasets[0],
+            data
+          }]
         });
       })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+      .catch((error) => console.error("Error fetching civil case graph data:", error));
   };
-
-
   const fetchCriminalCaseGraphData = () => {
-    let apiUrl = `${API_URL}/criminal`;
-
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationname=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
+    const apiUrl = `${API_URL}/criminal`;
+  
+    const body = {};
+    if (selectedLocations?.length > 0) {
+      body.locationNames = selectedLocations;
     }
-
-    axios
-      .get(apiUrl)
+  
+    axios.post(apiUrl, body)
       .then((response) => {
         const apiData = response.data;
-
-        if (!apiData || apiData.length === 0) {
-          console.error("No data received from the API");
-          return;
-        }
-
-        const labels = Object.keys(apiData[0]);
-        const data = Object.values(apiData[0]);
-
+        if (!apiData || apiData.length === 0) return;
+  
+        const labels = Object.keys(apiData[0]).filter(label => label !== "id");
+        const data = labels.map(label => apiData[0][label]);
+  
         setCriminalCase({
-          labels: labels.filter((label) => label !== "id"),
-          datasets: [
-            {
-              ...criminalCase.datasets[0],
-              data: data,
-            },
-          ],
+          labels,
+          datasets: [{
+            ...criminalCase.datasets[0],
+            data
+          }]
         });
       })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+      .catch((error) => console.error("Error fetching criminal case graph data:", error));
   };
-
-
-
   const fetchAllYesGraphImageData = async (queryParams) => {
     try {
-      let apiUrl = `${API_URL}/graph9`;
-
-      // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
-
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
+      const apiUrl = `${API_URL}/graph9`;
+  
+      const body = {};
+      if (queryParams?.locationNames) {
+        body.locationNames = queryParams.locationNames
+          .split(',')
+          .map(loc => loc.trim());
       }
-
-
-
-      const response = await axios.get(apiUrl);
+  
+      const response = await axios.post(apiUrl, body);
       const apiData = response.data;
-
-
-      if (!apiData || apiData.length === 0) {
-        console.error("No data received from the API");
-        return;
-      }
-
+  
+      if (!apiData || apiData.length === 0) return;
+  
       const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
       const data = apiData.map(item => item["Images"] || 0);
-
-
-
+  
       setAllLocationYesImage({
-        labels: labels,
+        labels,
         datasets: [{
           label: "Images",
-          data: data,
+          data,
           backgroundColor: "#02B2AF",
         }],
       });
-
+  
     } catch (error) {
-      console.error("Error in fetchAllYesGraphImageData:", {
-        message: error.message,
-        response: error.response?.data,
-        config: error.config
-      });
+      console.error("Error in fetchAllYesGraphImageData:", error);
     }
   };
-
-
-
-
   const fetchAllGraphImageData = async (queryParams) => {
     try {
-      let apiUrl = `${API_URL}/graph10`;
-
-      // Extract locations from queryParams if they exist
-      const locations = queryParams?.locationNames
-        ? queryParams.locationNames.split(',')
-        : [];
-
-      if (locations.length > 0) {
-        const locationQuery = locations
-          .map(location => `locationname=${encodeURIComponent(location.trim())}`)
-          .join('&');
-        apiUrl += `?${locationQuery}`;
+      const apiUrl = `${API_URL}/graph10`;
+  
+      const body = {};
+      if (queryParams?.locationNames) {
+        body.locationNames = queryParams.locationNames
+          .split(',')
+          .map(loc => loc.trim());
       }
-
-
-
-      const response = await axios.get(apiUrl);
+  
+      const response = await axios.post(apiUrl, body);
       const apiData = response.data;
-
-
-
-      if (!apiData || apiData.length === 0) {
-        console.error("No data received from the API");
-        return;
-      }
-
+  
+      if (!apiData || apiData.length === 0) return;
+  
       const labels = apiData.map(item => item["Location Name"] || item["locationname"] || "Unknown");
       const data = apiData.map(item => item["Images"] || 0);
-
-
+  
       setAllLocationImage({
-        labels: labels,
+        labels,
         datasets: [{
           label: "Images",
-          data: data,
+          data,
           backgroundColor: "#02B2AF",
         }],
       });
-
+  
     } catch (error) {
-      console.error("Error in fetchAllGraphImageData:", {
-        message: error.message,
-        response: error.response?.data,
-        config: error.config
-      });
+      console.error("Error in fetchAllGraphImageData:", error);
     }
   };
-
-
-
-  const fetchTableData = () => {
-    let apiUrl = `${API_URL}/tabularData`;
-
-    if (selectedLocations && selectedLocations.length > 0) {
-      const locationQuery = selectedLocations
-        .map((location) => `locationName=${encodeURIComponent(location)}`)
-        .join("&");
-      apiUrl += `?${locationQuery}`;
-    }
-    axios
-      .get(apiUrl)
-      .then((response) => {
-        setTableData(response.data);
-
-      })
-      .catch((error) => console.error(error));
-  };
-
-
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/7daysimages`, {
-        params: { locationName },
-      });
-
-      const data = response.data;
-
-      // Process data for the chart
-      const dates = data.map((item) => item.date);
-      const scannedImages = data.map((item) => parseInt(item.ScannedImages, 10));
-      const qcImages = data.map((item) => parseInt(item.QCImages, 10));
-      const flaggingImages = data.map((item) => parseInt(item.FlaggingImages, 10));
-      const indexImages = data.map((item) => parseInt(item.IndexImages, 10));
-      const cbslQaImages = data.map((item) => parseInt(item.CBSL_QAImages, 10));
-      const clientQaImages = data.map((item) => parseInt(item.Client_QAImages, 10));
-      const digiSignImages = data.map((item) => parseInt(item.DigiSignImages, 10));
-      // const dmsUploadImages = data.map((item) => parseInt(item.DMSUploadImages, 10));
-
-      setChartData({
-        series: [
-          { name: "Scanned Images", type: "bar", data: scannedImages, color: "#1E90FF" },
-          { name: "QC Images", type: "bar", data: qcImages, color: "#32CD32" },
-          { name: "Flagging Images", type: "bar", data: flaggingImages, color: "#AC1754" },
-          { name: "Indexing Images", type: "bar", data: indexImages, color: "#4DA1A9" },
-          { name: "CBSL QA Images", type: "bar", data: cbslQaImages, color: "#FF4500" },
-          { name: "Client QA Images", type: "bar", data: clientQaImages, color: "#735557" },
-          { name: "Digi Sign Images", type: "bar", data: digiSignImages, color: "#006A71" },
-          // { name: "DMS Upload Images", type: "bar", data: dmsUploadImages, color: "#E69DB8" },
-          { name: "Scanned Images (Line)", type: "line", data: scannedImages, color: "#1E90FF" },
-          { name: "QC Images (Line)", type: "line", data: qcImages, color: "#32CD32" },
-          { name: "Flagging Images (Line)", type: "line", data: flaggingImages, color: "#AC1754" },
-          { name: "Indexing Images (Line)", type: "line", data: indexImages, color: "#4DA1A9" },
-          { name: "CBSL QA Images (Line)", type: "line", data: cbslQaImages, color: "#FF4500" },
-          { name: "Client QA Images (Line)", type: "line", data: clientQaImages, color: "#735557" },
-          { name: "Digi Sign Images (Line)", type: "line", data: digiSignImages, color: "#006A71" },
-          // { name: "DMS Upload Images (Line)", type: "line", data: dmsUploadImages, color: "#E69DB8" },
-        ],
-        options: {
-          chart: {
-            type: "line",
-            toolbar: { show: true },
-          },
-          stroke: {
-            width: [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2], // Line series has width 2, bars have 0
-            curve: "smooth",
-          },
-          xaxis: {
-            categories: dates,
-            title: { text: "Date" },
-          },
-          yaxis: {
-            title: { text: "Images Count" },
-          },
-          plotOptions: {
-            bar: {
-              columnWidth: "50%",
-              dataLabels: { position: "top" },
+  
+    const fetchTableData = () => {
+      axios
+        .post(`${API_URL}/tabularData`)
+        .then((response) => {
+          
+          let data = response.data;
+          if (selectedLocations.length > 0) {
+  
+            data = data.filter(item =>
+              selectedLocations.includes(item.LocationName)
+            );
+          
+            setTableData(data);
+          } else {
+            setTableData(response.data);
+          }
+  
+        })
+        .catch((error) => console.error(error));
+    };
+  
+    const fetchData = async () => {
+      try {
+        const response = await axios.post(`${API_URL}/7daysimages`, {
+            locationName },
+        );
+  
+        const data = response.data;
+  
+        // Process data for the chart
+        const dates = data.map((item) => item.date);
+        const scannedImages = data.map((item) => parseInt(item.ScannedImages, 10));
+        const qcImages = data.map((item) => parseInt(item.QCImages, 10));
+        const flaggingImages = data.map((item) => parseInt(item.FlaggingImages, 10));
+        const indexImages = data.map((item) => parseInt(item.IndexImages, 10));
+        const cbslQaImages = data.map((item) => parseInt(item.CBSL_QAImages, 10));
+        const clientQaImages = data.map((item) => parseInt(item.Client_QAImages, 10));
+        const digiSignImages = data.map((item) => parseInt(item.Digi_SignImages, 10));
+        // const dmsUploadImages = data.map((item) => parseInt(item.DMSUploadImages, 10));
+  
+        setChartData({
+          series: [
+            { name: "Scanned Images", type: "bar", data: scannedImages, color: "#1E90FF" },
+            { name: "QC Images", type: "bar", data: qcImages, color: "#32CD32" },
+            { name: "Flagging Images", type: "bar", data: flaggingImages, color: "#AC1754" },
+            { name: "Indexing Images", type: "bar", data: indexImages, color: "#4DA1A9" },
+            { name: "CBSL QA Images", type: "bar", data: cbslQaImages, color: "#FF4500" },
+            { name: "Client QA Images", type: "bar", data: clientQaImages, color: "#735557" },
+            { name: "Digi Sign Images", type: "bar", data: digiSignImages, color: "#006A71" },
+            // { name: "DMS Upload Images", type: "bar", data: dmsUploadImages, color: "#E69DB8" },
+            { name: "Scanned Images (Line)", type: "line", data: scannedImages, color: "#1E90FF" },
+            { name: "QC Images (Line)", type: "line", data: qcImages, color: "#32CD32" },
+            { name: "Flagging Images (Line)", type: "line", data: flaggingImages, color: "#AC1754" },
+            { name: "Indexing Images (Line)", type: "line", data: indexImages, color: "#4DA1A9" },
+            { name: "CBSL QA Images (Line)", type: "line", data: cbslQaImages, color: "#FF4500" },
+            { name: "Client QA Images (Line)", type: "line", data: clientQaImages, color: "#735557" },
+            { name: "Digi Sign Images (Line)", type: "line", data: digiSignImages, color: "#006A71" },
+            // { name: "DMS Upload Images (Line)", type: "line", data: dmsUploadImages, color: "#E69DB8" },
+          ],
+          options: {
+            chart: {
+              type: "line",
+              toolbar: { show: true },
+            },
+            stroke: {
+              width: [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2], // Line series has width 2, bars have 0
+              curve: "smooth",
+            },
+            xaxis: {
+              categories: dates,
+              title: { text: "Date" },
+            },
+            yaxis: {
+              title: { text: "Images Count" },
+            },
+            plotOptions: {
+              bar: {
+                columnWidth: "50%",
+                dataLabels: { position: "top" },
+              },
+            },
+            dataLabels: {
+              enabled: true,
+              enabledOnSeries: [0, 1, 2, 3, 4, 5, 6, 7], // Only for bar series
+              formatter: (val) => val,
+              offsetY: -10,
+              style: { fontSize: "12px", colors: ["#304758"] },
+            },
+            tooltip: {
+              shared: true,
+              sharedOnSeries: [8, 9, 10, 11, 12, 13, 14, 15],
+              intersect: false,
+            },
+            legend: {
+              position: "top",
             },
           },
-          dataLabels: {
-            enabled: true,
-            enabledOnSeries: [0, 1, 2, 3, 4, 5, 6, 7], // Only for bar series
-            formatter: (val) => val,
-            offsetY: -10,
-            style: { fontSize: "12px", colors: ["#304758"] },
-          },
-          tooltip: {
-            shared: true,
-            sharedOnSeries: [8, 9, 10, 11, 12, 13, 14, 15],
-            intersect: false,
-          },
-          legend: {
-            position: "top",
-          },
-        },
-      });
-
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+        });
+  
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+  
   useEffect(() => {
     const fetchAllData = async () => {
       setIsLoading(true);
@@ -988,30 +1445,47 @@ const ExclusiveDashboard = ({ showSideBar }) => {
   }, []);
 
   useEffect(() => {
+    // const fetchTarget = async () => {
+    //   try {
+    //     const response = await axios.get(`${API_URL}/mptarget`);
+    //     setTarget(response.data);
+    //   } catch {
+
+    //   }
+    // };
+    // const fetchVendor = async () => {
+    //   try {
+    //     const response = await axios.get(`${API_URL}/vendorName`);
+    //     setVendorName(response.data);
+    //   } catch {
+
+    //   }
+    // };
     const fetchTarget = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/mptarget`);
-        setTarget(response.data);
-      } catch {
+          try {
+            const response = await axios.post(`${API_URL}/mptarget`);
+            setTarget(response.data);
+          } catch {
+            console.error("Error fetching target data");
+          }
+        };
+        const fetchVendor = async () => {
+          try {
+            const response = await axios.post(`${API_URL}/vendorName`);
+            setVendorName(response.data);
+          } catch {
+            console.error("Error fetching target data");
+          }
+        };
 
-      }
-    };
-    const fetchVendor = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/vendorName`);
-        setVendorName(response.data);
-      } catch {
+    // const fetchData = async () => {
+    //   setIsLoading(true); // ✅ Set loading before fetching
+    //   await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
+    //   setIsLoading(false); // ✅ Only set false after both complete
+    // };
 
-      }
-    };
-
-    const fetchData = async () => {
-      setIsLoading(true); // ✅ Set loading before fetching
-      await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
-      setIsLoading(false); // ✅ Only set false after both complete
-    };
-
-    fetchData();
+    // fetchData();
+    fetchTarget();
     fetchVendor();
   }, []);
 

@@ -227,7 +227,7 @@ const Dashboard = ({ showSideBar }) => {
     };
   };
   const fetchLocationData = async () => {
-    //setIsLoading(true);
+
     try {
       const response = await axios.post(`${API_URL}/locations`);
       //setLocations(response.data);
@@ -237,7 +237,7 @@ const Dashboard = ({ showSideBar }) => {
     } catch (error) {
       console.error(error);
     }
-    //setIsLoading(false);
+  
   };
   const locationName = selectedLocations;
 
@@ -1033,16 +1033,16 @@ const fetchAllGraphImageData = async (queryParams) => {
 
   const fetchTableData = () => {
     axios
-      .get(`${API_URL}/tabularData`)
+      .post(`${API_URL}/tabularData`)
       .then((response) => {
-        // console.log(response.data);
+        
         let data = response.data;
         if (selectedLocations.length > 0) {
 
           data = data.filter(item =>
             selectedLocations.includes(item.LocationName)
           );
-          // console.log(data);
+        
           setTableData(data);
         } else {
           setTableData(response.data);
@@ -1168,61 +1168,31 @@ const fetchAllGraphImageData = async (queryParams) => {
 
     fetchAllData();
   }, []);
-  // const fetchYesterdayData = async (locationName) => {
-  //   try {
-  //     const params = {};
-
-  //     if (selectedDate) {
-  //       params.date = selectedDate;
-  //     }
-
-  //     if (selectedVendors) {  // Ensure vendor is included if selected
-  //       params.vendor = selectedVendors;
-  //     }
-
-  //     if (selectedLocations && selectedLocations.length > 0) {
-  //       params.locationname = selectedLocations; // Pass locations if selected
-  //     }
-
-  //     const response = await axios.get(`${API_URL}/vendorReport`, { params });
-  //     setYesterdayReport(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching report data:", error);
-  //     setError("Error fetching report data. Please try again.");
-  //   }
-  // };
-
-
+ 
   const fetchYesterdayData = async (locationName) => {
-    try {
-      const params = {};
+  try {
+    const params = {};
 
-      if (selectedDate) {
-        params.date = selectedDate;
-      }
-
-      if (selectedVendors) {  // vendor works perfectly with backend
-        params.vendor = selectedVendors;
-      }
-
-      // backend ignores location — we’ll handle filtering on frontend
-      const response = await axios.get(`${API_URL}/vendorReport`, { params });
-
-      let data = response.data;
-
-      // frontend filter by location name
-      if (selectedLocations && selectedLocations.length > 0) {
-        data = data.filter(item =>
-          selectedLocations.includes(item.locationname)
-        );
-      }
-
-      setYesterdayReport(data);
-    } catch (error) {
-      console.error("Error fetching report data:", error);
-      setError("Error fetching report data. Please try again.");
+    if (selectedDate) {
+      params.date = selectedDate;
     }
-  };
+
+    if (selectedVendors) {
+      params.vendor = selectedVendors;
+    }
+
+    if (selectedLocations && selectedLocations.length > 0) {
+      params.locations = selectedLocations;
+    }
+
+    const response = await axios.post(`${API_URL}/vendorReport`, { params });
+    // Remove the frontend filtering since it's now handled in the backend
+    setYesterdayReport(response.data);
+  } catch (error) {
+    console.error("Error fetching report data:", error);
+    setError("Error fetching report data. Please try again.");
+  }
+};
 
 
   const fetchCumulative = async (locationName) => {
@@ -1262,11 +1232,7 @@ const fetchAllGraphImageData = async (queryParams) => {
         console.error("Error fetching target data");
       }
     };
-    // const fetchData = async () => {
-    //   //setIsLoading(true);  // ✅ Set loading before fetching
-    //   await Promise.all([fetchCumulative(), fetchTarget()]); // ✅ Wait for both requests
-    //   //setIsLoading(false); // ✅ Only set false after both complete
-    // };
+  
     fetchTarget();
     fetchData();
     fetchVendor();
